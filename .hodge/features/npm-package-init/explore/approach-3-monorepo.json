@@ -1,0 +1,87 @@
+{
+  "name": "@agileexplorations/hodge",
+  "version": "3.0.0-alpha.1",
+  "description": "AI development framework: Freedom to explore, discipline to ship, wisdom to know the difference",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./lib/index.js",
+      "types": "./lib/index.d.ts"
+    },
+    "./cli": {
+      "import": "./lib/cli/index.js",
+      "types": "./lib/cli/index.d.ts"
+    },
+    "./adapters": {
+      "import": "./lib/adapters/index.js",
+      "types": "./lib/adapters/index.d.ts"
+    },
+    "./patterns": {
+      "import": "./lib/patterns/index.js",
+      "types": "./lib/patterns/index.d.ts"
+    }
+  },
+  "bin": {
+    "hodge": "./bin/hodge.js"
+  },
+  "scripts": {
+    "dev": "node --watch --enable-source-maps bin/hodge.js",
+    "build": "node scripts/build.js",
+    "test": "node --test lib/**/*.test.js",
+    "test:watch": "node --test --watch lib/**/*.test.js",
+    "lint": "eslint . --cache",
+    "format": "prettier --write . --cache",
+    "prepack": "npm run build",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "changeset publish"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "commander": "^12.0.0",
+    "chalk": "^5.3.0",
+    "fs-extra": "^11.2.0",
+    "inquirer": "^9.2.12",
+    "ora": "^8.0.1",
+    "cosmiconfig": "^9.0.0",
+    "execa": "^8.0.1",
+    "glob": "^10.3.10"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.1",
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.4",
+    "esbuild": "^0.19.11"
+  },
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
+  "files": [
+    "lib",
+    "bin",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "keywords": [
+    "ai",
+    "development",
+    "claude",
+    "framework",
+    "monorepo",
+    "workspace"
+  ],
+  "author": "Agile Explorations",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agileexplorations/hodge.git"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

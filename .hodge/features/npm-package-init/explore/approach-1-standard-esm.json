@@ -1,0 +1,55 @@
+{
+  "name": "@agileexplorations/hodge",
+  "version": "3.0.0-alpha.1",
+  "description": "AI development framework: Freedom to explore, discipline to ship, wisdom to know the difference",
+  "type": "module",
+  "main": "./lib/index.js",
+  "bin": {
+    "hodge": "./bin/hodge.js"
+  },
+  "scripts": {
+    "dev": "node --watch bin/hodge.js",
+    "test": "node --test",
+    "test:watch": "node --test --watch",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "commander": "^12.0.0",
+    "chalk": "^5.3.0",
+    "fs-extra": "^11.2.0",
+    "inquirer": "^9.2.12",
+    "ora": "^8.0.1",
+    "cosmiconfig": "^9.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.4"
+  },
+  "keywords": [
+    "ai",
+    "development",
+    "claude",
+    "cursor",
+    "framework",
+    "explore",
+    "build",
+    "harden"
+  ],
+  "author": "Agile Explorations",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agileexplorations/hodge.git"
+  },
+  "bugs": {
+    "url": "https://github.com/agileexplorations/hodge/issues"
+  },
+  "homepage": "https://github.com/agileexplorations/hodge#readme",
+  "publishConfig": {
+    "access": "public"
+  }
+}
