@@ -1,4 +1,4 @@
-export const version = '0.1.0-alpha.1';
+export const VERSION = '0.1.0-alpha.1';
 
 export interface HodgeConfig {
   version: string;

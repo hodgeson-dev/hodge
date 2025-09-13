@@ -15,23 +15,23 @@ export class ClaudeAdapter {
       apiKey: process.env.ANTHROPIC_API_KEY,
       model: 'claude-3-opus-20240229',
       maxTokens: 4000,
-      ...config
+      ...config,
     };
-    
+
     // Check for Claude Code CLI vs API
     this.mode = this.detectMode();
-    
+
     if (this.mode === 'api') {
       this.client = new Anthropic({
-        apiKey: this.config.apiKey
+        apiKey: this.config.apiKey,
       });
     }
-    
+
     this.contextBuilder = new ContextBuilder();
     this.standardsEngine = new StandardsEngine();
     this.patternLearner = new PatternLearner();
   }
-  
+
   detectMode() {
     // Check for Claude Code CLI
     try {
@@ -46,18 +46,18 @@ export class ClaudeAdapter {
       return 'manual';
     }
   }
-  
+
   async startSession(context, options) {
     const spinner = ora('Preparing Claude session...').start();
-    
+
     try {
       // Build the full prompt with context
       const prompt = await this.buildPrompt(context, options);
-      
+
       // Save prompt for reference
       const promptFile = await this.savePrompt(prompt, options);
       spinner.succeed('Context prepared');
-      
+
       // Start appropriate session type
       switch (this.mode) {
         case 'cli':
@@ -72,7 +72,7 @@ export class ClaudeAdapter {
       throw error;
     }
   }
-  
+
   async buildPrompt(context, options) {
     let prompt = `# Hodge Development Session
 
@@ -88,19 +88,19 @@ Temperature: ${options.temperature}
     } else if (options.mode === 'ship') {
       prompt += this.getShipInstructions(context);
     }
-    
+
     // Add tech stack context
     if (context.techStack?.length > 0) {
       prompt += `\n## Tech Stack\n`;
-      prompt += context.techStack.map(tech => `- ${tech}`).join('\n');
+      prompt += context.techStack.map((tech) => `- ${tech}`).join('\n');
       prompt += '\n';
     }
-    
+
     // Add standards (enforcement varies by mode)
     if (context.standards?.length > 0) {
       const enforcement = options.mode === 'ship' ? 'MUST FOLLOW' : 'SUGGESTED';
       prompt += `\n## Standards (${enforcement})\n\n`;
-      
+
       for (const standard of context.standards) {
         prompt += `### ${standard.name}\n`;
         if (standard.rules) {
@@ -111,12 +111,12 @@ Temperature: ${options.temperature}
         prompt += '\n';
       }
     }
-    
+
     // Add patterns
     if (context.patterns?.length > 0) {
       const requirement = options.mode === 'ship' ? 'MUST USE' : 'AVAILABLE';
       prompt += `\n## Patterns (${requirement})\n\n`;
-      
+
       for (const pattern of context.patterns) {
         prompt += `### ${pattern.name}\n`;
         prompt += `Type: ${pattern.type}\n`;
@@ -126,28 +126,28 @@ Temperature: ${options.temperature}
         prompt += '\n';
       }
     }
-    
+
     // Add decisions
     if (context.decisions?.length > 0) {
       prompt += `\n## Project Decisions\n\n`;
       prompt += `These decisions have been made and should ${options.mode === 'ship' ? 'MUST' : 'SHOULD'} be followed:\n\n`;
-      
+
       for (const decision of context.decisions) {
         prompt += `- ${decision}\n`;
       }
       prompt += '\n';
     }
-    
+
     // Add task if specified
     if (options.task) {
       prompt += `\n## Task\n\n${options.task}\n`;
     }
-    
+
     // Add pattern to follow if specified
     if (options.likePattern) {
       prompt += `\n## Follow Pattern\n\nUse the same pattern as: ${options.likePattern}\n`;
     }
-    
+
     // Add test requirements for ship mode
     if (options.mode === 'ship' && !options.skipTests) {
       prompt += `\n## Testing Requirements\n\n`;
@@ -157,10 +157,10 @@ Temperature: ${options.temperature}
       prompt += `- Follow existing test patterns\n`;
       prompt += `- Aim for >80% coverage\n`;
     }
-    
+
     return prompt;
   }
-  
+
   getExploreInstructions(context) {
     return `## Exploration Mode Instructions
 
@@ -183,7 +183,7 @@ Key behaviors:
 Remember: We're exploring to learn, not building for production yet.
 `;
   }
-  
+
   getShipInstructions(context) {
     return `## Ship Mode Instructions
 
@@ -213,18 +213,15 @@ Key requirements:
 Remember: This code is going to production. Quality is non-negotiable.
 `;
   }
-  
+
   async startCLISession(promptFile, options) {
     console.log(chalk.blue('\n🐱 Starting Claude Code session...\n'));
-    
-    const args = [
-      '--system-prompt-file', promptFile,
-      '--model', this.config.model
-    ];
-    
+
+    const args = ['--system-prompt-file', promptFile, '--model', this.config.model];
+
     // Add temperature
     args.push('--temperature', options.temperature.toString());
-    
+
     // Add mode-specific flags
     if (options.mode === 'ship') {
       args.push('--strict-mode');
@@ -232,32 +229,32 @@ Remember: This code is going to production. Quality is non-negotiable.
         args.push('--require-tests');
       }
     }
-    
+
     // Add files if specified
     if (options.files?.length > 0) {
       args.push('--files', ...options.files);
     }
-    
+
     // Launch Claude Code
     const claude = spawn('claude', args, {
       stdio: 'inherit',
       env: {
         ...process.env,
         HODGE_MODE: options.mode,
-        HODGE_SESSION: 'true'
-      }
+        HODGE_SESSION: 'true',
+      },
     });
-    
+
     return new Promise((resolve, reject) => {
       claude.on('exit', (code) => {
         if (code === 0) {
           console.log(chalk.green('\n✓ Claude session completed'));
-          
+
           // Save any patterns if in ship mode
           if (options.mode === 'ship') {
             this.checkForNewPatterns();
           }
-          
+
           resolve();
         } else {
           reject(new Error(`Claude exited with code ${code}`));
@@ -265,10 +262,10 @@ Remember: This code is going to production. Quality is non-negotiable.
       });
     });
   }
-  
+
   async startAPISession(prompt, options) {
     console.log(chalk.blue('\n🐱 Starting Claude API session...\n'));
-    
+
     if (options.interactive !== false) {
       // Interactive conversation mode
       return await this.interactiveAPISession(prompt, options);
@@ -277,86 +274,82 @@ Remember: This code is going to production. Quality is non-negotiable.
       return await this.singleAPIResponse(prompt, options);
     }
   }
-  
+
   async interactiveAPISession(initialPrompt, options) {
     const readline = require('readline');
     const rl = readline.createInterface({
       input: process.stdin,
-      output: process.stdout
+      output: process.stdout,
     });
-    
-    let messages = [
-      { role: 'user', content: initialPrompt }
-    ];
-    
+
+    let messages = [{ role: 'user', content: initialPrompt }];
+
     console.log(chalk.gray('Interactive session started. Type "exit" to end.\n'));
-    
+
     while (true) {
       // Get Claude's response
       const response = await this.callAPI(messages, options);
       console.log(chalk.cyan('\nClaude:'), response);
-      
+
       // Get user input
-      const userInput = await new Promise(resolve => {
+      const userInput = await new Promise((resolve) => {
         rl.question(chalk.green('\nYou: '), resolve);
       });
-      
+
       if (userInput.toLowerCase() === 'exit') {
         break;
       }
-      
+
       messages.push({ role: 'assistant', content: response });
       messages.push({ role: 'user', content: userInput });
     }
-    
+
     rl.close();
     console.log(chalk.green('\n✓ Session ended'));
   }
-  
+
   async singleAPIResponse(prompt, options) {
-    const response = await this.callAPI([
-      { role: 'user', content: prompt }
-    ], options);
-    
+    const response = await this.callAPI([{ role: 'user', content: prompt }], options);
+
     console.log(response);
-    
+
     // Save response if needed
     if (options.output) {
       await fs.writeFile(options.output, response);
       console.log(chalk.green(`\n✓ Response saved to ${options.output}`));
     }
-    
+
     return response;
   }
-  
+
   async callAPI(messages, options) {
     try {
       const response = await this.client.messages.create({
         model: this.config.model,
         messages: messages,
         max_tokens: this.config.maxTokens,
-        temperature: options.temperature || 0.5
+        temperature: options.temperature || 0.5,
       });
-      
+
       return response.content[0].text;
     } catch (error) {
       console.error(chalk.red('API Error:'), error.message);
       throw error;
     }
   }
-  
+
   async startManualSession(promptFile, options) {
     console.log(chalk.yellow('\n📋 Manual Mode\n'));
     console.log(chalk.gray('Claude is not available via CLI or API.\n'));
     console.log(chalk.gray('1. Copy the context from:'), chalk.blue(promptFile));
     console.log(chalk.gray('2. Paste into claude.ai or your preferred interface'));
     console.log(chalk.gray('3. Work with Claude using the provided context\n'));
-    
+
     // Try to copy to clipboard
     try {
       const content = await fs.readFile(promptFile, 'utf8');
       const { execSync } = require('child_process');
-      
+
       if (process.platform === 'darwin') {
         execSync('pbcopy', { input: content });
         console.log(chalk.green('✓ Context copied to clipboard'));
@@ -372,21 +365,21 @@ Remember: This code is going to production. Quality is non-negotiable.
       console.log(chalk.gray('Please copy manually from the file above'));
     }
   }
-  
+
   async savePrompt(prompt, options) {
     const timestamp = Date.now();
     const filename = `${options.mode}-${options.feature || options.topic}-${timestamp}.md`;
     const filepath = path.join('.hodge', 'explore', filename);
-    
+
     await fs.ensureDir(path.dirname(filepath));
     await fs.writeFile(filepath, prompt);
-    
+
     return filepath;
   }
-  
+
   async exploreApproaches(topic, context, numApproaches = 3) {
     console.log(chalk.blue(`\n🔍 Exploring ${numApproaches} approaches for: ${topic}\n`));
-    
+
     const prompt = `Please explore ${numApproaches} different approaches for: ${topic}
 
 For each approach, provide:
@@ -405,22 +398,22 @@ Context:
 Format each approach clearly with headers.`;
 
     if (this.mode === 'api') {
-      const response = await this.callAPI([
-        { role: 'user', content: prompt }
-      ], { temperature: 0.7 });
-      
+      const response = await this.callAPI([{ role: 'user', content: prompt }], {
+        temperature: 0.7,
+      });
+
       console.log(response);
       return this.parseApproaches(response);
     } else if (this.mode === 'cli') {
       // Save prompt and launch Claude
-      const promptFile = await this.savePrompt(prompt, { 
-        mode: 'explore', 
-        topic: `${topic}-approaches` 
+      const promptFile = await this.savePrompt(prompt, {
+        mode: 'explore',
+        topic: `${topic}-approaches`,
       });
-      
+
       await this.startCLISession(promptFile, {
         mode: 'explore',
-        temperature: 0.7
+        temperature: 0.7,
       });
     } else {
       // Manual mode
@@ -428,25 +421,25 @@ Format each approach clearly with headers.`;
       console.log(prompt);
     }
   }
-  
+
   parseApproaches(response) {
     // Parse structured response into approach objects
     const approaches = [];
     const sections = response.split(/Approach \d+/i);
-    
+
     for (let i = 1; i < sections.length && i <= 3; i++) {
       approaches.push({
         number: i,
-        content: sections[i].trim()
+        content: sections[i].trim(),
       });
     }
-    
+
     return approaches;
   }
-  
+
   async generateTests(context, options = {}) {
     console.log(chalk.green('\n🧪 Generating tests...\n'));
-    
+
     const prompt = `Generate comprehensive tests for the current implementation.
 
 Requirements:
@@ -458,30 +451,38 @@ Requirements:
 6. Aim for >80% coverage
 7. Follow the naming convention for test files
 
-${context.patterns?.length > 0 ? 'Use these test patterns:\n' + context.patterns.filter(p => p.type === 'test').map(p => `- ${p.name}`).join('\n') : ''}
+${
+  context.patterns?.length > 0
+    ? 'Use these test patterns:\n' +
+      context.patterns
+        .filter((p) => p.type === 'test')
+        .map((p) => `- ${p.name}`)
+        .join('\n')
+    : ''
+}
 
 Generate production-ready tests that follow all project standards.`;
 
     if (this.mode === 'api') {
-      const response = await this.callAPI([
-        { role: 'user', content: prompt }
-      ], { temperature: 0.3 });
-      
+      const response = await this.callAPI([{ role: 'user', content: prompt }], {
+        temperature: 0.3,
+      });
+
       return response;
     } else {
       const promptFile = await this.savePrompt(prompt, {
         mode: 'ship',
-        feature: 'tests'
+        feature: 'tests',
       });
-      
+
       console.log(chalk.gray('Generate tests using this context:'));
       console.log(chalk.blue(promptFile));
     }
   }
-  
+
   async validateCode(code, standards) {
     console.log(chalk.cyan('\n🔍 Validating code against standards...\n'));
-    
+
     const prompt = `Review this code for compliance with project standards:
 
 \`\`\`
@@ -489,29 +490,29 @@ ${code}
 \`\`\`
 
 Standards to check:
-${standards.map(s => `- ${s.name}: ${s.rules.join(', ')}`).join('\n')}
+${standards.map((s) => `- ${s.name}: ${s.rules.join(', ')}`).join('\n')}
 
 Identify any violations and suggest fixes.`;
 
     if (this.mode === 'api') {
-      const response = await this.callAPI([
-        { role: 'user', content: prompt }
-      ], { temperature: 0.2 });
-      
+      const response = await this.callAPI([{ role: 'user', content: prompt }], {
+        temperature: 0.2,
+      });
+
       return this.parseValidation(response);
     } else {
       console.log(chalk.gray('Please validate using this prompt:'));
       console.log(prompt);
     }
   }
-  
+
   parseValidation(response) {
     const validation = {
       valid: !response.toLowerCase().includes('violation'),
       violations: [],
-      suggestions: []
+      suggestions: [],
     };
-    
+
     // Extract violations and suggestions from response
     const lines = response.split('\n');
     for (const line of lines) {
@@ -522,57 +523,59 @@ Identify any violations and suggest fixes.`;
         validation.suggestions.push(line);
       }
     }
-    
+
     return validation;
   }
-  
+
   async checkForNewPatterns() {
     // Check if any new patterns emerged from the session
     const recentFiles = await this.getRecentlyModifiedFiles();
-    
+
     if (recentFiles.length > 0) {
       console.log(chalk.gray('\nChecking for new patterns...'));
-      
+
       const patterns = await this.patternLearner.extract({
         from: recentFiles,
-        minOccurrences: 2
+        minOccurrences: 2,
       });
-      
+
       if (patterns.length > 0) {
         console.log(chalk.green(`Found ${patterns.length} potential patterns`));
         console.log(chalk.gray('Run "hodge learn" to save them'));
       }
     }
   }
-  
+
   async getRecentlyModifiedFiles() {
     const { execSync } = require('child_process');
     try {
       // Get files modified in the last hour
-      const files = execSync('find . -type f -name "*.js" -o -name "*.ts" -o -name "*.jsx" -o -name "*.tsx" -mmin -60')
+      const files = execSync(
+        'find . -type f -name "*.js" -o -name "*.ts" -o -name "*.jsx" -o -name "*.tsx" -mmin -60'
+      )
         .toString()
         .split('\n')
-        .filter(f => f && !f.includes('node_modules') && !f.includes('.hodge'));
-      
+        .filter((f) => f && !f.includes('node_modules') && !f.includes('.hodge'));
+
       return files;
     } catch {
       return [];
     }
   }
-  
+
   // Helper method for ship mode with pattern
   async shipWithPattern(feature, patternName, context) {
     console.log(chalk.blue(`\n🚀 Shipping ${feature} using ${patternName} pattern\n`));
-    
+
     // Load the specific pattern
     const patterns = await this.patternLearner.loadAll();
-    const pattern = patterns.find(p => p.name === patternName || p.file?.includes(patternName));
-    
+    const pattern = patterns.find((p) => p.name === patternName || p.file?.includes(patternName));
+
     if (!pattern) {
       console.log(chalk.yellow(`Pattern "${patternName}" not found`));
       return;
     }
-    
+
     const prompt = `
 Create ${feature} following this exact pattern:
 
@@ -594,14 +597,14 @@ This is SHIP mode - the code must be production-ready and follow all standards.`
       mode: 'ship',
       feature,
       task: prompt,
-      temperature: 0.3
+      temperature: 0.3,
     });
   }
-  
+
   // Helper for reviewing code
   async reviewCode(code, context) {
     console.log(chalk.cyan('\n🔍 Reviewing code...\n'));
-    
+
     const prompt = `Review this code for production readiness:
 
 \`\`\`
@@ -621,10 +624,10 @@ Check for:
 Provide specific, actionable feedback.`;
 
     if (this.mode === 'api') {
-      const response = await this.callAPI([
-        { role: 'user', content: prompt }
-      ], { temperature: 0.3 });
-      
+      const response = await this.callAPI([{ role: 'user', content: prompt }], {
+        temperature: 0.3,
+      });
+
       return response;
     } else {
       console.log(chalk.gray('Review using this prompt:'));

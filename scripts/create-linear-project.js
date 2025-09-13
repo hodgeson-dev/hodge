@@ -10,7 +10,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const linear = new LinearClient({
-  apiKey: process.env.LINEAR_API_KEY
+  apiKey: process.env.LINEAR_API_KEY,
 });
 
 // Helper function to get or create a label
@@ -20,21 +20,21 @@ async function getOrCreateLabel(teamId, labelName, color = '#6B46C1') {
     const labels = await linear.issueLabels({
       filter: {
         team: { id: { eq: teamId } },
-        name: { eq: labelName }
-      }
+        name: { eq: labelName },
+      },
     });
-    
+
     if (labels.nodes.length > 0) {
       return labels.nodes[0].id;
     }
-    
+
     // Create new label if not found
     const label = await linear.createIssueLabel({
       teamId,
       name: labelName,
-      color
+      color,
     });
-    
+
     return label.issueLabel.id;
   } catch (error) {
     console.warn(`⚠️ Could not create/find label "${labelName}": ${error.message}`);
@@ -46,16 +46,16 @@ async function createHodgeProject() {
   try {
     // Get the configured team name
     const teamName = process.env.LINEAR_TEAM_NAME;
-    
+
     if (!teamName) {
       console.error('❌ LINEAR_TEAM_NAME environment variable not set');
       console.error('\nTo fix this:');
-      
+
       // List available teams to help user
       const teams = await linear.teams();
       if (teams.nodes.length > 0) {
         console.error('\nAvailable teams in your Linear workspace:');
-        teams.nodes.forEach(t => {
+        teams.nodes.forEach((t) => {
           console.error(`  - ${t.name}`);
         });
         console.error('\nAdd to your .env file:');
@@ -65,42 +65,45 @@ async function createHodgeProject() {
       }
       process.exit(1);
     }
-    
+
     // Find the specified team
     const teams = await linear.teams();
-    const team = teams.nodes.find(t => t.name === teamName);
-    
+    const team = teams.nodes.find((t) => t.name === teamName);
+
     if (!team) {
       console.error(`❌ Team "${teamName}" not found`);
       console.error('\nAvailable teams:');
-      teams.nodes.forEach(t => {
+      teams.nodes.forEach((t) => {
         console.error(`  - ${t.name}`);
       });
       process.exit(1);
     }
-    
+
     console.log(`Using team: ${team.name}`);
-    
+
     // Create the Hodge project
     const project = await linear.createProject({
       teamIds: [team.id],
       name: 'Hodge 0.1.0 Alpha',
-      description: 'Initial alpha release: Freedom to explore, discipline to build, confidence to ship',
+      description:
+        'Initial alpha release: Freedom to explore, discipline to build, confidence to ship',
       targetDate: new Date('2025-03-01'), // 7 weeks from now
-      state: 'started'
+      state: 'started',
     });
-    
+
     console.log(`\n✅ Created project: Hodge 0.1.0 Alpha`);
-    console.log(`🔗 View project: https://linear.app/${team.key}/project/${project.project.slugId}`);
-    
+    console.log(
+      `🔗 View project: https://linear.app/${team.key}/project/${project.project.slugId}`
+    );
+
     // Get states for issues
     const states = await team.states();
-    const todoState = states.nodes.find(s => s.name === 'Todo' || s.name === 'Backlog');
-    
+    const todoState = states.nodes.find((s) => s.name === 'Todo' || s.name === 'Backlog');
+
     if (!todoState) {
       throw new Error('Todo/Backlog state not found');
     }
-    
+
     // Create labels
     const labelIds = [];
     const labels = ['hodge', 'cli', 'ai-integration', 'typescript'];
@@ -110,7 +113,7 @@ async function createHodgeProject() {
         labelIds.push(labelId);
       }
     }
-    
+
     // Define the 7 weekly epics with their stories
     const weeklyEpics = [
       {
@@ -120,11 +123,7 @@ async function createHodgeProject() {
           {
             title: 'Set up Commander.js CLI framework',
             description: 'Initialize the CLI with Commander.js',
-            tasks: [
-              'Configure Commander.js',
-              'Set up command structure',
-              'Add help documentation'
-            ]
+            tasks: ['Configure Commander.js', 'Set up command structure', 'Add help documentation'],
           },
           {
             title: 'Implement hodge init command',
@@ -133,19 +132,15 @@ async function createHodgeProject() {
               'Create init command handler',
               'Generate .hodge directory structure',
               'Create hodge.json config',
-              'Add validation'
-            ]
+              'Add validation',
+            ],
           },
           {
             title: 'Set up local testing with npm link',
             description: 'Enable local development testing',
-            tasks: [
-              'Configure npm link',
-              'Create test harness script',
-              'Document testing process'
-            ]
-          }
-        ]
+            tasks: ['Configure npm link', 'Create test harness script', 'Document testing process'],
+          },
+        ],
       },
       {
         title: 'Week 2: Three-Mode System',
@@ -157,8 +152,8 @@ async function createHodgeProject() {
             tasks: [
               'Create ModeManager class',
               'Implement mode transitions',
-              'Add mode validation'
-            ]
+              'Add mode validation',
+            ],
           },
           {
             title: 'Create explore/build/harden commands',
@@ -167,19 +162,15 @@ async function createHodgeProject() {
               'Implement explore command',
               'Implement build command',
               'Implement harden command',
-              'Add progressive standards enforcement'
-            ]
+              'Add progressive standards enforcement',
+            ],
           },
           {
             title: 'Build ContextBuilder',
             description: 'Context awareness system',
-            tasks: [
-              'Create ContextBuilder class',
-              'Add mode awareness',
-              'Create prompt templates'
-            ]
-          }
-        ]
+            tasks: ['Create ContextBuilder class', 'Add mode awareness', 'Create prompt templates'],
+          },
+        ],
       },
       {
         title: 'Week 3: Learning Engine',
@@ -192,8 +183,8 @@ async function createHodgeProject() {
               'Create PatternLearner class',
               'Add AST parsing',
               'Implement pattern hashing',
-              'Add pattern normalization'
-            ]
+              'Add pattern normalization',
+            ],
           },
           {
             title: 'Build StandardsEngine',
@@ -202,10 +193,10 @@ async function createHodgeProject() {
               'Create StandardsEngine class',
               'Add three enforcement levels',
               'Auto-detect from package.json',
-              'Implement hodge learn command'
-            ]
-          }
-        ]
+              'Implement hodge learn command',
+            ],
+          },
+        ],
       },
       {
         title: 'Week 4: AI Integration',
@@ -214,11 +205,7 @@ async function createHodgeProject() {
           {
             title: 'Create base AIAdapter class',
             description: 'Foundation for AI integrations',
-            tasks: [
-              'Design adapter interface',
-              'Add mock mode',
-              'Create response handling'
-            ]
+            tasks: ['Design adapter interface', 'Add mock mode', 'Create response handling'],
           },
           {
             title: 'Implement Claude integration',
@@ -227,19 +214,15 @@ async function createHodgeProject() {
               'Create ClaudeAdapter',
               'Add CLI mode',
               'Add API mode',
-              'Implement manual/clipboard mode'
-            ]
+              'Implement manual/clipboard mode',
+            ],
           },
           {
             title: 'Add Cursor and Aider integration',
             description: 'Additional AI tool support',
-            tasks: [
-              'Create CursorAdapter',
-              'Create AiderAdapter',
-              'Test integrations'
-            ]
-          }
-        ]
+            tasks: ['Create CursorAdapter', 'Create AiderAdapter', 'Test integrations'],
+          },
+        ],
       },
       {
         title: 'Week 5: Warp Code Integration',
@@ -251,8 +234,8 @@ async function createHodgeProject() {
             tasks: [
               'Create adapter class',
               'Add terminal detection',
-              'Optimize output for Warp blocks'
-            ]
+              'Optimize output for Warp blocks',
+            ],
           },
           {
             title: 'Build workflow generation',
@@ -261,10 +244,10 @@ async function createHodgeProject() {
               'Create workflow templates',
               'Add hodge warp setup command',
               'Generate parameterized workflows',
-              'Enable workflow sharing'
-            ]
-          }
-        ]
+              'Enable workflow sharing',
+            ],
+          },
+        ],
       },
       {
         title: 'Week 6: Advanced Features',
@@ -273,20 +256,12 @@ async function createHodgeProject() {
           {
             title: 'Implement hodge decide command',
             description: 'Decision tracking system',
-            tasks: [
-              'Create decide command',
-              'Add decision storage',
-              'Build decision UI'
-            ]
+            tasks: ['Create decide command', 'Add decision storage', 'Build decision UI'],
           },
           {
             title: 'Add pattern reuse system',
             description: 'Reuse learned patterns',
-            tasks: [
-              'Implement --like flag',
-              'Add pattern matching',
-              'Create pattern library'
-            ]
+            tasks: ['Implement --like flag', 'Add pattern matching', 'Create pattern library'],
           },
           {
             title: 'Build test generation',
@@ -294,10 +269,10 @@ async function createHodgeProject() {
             tasks: [
               'Create test templates',
               'Add test generation logic',
-              'Integrate with existing test runners'
-            ]
-          }
-        ]
+              'Integrate with existing test runners',
+            ],
+          },
+        ],
       },
       {
         title: 'Week 7: Polish & Release',
@@ -306,20 +281,12 @@ async function createHodgeProject() {
           {
             title: 'Write comprehensive documentation',
             description: 'Complete docs for all features',
-            tasks: [
-              'Write API documentation',
-              'Create user guides',
-              'Add examples'
-            ]
+            tasks: ['Write API documentation', 'Create user guides', 'Add examples'],
           },
           {
             title: 'Add comprehensive tests',
             description: 'Unit and integration tests',
-            tasks: [
-              'Write unit tests',
-              'Create integration tests',
-              'Set up CI/CD'
-            ]
+            tasks: ['Write unit tests', 'Create integration tests', 'Set up CI/CD'],
           },
           {
             title: 'Publish to NPM',
@@ -328,16 +295,16 @@ async function createHodgeProject() {
               'Final testing',
               'Create release notes',
               'Publish to NPM',
-              'Create announcement'
-            ]
-          }
-        ]
-      }
+              'Create announcement',
+            ],
+          },
+        ],
+      },
     ];
-    
+
     // Create epics and stories
     console.log('\n📂 Creating weekly epics...\n');
-    
+
     for (const [index, epicData] of weeklyEpics.entries()) {
       // Create epic
       const epicPayload = await linear.createIssue({
@@ -349,10 +316,10 @@ async function createHodgeProject() {
         priority: 2, // High priority
         labelIds: labelIds,
       });
-      
+
       const epic = await epicPayload.issue;
       console.log(`✅ Created Epic ${index + 1}: ${epicData.title}`);
-      
+
       // Create stories under epic
       for (const story of epicData.stories) {
         const storyPayload = await linear.createIssue({
@@ -365,10 +332,10 @@ async function createHodgeProject() {
           priority: 3, // Normal priority
           labelIds: labelIds,
         });
-        
+
         const storyIssue = await storyPayload.issue;
         console.log(`  📋 ${story.title}`);
-        
+
         // Create tasks under story
         if (story.tasks && story.tasks.length > 0) {
           for (const task of story.tasks) {
@@ -385,14 +352,14 @@ async function createHodgeProject() {
       }
       console.log(''); // Empty line between epics
     }
-    
+
     console.log(`\n📊 Project Summary:`);
     console.log(`  - Project: Hodge 0.1.0 Alpha`);
     console.log(`  - 7 Weekly Epics created`);
     console.log(`  - ~21 Stories created`);
     console.log(`  - ~60+ Tasks created`);
     console.log(`  - Target completion: March 1, 2025`);
-    
+
     return project;
   } catch (error) {
     console.error('❌ Failed to create project:', error.message);
@@ -409,10 +376,10 @@ async function main() {
     console.error('2. Add to your .env file: LINEAR_API_KEY=your_key_here');
     process.exit(1);
   }
-  
+
   // Note: LINEAR_TEAM_NAME check happens inside createHodgeProject()
   // This allows us to list available teams first
-  
+
   console.log('🚀 Creating Hodge project in Linear...\n');
   await createHodgeProject();
 }
