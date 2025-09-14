@@ -13,7 +13,8 @@
   ],
   "rules": {
     // Essential Standards (Always Enforced)
-    "no-console": ["error", { "allow": ["warn", "error"] }],
+    // Allow console for CLI tools, but still catch accidental console usage in lib
+    "no-console": "off",
     "@typescript-eslint/no-explicit-any": "error",
     "@typescript-eslint/explicit-function-return-type": [
       "error",

@@ -23,7 +23,8 @@ Scan for pending decisions from:
 - Previous `/review` output
 - Conversation history
 - Code comments (TODO, FIXME, QUESTION)
-- Uncommitted exploration results
+- Uncommitted exploration results in `.hodge/features/*/explore/`
+- Check if exploration exists without corresponding PM issue
 
 ### 2. Present Decisions Interactively
 
@@ -64,7 +65,25 @@ After user responds:
 1. Record decision in `.hodge/decisions.md`
 2. Update relevant context files
 3. Note any follow-up actions needed
-4. Move to next pending decision
+4. If decision is about an explored feature:
+   a. If PM issue already exists:
+      - Add `hodge-decided` label
+      - Add comment with decision:
+        ```
+        ## ✅ Hodge Decision Made
+        - Date: {{timestamp}}
+        - Chosen approach: {{chosen_approach}}
+        - Rationale: {{decision_rationale}}
+        - Next step: Ready for /build
+        ```
+   b. If no PM issue exists:
+      - Ask: "Would you like to create a PM issue for '{{feature}}'? (yes/no)"
+      - If yes:
+        - Create issue with chosen approach from decision
+        - Add `hodge-decided` label
+        - Include exploration summary and decision in description
+        - Save issue ID to `.hodge/features/{{feature}}/issue-id.txt`
+5. Move to next pending decision
 
 ### 5. Summary After All Decisions
 
@@ -82,7 +101,16 @@ After user responds:
 
 ⏭️ {{skipped_count}} decisions skipped for later
 
-Next recommended action: {{suggestion}}
+### Next Steps
+Choose your next action:
+a) Start building the decided feature → `/build {{feature}}`
+b) Explore another feature → `/explore`
+c) Review project status → `/status`
+d) Create/update PM issues for decisions
+e) Review all decisions → show `.hodge/decisions.md`
+f) Done for now
+
+Enter your choice (a-f):
 ```
 
 {{/if}}

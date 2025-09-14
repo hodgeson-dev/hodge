@@ -1,0 +1,405 @@
+/**
+ * Unit tests for the structure generator
+ */
+
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import fs from 'fs-extra';
+import path from 'path';
+import { StructureGenerator, StructureGenerationError } from './structure-generator';
+import { ProjectInfo, ProjectType } from './detection';
+
+// Mock external dependencies
+vi.mock('fs-extra');
+
+const mockFs = vi.mocked(fs);
+
+describe('StructureGenerator', () => {
+  let mockRootPath: string;
+  let generator: StructureGenerator;
+  let mockProjectInfo: ProjectInfo;
+
+  beforeEach(() => {
+    mockRootPath = '/test/project';
+    vi.clearAllMocks();
+
+    // Default mock implementations
+    mockFs.statSync.mockReturnValue({
+      isDirectory: () => true,
+    } as any);
+
+    // Mock successful write test
+    mockFs.writeFileSync.mockImplementation(() => {});
+    mockFs.unlinkSync.mockImplementation(() => {});
+
+    mockProjectInfo = {
+      name: 'test-project',
+      type: 'node' as ProjectType,
+      pmTool: 'github',
+      hasExistingConfig: false,
+      detectedTools: {
+        packageManager: 'npm',
+        testFramework: ['vitest'],
+        linting: ['eslint', 'prettier'],
+        buildTools: ['typescript'],
+        hasGit: true,
+        gitRemote: 'https://github.com/user/test-project.git',
+      },
+      rootPath: mockRootPath,
+    };
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  describe('constructor', () => {
+    it('should create generator with valid absolute path', () => {
+      expect(() => new StructureGenerator('/valid/path')).not.toThrow();
+    });
+
+    it('should convert relative path to absolute', () => {
+      mockFs.statSync.mockReturnValue({
+        isDirectory: () => true,
+      } as any);
+
+      expect(() => new StructureGenerator('relative/path')).not.toThrow();
+    });
+
+    it('should throw StructureGenerationError for empty path', () => {
+      expect(() => new StructureGenerator('')).toThrow(StructureGenerationError);
+      expect(() => new StructureGenerator(null as any)).toThrow(StructureGenerationError);
+    });
+
+    it('should throw StructureGenerationError for non-directory path', () => {
+      mockFs.statSync.mockReturnValue({
+        isDirectory: () => false,
+      } as any);
+
+      expect(() => new StructureGenerator('/file/path')).toThrow(StructureGenerationError);
+    });
+
+    it('should throw StructureGenerationError for non-writable directory', () => {
+      mockFs.writeFileSync.mockImplementation(() => {
+        throw new Error('EACCES: permission denied');
+      });
+
+      expect(() => new StructureGenerator('/readonly/path')).toThrow(StructureGenerationError);
+    });
+  });
+
+  describe('generateStructure', () => {
+    beforeEach(() => {
+      generator = new StructureGenerator(mockRootPath);
+      mockFs.pathExists.mockResolvedValue(false); // No existing .hodge
+      mockFs.ensureDir.mockResolvedValue(undefined);
+      mockFs.writeJson.mockResolvedValue(undefined);
+      mockFs.writeFile.mockResolvedValue(undefined);
+      mockFs.readFile.mockResolvedValue('');
+      mockFs.appendFile.mockResolvedValue(undefined);
+    });
+
+    it('should generate complete structure successfully', async () => {
+      await generator.generateStructure(mockProjectInfo);
+
+      // Verify directories are created
+      expect(mockFs.ensureDir).toHaveBeenCalledWith(expect.stringContaining('.hodge'));
+      expect(mockFs.ensureDir).toHaveBeenCalledWith(expect.stringContaining('patterns'));
+      expect(mockFs.ensureDir).toHaveBeenCalledWith(expect.stringContaining('features'));
+
+      // Verify files are created
+      expect(mockFs.writeJson).toHaveBeenCalledWith(
+        expect.stringContaining('config.json'),
+        expect.objectContaining({
+          projectName: 'test-project',
+          projectType: 'node',
+          pmTool: 'github',
+        }),
+        { spaces: 2 }
+      );
+
+      expect(mockFs.writeFile).toHaveBeenCalledWith(
+        expect.stringContaining('standards.md'),
+        expect.stringContaining('test-project Development Standards'),
+        'utf8'
+      );
+
+      expect(mockFs.writeFile).toHaveBeenCalledWith(
+        expect.stringContaining('decisions.md'),
+        expect.stringContaining('Architecture Decisions'),
+        'utf8'
+      );
+
+      expect(mockFs.writeFile).toHaveBeenCalledWith(
+        expect.stringContaining('patterns/README.md'),
+        expect.stringContaining('Hodge Patterns Library'),
+        'utf8'
+      );
+    });
+
+    it('should throw error when project info is null', async () => {
+      await expect(generator.generateStructure(null as any)).rejects.toThrow(
+        StructureGenerationError
+      );
+    });
+
+    it('should throw error when .hodge exists without force', async () => {
+      mockFs.pathExists.mockResolvedValue(true);
+
+      await expect(generator.generateStructure(mockProjectInfo)).rejects.toThrow(
+        StructureGenerationError
+      );
+    });
+
+    it('should overwrite when force is true', async () => {
+      mockFs.pathExists.mockResolvedValue(true);
+
+      await generator.generateStructure(mockProjectInfo, true);
+
+      expect(mockFs.ensureDir).toHaveBeenCalled();
+    });
+
+    it('should handle directory creation failures', async () => {
+      mockFs.ensureDir.mockRejectedValue(new Error('Permission denied'));
+
+      await expect(generator.generateStructure(mockProjectInfo)).rejects.toThrow(
+        StructureGenerationError
+      );
+    });
+
+    it('should handle file writing failures', async () => {
+      mockFs.writeJson.mockRejectedValue(new Error('Disk full'));
+
+      await expect(generator.generateStructure(mockProjectInfo)).rejects.toThrow(
+        StructureGenerationError
+      );
+    });
+
+    it('should update .gitignore when git is present', async () => {
+      await generator.generateStructure(mockProjectInfo);
+
+      expect(mockFs.readFile).toHaveBeenCalledWith(expect.stringContaining('.gitignore'), 'utf-8');
+    });
+
+    it('should not update .gitignore when git is not present', async () => {
+      mockProjectInfo.detectedTools.hasGit = false;
+
+      await generator.generateStructure(mockProjectInfo);
+
+      expect(mockFs.readFile).not.toHaveBeenCalledWith(
+        expect.stringContaining('.gitignore'),
+        'utf-8'
+      );
+    });
+  });
+
+  describe('config generation', () => {
+    beforeEach(() => {
+      generator = new StructureGenerator(mockRootPath);
+      mockFs.pathExists.mockResolvedValue(false);
+      mockFs.ensureDir.mockResolvedValue(undefined);
+      mockFs.writeJson.mockResolvedValue(undefined);
+      mockFs.writeFile.mockResolvedValue(undefined);
+    });
+
+    it('should generate valid config.json', async () => {
+      await generator.generateStructure(mockProjectInfo);
+
+      expect(mockFs.writeJson).toHaveBeenCalledWith(
+        expect.stringContaining('config.json'),
+        expect.objectContaining({
+          projectName: 'test-project',
+          projectType: 'node',
+          pmTool: 'github',
+          detectedTools: mockProjectInfo.detectedTools,
+          createdAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T/),
+          version: '0.1.0',
+        }),
+        { spaces: 2 }
+      );
+    });
+
+    it('should handle config writing errors', async () => {
+      mockFs.writeJson.mockRejectedValue(new Error('Write failed'));
+
+      await expect(generator.generateStructure(mockProjectInfo)).rejects.toThrow(
+        StructureGenerationError
+      );
+    });
+  });
+
+  describe('standards generation', () => {
+    beforeEach(() => {
+      generator = new StructureGenerator(mockRootPath);
+      mockFs.pathExists.mockResolvedValue(false);
+      mockFs.ensureDir.mockResolvedValue(undefined);
+      mockFs.writeJson.mockResolvedValue(undefined);
+      mockFs.writeFile.mockResolvedValue(undefined);
+    });
+
+    it('should generate standards for Node.js project', async () => {
+      await generator.generateStructure(mockProjectInfo);
+
+      const standardsCall = mockFs.writeFile.mock.calls.find((call) =>
+        call[0].toString().includes('standards.md')
+      );
+
+      expect(standardsCall).toBeTruthy();
+      expect(standardsCall![1]).toContain('test-project Development Standards');
+      expect(standardsCall![1]).toContain('Type**: node');
+      expect(standardsCall![1]).toContain('vitest');
+      expect(standardsCall![1]).toContain('eslint, prettier');
+      expect(standardsCall![1]).toContain('typescript');
+      expect(standardsCall![1]).toContain('Node.js Standards');
+    });
+
+    it('should generate standards for Python project', async () => {
+      mockProjectInfo.type = 'python';
+      mockProjectInfo.detectedTools.testFramework = ['pytest'];
+
+      await generator.generateStructure(mockProjectInfo);
+
+      const standardsCall = mockFs.writeFile.mock.calls.find((call) =>
+        call[0].toString().includes('standards.md')
+      );
+
+      expect(standardsCall![1]).toContain('Python Standards');
+      expect(standardsCall![1]).toContain('PEP 8');
+    });
+
+    it('should handle unknown project type gracefully', async () => {
+      mockProjectInfo.type = 'unknown';
+
+      await generator.generateStructure(mockProjectInfo);
+
+      const standardsCall = mockFs.writeFile.mock.calls.find((call) =>
+        call[0].toString().includes('standards.md')
+      );
+
+      expect(standardsCall).toBeTruthy();
+      expect(standardsCall![1]).toContain('Development Standards');
+    });
+
+    it('should handle standards writing errors', async () => {
+      mockFs.writeFile.mockImplementation((path) => {
+        if (path.toString().includes('standards.md')) {
+          throw new Error('Write failed');
+        }
+        return Promise.resolve();
+      });
+
+      await expect(generator.generateStructure(mockProjectInfo)).rejects.toThrow(
+        StructureGenerationError
+      );
+    });
+  });
+
+  describe('gitignore updates', () => {
+    beforeEach(() => {
+      generator = new StructureGenerator(mockRootPath);
+      mockFs.pathExists.mockResolvedValue(false);
+      mockFs.ensureDir.mockResolvedValue(undefined);
+      mockFs.writeJson.mockResolvedValue(undefined);
+      mockFs.writeFile.mockResolvedValue(undefined);
+      mockFs.appendFile.mockResolvedValue(undefined);
+    });
+
+    it('should create new .gitignore if none exists', async () => {
+      mockFs.pathExists.mockImplementation(async (path) => {
+        if (path.toString().includes('.gitignore')) return false;
+        return false; // No existing .hodge
+      });
+
+      await generator.generateStructure(mockProjectInfo);
+
+      expect(mockFs.writeFile).toHaveBeenCalledWith(
+        expect.stringContaining('.gitignore'),
+        expect.stringContaining('.hodge/local/'),
+        'utf8'
+      );
+    });
+
+    it('should append to existing .gitignore', async () => {
+      mockFs.pathExists.mockImplementation(async (path) => {
+        if (path.toString().includes('.gitignore')) return true;
+        return false; // No existing .hodge
+      });
+      mockFs.readFile.mockResolvedValue('existing content');
+
+      await generator.generateStructure(mockProjectInfo);
+
+      expect(mockFs.appendFile).toHaveBeenCalledWith(
+        expect.stringContaining('.gitignore'),
+        expect.stringContaining('.hodge/local/')
+      );
+    });
+
+    it('should not duplicate .gitignore entries', async () => {
+      mockFs.pathExists.mockImplementation(async (path) => {
+        if (path.toString().includes('.gitignore')) return true;
+        return false; // No existing .hodge
+      });
+      mockFs.readFile.mockResolvedValue('existing\n.hodge/local/\ncontent');
+
+      await generator.generateStructure(mockProjectInfo);
+
+      expect(mockFs.appendFile).not.toHaveBeenCalled();
+    });
+
+    it('should not fail generation if gitignore update fails', async () => {
+      mockFs.readFile.mockRejectedValue(new Error('Permission denied'));
+
+      // Should not throw, just warn
+      await generator.generateStructure(mockProjectInfo);
+
+      expect(mockFs.ensureDir).toHaveBeenCalled();
+    });
+  });
+
+  describe('security validation', () => {
+    it('should reject path traversal attempts', () => {
+      expect(() => new StructureGenerator('/valid/../../../etc')).toThrow();
+    });
+
+    it('should validate file paths for safety', async () => {
+      generator = new StructureGenerator(mockRootPath);
+      mockFs.pathExists.mockResolvedValue(false);
+      mockFs.ensureDir.mockResolvedValue(undefined);
+      mockFs.writeJson.mockResolvedValue(undefined);
+      mockFs.writeFile.mockResolvedValue(undefined);
+
+      // This should work without throwing security errors
+      await generator.generateStructure(mockProjectInfo);
+
+      expect(mockFs.ensureDir).toHaveBeenCalled();
+    });
+  });
+
+  describe('error handling', () => {
+    beforeEach(() => {
+      generator = new StructureGenerator(mockRootPath);
+      mockFs.pathExists.mockResolvedValue(false);
+    });
+
+    it('should wrap filesystem errors properly', async () => {
+      mockFs.ensureDir.mockRejectedValue(new Error('ENOSPC: no space left on device'));
+
+      await expect(generator.generateStructure(mockProjectInfo)).rejects.toThrow(
+        StructureGenerationError
+      );
+    });
+
+    it('should provide meaningful error messages', async () => {
+      mockFs.writeJson.mockRejectedValue(new Error('Disk full'));
+
+      try {
+        await generator.generateStructure(mockProjectInfo);
+      } catch (error) {
+        expect(error).toBeInstanceOf(StructureGenerationError);
+        expect((error as StructureGenerationError).message).toContain(
+          'Failed to generate Hodge structure'
+        );
+        expect((error as StructureGenerationError).cause?.message).toBe('Disk full');
+      }
+    });
+  });
+});

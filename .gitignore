@@ -31,16 +31,23 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+*.log
+logs/
 
 # Cache
 .eslintcache
-.prettierignore
 *.tsbuildinfo
+.npm/
+.yarn/
+.parcel-cache/
 
-# Hodge temporary files
-.hodge/temp/
-.hodge/cache/
+# Hodge runtime files
 .hodge/saves/
+.hodge/context.md
+.hodge/session.json
 
 # OS files
 Thumbs.db
+
+# Hodge local files
+.hodge/local/

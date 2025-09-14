@@ -1,125 +1,55 @@
-# Hodge Development Standards
+# hodge Development Standards
 
-> Progressive standards that evolve with the project
-> Last Updated: 2025-09-12
+## Project Overview
+- **Type**: node
+- **Package Manager**: npm
+- **Git Repository**: Yes
 
-## Essential Standards (Always Enforced)
-
-These standards are non-negotiable and enforced in all modes.
-
-### TypeScript
-- ✅ Strict mode enabled (`strict: true` in tsconfig.json)
-- ✅ No `any` type without explicit justification comment
-- ✅ Explicit return types for public methods
-- ✅ Proper error handling (no unhandled promises)
+## Code Quality Standards
 
 ### Testing
-- ✅ All public APIs must have tests
-- ✅ Test files named `*.test.ts` or `*.spec.ts`
-- ✅ Use descriptive test names that explain the behavior
+- **Frameworks**: vitest
+- All features should have tests before moving to harden mode
+- Maintain test coverage above 80%
+- Use descriptive test names that explain the expected behavior
 
-### Version Control
-- ✅ Semantic commit messages: `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`
-- ✅ No commits directly to main branch
-- ✅ Branch names follow pattern: `{mode}-{feature}` (e.g., `explore-ai-adapter`)
+### Code Style
+- **Linting**: eslint, prettier
+- Follow configured linting rules strictly in harden mode
+- Auto-format code before commits
+- Use consistent naming conventions
 
-### Code Quality
-- ✅ No console.log in production code (use proper logging)
-- ✅ Handle all error cases explicitly
-- ✅ No commented-out code in commits
+### Build & Deployment
+- **Build Tools**: typescript, tsconfig
+- Code must build without warnings in harden mode
+- Maintain type safety (if TypeScript is detected)
+- Optimize bundle size for production
 
-## Recommended Standards (Progressive Enforcement)
+### Node.js Standards
+- Use ES modules where possible
+- Handle errors appropriately with proper error types
+- Use async/await over callbacks
+- Keep dependencies minimal and up-to-date
 
-These standards are:
-- **Suggested** in Explore mode (warnings)
-- **Recommended** in Build mode (strong warnings)
-- **Enforced** in Harden mode (errors)
-
-### Architecture
-- 📁 Follow established directory structure:
-  ```
-  src/
-  ├── commands/     # CLI command handlers
-  ├── core/         # Business logic
-  ├── adapters/     # External integrations
-  ├── utils/        # Shared utilities
-  └── types/        # TypeScript types
-  ```
-- 🔄 No circular dependencies
-- 🎯 Single Responsibility Principle for classes
-
-### Naming Conventions
-- 📝 PascalCase: Classes, Types, Interfaces, Enums
-- 📝 camelCase: Functions, variables, methods
-- 📝 UPPER_SNAKE_CASE: Constants
-- 📝 kebab-case: File names
-
-### Error Handling
-- 🔧 Use Result<T, E> pattern for operations that can fail
-- 🔧 Throw errors only for truly exceptional cases
-- 🔧 Provide meaningful error messages
-
-### Testing
-- 🧪 Minimum 80% code coverage
-- 🧪 Integration tests for CLI commands
-- 🧪 Mock external dependencies
-- 🧪 Follow AAA pattern: Arrange, Act, Assert
-
-### Documentation
-- 📚 JSDoc comments for all public APIs
-- 📚 README for each major module
-- 📚 Include usage examples in documentation
-
-## Learned Patterns (Discovered)
-
-Patterns discovered through development and promoted based on usage.
-
-### Current Patterns
-*No patterns discovered yet - this section will grow as we build*
-
-### Pattern Promotion Path
-1. **Discovered**: Pattern detected in codebase
-2. **Suggested**: Pattern recommended when similar code is written
-3. **Standardized**: Pattern becomes a recommended standard
-
-## Mode-Specific Application
+## Mode-Specific Guidelines
 
 ### Explore Mode
-- Essential standards: **Enforced**
-- Recommended standards: **Suggested** (warnings only)
-- Focus on: Rapid prototyping, trying different approaches
+- Focus on rapid prototyping and experimentation
+- Document key findings and decisions
+- Don't worry about perfect code quality initially
 
-### Build Mode
-- Essential standards: **Enforced**
-- Recommended standards: **Strongly Recommended** (warnings)
-- Focus on: Clean implementation, following patterns
+### Build Mode  
+- Follow basic standards and conventions
+- Include essential tests for core functionality
+- Apply linting rules as recommendations
 
 ### Harden Mode
-- Essential standards: **Enforced**
-- Recommended standards: **Enforced**
-- Additional: Performance optimization, security review
-- Focus on: Production readiness
+- All standards are strictly enforced
+- Complete test coverage required
+- Code must pass all quality checks
+- Documentation must be comprehensive
 
-## Enforcement Tools
+## Custom Standards
 
-### Current
-- TypeScript compiler for type checking
-- Manual code review
+Add your project-specific standards here...
 
-### Planned
-- ESLint for code quality
-- Prettier for formatting
-- Vitest for testing standards
-- Husky for pre-commit hooks
-
-## Standard Evolution Process
-
-1. **Proposal**: Suggest new standard via PR
-2. **Discussion**: Team reviews and discusses
-3. **Trial**: Test as "recommended" for 2 weeks
-4. **Promotion**: Move to essential if successful
-5. **Documentation**: Update this file
-
----
-
-*Standards are living documents. Propose changes when you find better patterns.*

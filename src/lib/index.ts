@@ -9,3 +9,6 @@ export interface HodgeConfig {
     suggest?: string[];
   };
 }
+
+// Export PM module
+export * from './pm';

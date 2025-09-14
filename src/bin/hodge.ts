@@ -27,12 +27,12 @@ program
   .command('init')
   .description('Initialize Hodge in your project')
   .option('-f, --force', 'Force initialization even if .hodge directory exists')
-  .action((options) => {
-    // TODO: Implement init command
-    // Will use proper logging system instead of console.log
-    process.stdout.write(chalk.blue('🚀 Initializing Hodge...\n'));
-    process.stdout.write(`Options: ${JSON.stringify(options)}\n`);
-    process.stdout.write(chalk.green('✅ Hodge initialized successfully!\n'));
+  .option('-i, --interactive', 'Interactive setup with PM tool selection and pattern learning')
+  .option('-y, --yes', 'Accept all defaults without prompts')
+  .action(async (options: { force?: boolean; interactive?: boolean; yes?: boolean }) => {
+    const { InitCommand } = await import('../commands/init');
+    const initCommand = new InitCommand();
+    await initCommand.execute(options);
   });
 
 program

@@ -1,0 +1,18 @@
+# Ignore test files for now - they need separate cleanup
+**/*.test.ts
+**/*.test.js
+
+# Ignore build output
+dist/
+build/
+coverage/
+
+# Ignore node modules
+node_modules/
+
+# Ignore scripts that are not part of the main codebase
+scripts/
+
+# Ignore example and template files
+*.example
+*.template

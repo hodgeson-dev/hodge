@@ -1,5 +1,4 @@
 import { describe, it, expect } from 'vitest';
-import { validateStandards, StandardLevel, ValidationResult } from './standards-validator';
 
 describe('StandardsValidator', () => {
   describe('validateStandards', () => {

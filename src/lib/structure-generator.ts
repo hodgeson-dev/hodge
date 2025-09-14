@@ -1,0 +1,746 @@
+/**
+ * Hodge Structure Generator
+ * Creates .hodge directory and initial configuration files
+ * Provides secure file generation with comprehensive error handling
+ */
+
+import fs from 'fs-extra';
+import path from 'path';
+import { ProjectInfo } from './detection';
+import {
+  getLinearScripts,
+  getGitHubScripts,
+  getJiraScripts,
+  getTrelloScripts,
+  getAsanaScripts,
+  getCommonScripts,
+  PMScript,
+} from './pm-scripts-templates';
+
+/**
+ * Custom error class for structure generation errors
+ */
+export class StructureGenerationError extends Error {
+  constructor(
+    message: string,
+    public readonly cause?: Error
+  ) {
+    super(message);
+    this.name = 'StructureGenerationError';
+  }
+}
+
+/**
+ * Security utilities for PM script generation
+ */
+class ScriptSecurityValidator {
+  /**
+   * Validates script content for security issues
+   * @param content - The script content to validate
+   * @param scriptType - The type of script being validated
+   * @throws {StructureGenerationError} If security issues are found
+   */
+  static validateScriptContent(content: string, scriptType: string): void {
+    // Check for potential security issues
+    const securityPatterns = [
+      { pattern: /eval\s*\(/gi, issue: 'eval() usage' },
+      { pattern: /exec\s*\(/gi, issue: 'exec() usage' },
+      { pattern: /spawn\s*\(/gi, issue: 'spawn() usage without validation' },
+      { pattern: /execSync\s*\(/gi, issue: 'execSync() usage' },
+      { pattern: /child_process/gi, issue: 'direct child_process usage' },
+      // Removed overly broad template literal check - only flag dangerous patterns
+      { pattern: /require\s*\(\s*['"]\s*\.\./gi, issue: 'relative require paths' },
+      { pattern: /import\s+.*from\s+['"]\s*\.\./gi, issue: 'relative import paths' },
+    ];
+
+    for (const { pattern, issue } of securityPatterns) {
+      if (pattern.test(content)) {
+        throw new StructureGenerationError(`Security issue in ${scriptType}: ${issue}`);
+      }
+    }
+  }
+
+  /**
+   * Validates that script path is safe
+   * @param scriptPath - The path where the script will be written
+   * @throws {StructureGenerationError} If path is unsafe
+   */
+  static validateScriptPath(scriptPath: string): void {
+    // Ensure path is within allowed directories
+    if (scriptPath.includes('..') || scriptPath.includes('~')) {
+      throw new StructureGenerationError('Script path contains unsafe path traversal');
+    }
+
+    // Ensure script has safe extension
+    if (!scriptPath.endsWith('.js') && !scriptPath.endsWith('.md')) {
+      throw new StructureGenerationError('Script must have .js or .md extension');
+    }
+  }
+
+  /**
+   * Sanitizes environment variable names
+   * @param envVarName - The environment variable name to sanitize
+   * @returns Sanitized environment variable name
+   */
+  static sanitizeEnvVarName(envVarName: string): string {
+    // Only allow alphanumeric characters and underscores
+    const sanitized = envVarName.replace(/[^A-Z0-9_]/g, '');
+    if (!sanitized || sanitized !== envVarName) {
+      throw new StructureGenerationError(`Invalid environment variable name: ${envVarName}`);
+    }
+    return sanitized;
+  }
+}
+
+/**
+ * Configuration object stored in .hodge/config.json
+ */
+export interface HodgeConfig {
+  /** The project name */
+  projectName: string;
+  /** The detected project type */
+  projectType: string;
+  /** The detected PM tool */
+  pmTool: string | null;
+  /** All detected development tools */
+  detectedTools: {
+    packageManager: string | null;
+    testFramework: string[];
+    linting: string[];
+    buildTools: string[];
+    hasGit: boolean;
+    gitRemote?: string;
+  };
+  /** ISO timestamp when config was created */
+  createdAt: string;
+  /** Hodge configuration version */
+  version: string;
+}
+
+/**
+ * Generates the .hodge directory structure and configuration files
+ */
+export class StructureGenerator {
+  /**
+   * Creates a new StructureGenerator instance
+   * @param rootPath - The root path where .hodge should be created
+   * @throws {StructureGenerationError} If the rootPath is invalid
+   */
+  constructor(private rootPath: string = process.cwd()) {
+    this.validateRootPath(rootPath);
+  }
+
+  /**
+   * Validates that the root path exists and is writable
+   * @param rootPath - The path to validate
+   * @throws {StructureGenerationError} If the path is invalid or not writable
+   */
+  private validateRootPath(rootPath: string): void {
+    if (!rootPath || typeof rootPath !== 'string') {
+      throw new StructureGenerationError('Root path must be a non-empty string');
+    }
+
+    if (!path.isAbsolute(rootPath)) {
+      this.rootPath = path.resolve(rootPath);
+    }
+
+    try {
+      const stat = fs.statSync(this.rootPath);
+      if (!stat.isDirectory()) {
+        throw new StructureGenerationError(`Path is not a directory: ${this.rootPath}`);
+      }
+
+      // Test write permissions by attempting to create a temporary file
+      const tempPath = path.join(this.rootPath, `.hodge-write-test-${Date.now()}`);
+      fs.writeFileSync(tempPath, '');
+      fs.unlinkSync(tempPath);
+    } catch (error) {
+      if (error instanceof StructureGenerationError) throw error;
+      throw new StructureGenerationError(
+        `Cannot write to directory: ${this.rootPath}`,
+        error as Error
+      );
+    }
+  }
+
+  /**
+   * Generates the complete .hodge directory structure
+   * @param projectInfo - The detected project information
+   * @param force - Whether to overwrite existing .hodge directory
+   * @throws {StructureGenerationError} If generation fails
+   */
+  async generateStructure(projectInfo: ProjectInfo, force = false): Promise<void> {
+    if (!projectInfo) {
+      throw new StructureGenerationError('Project information is required');
+    }
+
+    const hodgePath = this.safePath('.hodge');
+    if (!hodgePath) {
+      throw new StructureGenerationError('Invalid .hodge path');
+    }
+
+    try {
+      // Check if .hodge already exists and force is not set
+      if (!force && (await fs.pathExists(hodgePath))) {
+        throw new StructureGenerationError(
+          '.hodge directory already exists. Use --force to overwrite.'
+        );
+      }
+
+      // Create .hodge directory structure
+      await fs.ensureDir(hodgePath);
+      await fs.ensureDir(path.join(hodgePath, 'patterns'));
+      await fs.ensureDir(path.join(hodgePath, 'features'));
+
+      // Generate all configuration files
+      await this.generateConfig(projectInfo, hodgePath);
+      await this.generateStandards(projectInfo, hodgePath);
+      await this.generateDecisions(hodgePath);
+      await this.generatePatternsReadme(hodgePath);
+      await this.generatePMScripts(projectInfo, hodgePath);
+
+      // Generate .gitignore entry if git is present
+      if (projectInfo.detectedTools.hasGit) {
+        await this.updateGitignore();
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown generation error';
+      throw new StructureGenerationError(
+        `Failed to generate Hodge structure: ${message}`,
+        error as Error
+      );
+    }
+  }
+
+  /**
+   * Creates a safe path by joining with rootPath and validating against path traversal
+   * @param relativePath - The relative path to validate
+   * @returns Safe absolute path or null if invalid
+   */
+  private safePath(relativePath: string): string | null {
+    if (!relativePath || typeof relativePath !== 'string') return null;
+
+    // Prevent path traversal attacks
+    if (relativePath.includes('..') || relativePath.includes('~')) return null;
+
+    const fullPath = path.join(this.rootPath, relativePath);
+
+    // Ensure the resolved path is still within rootPath
+    if (!fullPath.startsWith(this.rootPath)) return null;
+
+    return fullPath;
+  }
+
+  /**
+   * Generates the config.json file with project information
+   * @param projectInfo - The detected project information
+   * @param hodgePath - The .hodge directory path
+   * @throws {StructureGenerationError} If config generation fails
+   */
+  private async generateConfig(projectInfo: ProjectInfo, hodgePath: string): Promise<void> {
+    try {
+      const config: HodgeConfig = {
+        projectName: projectInfo.name,
+        projectType: projectInfo.type,
+        pmTool: projectInfo.pmTool,
+        detectedTools: projectInfo.detectedTools,
+        createdAt: new Date().toISOString(),
+        version: '0.1.0',
+      };
+
+      const configPath = path.join(hodgePath, 'config.json');
+      await fs.writeJson(configPath, config, { spaces: 2 });
+    } catch (error) {
+      throw new StructureGenerationError(
+        `Failed to generate config.json: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        error as Error
+      );
+    }
+  }
+
+  /**
+   * Generates the standards.md file based on detected project tools
+   * @param projectInfo - The detected project information
+   * @param hodgePath - The .hodge directory path
+   * @throws {StructureGenerationError} If standards generation fails
+   */
+  private async generateStandards(projectInfo: ProjectInfo, hodgePath: string): Promise<void> {
+    try {
+      const standards = this.buildStandardsContent(projectInfo);
+      const standardsPath = path.join(hodgePath, 'standards.md');
+      await fs.writeFile(standardsPath, standards, 'utf8');
+    } catch (error) {
+      throw new StructureGenerationError(
+        `Failed to generate standards.md: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        error as Error
+      );
+    }
+  }
+
+  /**
+   * Builds the content for standards.md based on detected tools
+   * @param projectInfo - The detected project information
+   * @returns The generated standards markdown content
+   */
+  private buildStandardsContent(projectInfo: ProjectInfo): string {
+    const { name, type, detectedTools } = projectInfo;
+
+    let content = `# ${name} Development Standards
+
+## Project Overview
+- **Type**: ${type}
+- **Package Manager**: ${detectedTools.packageManager || 'Not detected'}
+- **Git Repository**: ${detectedTools.hasGit ? 'Yes' : 'No'}
+
+## Code Quality Standards
+
+`;
+
+    // Add testing standards if test frameworks detected
+    if (detectedTools.testFramework.length > 0) {
+      content += `### Testing
+- **Frameworks**: ${detectedTools.testFramework.join(', ')}
+- All features should have tests before moving to harden mode
+- Maintain test coverage above 80%
+- Use descriptive test names that explain the expected behavior
+
+`;
+    }
+
+    // Add linting standards if linters detected
+    if (detectedTools.linting.length > 0) {
+      content += `### Code Style
+- **Linting**: ${detectedTools.linting.join(', ')}
+- Follow configured linting rules strictly in harden mode
+- Auto-format code before commits
+- Use consistent naming conventions
+
+`;
+    }
+
+    // Add build standards if build tools detected
+    if (detectedTools.buildTools.length > 0) {
+      content += `### Build & Deployment
+- **Build Tools**: ${detectedTools.buildTools.join(', ')}
+- Code must build without warnings in harden mode
+- Maintain type safety (if TypeScript is detected)
+- Optimize bundle size for production
+
+`;
+    }
+
+    // Add Node.js specific standards
+    if (type === 'node') {
+      content += `### Node.js Standards
+- Use ES modules where possible
+- Handle errors appropriately with proper error types
+- Use async/await over callbacks
+- Keep dependencies minimal and up-to-date
+
+`;
+    }
+
+    // Add Python specific standards
+    if (type === 'python') {
+      content += `### Python Standards
+- Follow PEP 8 style guidelines
+- Use type hints for function signatures
+- Write docstrings for all public functions
+- Use virtual environments for dependency management
+
+`;
+    }
+
+    content += `## Mode-Specific Guidelines
+
+### Explore Mode
+- Focus on rapid prototyping and experimentation
+- Document key findings and decisions
+- Don't worry about perfect code quality initially
+
+### Build Mode  
+- Follow basic standards and conventions
+- Include essential tests for core functionality
+- Apply linting rules as recommendations
+
+### Harden Mode
+- All standards are strictly enforced
+- Complete test coverage required
+- Code must pass all quality checks
+- Documentation must be comprehensive
+
+## Custom Standards
+
+Add your project-specific standards here...
+
+`;
+
+    return content;
+  }
+
+  /**
+   * Generates the decisions.md template file
+   * @param hodgePath - The .hodge directory path
+   * @throws {StructureGenerationError} If decisions generation fails
+   */
+  private async generateDecisions(hodgePath: string): Promise<void> {
+    try {
+      const decisionsContent = `# Architecture Decisions
+
+This file tracks key architectural and technical decisions made during development.
+
+## Decision Template
+
+### [Date] - Decision Title
+
+**Status**: Proposed | Accepted | Deprecated | Superseded
+
+**Context**: 
+Describe the context and problem that led to this decision.
+
+**Decision**: 
+State the decision clearly.
+
+**Rationale**: 
+Explain why this decision was made, considering alternatives.
+
+**Consequences**: 
+List the positive and negative consequences of this decision.
+
+---
+
+## Decisions
+
+<!-- Add your decisions below -->
+
+`;
+
+      const decisionsPath = path.join(hodgePath, 'decisions.md');
+      await fs.writeFile(decisionsPath, decisionsContent, 'utf8');
+    } catch (error) {
+      throw new StructureGenerationError(
+        `Failed to generate decisions.md: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        error as Error
+      );
+    }
+  }
+
+  /**
+   * Generates the patterns/README.md file
+   * @param hodgePath - The .hodge directory path
+   * @throws {StructureGenerationError} If patterns readme generation fails
+   */
+  private async generatePatternsReadme(hodgePath: string): Promise<void> {
+    try {
+      const patternsContent = `# Hodge Patterns Library
+
+This directory contains reusable patterns discovered and extracted from the Hodge codebase.
+
+## Pattern Categories
+
+### Command Patterns
+Patterns for CLI command implementations.
+
+### Error Handling Patterns
+Patterns for consistent error handling across the codebase.
+
+### Testing Patterns
+Patterns for writing effective tests.
+
+### Integration Patterns
+Patterns for integrating with external services.
+
+## Pattern Lifecycle
+
+1. **Discovery**: Pattern identified in code
+2. **Documentation**: Pattern documented here
+3. **Reuse**: Pattern suggested when relevant
+4. **Standardization**: Pattern becomes a standard
+
+## Current Patterns
+
+*No patterns extracted yet - patterns will be added as they emerge from the codebase.*
+
+---
+
+Patterns are automatically suggested by Hodge when writing similar code.
+`;
+
+      const patternsReadmePath = path.join(hodgePath, 'patterns', 'README.md');
+      await fs.writeFile(patternsReadmePath, patternsContent, 'utf8');
+    } catch (error) {
+      throw new StructureGenerationError(
+        `Failed to generate patterns/README.md: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        error as Error
+      );
+    }
+  }
+
+  /**
+   * Generates PM scripts for the detected or selected PM tool
+   * @param projectInfo - The project information
+   * @param hodgePath - The .hodge directory path
+   * @throws {StructureGenerationError} If PM scripts generation fails
+   */
+  private async generatePMScripts(projectInfo: ProjectInfo, hodgePath: string): Promise<void> {
+    if (!projectInfo.pmTool) {
+      // No PM tool configured - create empty directory with placeholder
+      await fs.ensureDir(path.join(hodgePath, 'pm-scripts'));
+      const placeholderPath = path.join(hodgePath, 'pm-scripts', 'README.md');
+      const placeholderContent = `# Project Management Scripts
+
+No PM tool configured yet. To add PM integration:
+
+1. Set up environment variables for your PM tool:
+   - Linear: \`LINEAR_API_KEY\`
+   - GitHub: \`GITHUB_TOKEN\`
+   - Jira: \`JIRA_API_TOKEN\`
+
+2. Run \`hodge init\` again to configure PM integration
+
+3. Or manually configure in \`.hodge/config.json\`
+
+Scripts will be generated here once a PM tool is configured.
+`;
+      await fs.writeFile(placeholderPath, placeholderContent, 'utf8');
+      return;
+    }
+
+    // Create pm-scripts directory
+    const scriptsPath = path.join(hodgePath, 'pm-scripts');
+    await fs.ensureDir(scriptsPath);
+
+    // Generate scripts based on PM tool
+    switch (projectInfo.pmTool) {
+      case 'linear':
+        await this.generateLinearScripts(scriptsPath);
+        break;
+      case 'github':
+        await this.generateGitHubScripts(scriptsPath);
+        break;
+      case 'jira':
+        await this.generateJiraScripts(scriptsPath);
+        break;
+      case 'trello':
+        await this.generateTrelloScripts(scriptsPath);
+        break;
+      case 'asana':
+        await this.generateAsanaScripts(scriptsPath);
+        break;
+      case 'custom':
+        await this.generateCustomScripts(scriptsPath);
+        break;
+      default:
+        // Handle null case or unknown PM tools
+        break;
+    }
+
+    // Generate common scripts
+    await this.generateCommonPMScripts(scriptsPath);
+  }
+
+  /**
+   * Writes PM scripts to disk with security validation
+   * @param scripts - Array of scripts to write
+   * @param scriptsPath - The path to write scripts to
+   * @throws {StructureGenerationError} If script generation or validation fails
+   */
+  private async writeScripts(scripts: PMScript[], scriptsPath: string): Promise<void> {
+    for (const script of scripts) {
+      const scriptPath = path.join(scriptsPath, script.name);
+      ScriptSecurityValidator.validateScriptPath(scriptPath);
+      ScriptSecurityValidator.validateScriptContent(script.content, script.description);
+      await fs.writeFile(scriptPath, script.content, 'utf8');
+      await fs.chmod(scriptPath, 0o755);
+    }
+  }
+
+  /**
+   * Generates Linear-specific PM scripts with security validation
+   * @throws {StructureGenerationError} If script generation or validation fails
+   */
+  private async generateLinearScripts(scriptsPath: string): Promise<void> {
+    const scripts = getLinearScripts();
+    await this.writeScripts(scripts, scriptsPath);
+  }
+
+  /**
+   * Generates GitHub-specific PM scripts with security validation
+   * @throws {StructureGenerationError} If script generation or validation fails
+   */
+  private async generateGitHubScripts(scriptsPath: string): Promise<void> {
+    const scripts = getGitHubScripts();
+    await this.writeScripts(scripts, scriptsPath);
+  }
+
+  /**
+   * Generates Jira-specific PM scripts with security validation
+   * @throws {StructureGenerationError} If script generation or validation fails
+   */
+  private async generateJiraScripts(scriptsPath: string): Promise<void> {
+    const scripts = getJiraScripts();
+    await this.writeScripts(scripts, scriptsPath);
+  }
+
+  /**
+   * Generates Trello-specific PM scripts with security validation
+   * @throws {StructureGenerationError} If script generation or validation fails
+   */
+  private async generateTrelloScripts(scriptsPath: string): Promise<void> {
+    const scripts = getTrelloScripts();
+    await this.writeScripts(scripts, scriptsPath);
+  }
+
+  /**
+   * Generates Asana-specific PM scripts with security validation
+   * @throws {StructureGenerationError} If script generation or validation fails
+   */
+  private async generateAsanaScripts(scriptsPath: string): Promise<void> {
+    const scripts = getAsanaScripts();
+    await this.writeScripts(scripts, scriptsPath);
+  }
+
+  /**
+   * Generates custom PM integration scripts with security validation
+   * @throws {StructureGenerationError} If script generation or validation fails
+   */
+  private async generateCustomScripts(scriptsPath: string): Promise<void> {
+    const templateScript = `#!/usr/bin/env node
+/**
+ * Custom PM Integration Script
+ * Customize this script for your PM tool
+ * Generated by Hodge - SAFE TO EDIT
+ */
+
+'use strict';
+
+// Add your custom PM tool integration here
+console.log('Custom PM integration - customize this script for your needs');
+
+// Example structure:
+// 1. Read Hodge feature status from .hodge/features/
+// 2. Call your PM tool API (use fetch or axios for HTTP requests)
+// 3. Update status bidirectionally
+// 4. Always validate and sanitize input data
+
+// Security recommendations:
+// - Use environment variables for API keys
+// - Validate all input data
+// - Use HTTPS for API calls
+// - Implement proper error handling
+`;
+
+    const scriptPath = path.join(scriptsPath, 'sync-custom.js');
+    ScriptSecurityValidator.validateScriptPath(scriptPath);
+    ScriptSecurityValidator.validateScriptContent(templateScript, 'Custom sync script template');
+
+    await fs.writeFile(scriptPath, templateScript, 'utf8');
+    await fs.chmod(scriptPath, 0o755);
+  }
+
+  /**
+   * Generates common PM scripts used by all PM tools with security validation
+   * @throws {StructureGenerationError} If script generation or validation fails
+   */
+  private async generateCommonPMScripts(scriptsPath: string): Promise<void> {
+    const scripts = getCommonScripts();
+    await this.writeScripts(scripts, scriptsPath);
+
+    // Generate README for the PM scripts
+    const readmeContent = `# Project Management Scripts
+
+This directory contains comprehensive scripts for integrating Hodge with your project management tool.
+
+## Available Scripts
+
+### Common Scripts
+- \`pm-status.js\` - Check PM integration status
+- \`install-dependencies.js\` - Install required npm packages
+
+### Tool-Specific Scripts
+Based on your selected PM tool, you'll have scripts for:
+- Creating issues/tasks/cards
+- Updating issue status
+- Fetching issue details
+- Creating projects/epics/milestones
+- And more...
+
+## Usage
+
+First, check your PM tool configuration:
+\`\`\`bash
+node .hodge/pm-scripts/pm-status.js
+\`\`\`
+
+If needed, install dependencies:
+\`\`\`bash
+node .hodge/pm-scripts/install-dependencies.js
+\`\`\`
+
+Then use the scripts for your PM tool:
+\`\`\`bash
+# Create an issue
+node .hodge/pm-scripts/create-issue.js "Issue Title" "Description"
+
+# Update issue status
+node .hodge/pm-scripts/update-issue.js <issue-id> <status>
+
+# Fetch issue details
+node .hodge/pm-scripts/fetch-issue.js <issue-id>
+\`\`\`
+
+## Environment Variables
+
+Set the appropriate variables for your PM tool:
+
+- **Linear**: \`LINEAR_API_KEY\`, \`LINEAR_TEAM_ID\`
+- **GitHub**: \`GITHUB_TOKEN\`
+- **Jira**: \`JIRA_API_TOKEN\`, \`JIRA_EMAIL\`, \`JIRA_DOMAIN\`
+- **Trello**: \`TRELLO_API_KEY\`, \`TRELLO_TOKEN\`
+- **Asana**: \`ASANA_TOKEN\`
+
+## Getting API Keys
+
+- **Linear**: https://linear.app/settings/api
+- **GitHub**: https://github.com/settings/tokens
+- **Jira**: https://id.atlassian.com/manage-profile/security/api-tokens
+- **Trello**: https://trello.com/app-key
+- **Asana**: https://app.asana.com/0/developer-console
+
+## Customization
+
+These scripts are designed to work out of the box, but you can customize them based on your specific workflow and PM tool configuration.
+`;
+
+    await fs.writeFile(path.join(scriptsPath, 'README.md'), readmeContent, 'utf8');
+  }
+
+  /**
+   * Updates .gitignore to include Hodge-specific entries
+   * @throws {StructureGenerationError} If gitignore update fails
+   */
+  private async updateGitignore(): Promise<void> {
+    try {
+      const gitignorePath = this.safePath('.gitignore');
+      if (!gitignorePath) {
+        throw new StructureGenerationError('Invalid .gitignore path');
+      }
+
+      const hodgeIgnoreEntry = '\n# Hodge local files\n.hodge/local/\n.hodge/saves/\n';
+
+      if (await fs.pathExists(gitignorePath)) {
+        const content = await fs.readFile(gitignorePath, 'utf-8');
+        if (!content.includes('.hodge/local/')) {
+          await fs.appendFile(gitignorePath, hodgeIgnoreEntry);
+        }
+      } else {
+        await fs.writeFile(gitignorePath, hodgeIgnoreEntry.trim() + '\n', 'utf8');
+      }
+    } catch (error) {
+      // Don't fail the entire init process if gitignore update fails
+      console.warn(
+        `Warning: Failed to update .gitignore: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
+    }
+  }
+}

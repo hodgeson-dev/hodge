@@ -9,10 +9,21 @@ You are now in **Harden Mode** for: {{feature || "current feature"}}
 - Comprehensive testing and documentation
 
 ## Pre-Harden Requirements
-1. Feature must be built (check `.hodge/features/{{feature}}/context.md`)
-2. Load and enforce ALL standards from `.hodge/standards.md`
-3. Apply ALL relevant patterns from `.hodge/patterns/`
-4. Review performance budgets and constraints
+1. Check for linked PM issue in `.hodge/features/{{feature}}/issue-id.txt`
+2. If PM issue exists:
+   - Check current state
+   - If in "Backlog" or "Todo", ask: "This issue hasn't been built yet. Are you hardening existing code? (yes/no)"
+     - If yes: Add comment "Fast-tracked to hardening - existing implementation"
+     - If no: Exit and suggest `/build {{feature}}`
+   - If in "Done", ask: "This issue is already shipped. Are you doing additional hardening? (yes/no)"
+     - If yes: Add comment "Additional hardening post-ship"
+     - If no: Exit
+3. Check if feature has been built (`.hodge/features/{{feature}}/context.md`)
+   - If not built, ask: "No build record found. Are you hardening existing code? (yes/no)"
+4. Transition PM issue to "In Review" state (if appropriate)
+5. Load and enforce ALL standards from `.hodge/standards.md`
+6. Apply ALL relevant patterns from `.hodge/patterns/`
+7. Review performance budgets and constraints
 
 ## Hardening Checklist
 ### Code Quality
@@ -50,6 +61,12 @@ You are now in **Harden Mode** for: {{feature || "current feature"}}
 ```
 ## Hardening: {{feature}}
 
+{{#if pm_issue}}
+📋 PM Issue: {{pm_issue.id}} - {{pm_issue.title}}
+   Status: In Review
+   URL: {{pm_issue.url}}
+{{/if}}
+
 ### Standards Compliance ✓
 - [x] TypeScript strict mode
 - [x] Error boundaries implemented
@@ -79,6 +96,19 @@ You are now in **Harden Mode** for: {{feature || "current feature"}}
 - Feature flags configured
 
 Status: **Production Ready** ✅
+
+### Next Steps
+Choose your next action:
+a) Ship to production → `/ship {{feature}}`
+b) Run final tests
+c) Request code review
+d) Generate documentation
+e) Create PR
+f) Review security checklist
+g) Back to build for fixes → `/build {{feature}}`
+h) Done for now
+
+Enter your choice (a-h):
 ```
 
 Remember: Harden mode accepts no compromises. Every standard must be met.
