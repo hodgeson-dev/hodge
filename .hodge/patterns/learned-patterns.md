@@ -1,24 +1,23 @@
 # Learned Patterns Summary
 
 ## Statistics
-- Total patterns detected: 3
+- Total patterns detected: 2
 - High confidence patterns: 0
-- Most frequent category: performance
+- Most frequent category: error-handling
 
 ## Patterns by Category
-
-
-### Performance
-- **Async Parallel Operations** (2x, 40% confidence)
-- **Caching Strategy** (3x, 60% confidence)
 
 
 ### Error-handling
 - **Error Boundary** (2x, 40% confidence)
 
 
+### Performance
+- **Async Parallel Operations** (2x, 40% confidence)
+
+
 ## Recommendations
-- Consider using Caching Strategy pattern (used 3 times)
+
 
 ---
-*Generated: 2025-09-15T06:42:32.816Z*
+*Generated: 2025-09-15T07:02:17.304Z*

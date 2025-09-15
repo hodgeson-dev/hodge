@@ -14,6 +14,21 @@ export interface HardenOptions {
 
 export class HardenCommand {
   async execute(feature: string, options: HardenOptions = {}): Promise<void> {
+    // Use optimized version if available
+    if (process.env.HODGE_USE_OPTIMIZED || process.env.NODE_ENV === 'production') {
+      try {
+        const { OptimizedHardenCommand } = await import('./harden-optimized.js');
+        const optimizedCommand = new OptimizedHardenCommand();
+        return await optimizedCommand.execute(feature, options);
+      } catch (error) {
+        // Fall back to standard implementation if optimized version fails to load
+        console.warn(
+          chalk.yellow('Warning: Failed to load optimized harden command, using standard version')
+        );
+      }
+    }
+
+    // Standard implementation follows
     console.log(chalk.magenta('🛡️  Entering Harden Mode'));
     console.log(chalk.gray(`Feature: ${feature}\n`));
 
