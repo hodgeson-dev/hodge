@@ -78,6 +78,8 @@ export interface DetectedTools {
   hasGit: boolean;
   /** Git remote URL if available */
   gitRemote?: string;
+  /** Whether Claude Code is set up (CLAUDE.md exists) */
+  hasClaudeCode: boolean;
 }
 
 /**
@@ -331,6 +333,7 @@ export class ProjectDetector {
   private async detectTools(): Promise<DetectedTools> {
     const hasGit = this.checkGit();
     const gitRemote = hasGit ? this.getGitRemote() : undefined;
+    const hasClaudeCode = await this.detectClaudeCode();
 
     return {
       packageManager: await this.detectPackageManager(),
@@ -339,6 +342,7 @@ export class ProjectDetector {
       buildTools: await this.detectBuildTools(),
       hasGit,
       gitRemote,
+      hasClaudeCode,
     };
   }
 
@@ -541,6 +545,21 @@ export class ProjectDetector {
       }).trim();
     } catch {
       return undefined;
+    }
+  }
+
+  /**
+   * Detects if Claude Code is set up in the project
+   * @returns True if CLAUDE.md exists
+   */
+  private async detectClaudeCode(): Promise<boolean> {
+    const claudeMdPath = this.safePath('CLAUDE.md');
+    if (!claudeMdPath) return false;
+
+    try {
+      return await fs.pathExists(claudeMdPath);
+    } catch {
+      return false;
     }
   }
 }

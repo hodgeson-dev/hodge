@@ -904,8 +904,8 @@ ${
    * @param projectInfo - The project information
    */
   private displayCompletionMessage(projectInfo: ExtendedProjectInfo): void {
-    console.log(chalk.green('\\n🎉 Hodge initialized successfully!'));
-    console.log(chalk.blue('\\n📁 Created structure:'));
+    console.log(chalk.green('\n🎉 Hodge initialized successfully!'));
+    console.log(chalk.blue('\n📁 Created structure:'));
     console.log(`   ${chalk.dim('.hodge/')}`);
     console.log(`   ${chalk.dim('├── config.json')}     ${chalk.gray('# Project configuration')}`);
     console.log(`   ${chalk.dim('├── standards.md')}    ${chalk.gray('# Development standards')}`);
@@ -914,7 +914,7 @@ ${
     console.log(`   ${chalk.dim('├── features/')}       ${chalk.gray('# Feature development')}`);
     console.log(`   ${chalk.dim('└── pm-scripts/')}     ${chalk.gray('# PM integration scripts')}`);
 
-    console.log(chalk.blue('\\n🚀 Next steps:'));
+    console.log(chalk.blue('\n🚀 Next steps:'));
     console.log(
       `   ${chalk.white('hodge explore <feature>')}  ${chalk.gray('# Start exploring a new feature')}`
     );
@@ -922,9 +922,24 @@ ${
       `   ${chalk.white('hodge status')}              ${chalk.gray('# Check current status')}`
     );
 
+    // Add Claude Code detection message
+    if (projectInfo.detectedTools.hasClaudeCode) {
+      console.log(chalk.yellow('\n📝 Claude Code detected!'));
+      console.log(
+        `   ${chalk.gray('CLAUDE.md found. Hodge context files in .hodge/ are available to Claude.')}`
+      );
+      console.log(
+        `   ${chalk.gray('Consider adding a reference to .hodge/ in your CLAUDE.md if desired.')}`
+      );
+    } else {
+      console.log(
+        chalk.gray('\n💡 Tip: Run `claude project init` to set up Claude Code for this project')
+      );
+    }
+
     // Add PM-specific suggestions
     if (projectInfo.pmTool) {
-      console.log(chalk.blue(`\\n🔧 PM Integration (${projectInfo.pmTool}):`));
+      console.log(chalk.blue(`\n🔧 PM Integration (${projectInfo.pmTool}):`));
       console.log(
         `   ${chalk.white('node .hodge/pm-scripts/pm-status.js')}  ${chalk.gray('# Check PM integration status')}`
       );
@@ -932,7 +947,7 @@ ${
         `   ${chalk.white(`node .hodge/pm-scripts/sync-${projectInfo.pmTool}.js`)}  ${chalk.gray('# Sync with ' + projectInfo.pmTool)}`
       );
     } else {
-      console.log(chalk.blue('\\n🔧 PM Integration:'));
+      console.log(chalk.blue('\n🔧 PM Integration:'));
       console.log(
         `   ${chalk.gray('No PM tool configured - set up environment variables and run init again')}`
       );
