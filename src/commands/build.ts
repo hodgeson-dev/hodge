@@ -9,6 +9,21 @@ export interface BuildOptions {
 
 export class BuildCommand {
   async execute(feature: string, options: BuildOptions = {}): Promise<void> {
+    // Use optimized version if available
+    if (process.env.HODGE_USE_OPTIMIZED || process.env.NODE_ENV === 'production') {
+      try {
+        const { OptimizedBuildCommand } = await import('./build-optimized.js');
+        const optimizedCommand = new OptimizedBuildCommand();
+        return await optimizedCommand.execute(feature, options);
+      } catch (error) {
+        // Fall back to standard implementation if optimized version fails to load
+        console.warn(
+          chalk.yellow('Warning: Failed to load optimized build command, using standard version')
+        );
+      }
+    }
+
+    // Standard implementation follows
     console.log(chalk.blue('🔨 Entering Build Mode'));
     console.log(chalk.gray(`Feature: ${feature}\n`));
 
