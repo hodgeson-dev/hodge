@@ -101,7 +101,7 @@ export class InteractionStateManager<T = unknown> {
 
     try {
       const content = await fs.readFile(this.stateFile, 'utf-8');
-      return JSON.parse(content);
+      return JSON.parse(content) as InteractionState<T>;
     } catch (error) {
       console.error('Failed to load interaction state:', error);
       return null;

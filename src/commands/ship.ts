@@ -4,6 +4,7 @@ import path from 'path';
 import { existsSync } from 'fs';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import inquirer from 'inquirer';
 import { getCurrentEnvironment } from '../lib/environment-detector.js';
 import { InteractionStateManager, type ShipInteractionData, detectCommitType, detectScope, formatFileChanges } from '../lib/interaction-state.js';
 import {
@@ -14,6 +15,8 @@ import {
   formatPushPreview,
   formatPushSummary
 } from '../lib/git-utils.js';
+import { getPRManager } from '../lib/pr-manager.js';
+import { getConfigManager } from '../lib/config-manager.js';
 
 const execAsync = promisify(exec);
 
@@ -283,8 +286,8 @@ export class ShipCommand {
 
         // Check if user has edited the state
         const currentState = await interactionManager.load();
-        if (currentState && currentState.data && 'edited' in currentState.data && (currentState.data as ShipInteractionData).edited) {
-          commitMessage = (currentState.data as ShipInteractionData).edited as string;
+        if (currentState?.data && 'edited' in currentState.data && currentState.data.edited) {
+          commitMessage = currentState.data.edited;
           console.log(chalk.green('   ✓ Using edited commit message'));
         } else if (options.yes ?? !env.capabilities.prompts) {
           commitMessage = suggestedMessage;
@@ -297,7 +300,7 @@ export class ShipCommand {
         // Clean up interaction files after use
         await interactionManager.cleanup();
 
-      } else if (env.capabilities.prompts) {
+      } else {
         // Interactive terminals (Warp, Aider, standard terminal)
         const { getPrompts } = await import('../lib/prompts.js');
         const prompts = getPrompts();
@@ -426,8 +429,12 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}
         const currentBranch = await getCurrentBranch();
         console.log(chalk.gray(`   Branch: ${currentBranch}`));
 
-        // Handle push if requested
-        if (options.push && !options.noPush) {
+        // Check config for auto-push
+        const configManager = getConfigManager();
+        const shouldAutoPush = await configManager.isAutoPushEnabled();
+
+        // Handle push if requested or configured
+        if ((options.push || shouldAutoPush) && !options.noPush) {
           await this.handlePush(currentBranch, feature, options);
         } else if (!options.noPush) {
           // Show push instructions if not auto-pushing
@@ -567,18 +574,9 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}
     console.log();
     console.log(formatPushSummary(pushResult, branchInfo));
 
-    // Update work log if push was successful
+    // Handle PR creation if push was successful
     if (pushResult.success && !options.dryRun) {
-      const workLogPath = path.join('.hodge', 'features', feature, 'work-log.md');
-      if (existsSync(workLogPath)) {
-        const pushEntry = `\n### Push Record - ${new Date().toISOString()}\n` +
-          `- Branch: ${branch}\n` +
-          `- Remote: ${pushResult.remote}\n` +
-          `- Status: ✅ Pushed successfully\n`;
-
-        await fs.appendFile(workLogPath, pushEntry);
-        console.log(chalk.gray('\n✓ Work log updated'));
-      }
+      await this.handlePRCreation(branch, feature, branchInfo, options);
     }
   }
 
@@ -789,11 +787,118 @@ ${!gitStatus.remote ? 'ℹ️ **Info**: No upstream branch exists - will create 
 
       // Create PR if requested
       if (pushConfig.createPR) {
-        console.log(chalk.cyan('\n📝 PR Creation'));
-        console.log(chalk.gray('   PR creation not yet implemented'));
-        console.log(chalk.gray('   Please create PR manually for now'));
-        // TODO: Implement PR creation in Phase 3
+        const branchInfo = analyzeBranch(pushConfig.branch);
+        await this.handlePRCreation(pushConfig.branch, feature, branchInfo, options);
       }
     }
+  }
+
+  /**
+   * Handle PR creation after successful push
+   */
+  private async handlePRCreation(
+    branch: string,
+    feature: string,
+    branchInfo: ReturnType<typeof analyzeBranch>,
+    options: ShipOptions
+  ): Promise<void> {
+    // Check configuration for PR creation
+    const configManager = getConfigManager();
+    const pushConfig = await configManager.getPushConfig();
+
+    // Determine if we should create PR
+    let shouldCreatePR = false;
+    const env = getCurrentEnvironment();
+
+    if (pushConfig.createPR === 'always') {
+      shouldCreatePR = true;
+    } else if (pushConfig.createPR === 'never') {
+      shouldCreatePR = false;
+    } else if (pushConfig.createPR === 'prompt' && !options.noInteractive) {
+      // Check if PR already exists
+      const prManager = getPRManager();
+      const existingPR = await prManager.checkExistingPR(branch);
+
+      if (existingPR) {
+        console.log(chalk.blue('\n📋 Existing PR found'));
+        console.log(`   PR #${existingPR.number}: ${existingPR.title}`);
+        console.log(`   URL: ${chalk.cyan(existingPR.url)}`);
+        console.log(`   Status: ${existingPR.state}`);
+        return;
+      }
+
+      // Prompt for PR creation in terminal
+      if (env.capabilities.prompts && !env.type.includes('claude')) {
+        console.log(chalk.bold('\n📝 Pull Request'));
+        const { confirm } = await inquirer.prompt<{ confirm: boolean }>([
+          {
+            type: 'confirm',
+            name: 'confirm',
+            message: 'Create a pull request?',
+            default: branchInfo.type === 'feature' || branchInfo.type === 'fix'
+          }
+        ]);
+
+        shouldCreatePR = confirm;
+      } else if (branchInfo.type === 'feature' || branchInfo.type === 'fix') {
+        // Auto-create for feature/fix branches in non-interactive mode
+        shouldCreatePR = true;
+      }
+    }
+
+    if (!shouldCreatePR) {
+      if (branchInfo.type === 'feature' || branchInfo.type === 'fix') {
+        console.log(chalk.gray('\nSkipping PR creation. Create manually when ready.'));
+      }
+      return;
+    }
+
+    // Create the PR
+    console.log(chalk.cyan('\n📝 Creating Pull Request...'));
+
+    const prManager = getPRManager();
+
+    // Check for conflicts first
+    const hasConflicts = await prManager.checkConflicts();
+    if (hasConflicts) {
+      console.log(chalk.yellow('\n⚠️  Potential conflicts detected'));
+      console.log(prManager.getConflictInstructions());
+
+      if (!options.forcePush) {
+        console.log(chalk.yellow('\nResolve conflicts before creating PR'));
+        return;
+      }
+    }
+
+    // Get recent commits for PR body
+    let commits: string[] = [];
+    try {
+      const { stdout } = await execAsync('git log --oneline -5 --pretty=format:"%s"');
+      commits = stdout.trim().split('\n').filter(Boolean);
+    } catch {
+      // Ignore if we can't get commits
+    }
+
+    // Generate PR title and body
+    const prTitle = prManager.generatePRTitle(branch, feature);
+    const prBody = prManager.generatePRBody({
+      feature,
+      branch,
+      commits,
+      issueId: branchInfo.issueId,
+      description: `Implementation of ${feature}`
+    });
+
+    // Create the PR
+    const result = await prManager.createPR({
+      title: prTitle,
+      body: prBody,
+      base: 'main', // TODO: Make this configurable
+      labels: branchInfo.type ? [branchInfo.type] : undefined
+    });
+
+    // Show result
+    console.log();
+    console.log(prManager.formatPRResult(result, branch));
   }
 }
