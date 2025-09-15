@@ -132,6 +132,36 @@ Keeping quick mode as default maintains the original "one-question setup" philos
 
 ---
 
+### 2025-01-15 - Hodgeson Branding Strategy
+
+**Status**: Accepted
+
+**Context**:
+The project needs a cohesive branding strategy. Proposed naming: "Hodgeson" as project name, "hodge" as CLI command, and ".podge" as portable archive extension. Need to determine NPM package name, GitHub repository, web domain, and visual identity.
+
+**Decision**:
+Adopt Hybrid Practical Naming with Compass Rose logo:
+- NPM Package: `hodge-cli`
+- GitHub: `hodgeson/hodge-cli`
+- Domain: `hodgeson.com`
+- Logo: Compass rose with three colored points (explore/build/ship)
+
+**Rationale**:
+- `hodge-cli` likely available on NPM and SEO-friendly
+- Clear hierarchy: Hodgeson (project) → hodge (CLI) → .podge (archives)
+- Compass rose perfectly captures exploration theme
+- Three logo points map directly to three modes
+- Professional, scalable visual identity
+
+**Consequences**:
+- Positive: Clear brand identity and naming hierarchy
+- Positive: Room for ecosystem growth (hodge-patterns, hodge-podge)
+- Positive: Memorable visual identity that reinforces core concepts
+- Negative: Need to migrate from current "hodge" naming
+- Negative: Requires coordinated rebranding effort
+
+---
+
 ### 2025-01-19 - Core Mode Commands Implementation Pattern
 
 **Status**: Accepted
