@@ -11,6 +11,7 @@ import fs from 'fs-extra';
 import { ProjectDetector, ProjectInfo, DetectionError, ValidationError } from '../lib/detection';
 import { StructureGenerator, StructureGenerationError } from '../lib/structure-generator';
 import { PMTool } from '../lib/pm/types';
+import { installClaudeSlashCommands } from './init-claude-commands';
 
 /**
  * Valid PM tool values that can be selected by users
@@ -1114,8 +1115,8 @@ ${
       console.log(
         chalk.gray(`   ✓ Documentation: ${chalk.white('.hodge/integrations/claude/README.md')}`)
       );
-      console.log(chalk.gray(`   ✓ Slash commands: ${chalk.white('.claude/commands/hodge-*.md')}`));
-      console.log(chalk.gray(`   Try: ${chalk.white('/hodge-explore')} in Claude Code to start`));
+      console.log(chalk.gray(`   ✓ Slash commands: ${chalk.white('.claude/commands/*.md')} (9 commands)`));
+      console.log(chalk.gray(`   Try: ${chalk.white('/explore <feature>')} in Claude Code to start`));
     } catch (error) {
       spinner.fail('Failed to install Claude integration');
       InitLogger.error('Claude integration installation failed', error as Error);
@@ -1234,7 +1235,7 @@ Ask Claude to "use Hodge patterns" to apply these learned patterns.
     await fs.writeFile(path.join(integrationPath, 'workflow.md'), workflowContent, 'utf8');
 
     // Install Claude slash commands
-    await this.installClaudeSlashCommands(rootPath);
+    await installClaudeSlashCommands(rootPath);
 
     // Optionally append to CLAUDE.md if it exists
     const claudeMdPath = path.join(rootPath, 'CLAUDE.md');
@@ -1257,230 +1258,6 @@ When assisting with code, please follow Hodge standards and check architectural 
         await fs.appendFile(claudeMdPath, appendContent, 'utf8');
         InitLogger.debug('Updated CLAUDE.md with Hodge reference');
       }
-    }
-  }
-
-  /**
-   * Installs Claude slash commands in .claude/commands/
-   * @param rootPath - The project root path
-   */
-  private async installClaudeSlashCommands(rootPath: string): Promise<void> {
-    const claudeDir = path.join(rootPath, '.claude');
-    const commandsDir = path.join(claudeDir, 'commands');
-
-    // Ensure .claude/commands directory exists
-    await fs.ensureDir(commandsDir);
-
-    // Define Hodge slash commands
-    const commands = [
-      {
-        name: 'hodge-explore',
-        content: `# Hodge Explore Mode
-
-This command enters Hodge Explore Mode for prototyping and experimentation.
-
-## Usage
-\`/hodge-explore <feature-name>\`
-
-## What it does
-1. Creates exploration directory: \`.hodge/features/<feature>/explore/\`
-2. Generates multiple implementation approaches
-3. Suggests patterns but doesn't enforce standards
-4. Encourages creative experimentation
-
-## Context
-- Check \`.hodge/standards.md\` for preferred patterns (not enforced in explore mode)
-- Review \`.hodge/decisions.md\` for architectural context
-- Look at \`.hodge/features/\` for similar explorations
-
-## Example
-\`\`\`
-/hodge-explore user-authentication
-\`\`\`
-
-This will explore different ways to implement user authentication, creating prototypes and comparing approaches.`,
-      },
-      {
-        name: 'hodge-build',
-        content: `# Hodge Build Mode
-
-This command enters Hodge Build Mode for production-ready implementation.
-
-## Usage
-\`/hodge-build [feature-name]\`
-
-## What it does
-1. Enforces standards from \`.hodge/standards.md\`
-2. Applies patterns from \`.hodge/patterns/\`
-3. Creates structured implementation in \`.hodge/features/<feature>/build/\`
-4. Ensures production-ready code quality
-
-## Prerequisites
-- Feature should be explored first with \`/hodge-explore\`
-- Review decisions in \`.hodge/decisions.md\`
-
-## Context Files
-- Standards: \`.hodge/standards.md\` (enforced)
-- Patterns: \`.hodge/patterns/\` (applied)
-- Previous builds: \`.hodge/features/*/build/\`
-
-## Example
-\`\`\`
-/hodge-build user-authentication
-\`\`\`
-
-This will build the user authentication feature following all project standards and patterns.`,
-      },
-      {
-        name: 'hodge-ship',
-        content: `# Hodge Ship Mode
-
-This command prepares and ships the completed feature.
-
-## Usage
-\`/hodge-ship [feature-name]\`
-
-## What it does
-1. Runs quality checks (tests, linting, type checking)
-2. Extracts patterns for future reuse
-3. Creates comprehensive git commit
-4. Updates PM tool if configured
-5. Records in \`.hodge/features/<feature>/ship/\`
-
-## Prerequisites
-- Feature must be built with \`/hodge-build\`
-- All tests should pass
-- Code should meet standards
-
-## Git Integration
-The ship command will:
-- Stage all changes
-- Create detailed commit message
-- Include pattern extraction results
-- Update PM issue status
-
-## Example
-\`\`\`
-/hodge-ship user-authentication
-\`\`\`
-
-This will ship the user authentication feature with proper git integration and pattern learning.`,
-      },
-      {
-        name: 'hodge-status',
-        content: `# Hodge Status
-
-This command shows the current Hodge project status.
-
-## Usage
-\`/hodge-status\`
-
-## What it shows
-1. Current feature being worked on
-2. Mode (explore/build/ship)
-3. Standards compliance status
-4. Recent decisions
-5. Extracted patterns count
-6. PM integration status
-
-## Output includes
-- Features in progress
-- Completed features
-- Pending decisions
-- Pattern library size
-- Standards violations (if any)
-
-## Example
-\`\`\`
-/hodge-status
-\`\`\`
-
-Shows comprehensive status of the Hodge-managed project.`,
-      },
-      {
-        name: 'hodge-decide',
-        content: `# Hodge Decide
-
-This command records an architectural or technical decision.
-
-## Usage
-\`/hodge-decide <decision-title>\`
-
-## What it does
-1. Creates a decision record in \`.hodge/decisions.md\`
-2. Updates PM tool if configured
-3. Links to relevant feature/exploration
-4. Timestamps the decision
-
-## Decision Format
-- **Context**: Why this decision is needed
-- **Decision**: What was decided
-- **Rationale**: Why this approach was chosen
-- **Consequences**: Impact and trade-offs
-
-## Example
-\`\`\`
-/hodge-decide "Use JWT for authentication"
-\`\`\`
-
-Records the decision to use JWT tokens for the authentication system.`,
-      },
-      {
-        name: 'hodge-harden',
-        content: `# Hodge Harden
-
-This command runs quality checks to harden the codebase.
-
-## Usage
-\`/hodge-harden [--fix]\`
-
-## What it does
-1. Runs all tests
-2. Checks linting rules
-3. Validates TypeScript types
-4. Checks standards compliance
-5. Optionally fixes issues (with --fix flag)
-
-## Quality Checks
-- **Tests**: Unit and integration tests
-- **Linting**: ESLint rules
-- **Types**: TypeScript compilation
-- **Standards**: Project-specific standards from \`.hodge/standards.md\`
-
-## Example
-\`\`\`
-/hodge-harden --fix
-\`\`\`
-
-Runs all quality checks and automatically fixes what can be fixed.`,
-      },
-    ];
-
-    // Install each command
-    let installedCount = 0;
-    let skippedCount = 0;
-
-    for (const command of commands) {
-      const commandPath = path.join(commandsDir, `${command.name}.md`);
-
-      // Check if command already exists
-      if (await fs.pathExists(commandPath)) {
-        InitLogger.debug(`Skipping existing command: ${command.name}`);
-        skippedCount++;
-        continue;
-      }
-
-      // Write the command file
-      await fs.writeFile(commandPath, command.content, 'utf8');
-      installedCount++;
-      InitLogger.debug(`Installed command: ${command.name}`);
-    }
-
-    if (installedCount > 0) {
-      InitLogger.debug(`Installed ${installedCount} Claude slash commands`);
-    }
-    if (skippedCount > 0) {
-      InitLogger.debug(`Skipped ${skippedCount} existing commands`);
     }
   }
 }

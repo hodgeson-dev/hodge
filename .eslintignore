@@ -13,6 +13,9 @@ node_modules/
 # Ignore scripts that are not part of the main codebase
 scripts/
 
+# Ignore .hodge directory and all its contents
+.hodge/
+
 # Ignore example and template files
 *.example
 *.template

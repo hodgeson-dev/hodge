@@ -142,7 +142,7 @@ export class EnhancedExploreCommand {
   ): Promise<{ exists: boolean; content?: string }> {
     const exists = await this.cache.getOrLoad(
       `exists:${exploreDir}`,
-      async () => existsSync(exploreDir),
+      () => Promise.resolve(existsSync(exploreDir)),
       { ttl: 1000 }
     );
 
@@ -267,7 +267,12 @@ export class EnhancedExploreCommand {
   /**
    * Load project context from cache
    */
-  private async loadProjectContext(): Promise<any> {
+  private async loadProjectContext(): Promise<{
+    hasStandards: boolean;
+    patternCount: number;
+    patterns: string[];
+    config: Record<string, unknown> | null;
+  }> {
     const [standards, patterns, config] = await Promise.all([
       this.standardsCache.loadStandards(),
       this.standardsCache.loadPatterns(),
@@ -285,7 +290,7 @@ export class EnhancedExploreCommand {
   /**
    * Check PM integration
    */
-  private async checkPMIntegration(feature: string): Promise<any> {
+  private async checkPMIntegration(feature: string): Promise<{ id: string; title: string; url: string } | null> {
     const pmTool = process.env.HODGE_PM_TOOL;
 
     if (!pmTool) {
@@ -301,19 +306,19 @@ export class EnhancedExploreCommand {
 
     console.log(chalk.green(`✓ Linked to ${pmTool} issue: ${feature}`));
 
-    return { id: feature, tool: pmTool };
+    return { id: feature, title: `${pmTool} issue`, url: '#' };
   }
 
   /**
    * Generate smart template based on context
    */
-  private async generateSmartTemplate(
+  private generateSmartTemplate(
     feature: string,
     intent: FeatureIntent,
     similarFeatures: string[],
-    _existingPatterns: any[],
-    projectContext: any,
-    pmIssue: any
+    _existingPatterns: Array<{ name: string; description: string; confidence: number }>,
+    projectContext: { hasStandards: boolean; patternCount: number; patterns: string[]; config: Record<string, unknown> | null },
+    pmIssue: { id: string; title: string; url: string } | null
   ): Promise<SmartTemplate> {
     // Generate intelligent approaches
     const approaches = this.generateApproaches(feature, intent, _existingPatterns);

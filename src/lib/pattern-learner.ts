@@ -237,8 +237,9 @@ export class PatternLearner {
 
     // Check git for files changed in this feature
     try {
-      const { execSync } = require('child_process');
-      const gitFiles = execSync(`git diff --name-only HEAD~1`, { encoding: 'utf8' })
+      const { execSync } = await import('child_process');
+      const gitOutput = execSync(`git diff --name-only HEAD~1`, { encoding: 'utf8' });
+      const gitFiles = gitOutput
         .split('\n')
         .filter((f: string) => f.endsWith('.ts') || f.endsWith('.js'))
         .filter((f: string) => !f.includes('test'));
