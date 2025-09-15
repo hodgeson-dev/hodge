@@ -179,6 +179,12 @@ export class InitCommand {
         await this.executePatternLearning(projectInfo);
       }
 
+      // Check and offer AI tool integrations
+      await this.checkAndOfferAIIntegrations(
+        projectInfo,
+        path.join(projectInfo.rootPath, '.hodge')
+      );
+
       // Show completion message
       InitLogger.success('Hodge initialization completed successfully');
       this.displayCompletionMessage(projectInfo as ExtendedProjectInfo);
@@ -1051,6 +1057,201 @@ ${
         ];
       default:
         return baseScripts;
+    }
+  }
+
+  /**
+   * Checks for AI dev tools and offers to install integrations
+   * @param projectInfo - The project information
+   * @param hodgePath - The .hodge directory path
+   */
+  private async checkAndOfferAIIntegrations(
+    projectInfo: ProjectInfo,
+    hodgePath: string
+  ): Promise<void> {
+    // Only proceed if Claude Code is detected
+    if (!projectInfo.detectedTools.hasClaudeCode) {
+      return;
+    }
+
+    // Check if integration is already installed
+    const integrationPath = path.join(hodgePath, 'integrations', 'claude');
+    const hasIntegration = await fs.pathExists(integrationPath);
+
+    if (hasIntegration) {
+      InitLogger.debug('Claude integration already installed');
+      return;
+    }
+
+    // Ask user if they want to install the integration
+    console.log(chalk.yellow('\n🤖 AI Tool Integration Available:'));
+    console.log(
+      `   ${chalk.gray('Claude Code detected. Hodge can install enhanced integration.')}`
+    );
+
+    const { shouldInstall } = await inquirer.prompt<{ shouldInstall: boolean }>([
+      {
+        type: 'confirm',
+        name: 'shouldInstall',
+        message: 'Install Hodge integration for Claude Code?',
+        default: true,
+      },
+    ]);
+
+    if (!shouldInstall) {
+      console.log(
+        chalk.gray('   Skipped integration (install later with: hodge integrations add claude)')
+      );
+      return;
+    }
+
+    // Install the integration
+    const spinner = ora('Installing Claude integration...').start();
+
+    try {
+      await this.installClaudeIntegration(hodgePath, projectInfo.rootPath);
+      spinner.succeed('Claude integration installed successfully');
+      console.log(
+        chalk.gray(`   See ${chalk.white('.hodge/integrations/claude/README.md')} for usage tips`)
+      );
+    } catch (error) {
+      spinner.fail('Failed to install Claude integration');
+      InitLogger.error('Claude integration installation failed', error as Error);
+      console.error(chalk.gray('   You can try again later with: hodge integrations add claude'));
+    }
+  }
+
+  /**
+   * Installs the Claude Code integration
+   * @param hodgePath - The .hodge directory path
+   * @param rootPath - The project root path
+   */
+  private async installClaudeIntegration(hodgePath: string, rootPath: string): Promise<void> {
+    const integrationPath = path.join(hodgePath, 'integrations', 'claude');
+    await fs.ensureDir(integrationPath);
+
+    // Create main integration README
+    const readmeContent = `# Hodge Integration for Claude Code
+
+This integration enhances Claude's understanding of your Hodge workflow.
+
+## Available Context
+
+Claude can now access and understand:
+- \`.hodge/standards.md\` - Your project's coding standards
+- \`.hodge/decisions.md\` - Architectural decisions history
+- \`.hodge/features/\` - Feature exploration and implementation
+- \`.hodge/patterns/\` - Extracted code patterns
+
+## Suggested Workflow
+
+1. **Explore**: Start with \`hodge explore <feature>\`
+2. **Ask Claude**: "Help me implement [feature] following Hodge standards"
+3. **Build**: Use \`hodge build\` to structure implementation
+4. **Ship**: Complete with \`hodge ship\` for git integration
+
+## Claude Instructions
+
+When working on this project, Claude should:
+- Reference standards in \`.hodge/standards.md\`
+- Check decisions in \`.hodge/decisions.md\` before proposing changes
+- Use patterns from \`.hodge/patterns/\` when applicable
+- Follow the explore → build → ship workflow
+
+## Hodge Commands
+
+You can ask Claude to help with:
+- \`hodge explore <feature>\` - Explore new features
+- \`hodge build\` - Build with standards enforcement
+- \`hodge ship\` - Ship with git integration
+- \`hodge decide\` - Record architectural decisions
+- \`hodge harden\` - Run quality checks
+- \`hodge status\` - Check project status
+
+## Tips for Better AI Assistance
+
+1. **Be specific about Hodge context**: "Check Hodge standards before implementing"
+2. **Reference decisions**: "Is this aligned with our Hodge decisions?"
+3. **Use patterns**: "Apply relevant Hodge patterns to this code"
+4. **Follow workflow**: Start with explore, then build, finally ship
+
+## Pattern Library
+
+As you ship features, Hodge learns patterns and saves them to \`.hodge/patterns/\`.
+Ask Claude to "use Hodge patterns" to apply these learned patterns.
+`;
+
+    await fs.writeFile(path.join(integrationPath, 'README.md'), readmeContent, 'utf8');
+
+    // Create workflow guide
+    const workflowContent = `# Hodge Workflow with Claude Code
+
+## The Three Modes
+
+### 1. Explore Mode
+- Freedom to experiment
+- Standards suggested but not enforced
+- Multiple approaches encouraged
+
+**With Claude**: "Let's explore different ways to implement [feature]"
+
+### 2. Build Mode
+- Standards enforced
+- Patterns applied
+- Production-ready code
+
+**With Claude**: "Help me build [feature] following Hodge standards"
+
+### 3. Ship Mode
+- Git integration
+- Pattern extraction
+- Decision recording
+
+**With Claude**: "Let's ship this feature with proper git commit"
+
+## Example Claude Prompts
+
+### For Exploration
+"I want to explore implementing user authentication. Check .hodge/features/ for similar work."
+
+### For Building
+"Build the authentication feature following .hodge/standards.md and using patterns from .hodge/patterns/"
+
+### For Shipping
+"Help me create a good commit message for this authentication feature"
+
+## Best Practices
+
+1. Always start with \`hodge explore\` for new features
+2. Ask Claude to check standards before building
+3. Use \`hodge decide\` for important architectural choices
+4. Run \`hodge harden\` before shipping
+5. Use \`hodge ship\` for consistent git workflow
+`;
+
+    await fs.writeFile(path.join(integrationPath, 'workflow.md'), workflowContent, 'utf8');
+
+    // Optionally append to CLAUDE.md if it exists
+    const claudeMdPath = path.join(rootPath, 'CLAUDE.md');
+    if (await fs.pathExists(claudeMdPath)) {
+      const existingContent = await fs.readFile(claudeMdPath, 'utf8');
+
+      // Only add if not already referenced
+      if (!existingContent.includes('Hodge') && !existingContent.includes('.hodge')) {
+        const appendContent = `
+
+## Hodge Framework Integration
+
+This project uses Hodge for development workflow management. Key resources:
+- Standards: \`.hodge/standards.md\`
+- Decisions: \`.hodge/decisions.md\`
+- Integration guide: \`.hodge/integrations/claude/README.md\`
+
+When assisting with code, please follow Hodge standards and check architectural decisions.
+`;
+        await fs.appendFile(claudeMdPath, appendContent, 'utf8');
+        InitLogger.debug('Updated CLAUDE.md with Hodge reference');
+      }
     }
   }
 }
