@@ -946,6 +946,9 @@ ${
       pmScriptExamples.forEach(({ script, description }) => {
         console.log(`   ${chalk.white(script)}  ${chalk.gray(`# ${description}`)}`);
       });
+
+      // Indicate more scripts are available
+      console.log(`   ${chalk.gray('...and more! See all scripts: ls .hodge/pm-scripts/')}`);
     } else {
       console.log(chalk.blue('\n🔧 PM Integration:'));
       console.log(
@@ -996,8 +999,8 @@ ${
             description: 'Create Linear issue',
           },
           {
-            script: 'node .hodge/pm-scripts/fetch-issue.js <issue-id>',
-            description: 'Fetch issue details',
+            script: 'node .hodge/pm-scripts/update-issue.js <issue-id> <status>',
+            description: 'Update issue status',
           },
         ];
       case 'github':
