@@ -93,6 +93,10 @@ program
   .option('--no-interactive', 'Disable interactive prompts')
   .option('-y, --yes', 'Accept all defaults')
   .option('--dry-run', 'Preview without making changes')
+  .option('--push', 'Push to remote after shipping')
+  .option('--no-push', 'Do not push to remote')
+  .option('--push-branch <branch>', 'Push to specific branch')
+  .option('--force-push', 'Force push (use with caution)')
   .action(
     async (
       feature: string,
@@ -103,6 +107,10 @@ program
         noInteractive?: boolean;
         yes?: boolean;
         dryRun?: boolean;
+        push?: boolean;
+        noPush?: boolean;
+        pushBranch?: string;
+        forcePush?: boolean;
       }
     ) => {
       const { ShipCommand } = await import('../commands/ship');

@@ -1,0 +1,68 @@
+{
+  "feature": "ship-push-integration",
+  "mode": "explore",
+  "timestamp": "2025-09-15T04:25:00.000Z",
+  "pmIssue": null,
+  "approaches": [
+    {
+      "name": "Integrated Push in Ship Command",
+      "description": "Extend ship command with push capabilities",
+      "pros": [
+        "Single command for complete workflow",
+        "Maintains context from commit generation",
+        "Natural progression"
+      ],
+      "cons": [
+        "Command becomes complex",
+        "Violates single responsibility",
+        "Harder to push without shipping"
+      ]
+    },
+    {
+      "name": "Separate Push Command",
+      "description": "Create standalone hodge push command",
+      "pros": [
+        "Clear separation of concerns",
+        "More flexible",
+        "Simpler to test"
+      ],
+      "cons": [
+        "Two commands for common workflow",
+        "Potential context loss"
+      ]
+    },
+    {
+      "name": "Hybrid with Ship Hooks",
+      "description": "Ship command with optional push hook",
+      "pros": [
+        "Best of both worlds",
+        "Configurable per project",
+        "Maintains context",
+        "Backwards compatible"
+      ],
+      "cons": [
+        "More configuration complexity",
+        "Hook behavior might surprise users"
+      ]
+    }
+  ],
+  "recommendation": "Hybrid with Ship Hooks",
+  "progressiveEnhancement": {
+    "claudeCode": "Markdown UI for push review and configuration",
+    "warp": "Rich terminal UI with workflow integration",
+    "aider": "Git-aware AI assistance",
+    "continue": "VS Code integrated UI",
+    "cursor": "AI-enhanced push suggestions",
+    "terminal": "Interactive prompts with safety checks",
+    "ci": "Automatic with safe defaults"
+  },
+  "keyFeatures": [
+    "Branch-aware behavior",
+    "Issue ID extraction",
+    "Parallel workflow support",
+    "Conflict detection",
+    "Work log integration",
+    "PR creation",
+    "Safety validations"
+  ]
+}

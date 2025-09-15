@@ -44,6 +44,29 @@ To be determined based on implementation.
 
 ---
 
+### 2025-01-15 - Git Push Integration for Ship Command
+
+**Status**: Accepted
+
+**Context**:
+The ship command currently creates commits but doesn't push to remote. Users need to manually push after shipping, which breaks the flow and risks forgetting to push important changes. We need to integrate push functionality while supporting different environments and workflows.
+
+**Decision**:
+Adopt a hybrid approach with ship hooks - extend the ship command with optional push functionality that can be enabled via flags or configuration, while maintaining backwards compatibility.
+
+**Rationale**:
+- Provides flexibility without breaking existing workflows
+- Progressive Enhancement allows optimal UX per environment (Claude Code, Terminal, CI)
+- Branch-aware intelligence prevents dangerous operations (pushing to main)
+- Maintains context from ship to push operations
+- Can be disabled easily with `--no-push` flag
+
+**Consequences**:
+- **Positive**: Complete ship workflow in one command, safety checks prevent mistakes, works across all environments
+- **Negative**: Increased complexity in ship command, requires careful configuration management
+- **Implementation**: Phase 1 (basic push), Phase 2 (Progressive Enhancement), Phase 3 (PR creation)
+
+---
 
 ### 2025-09-13 - PM Tool Selection During Init
 

@@ -6,6 +6,14 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import { getCurrentEnvironment } from '../lib/environment-detector.js';
 import { InteractionStateManager, type ShipInteractionData, detectCommitType, detectScope, formatFileChanges } from '../lib/interaction-state.js';
+import {
+  getCurrentBranch,
+  getGitStatus,
+  analyzeBranch,
+  gitPush,
+  formatPushPreview,
+  formatPushSummary
+} from '../lib/git-utils.js';
 
 const execAsync = promisify(exec);
 
@@ -17,6 +25,10 @@ export interface ShipOptions {
   yes?: boolean;
   edit?: boolean;
   dryRun?: boolean;
+  push?: boolean;          // Enable push after ship
+  noPush?: boolean;        // Explicitly disable push
+  pushBranch?: string;     // Override push branch
+  forcePush?: boolean;     // Allow force push (with warnings)
 }
 
 export class ShipCommand {
@@ -404,15 +416,23 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}
         console.log(chalk.green('   ✓ Commit created successfully'));
 
         // Get current branch
-        const { stdout: currentBranch } = await execAsync('git branch --show-current');
-        console.log(chalk.gray(`   Branch: ${currentBranch.trim()}`));
+        const currentBranch = await getCurrentBranch();
+        console.log(chalk.gray(`   Branch: ${currentBranch}`));
 
-        console.log(chalk.bold('\nNext Steps:'));
-        console.log('  1. Push to remote: git push');
-        console.log('  2. Create pull request if needed');
-        console.log('  3. Create release tag if needed');
-        console.log('  4. Monitor production metrics');
-        console.log('  5. Gather user feedback');
+        // Handle push if requested
+        if (options.push && !options.noPush) {
+          await this.handlePush(currentBranch, feature, options);
+        } else if (!options.noPush) {
+          // Show push instructions if not auto-pushing
+          console.log(chalk.bold('\nNext Steps:'));
+          console.log('  1. Push to remote: git push');
+          console.log('  2. Create pull request if needed');
+          console.log('  3. Create release tag if needed');
+          console.log('  4. Monitor production metrics');
+          console.log('  5. Gather user feedback');
+          console.log();
+          console.log(chalk.gray('Tip: Use --push flag to automatically push after shipping'));
+        }
       } catch (error) {
         console.log(chalk.yellow('   ⚠️  Could not create commit automatically'));
         console.log(
@@ -437,5 +457,88 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}
 
     console.log();
     console.log(chalk.gray('Ship record saved to: ' + shipDir));
+  }
+
+  /**
+   * Handle git push with safety checks
+   */
+  private async handlePush(branch: string, feature: string, options: ShipOptions): Promise<void> {
+    console.log(chalk.bold('\n📤 Preparing to push...'));
+
+    // Get git status
+    const gitStatus = await getGitStatus();
+    const branchInfo = analyzeBranch(branch);
+
+    // Show push preview
+    console.log();
+    console.log(formatPushPreview(gitStatus, branchInfo));
+    console.log();
+
+    // Check for protected branch
+    if (branchInfo.isProtected && !options.forcePush) {
+      console.log(chalk.yellow.bold('⚠️  Warning: Pushing to protected branch'));
+      console.log(chalk.yellow(`   Branch '${branch}' is typically protected.`));
+      console.log(chalk.yellow('   Consider creating a feature branch instead.'));
+      console.log();
+
+      // In non-interactive mode, skip push to protected branch
+      if (options.noInteractive || options.yes) {
+        console.log(chalk.red('❌ Skipping push to protected branch'));
+        console.log(chalk.gray('   Use --force-push to override (not recommended)'));
+        return;
+      }
+
+      // Otherwise, require confirmation
+      const env = getCurrentEnvironment();
+      if (env.capabilities.prompts) {
+        // TODO: Add prompt for protected branch confirmation
+        console.log(chalk.yellow('   Interactive confirmation not yet implemented'));
+        console.log(chalk.yellow('   Use --force-push to push anyway'));
+        return;
+      }
+    }
+
+    // Check for uncommitted changes
+    if (gitStatus.hasUncommitted) {
+      console.log(chalk.yellow('⚠️  You have uncommitted changes'));
+      console.log(chalk.gray('   These changes will not be pushed'));
+      console.log();
+    }
+
+    // Check if we need to set upstream
+    const needsUpstream = !gitStatus.remote;
+    if (needsUpstream) {
+      console.log(chalk.blue('ℹ️  No remote tracking branch'));
+      console.log(chalk.gray('   Will create new remote branch'));
+      console.log();
+    }
+
+    // Execute push
+    console.log(chalk.cyan('Pushing to remote...'));
+    const pushResult = await gitPush({
+      branch: options.pushBranch || branch,
+      remote: 'origin',
+      force: options.forcePush,
+      setUpstream: needsUpstream,
+      dryRun: options.dryRun
+    });
+
+    // Show result
+    console.log();
+    console.log(formatPushSummary(pushResult, branchInfo));
+
+    // Update work log if push was successful
+    if (pushResult.success && !options.dryRun) {
+      const workLogPath = path.join('.hodge', 'features', feature, 'work-log.md');
+      if (existsSync(workLogPath)) {
+        const pushEntry = `\n### Push Record - ${new Date().toISOString()}\n` +
+          `- Branch: ${branch}\n` +
+          `- Remote: ${pushResult.remote}\n` +
+          `- Status: ✅ Pushed successfully\n`;
+
+        await fs.appendFile(workLogPath, pushEntry);
+        console.log(chalk.gray('\n✓ Work log updated'));
+      }
+    }
   }
 }
