@@ -1,7 +1,7 @@
 # Hodge Implementation Plan
 
 ## Overview
-Hodge is a balanced AI development framework that provides "Freedom to explore, discipline to build, confidence to ship." It will be published as an NPM package at `@agileexplorations/hodge`.
+Hodge is a balanced AI development framework that provides "Freedom to explore, discipline to build, confidence to ship." It will be published as an NPM package at `@agile-explorations/hodge`.
 
 ## Core Philosophy
 - **Three Modes**: Explore (creative), Build (structured), Harden (production-ready)
@@ -107,7 +107,7 @@ hodge warp setup                    # Generate Warp workflows
 npm link  # Creates global symlink
 
 # In a test project directory
-npm link @agileexplorations/hodge  # Uses local version
+npm link @agile-explorations/hodge  # Uses local version (note the hyphen!)
 hodge init  # Test the command
 
 # For development iteration
@@ -731,7 +731,7 @@ hodge build "feature" --ai=manual
 - [ ] Create integration tests
 - [ ] Set up CI/CD (GitHub Actions)
 - [ ] Beta test with real projects
-- [ ] Publish to NPM as @agileexplorations/hodge
+- [ ] Publish to NPM as @agile-explorations/hodge
 - [ ] Create video tutorials
 - [ ] Create Warp workflow examples
 - [ ] Implement saved context cleanup strategy
@@ -1095,7 +1095,7 @@ Key features:
 ## Complete Package Architecture
 
 ```
-@agileexplorations/hodge/
+@agile-explorations/hodge/
 ├── package.json                 # NPM package definition
 ├── README.md
 ├── LICENSE
