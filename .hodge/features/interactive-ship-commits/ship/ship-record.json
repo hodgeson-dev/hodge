@@ -1,0 +1,14 @@
+{
+  "feature": "interactive-ship-commits",
+  "timestamp": "2025-09-15T04:17:53.517Z",
+  "issueId": "interactive-ship-commits",
+  "pmTool": "linear",
+  "validationPassed": false,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": false
+  },
+  "commitMessage": "feat(ship): implement interactive ship commits with Progressive Enhancement"
+}

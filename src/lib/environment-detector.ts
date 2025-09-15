@@ -45,12 +45,12 @@ export class EnvironmentDetector {
           gitIntegration: true,
           customCommands: true,
           aiAssistance: true,
-          markdown: true
+          markdown: true,
         },
         metadata: {
           uiType: 'markdown',
-          interaction: 'file-based'
-        }
+          interaction: 'file-based',
+        },
       };
     }
 
@@ -65,12 +65,12 @@ export class EnvironmentDetector {
           prompts: true,
           gitIntegration: true,
           customCommands: false,
-          aiAssistance: true
+          aiAssistance: true,
         },
         metadata: {
           gitMode: 'integrated',
-          cooperation: 'recommended'
-        }
+          cooperation: 'recommended',
+        },
       };
     }
 
@@ -85,12 +85,12 @@ export class EnvironmentDetector {
           prompts: false,
           gitIntegration: true,
           customCommands: true,
-          aiAssistance: false
+          aiAssistance: false,
         },
         metadata: {
           ide: 'vscode',
-          interaction: 'file-based'
-        }
+          interaction: 'file-based',
+        },
       };
     }
 
@@ -105,12 +105,12 @@ export class EnvironmentDetector {
           prompts: true,
           gitIntegration: true,
           customCommands: true,
-          aiAssistance: true
+          aiAssistance: true,
         },
         metadata: {
           aiProvider: 'cursor',
-          enhancedMessages: true
-        }
+          enhancedMessages: true,
+        },
       };
     }
 
@@ -126,12 +126,12 @@ export class EnvironmentDetector {
           gitIntegration: true,
           customCommands: true,
           aiAssistance: true,
-          workflows: true
+          workflows: true,
         },
         metadata: {
           workflows: true,
-          aiCommands: true
-        }
+          aiCommands: true,
+        },
       };
     }
 
@@ -146,8 +146,8 @@ export class EnvironmentDetector {
           prompts: true,
           gitIntegration: true,
           customCommands: false,
-          aiAssistance: false
-        }
+          aiAssistance: false,
+        },
       };
     }
 
@@ -161,12 +161,12 @@ export class EnvironmentDetector {
         prompts: false,
         gitIntegration: true,
         customCommands: false,
-        aiAssistance: false
+        aiAssistance: false,
       },
       metadata: {
         ci: process.env.CI === 'true',
-        automated: true
-      }
+        automated: true,
+      },
     };
   }
 
@@ -176,8 +176,8 @@ export class EnvironmentDetector {
   private isClaudeCode(): boolean {
     return !!(
       existsSync('.claude/') ||
-      process.env.CLAUDE_WORKSPACE ??
-      process.env.CLAUDE_CODE ??
+      process.env.CLAUDE_WORKSPACE ||
+      process.env.CLAUDE_CODE ||
       // Check for Claude-specific command execution patterns
       (process.env._ && process.env._.includes('claude'))
     );
