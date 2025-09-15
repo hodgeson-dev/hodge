@@ -406,6 +406,42 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}
     console.log(chalk.gray('─'.repeat(40)));
     console.log();
 
+    // Learn patterns from shipped code
+    console.log(chalk.cyan.bold('\n🧠 Learning from shipped code...'));
+    try {
+      const { PatternLearner } = await import('../lib/pattern-learner.js');
+      const learner = new PatternLearner();
+      const learningResult = await learner.analyzeShippedCode(feature);
+
+      console.log(chalk.green(`   ✓ Analyzed ${learningResult.statistics.filesAnalyzed} files`));
+      console.log(chalk.green(`   ✓ Found ${learningResult.statistics.patternsFound} patterns`));
+      console.log(chalk.green(`   ✓ Detected ${learningResult.statistics.standardsDetected} standards`));
+
+      if (learningResult.patterns.length > 0) {
+        console.log(chalk.dim('\n   Top patterns:'));
+        learningResult.patterns
+          .sort((a, b) => b.frequency - a.frequency)
+          .slice(0, 3)
+          .forEach(p => {
+            console.log(chalk.dim(`   • ${p.name} (${p.frequency}x, ${p.metadata.confidence}% confidence)`));
+          });
+      }
+
+      if (learningResult.recommendations.length > 0) {
+        console.log(chalk.dim('\n   Recommendations:'));
+        learningResult.recommendations.slice(0, 3).forEach(r => {
+          console.log(chalk.dim(`   • ${r}`));
+        });
+      }
+
+      console.log(chalk.green('\n   ✓ Patterns saved to .hodge/patterns/'));
+    } catch (error) {
+      console.log(chalk.yellow('   ⚠️  Pattern learning skipped (optional feature)'));
+      if (process.env.DEBUG) {
+        console.error('Pattern learning error:', error);
+      }
+    }
+
     // Update PM issue to Done
     if (pmTool && issueId) {
       console.log(chalk.blue(`\n📋 Updating ${pmTool} issue ${issueId} to Done...`));
