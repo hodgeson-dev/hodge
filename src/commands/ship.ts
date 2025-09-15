@@ -29,10 +29,17 @@ export interface ShipOptions {
   noPush?: boolean;        // Explicitly disable push
   pushBranch?: string;     // Override push branch
   forcePush?: boolean;     // Allow force push (with warnings)
+  continuePush?: boolean;  // Continue after reviewing push config
 }
 
 export class ShipCommand {
   async execute(feature: string, options: ShipOptions = {}): Promise<void> {
+    // Check if continuing from push review
+    if (options.continuePush) {
+      await this.continuePushFromReview(feature, options);
+      return;
+    }
+
     console.log(chalk.green('🚀 Entering Ship Mode'));
     console.log(chalk.gray(`Feature: ${feature}\n`));
 
@@ -490,10 +497,43 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}
 
       // Otherwise, require confirmation
       const env = getCurrentEnvironment();
-      if (env.capabilities.prompts) {
-        // TODO: Add prompt for protected branch confirmation
-        console.log(chalk.yellow('   Interactive confirmation not yet implemented'));
-        console.log(chalk.yellow('   Use --force-push to push anyway'));
+      if (env.capabilities.prompts && !env.type.includes('claude')) {
+        const { getPrompts } = await import('../lib/prompts.js');
+        const prompts = getPrompts();
+
+        try {
+          const shouldPush = await prompts.promptProtectedBranchPush(branch);
+          if (!shouldPush) {
+            console.log(chalk.yellow('\n⚠️  Push cancelled'));
+            return;
+          }
+          // User confirmed push to protected branch
+          console.log(chalk.yellow('\n⚠️  Proceeding with push to protected branch'));
+        } catch (error) {
+          // Check if user wants to create a feature branch
+          if (error instanceof Error && error.message.startsWith('CREATE_BRANCH:')) {
+            const newBranch = error.message.split(':')[1];
+            console.log(chalk.cyan(`\nCreating and switching to branch: ${newBranch}`));
+
+            try {
+              await execAsync(`git checkout -b ${newBranch}`);
+              console.log(chalk.green(`   ✓ Switched to new branch: ${newBranch}`));
+
+              // Update branch for push
+              branch = newBranch;
+              branchInfo.isProtected = false;
+              branchInfo.type = 'feature';
+            } catch (createError) {
+              console.log(chalk.red(`   ✗ Failed to create branch: ${String(createError)}`));
+              return;
+            }
+          } else {
+            throw error;
+          }
+        }
+      } else if (env.type === 'claude-code') {
+        // For Claude Code, we'll create a markdown file for review
+        await this.createPushReviewFile(branch, feature, gitStatus, branchInfo, options);
         return;
       }
     }
@@ -538,6 +578,221 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}
 
         await fs.appendFile(workLogPath, pushEntry);
         console.log(chalk.gray('\n✓ Work log updated'));
+      }
+    }
+  }
+
+  /**
+   * Create markdown push review file for Claude Code
+   */
+  private async createPushReviewFile(
+    branch: string,
+    feature: string,
+    gitStatus: Awaited<ReturnType<typeof getGitStatus>>,
+    branchInfo: ReturnType<typeof analyzeBranch>,
+    options: ShipOptions
+  ): Promise<void> {
+    console.log(chalk.cyan('\n📝 Creating push review file for Claude Code...'));
+
+    const pushDir = path.join('.hodge', 'temp', 'push-review', feature);
+    await fs.mkdir(pushDir, { recursive: true });
+
+    // Get recent commits
+    let recentCommits = '';
+    try {
+      const { stdout } = await execAsync('git log --oneline -5');
+      recentCommits = stdout.trim();
+    } catch {
+      recentCommits = 'Unable to fetch recent commits';
+    }
+
+    // Create push configuration
+    const pushConfig = {
+      branch,
+      remote: 'origin',
+      isProtected: branchInfo.isProtected,
+      createFeatureBranch: branchInfo.isProtected,
+      suggestedBranch: branchInfo.isProtected ? `feature/${feature}-${Date.now()}` : null,
+      forcePush: options.forcePush || false,
+      createPR: branchInfo.type === 'feature'
+    };
+
+    // Create markdown content
+    const markdownContent = `# 📤 Push Review - ${feature}
+
+## Current State
+
+| Property | Value |
+|----------|-------|
+| **Branch** | ${branch} ${branchInfo.isProtected ? '⚠️ PROTECTED' : '✅'} |
+| **Type** | ${branchInfo.type} |
+| **Remote** | ${gitStatus.remote || 'No upstream (will create)'} |
+| **Status** | ${gitStatus.ahead} ahead, ${gitStatus.behind} behind |
+${branchInfo.issueId ? `| **Issue** | ${branchInfo.issueId} |` : ''}
+
+## Recent Commits
+
+\`\`\`
+${recentCommits}
+\`\`\`
+
+${branchInfo.isProtected ? `## ⚠️ Protected Branch Warning
+
+You are attempting to push to **${branch}**, which is a protected branch.
+
+### Recommended Actions
+
+1. **Create Feature Branch** (Recommended)
+   - New branch: \`${pushConfig.suggestedBranch}\`
+   - Automatically switches to new branch
+   - Safer for parallel work
+
+2. **Push to Protected Branch** (Not Recommended)
+   - Requires explicit confirmation
+   - May affect other team members
+   - Should only be used for emergency fixes
+
+` : ''}
+
+## Push Configuration
+
+Edit the settings below and save this file:
+
+\`\`\`yaml
+# Push settings
+push: true
+branch: ${pushConfig.suggestedBranch || branch}
+remote: origin
+forcePush: ${pushConfig.forcePush}
+createPR: ${pushConfig.createPR}
+
+# If creating feature branch
+createFeatureBranch: ${pushConfig.createFeatureBranch}
+${pushConfig.suggestedBranch ? `newBranchName: ${pushConfig.suggestedBranch}` : ''}
+
+# PR settings (if applicable)
+prTitle: "${branchInfo.type}${branchInfo.issueId ? `(${branchInfo.issueId})` : ''}: ${feature}"
+prBody: |
+  ## Summary
+  - Implementation of ${feature}
+  ${branchInfo.issueId ? `- Closes ${branchInfo.issueId}` : ''}
+
+  ## Changes
+  - See commit history
+
+  ## Testing
+  - Tests passed
+  - Manual testing completed
+\`\`\`
+
+## Actions
+
+### To proceed with push:
+1. Review and edit the configuration above
+2. Save this file
+3. Run: \`hodge ship ${feature} --continue-push\`
+
+### To cancel:
+- Run: \`hodge ship ${feature} --no-push\`
+
+## Safety Checks
+
+${gitStatus.hasUncommitted ? '⚠️ **Warning**: You have uncommitted changes that will NOT be pushed\n' : ''}
+${gitStatus.behind > 0 ? `⚠️ **Warning**: Branch is ${gitStatus.behind} commits behind remote\n` : ''}
+${!gitStatus.remote ? 'ℹ️ **Info**: No upstream branch exists - will create new remote branch\n' : ''}
+
+---
+
+> 💡 **Tip**: The push configuration is saved in \`.hodge/temp/push-review/${feature}/\`
+> You can edit and re-run the command as needed.`;
+
+    // Save files
+    const markdownPath = path.join(pushDir, 'push-review.md');
+    const configPath = path.join(pushDir, 'push-config.json');
+
+    await fs.writeFile(markdownPath, markdownContent);
+    await fs.writeFile(configPath, JSON.stringify(pushConfig, null, 2));
+
+    console.log(chalk.green(`   ✓ Push review created: ${markdownPath}`));
+    console.log(chalk.gray('\n   Edit the configuration and run with --continue-push to proceed'));
+  }
+
+  /**
+   * Continue push from saved configuration (for Claude Code)
+   */
+  private async continuePushFromReview(feature: string, options: ShipOptions): Promise<void> {
+    console.log(chalk.cyan('📤 Continuing push from review...'));
+
+    const configPath = path.join('.hodge', 'temp', 'push-review', feature, 'push-config.json');
+
+    if (!existsSync(configPath)) {
+      console.log(chalk.red('❌ No push review found'));
+      console.log(chalk.gray('   Run ship with --push first to create a review'));
+      return;
+    }
+
+    // Load configuration
+    interface PushConfig {
+      branch: string;
+      remote: string;
+      isProtected: boolean;
+      createFeatureBranch: boolean;
+      newBranchName?: string;
+      suggestedBranch?: string | null;
+      forcePush: boolean;
+      createPR: boolean;
+    }
+
+    let pushConfig: PushConfig;
+    try {
+      const configContent = await fs.readFile(configPath, 'utf-8');
+      pushConfig = JSON.parse(configContent) as PushConfig;
+    } catch (error) {
+      console.log(chalk.red('❌ Failed to load push configuration'));
+      console.log(chalk.gray(`   Error: ${String(error)}`));
+      return;
+    }
+
+    // Check if we need to create a feature branch
+    if (pushConfig.createFeatureBranch && pushConfig.newBranchName) {
+      console.log(chalk.cyan(`\nCreating feature branch: ${pushConfig.newBranchName}`));
+      try {
+        await execAsync(`git checkout -b ${pushConfig.newBranchName}`);
+        console.log(chalk.green(`   ✓ Created and switched to: ${pushConfig.newBranchName}`));
+        pushConfig.branch = pushConfig.newBranchName;
+      } catch (error) {
+        console.log(chalk.red(`   ✗ Failed to create branch: ${String(error)}`));
+        return;
+      }
+    }
+
+    // Execute push with config
+    console.log(chalk.cyan('\nPushing with reviewed configuration...'));
+    const pushResult = await gitPush({
+      branch: pushConfig.branch,
+      remote: pushConfig.remote || 'origin',
+      force: pushConfig.forcePush,
+      setUpstream: true,
+      dryRun: options.dryRun
+    });
+
+    // Show result
+    console.log();
+    const branchInfo = analyzeBranch(pushConfig.branch);
+    console.log(formatPushSummary(pushResult, branchInfo));
+
+    // Clean up review files
+    if (pushResult.success && !options.dryRun) {
+      const pushDir = path.join('.hodge', 'temp', 'push-review', feature);
+      await fs.rm(pushDir, { recursive: true, force: true });
+      console.log(chalk.gray('\n✓ Cleaned up review files'));
+
+      // Create PR if requested
+      if (pushConfig.createPR) {
+        console.log(chalk.cyan('\n📝 PR Creation'));
+        console.log(chalk.gray('   PR creation not yet implemented'));
+        console.log(chalk.gray('   Please create PR manually for now'));
+        // TODO: Implement PR creation in Phase 3
       }
     }
   }

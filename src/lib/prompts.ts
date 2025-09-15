@@ -238,6 +238,131 @@ export class InteractivePrompts {
   }
 
   /**
+   * Prompt for protected branch push confirmation
+   */
+  async promptProtectedBranchPush(branch: string): Promise<boolean> {
+    console.log(chalk.bold('\n⚠️  Protected Branch Warning\n'));
+    console.log(chalk.yellow(`You are about to push to '${branch}'`));
+    console.log(chalk.yellow('This is a protected branch typically used for production.'));
+    console.log();
+
+    const { action } = await inquirer.prompt<{ action: string }>([
+      {
+        type: 'list',
+        name: 'action',
+        message: 'How would you like to proceed?',
+        choices: [
+          { name: 'Create and push to feature branch instead', value: 'feature' },
+          { name: 'Push to protected branch anyway', value: 'push' },
+          { name: 'Cancel push', value: 'cancel' }
+        ],
+        default: 'feature'
+      }
+    ]);
+
+    if (action === 'cancel') {
+      return false;
+    }
+
+    if (action === 'feature') {
+      const { branchName } = await inquirer.prompt<{ branchName: string }>([
+        {
+          type: 'input',
+          name: 'branchName',
+          message: 'Enter feature branch name:',
+          default: `feature/${Date.now()}`,
+          validate: (input: string) => {
+            if (!input.trim()) return 'Branch name cannot be empty';
+            if (input === branch) return 'Cannot be the same as current branch';
+            return true;
+          }
+        }
+      ]);
+
+      console.log(chalk.cyan(`\nCreating branch: ${branchName}`));
+      // The actual branch creation will be handled by the caller
+      throw new Error(`CREATE_BRANCH:${branchName}`);
+    }
+
+    // If action === 'push', confirm once more
+    const { confirm } = await inquirer.prompt<{ confirm: boolean }>([
+      {
+        type: 'confirm',
+        name: 'confirm',
+        message: chalk.red(`Are you SURE you want to push to ${branch}?`),
+        default: false
+      }
+    ]);
+
+    return confirm;
+  }
+
+  /**
+   * Prompt for push options
+   */
+  async promptPushOptions(status: {
+    branch: string;
+    ahead: number;
+    behind: number;
+    hasUncommitted: boolean;
+  }): Promise<{
+    proceed: boolean;
+    pullFirst?: boolean;
+    stashChanges?: boolean;
+  }> {
+    const issues: string[] = [];
+
+    if (status.behind > 0) {
+      issues.push(`Branch is ${status.behind} commits behind remote`);
+    }
+    if (status.hasUncommitted) {
+      issues.push('You have uncommitted changes');
+    }
+
+    if (issues.length === 0) {
+      return { proceed: true };
+    }
+
+    console.log(chalk.bold('\n📋 Pre-Push Check\n'));
+    console.log(chalk.yellow('Issues detected:'));
+    issues.forEach(issue => console.log(chalk.yellow(`  • ${issue}`)));
+    console.log();
+
+    const choices: Array<{ name: string; value: string }> = [];
+
+    if (status.behind > 0) {
+      choices.push({ name: 'Pull and rebase first', value: 'pull-rebase' });
+      choices.push({ name: 'Pull and merge', value: 'pull-merge' });
+    }
+
+    if (status.hasUncommitted) {
+      choices.push({ name: 'Stash changes and continue', value: 'stash' });
+    }
+
+    choices.push({ name: 'Push anyway', value: 'force' });
+    choices.push({ name: 'Cancel', value: 'cancel' });
+
+    const { action } = await inquirer.prompt<{ action: string }>([
+      {
+        type: 'list',
+        name: 'action',
+        message: 'How would you like to proceed?',
+        choices
+      }
+    ]);
+
+    if (action === 'cancel') {
+      return { proceed: false };
+    }
+
+    return {
+      proceed: true,
+      pullFirst: action.startsWith('pull'),
+      stashChanges: action === 'stash'
+    };
+  }
+
+  /**
    * Prompt for decision recording
    */
   async promptDecision(): Promise<{

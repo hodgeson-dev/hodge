@@ -97,6 +97,7 @@ program
   .option('--no-push', 'Do not push to remote')
   .option('--push-branch <branch>', 'Push to specific branch')
   .option('--force-push', 'Force push (use with caution)')
+  .option('--continue-push', 'Continue push from saved review')
   .action(
     async (
       feature: string,
@@ -111,6 +112,7 @@ program
         noPush?: boolean;
         pushBranch?: string;
         forcePush?: boolean;
+        continuePush?: boolean;
       }
     ) => {
       const { ShipCommand } = await import('../commands/ship');
