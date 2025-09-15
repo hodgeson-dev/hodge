@@ -57,7 +57,7 @@ describe('StandardsValidator', () => {
   });
 });
 
-// Helper functions that would be imported from the actual implementation
+// TODO: Import these helper functions from the actual implementation
 function validateStandards(mode: string): ValidationResult {
   return {
     essentialEnforced: true,
@@ -66,7 +66,7 @@ function validateStandards(mode: string): ValidationResult {
 }
 
 function checkTypeScriptStrict(): boolean {
-  // In real implementation, would read tsconfig.json
+  // TODO: Read actual tsconfig.json in real implementation
   return true;
 }
 

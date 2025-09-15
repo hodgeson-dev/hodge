@@ -390,7 +390,7 @@ export class InitCommand {
     try {
       InitLogger.debug('Starting pattern learning analysis');
 
-      // Simulate pattern learning (in reality this would analyze the codebase)
+      // TODO: Implement actual pattern learning to analyze the codebase
       // TODO: Implement actual pattern analysis logic
       await new Promise((resolve) => setTimeout(resolve, 3000)); // Simulate analysis time
 

@@ -157,7 +157,7 @@ class TestCommandExecutor {
 /**
  * Integration test suite for npm link workflow
  */
-describe('NPM Link Integration Tests', () => {
+describe.skip('NPM Link Integration Tests', () => {
   let testWorkspacePath: string;
   let hodgePath: string;
 

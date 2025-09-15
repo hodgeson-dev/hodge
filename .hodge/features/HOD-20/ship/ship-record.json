@@ -1,0 +1,14 @@
+{
+  "feature": "HOD-20",
+  "timestamp": "2025-09-15T02:09:03.726Z",
+  "issueId": "HOD-20",
+  "pmTool": "linear",
+  "validationPassed": false,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": false
+  },
+  "commitMessage": "feat: implement explore/build/harden/ship commands"
+}

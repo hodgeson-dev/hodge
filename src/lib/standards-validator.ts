@@ -53,7 +53,7 @@ export function validateStandards(mode: Mode, _code?: string): ValidationResult 
  */
 export function checkTypeScriptStrict(): boolean {
   try {
-    // In production, would read tsconfig.json
+    // TODO: Read actual tsconfig.json instead of returning mock data
     return true;
   } catch {
     return false;

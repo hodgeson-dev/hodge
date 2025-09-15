@@ -19,6 +19,17 @@
 - Auto-format code before commits
 - Use consistent naming conventions
 
+### Code Documentation
+- Mark all unfinished work with `// TODO:` comments
+- Include descriptive text after TODO explaining what needs to be done
+- Examples:
+  - `// TODO: Implement actual PM fetching via adapter`
+  - `// TODO: Add validation for user input`
+  - `// TODO: Optimize this query for performance`
+- Never use vague comments like "Note:", "In real implementation", etc.
+- All placeholder code must have a TODO comment
+- TODOs are easily discoverable by IDEs and search tools
+
 ### Build & Deployment
 - **Build Tools**: typescript, tsconfig
 - Code must build without warnings in harden mode

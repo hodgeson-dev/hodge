@@ -1,100 +1,88 @@
 # Hodge Status - Feature Overview and Context Management
 
-{{#if feature}}
-## Status for Feature: {{feature}}
+## Command Execution
 
-Check `.hodge/features/{{feature}}/` for:
-- Current mode and progress
-- Context and decisions
-- Files modified
-- Next recommended actions
-
-{{else}}
-## All Features Status
-
-Scan `.hodge/features/` directory and present:
-
-```
-## Feature Overview
-
-### Active Feature
-📍 **{{current_feature}}** ({{current_mode}} mode)
-   Progress: {{progress_bar}} {{percentage}}%
-   Last modified: {{timestamp}}
-   Next action: {{recommendation}}
-
-### Other Features
-
-#### {{feature_1}}
-   Mode: {{mode}}
-   Progress: {{progress_bar}} {{percentage}}%
-   Status: {{status}}
-
-#### {{feature_2}}
-   Mode: {{mode}}
-   Progress: {{progress_bar}} {{percentage}}%
-   Status: {{status}}
-
-### Quick Actions
-Select a feature to load:
-a) {{feature_1}} - {{brief_description}}
-b) {{feature_2}} - {{brief_description}}
-c) {{feature_3}} - {{brief_description}}
-d) Continue with current ({{current_feature}})
-
-Your choice:
+### For Overall Status
+```bash
+hodge status
 ```
 
-{{/if}}
-
-## After Feature Selection
-
-When user selects a feature to load:
-
-1. **Update Context**
-   - Set selected feature as current in `.hodge/context.md`
-   - Load feature-specific context from `.hodge/features/{{feature}}/context.md`
-   - Note the mode (explore/build/harden)
-
-2. **Restore State**
-   ```
-   ## Loading Feature: {{feature}}
-   
-   ### Context Restored
-   - Mode: {{mode}}
-   - Approach: {{approach}}
-   - Progress: {{what_was_completed}}
-   
-   ### Recent Decisions
-   - {{relevant_decisions}}
-   
-   ### Next Steps
-   - {{immediate_next_action}}
-   - Continue with: `/{{mode}} {{feature}}`
-   ```
-
-3. **Auto-Save Trigger**
-   After loading, save the context switch
-
-## Session Context Structure
-
-`.hodge/context.md` should contain:
-```markdown
-# Current Session Context
-
-## Active Feature
-- Name: {{feature}}
-- Mode: {{mode}}
-- Started: {{timestamp}}
-- Last Updated: {{timestamp}}
-
-## Session State
-- Loaded from: {{previous_feature || "fresh"}}
-- Switch count: {{number_of_feature_switches}}
-
-## Working Files
-- {{file_1}}
-- {{file_2}}
+### For Feature-Specific Status
+```bash
+hodge status {{feature}}
 ```
 
-Remember: There's only ONE active context at a time - the current session.
+## What This Does
+
+### Overall Status (`hodge status`)
+1. Checks Hodge initialization
+2. Displays project configuration
+3. Shows statistics:
+   - Total features
+   - Active features (not shipped)
+   - Pattern count
+   - Decision count
+4. Lists active features
+5. Provides AI context summary
+
+### Feature Status (`hodge status {{feature}}`)
+1. Shows feature progress:
+   - ✓/○ Exploration
+   - ✓/○ Decision
+   - ✓/○ Build
+   - ✓/○ Harden
+   - ✓/○ Production Ready
+2. PM integration status
+3. Suggests next step for the feature
+
+## After Command Execution
+The CLI will output either:
+- Overall project status with context
+- Specific feature progress and next steps
+
+## Using Status Information
+
+### If Viewing Overall Status
+Review the context and decide:
+- Which feature to work on next
+- Whether to start a new feature
+- If any features need attention
+
+### If Viewing Feature Status
+Based on progress shown:
+- **No exploration**: Start with `/explore {{feature}}`
+- **No decision**: Review and use `/decide`
+- **No build**: Continue with `/build {{feature}}`
+- **No harden**: Proceed to `/harden {{feature}}`
+- **Not production ready**: Fix issues and re-harden
+- **Ready to ship**: Use `/ship {{feature}}`
+
+## Quick Feature Switch
+To switch between features:
+1. Check current status: `hodge status`
+2. Save current work: `/save`
+3. Switch to new feature: `/explore` or `/build {{new-feature}}`
+
+## Context Management
+The status command helps you:
+- Keep track of multiple features
+- Understand project progress
+- Maintain context when switching tasks
+- See what needs attention
+
+## Next Steps Menu
+After checking status:
+```
+### Next Steps
+Choose your next action:
+a) Continue with suggested feature
+b) Start new feature → `/explore`
+c) Resume active feature → `/build {{feature}}`
+d) Review decisions → `hodge decide`
+e) Check specific feature → `/status {{feature}}`
+f) Done for now
+
+Enter your choice (a-f):
+```
+
+Remember: The CLI tracks all feature progress automatically. Use status to stay oriented and make informed decisions about what to work on next.

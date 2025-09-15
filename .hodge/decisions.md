@@ -72,19 +72,46 @@ Immediate availability is important for user experience. Having scripts locally 
 
 **Status**: Accepted (Revised)
 
-**Context**: 
+**Context**:
 For existing codebases, Hodge could learn established patterns and standards, but we need to decide when and how to offer this capability.
 
-**Decision**: 
+**Decision**:
 Ask about pattern learning only in interactive mode (`hodge init --interactive`). The default `hodge init` remains quick with minimal prompts.
 
-**Rationale**: 
+**Rationale**:
 Keeping quick mode as default maintains the original "one-question setup" philosophy while providing an interactive option for users who want comprehensive setup with PM tool selection and pattern learning.
 
-**Consequences**: 
+**Consequences**:
 - Positive: Maintains simple default experience
 - Positive: Interactive mode available for those who want it
 - Positive: No breaking change from current behavior
 - Negative: Users might not discover interactive features
 - Negative: Need to educate about --interactive flag
+
+---
+
+### 2025-01-19 - Core Mode Commands Implementation Pattern
+
+**Status**: Accepted
+
+**Context**:
+HOD-20 requires implementing explore/build/harden commands. After exploring three approaches (Stateful Mode Manager, Lightweight Command Pattern, Plugin-Based Architecture), we need to choose an implementation strategy that balances simplicity, consistency, and future extensibility.
+
+**Decision**:
+Implement core mode commands using the Lightweight Command Pattern, following the exact pattern established by the init command.
+
+**Rationale**:
+- Consistency: Matches the existing init command pattern perfectly, maintaining codebase uniformity
+- Simplicity: Minimal abstraction makes the code easy to understand and maintain
+- Speed: Fastest to implement and ship, aligning with "ship fast, iterate often" philosophy
+- Pragmatic: Solves the immediate need without over-engineering
+- Evolutionary: Can be refactored to a more complex architecture later if needed
+
+**Consequences**:
+- Positive: Maintains consistent codebase patterns
+- Positive: Quick to implement and test
+- Positive: Easy for future developers to understand
+- Positive: Leverages existing test infrastructure
+- Negative: Some code duplication across commands (acceptable trade-off)
+- Negative: Less flexible for complex future requirements (can evolve later)
 

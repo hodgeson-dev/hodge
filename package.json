@@ -19,7 +19,7 @@
     "test:integration": "vitest scripts/npm-link-integration.test.ts --config vitest.config.ts",
     "test:cross-platform": "vitest scripts/cross-platform.test.ts --config vitest.config.ts",
     "start": "node dist/bin/hodge.js",
-    "test": "vitest",
+    "test": "vitest run",
     "test:watch": "vitest --watch",
     "test:coverage": "vitest --coverage",
     "lint": "eslint . --ext .ts,.tsx",

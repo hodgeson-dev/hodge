@@ -1,133 +1,98 @@
 # Hodge Decide - Decision Management
 
-{{#if decision}}
-## Recording Single Decision
+## Command Execution
 
-Record this decision in `.hodge/decisions.md`:
-- Decision: {{decision}}
-- Category: [Determine from context: Architecture/Patterns/Tools/Constraints]
-- Date: {{current_date}}
-
-Format as one-liner:
-```
-- {{date}}: {{decision}}
+### For Single Decision
+Execute the portable Hodge CLI command:
+```bash
+hodge decide "{{decision}}"
 ```
 
-Then confirm: "Decision recorded: {{decision}}"
+With feature association:
+```bash
+hodge decide "{{decision}}" --feature {{feature}}
+```
 
-{{else}}
+## What This Does
+1. Records decision in `.hodge/decisions.md`
+2. Adds timestamp and formatting
+3. Associates with feature if specified
+4. Updates PM issue with decision comment (if feature linked)
+5. Displays AI context update about the decision
+
+## After Command Execution
+The CLI will output:
+- Decision confirmation
+- File location
+- Total decision count
+- Feature association (if specified)
+
 ## Interactive Decision Mode
+If you need to make multiple decisions or review pending ones:
 
-### 1. Gather Pending Decisions
-Scan for pending decisions from:
-- Previous `/review` output
-- Conversation history
-- Code comments (TODO, FIXME, QUESTION)
-- Uncommitted exploration results in `.hodge/features/*/explore/`
-- Check if exploration exists without corresponding PM issue
+1. **Gather pending decisions from**:
+   - Code comments (TODO, FIXME, QUESTION)
+   - Previous exploration notes
+   - Uncommitted changes
+   - Open questions in conversation
 
-### 2. Present Decisions Interactively
+2. **Present each decision**:
+   ```
+   ## Decision {{number}} of {{total}}
 
-For EACH pending decision, present:
+   **Topic**: {{decision_topic}}
+   **Context**: {{brief_context}}
 
+   Options:
+   a) {{option_1}}
+      Pros: {{pros}}
+      Cons: {{cons}}
+
+   b) {{option_2}}
+      Pros: {{pros}}
+      Cons: {{cons}}
+
+   c) Skip for now
+   d) Need more exploration
+
+   Your choice:
+   ```
+
+3. **For each decision made**:
+   ```bash
+   hodge decide "{{chosen_option_description}}" --feature {{feature}}
+   ```
+
+## Decision Format
+Decisions are stored as:
+```markdown
+### YYYY-MM-DD - Decision Title
+
+**Status**: Accepted
+**Context**: Feature or general context
+**Decision**: Full decision text
+**Rationale**: Why this was chosen
+**Consequences**: Impact of decision
 ```
-## Decision {{number}} of {{total}}
 
-**Topic**: {{decision_topic}}
-**Context**: {{brief_context}}
+## PM Integration
+If decision is about a feature with PM issue:
+- Automatically adds comment to PM issue
+- Marks issue as "decided" if appropriate
+- Updates issue description with decision
 
-Options:
-a) {{option_1}}
-   Pros: {{pros}}
-   Cons: {{cons}}
-   
-b) {{option_2}}
-   Pros: {{pros}}
-   Cons: {{cons}}
-
-c) {{option_3}} (if applicable)
-   ...
-
-d) Skip for now (revisit later)
-e) Need more exploration
-
-Your choice:
+## Next Steps Menu
+After decisions are recorded:
 ```
-
-### 3. Wait for User Input
-- DO NOT simulate or assume user choices
-- Wait for actual user response
-- Accept single letters (a, b, c) or multiple (a and c)
-- Accept custom decisions if user types something else
-
-### 4. Process Each Decision
-After user responds:
-1. Record decision in `.hodge/decisions.md`
-2. Update relevant context files
-3. Note any follow-up actions needed
-4. If decision is about an explored feature:
-   a. If PM issue already exists:
-      - Add `hodge-decided` label
-      - Add comment with decision:
-        ```
-        ## ✅ Hodge Decision Made
-        - Date: {{timestamp}}
-        - Chosen approach: {{chosen_approach}}
-        - Rationale: {{decision_rationale}}
-        - Next step: Ready for /build
-        ```
-   b. If no PM issue exists:
-      - Ask: "Would you like to create a PM issue for '{{feature}}'? (yes/no)"
-      - If yes:
-        - Create issue with chosen approach from decision
-        - Add `hodge-decided` label
-        - Include exploration summary and decision in description
-        - Save issue ID to `.hodge/features/{{feature}}/issue-id.txt`
-5. Move to next pending decision
-
-### 5. Summary After All Decisions
-
-```
-## Decisions Recorded
-
-✓ {{count}} decisions made:
-1. {{decision_1}}
-2. {{decision_2}}
-...
-
-📋 Follow-up actions:
-- {{action_1}}
-- {{action_2}}
-
-⏭️ {{skipped_count}} decisions skipped for later
-
 ### Next Steps
 Choose your next action:
-a) Start building the decided feature → `/build {{feature}}`
+a) Start building decided feature → `/build {{feature}}`
 b) Explore another feature → `/explore`
-c) Review project status → `/status`
-d) Create/update PM issues for decisions
-e) Review all decisions → show `.hodge/decisions.md`
-f) Done for now
+c) Review all decisions → `/status`
+d) Continue development
+e) Done for now
 
-Enter your choice (a-f):
+Enter your choice (a-e):
 ```
 
-{{/if}}
-
-## Decision Format in `.hodge/decisions.md`
-
-Always use one-line format:
-```markdown
-## Category
-- YYYY-MM-DD: [Decision] - [Brief reason]
-```
-
-Categories:
-- Architecture
-- Patterns  
-- Tools
-- Constraints
-- Process
-
-Remember: Decisions should be concise, actionable, and include reasoning.
+Remember: The CLI handles decision recording and PM updates. Focus on making thoughtful technical choices.
