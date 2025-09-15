@@ -26,6 +26,25 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-15 - Use Progressive Enhancement approach for interactive ship commits with environment-specific optimizations
+
+**Status**: Accepted
+
+**Context**:
+General project decision
+
+**Decision**:
+Use Progressive Enhancement approach for interactive ship commits with environment-specific optimizations
+
+**Rationale**:
+Recorded via `hodge decide` command at 8:50:42 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-13 - PM Tool Selection During Init
 
 **Status**: Accepted

@@ -1,38 +1,58 @@
-# Hodge Ship Mode
+# 🚀 Hodge Ship Mode - Interactive Commit Experience
 
-## Command Execution
-Execute the portable Hodge CLI command:
+## Smart Ship Command
+Execute the enhanced ship command with intelligent commit message generation:
 ```bash
 hodge ship {{feature}}
 ```
 
-Options:
+## 🎯 Progressive Enhancement Active
+This command adapts to Claude Code with:
+- **Smart commit analysis** - Automatically detects type (feat/fix/docs) from your changes
+- **Interactive markdown UI** - Review and edit commit messages right here
+- **File-based state** - Seamless integration between CLI and Claude
+
+## How It Works
+
+### Step 1: Initial Analysis
 ```bash
-hodge ship {{feature}} --skip-tests              # Skip final tests (not recommended)
-hodge ship {{feature}} -m "Custom commit message" # Custom commit message
+hodge ship {{feature}}
+```
+The command will:
+1. Analyze your git changes
+2. Detect commit type and scope
+3. Generate a smart commit message
+4. Create an interactive UI file for you
+
+### Step 2: Review & Edit (Claude Code Special)
+When in Claude Code, the command creates:
+- `.hodge/temp/ship-interaction/{{feature}}/ui.md` - Your interactive UI
+- `.hodge/temp/ship-interaction/{{feature}}/state.json` - State tracking
+
+You can edit the commit message directly in the markdown file!
+
+### Step 3: Finalize Ship
+Re-run the command to use your edited message:
+```bash
+hodge ship {{feature}} --yes
 ```
 
-## What This Does
-1. Verifies feature has been hardened
-2. Runs final quality gates:
-   - Tests
-   - Coverage check
-   - Documentation check
-   - Changelog check
-3. Creates ship directory: `.hodge/features/{{feature}}/ship/`
-4. Generates:
-   - Ship record
-   - Release notes
-   - Commit message
-5. Updates PM issue to "Done"
+## Options
+```bash
+hodge ship {{feature}} --skip-tests              # Skip tests (emergency only!)
+hodge ship {{feature}} -m "Custom message"       # Direct message (skip interaction)
+hodge ship {{feature}} --no-interactive          # Disable all interaction
+hodge ship {{feature}} --yes                      # Accept suggested message
+hodge ship {{feature}} --dry-run                  # Preview without committing
+```
 
-## After Command Execution
-The CLI will output:
-- Ship requirements AI context
-- Quality gate results
-- Ship summary with pass/fail status
-- Generated commit message
-- PM issue update confirmation
+## What Gets Analyzed
+The ship command intelligently examines:
+- 📁 **File changes** - Added, modified, deleted files
+- 🏷️ **Commit type** - feat, fix, docs, style, refactor, test, chore
+- 📦 **Scope** - Detected from common directory patterns
+- 💔 **Breaking changes** - Identified from specific patterns
+- 🔗 **PM Integration** - Links to Linear/GitHub/Jira issues
 
 ## Your Tasks Based on Results
 

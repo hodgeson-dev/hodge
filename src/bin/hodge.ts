@@ -90,10 +90,20 @@ program
   .option('--skip-tests', 'Skip test execution (not recommended)')
   .option('-m, --message <message>', 'Custom commit message')
   .option('--no-commit', 'Skip automatic git commit')
+  .option('--no-interactive', 'Disable interactive prompts')
+  .option('-y, --yes', 'Accept all defaults')
+  .option('--dry-run', 'Preview without making changes')
   .action(
     async (
       feature: string,
-      options: { skipTests?: boolean; message?: string; noCommit?: boolean }
+      options: {
+        skipTests?: boolean;
+        message?: string;
+        noCommit?: boolean;
+        noInteractive?: boolean;
+        yes?: boolean;
+        dryRun?: boolean;
+      }
     ) => {
       const { ShipCommand } = await import('../commands/ship');
       const shipCommand = new ShipCommand();

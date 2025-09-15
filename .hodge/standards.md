@@ -62,5 +62,36 @@
 
 ## Custom Standards
 
-Add your project-specific standards here...
+### Multi-Environment Command Standards
+
+All Hodge commands MUST support multiple AI coding environments through Progressive Enhancement:
+
+1. **Environment Detection Required**
+   - Commands must detect: Claude Code, Warp, Aider, Continue.dev, Cursor, Terminal
+   - Must have non-interactive fallback for unknown environments
+   - Detection logic should be centralized in EnvironmentDetector class
+
+2. **File-Based State Protocol**
+   - All commands must support file-based interaction as baseline
+   - State files in `.hodge/temp/<command>-interaction/`
+   - JSON format for state persistence
+   - Clean up temporary files after execution
+
+3. **Claude Code Premium Experience**
+   - Claude commands in `.claude/commands/` should provide rich markdown UI
+   - Markdown files are the UI, not just launchers
+   - Use tables, collapsible sections, and formatting
+   - Maintain context between interactions
+
+4. **Universal Flags**
+   - All commands must support: `--no-interactive`, `--yes`, `--edit`, `--dry-run`
+   - Flags must work identically across all environments
+   - Document flag behavior in command help
+
+5. **Graceful Degradation**
+   - Never break in unknown environments
+   - Always provide meaningful output even without interactivity
+   - File-based fallback is mandatory
+
+See `.hodge/patterns/progressive-enhancement-commands.md` for implementation details.
 

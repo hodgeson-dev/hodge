@@ -4,6 +4,8 @@ import path from 'path';
 import { existsSync } from 'fs';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import { getCurrentEnvironment } from '../lib/environment-detector.js';
+import { InteractionStateManager, type ShipInteractionData, detectCommitType, detectScope, formatFileChanges } from '../lib/interaction-state.js';
 
 const execAsync = promisify(exec);
 
@@ -11,6 +13,10 @@ export interface ShipOptions {
   skipTests?: boolean;
   message?: string;
   noCommit?: boolean;
+  noInteractive?: boolean;
+  yes?: boolean;
+  edit?: boolean;
+  dryRun?: boolean;
 }
 
 export class ShipCommand {
@@ -158,14 +164,166 @@ export class ShipCommand {
       return;
     }
 
-    // Generate ship commit message
-    const commitMessage =
-      options.message ||
-      `ship: ${feature}${issueId ? ` (closes ${issueId})` : ''}
+    // Get git diff information for intelligent commit message generation
+    let gitAnalysis = null;
+    try {
+      const { stdout: gitStatus } = await execAsync('git status --porcelain');
+      const { stdout: gitDiff } = await execAsync('git diff --stat');
 
-- Implementation complete
-- Tests passing
-- Documentation updated${issueId ? `\n- Closes ${issueId}` : ''}`;
+      // Parse git status to get file changes
+      const files = gitStatus.trim().split('\n').filter(Boolean).map(line => {
+        const [status, ...pathParts] = line.trim().split(/\s+/);
+        const filePath = pathParts.join(' ');
+        const stats = gitDiff.includes(filePath) ?
+          gitDiff.split('\n').find(l => l.includes(filePath)) : null;
+
+        const insertions = stats ? parseInt(stats.match(/(\d+) insertion/)?.[1] ?? '0') : 0;
+        const deletions = stats ? parseInt(stats.match(/(\d+) deletion/)?.[1] ?? '0') : 0;
+
+        return {
+          path: filePath,
+          status: status.includes('A') ? 'added' as const :
+                  status.includes('D') ? 'deleted' as const :
+                  'modified' as const,
+          insertions,
+          deletions
+        };
+      });
+
+      gitAnalysis = {
+        files,
+        type: detectCommitType(files),
+        scope: detectScope(files),
+        breaking: false
+      };
+    } catch (error) {
+      console.log(chalk.yellow('⚠️  Could not analyze git changes'));
+    }
+
+    // Detect environment and use appropriate interaction mode
+    const env = getCurrentEnvironment();
+    let commitMessage = options.message;
+
+    if (!commitMessage && !options.noInteractive) {
+      // Use progressive enhancement for commit message generation
+      const interactionManager = new InteractionStateManager<ShipInteractionData>('ship', feature);
+
+      if (env.type === 'claude-code' || env.type === 'continue' || !env.capabilities.prompts) {
+        // File-based interaction for Claude Code and non-interactive environments
+        console.log(chalk.cyan('\n🤖 Generating commit message...'));
+
+        const suggestedMessage = gitAnalysis ?
+          `${gitAnalysis.type}${gitAnalysis.scope !== 'general' ? `(${gitAnalysis.scope})` : ''}: ${feature}\n\n` +
+          `- Implementation complete\n` +
+          `- Tests passing\n` +
+          `- Documentation updated` +
+          (issueId ? `\n- Closes ${issueId}` : '') :
+          `ship: ${feature}${issueId ? ` (closes ${issueId})` : ''}\n\n` +
+          `- Implementation complete\n` +
+          `- Tests passing\n` +
+          `- Documentation updated` +
+          (issueId ? `\n- Closes ${issueId}` : '');
+
+        const interactionData: ShipInteractionData = {
+          analysis: gitAnalysis || {
+            files: [],
+            type: 'ship',
+            scope: feature,
+            breaking: false
+          },
+          suggested: suggestedMessage,
+          issueId: issueId ?? undefined,
+          workLogPath: path.join(featureDir, 'work-log.md')
+        };
+
+        // Initialize interaction state
+        await interactionManager.initialize(interactionData, env.name);
+
+        // For Claude Code, write markdown UI file
+        if (env.type === 'claude-code') {
+          const markdownUI = `# 🚀 Ship Commit - ${feature}\n\n` +
+            `## Changed Files\n\n` +
+            (gitAnalysis ? formatFileChanges(gitAnalysis.files) : 'No file analysis available') + '\n\n' +
+            `## Suggested Commit Message\n\n` +
+            '```\n' + suggestedMessage + '\n```\n\n' +
+            `## Actions\n\n` +
+            `- Edit the message above and save this file to use your custom message\n` +
+            `- Or use the suggested message as-is\n\n` +
+            `> The portable command will read your edits from:\n` +
+            `> ${interactionManager.getFilePath('state.json')}`;
+
+          await interactionManager.writeFile('ui.md', markdownUI);
+          console.log(chalk.green(`   ✓ Review commit message in: ${interactionManager.getFilePath('ui.md')}`));
+          console.log(chalk.gray('   Edit the message and save, then re-run ship to continue'));
+
+          // In Claude Code, we exit here and let the user edit
+          if (!options.yes) {
+            return;
+          }
+        }
+
+        // Check if user has edited the state
+        const currentState = await interactionManager.load();
+        if (currentState && currentState.data && 'edited' in currentState.data && (currentState.data as ShipInteractionData).edited) {
+          commitMessage = (currentState.data as ShipInteractionData).edited as string;
+          console.log(chalk.green('   ✓ Using edited commit message'));
+        } else if (options.yes ?? !env.capabilities.prompts) {
+          commitMessage = suggestedMessage;
+          console.log(chalk.green('   ✓ Using suggested commit message'));
+        } else {
+          // For other non-interactive environments, use suggested
+          commitMessage = suggestedMessage;
+        }
+
+        // Clean up interaction files after use
+        await interactionManager.cleanup();
+
+      } else if (env.capabilities.prompts) {
+        // Interactive terminals (Warp, Aider, standard terminal)
+        const { getPrompts } = await import('../lib/prompts.js');
+        const prompts = getPrompts();
+
+        const interactionData: ShipInteractionData = {
+          analysis: gitAnalysis || {
+            files: [],
+            type: 'ship',
+            scope: feature,
+            breaking: false
+          },
+          suggested: gitAnalysis ?
+            `${gitAnalysis.type}${gitAnalysis.scope !== 'general' ? `(${gitAnalysis.scope})` : ''}: ${feature}\n\n` +
+            `- Implementation complete\n` +
+            `- Tests passing\n` +
+            `- Documentation updated` +
+            (issueId ? `\n- Closes ${issueId}` : '') :
+            `ship: ${feature}${issueId ? ` (closes ${issueId})` : ''}\n\n` +
+            `- Implementation complete\n` +
+            `- Tests passing\n` +
+            `- Documentation updated` +
+            (issueId ? `\n- Closes ${issueId}` : ''),
+          issueId: issueId ?? undefined
+        };
+
+        try {
+          commitMessage = await prompts.promptShipCommit(interactionData);
+        } catch (error) {
+          if (error instanceof Error && error.message === 'Ship cancelled by user') {
+            console.log(chalk.yellow('\n⚠️  Ship cancelled'));
+            return;
+          }
+          throw error;
+        }
+      }
+    }
+
+    // Fallback if no message was set
+    if (!commitMessage) {
+      commitMessage = `ship: ${feature}${issueId ? ` (closes ${issueId})` : ''}\n\n` +
+        `- Implementation complete\n` +
+        `- Tests passing\n` +
+        `- Documentation updated` +
+        (issueId ? `\n- Closes ${issueId}` : '');
+    }
 
     // Create ship record
     const shipRecord = {
