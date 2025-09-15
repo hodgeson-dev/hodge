@@ -914,14 +914,6 @@ ${
     console.log(`   ${chalk.dim('├── features/')}       ${chalk.gray('# Feature development')}`);
     console.log(`   ${chalk.dim('└── pm-scripts/')}     ${chalk.gray('# PM integration scripts')}`);
 
-    console.log(chalk.blue('\n🚀 Next steps:'));
-    console.log(
-      `   ${chalk.white('hodge explore <feature>')}  ${chalk.gray('# Start exploring a new feature')}`
-    );
-    console.log(
-      `   ${chalk.white('hodge status')}              ${chalk.gray('# Check current status')}`
-    );
-
     // Add Claude Code detection message
     if (projectInfo.detectedTools.hasClaudeCode) {
       console.log(chalk.yellow('\n📝 Claude Code detected!'));
@@ -976,6 +968,15 @@ ${
         )
       );
     }
+
+    // Next steps - always shown last
+    console.log(chalk.blue('\n🚀 Next steps:'));
+    console.log(
+      `   ${chalk.white('hodge explore <feature>')}  ${chalk.gray('# Start exploring a new feature')}`
+    );
+    console.log(
+      `   ${chalk.white('hodge status')}              ${chalk.gray('# Check current status')}`
+    );
 
     console.log(); // Empty line for spacing
   }
