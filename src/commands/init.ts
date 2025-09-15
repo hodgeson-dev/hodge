@@ -940,12 +940,12 @@ ${
     // Add PM-specific suggestions
     if (projectInfo.pmTool) {
       console.log(chalk.blue(`\n🔧 PM Integration (${projectInfo.pmTool}):`));
-      console.log(
-        `   ${chalk.white('node .hodge/pm-scripts/pm-status.js')}  ${chalk.gray('# Check PM integration status')}`
-      );
-      console.log(
-        `   ${chalk.white(`node .hodge/pm-scripts/sync-${projectInfo.pmTool}.js`)}  ${chalk.gray('# Sync with ' + projectInfo.pmTool)}`
-      );
+
+      // Show the actual scripts that were installed
+      const pmScriptExamples = this.getPMScriptExamples(projectInfo.pmTool);
+      pmScriptExamples.forEach(({ script, description }) => {
+        console.log(`   ${chalk.white(script)}  ${chalk.gray(`# ${description}`)}`);
+      });
     } else {
       console.log(chalk.blue('\n🔧 PM Integration:'));
       console.log(
@@ -975,5 +975,78 @@ ${
     }
 
     console.log(); // Empty line for spacing
+  }
+
+  /**
+   * Gets example PM scripts to show based on the PM tool
+   * @param pmTool - The PM tool being used
+   * @returns Array of script examples with descriptions
+   */
+  private getPMScriptExamples(pmTool: string): Array<{ script: string; description: string }> {
+    const baseScripts = [
+      { script: 'node .hodge/pm-scripts/pm-status.js', description: 'Check PM integration status' },
+    ];
+
+    switch (pmTool) {
+      case 'linear':
+        return [
+          ...baseScripts,
+          {
+            script: 'node .hodge/pm-scripts/create-issue.js "Title" "Description"',
+            description: 'Create Linear issue',
+          },
+          {
+            script: 'node .hodge/pm-scripts/fetch-issue.js <issue-id>',
+            description: 'Fetch issue details',
+          },
+        ];
+      case 'github':
+        return [
+          ...baseScripts,
+          {
+            script: 'node .hodge/pm-scripts/create-issue.js "Title" "Body"',
+            description: 'Create GitHub issue',
+          },
+          {
+            script: 'node .hodge/pm-scripts/create-milestone.js "Title"',
+            description: 'Create milestone',
+          },
+        ];
+      case 'jira':
+        return [
+          ...baseScripts,
+          {
+            script: 'node .hodge/pm-scripts/create-issue.js "Summary"',
+            description: 'Create Jira issue',
+          },
+          {
+            script: 'node .hodge/pm-scripts/create-epic.js "Epic Name"',
+            description: 'Create epic',
+          },
+        ];
+      case 'trello':
+        return [
+          ...baseScripts,
+          {
+            script: 'node .hodge/pm-scripts/create-card.js "Card Name"',
+            description: 'Create Trello card',
+          },
+          {
+            script: 'node .hodge/pm-scripts/move-card.js <card-id> <list-id>',
+            description: 'Move card',
+          },
+        ];
+      case 'asana':
+        return [
+          ...baseScripts,
+          {
+            script: 'node .hodge/pm-scripts/create-task.js "Task Name"',
+            description: 'Create Asana task',
+          },
+          { script: 'node .hodge/pm-scripts/update-task.js <task-id>', description: 'Update task' },
+        ];
+      default:
+        return baseScripts;
+    }
   }
 }
