@@ -1,6 +1,6 @@
 {
   "feature": "ship-push-integration",
-  "timestamp": "2025-09-15T04:39:46.169Z",
+  "timestamp": "2025-09-15T04:44:23.118Z",
   "issueId": null,
   "pmTool": "linear",
   "validationPassed": false,
@@ -10,5 +10,5 @@
     "docs": true,
     "changelog": false
   },
-  "commitMessage": "feat: ship-push-integration\n\n- Implementation complete\n- Tests passing\n- Documentation updated"
+  "commitMessage": "test: push integration"
 }
