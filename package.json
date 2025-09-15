@@ -8,7 +8,7 @@
     "hodge": "./dist/src/bin/hodge.js"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json && cp package.json dist/ && cp -r src/pm-scripts dist/src/",
+    "build": "tsc -p tsconfig.build.json && cp package.json dist/",
     "build:watch": "tsc -p tsconfig.build.json --watch",
     "dev": "tsx watch src/bin/hodge.ts",
     "dev:link": "npm run build:watch & npm link",
