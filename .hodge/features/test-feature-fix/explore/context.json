@@ -1,0 +1,52 @@
+{
+  "mode": "explore",
+  "feature": "test-feature-fix",
+  "timestamp": "2025-09-16T13:23:28.116Z",
+  "intent": {
+    "type": "testing",
+    "keywords": [
+      "unit",
+      "integration",
+      "mock",
+      "coverage",
+      "vitest"
+    ],
+    "suggestedPatterns": [
+      "test-factory",
+      "mock-builder",
+      "fixture"
+    ],
+    "relatedCommands": [
+      "test",
+      "mock",
+      "assert",
+      "coverage"
+    ]
+  },
+  "standards": "suggested",
+  "validation": "optional",
+  "pmIssue": "test-feature-fix",
+  "pmTool": null,
+  "approaches": [
+    {
+      "name": "Standard Implementation",
+      "description": "Implement test-feature-fix following existing project patterns",
+      "relevance": 70,
+      "pros": [
+        "Consistent with codebase",
+        "Uses proven patterns",
+        "Easy for team to understand"
+      ],
+      "cons": [
+        "May not be optimal for specific use case",
+        "Could miss optimization opportunities"
+      ]
+    }
+  ],
+  "relatedFeatures": [
+    "test-feature",
+    "patterns-test",
+    "template-test"
+  ],
+  "suggestedPatterns": []
+}

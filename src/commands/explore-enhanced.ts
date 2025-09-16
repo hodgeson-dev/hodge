@@ -601,23 +601,41 @@ ${this.generateImplementationHints(intent, _existingPatterns)}
     ];
 
     const intentSpecific: Record<string, string[]> = {
-      feature: [
-        '- [ ] Should provide the new functionality as described',
-        '- [ ] Should not break existing features',
-        '- [ ] Should be accessible to target users',
-        '- [ ] Should handle edge cases appropriately',
+      authentication: [
+        '- [ ] Should handle login/logout correctly',
+        '- [ ] Should manage sessions securely',
+        '- [ ] Should validate tokens properly',
+        '- [ ] Should handle authorization failures gracefully',
       ],
-      bugfix: [
-        '- [ ] Should fix the reported issue',
-        '- [ ] Should not introduce new bugs',
-        '- [ ] Should include regression test',
-        '- [ ] Should handle the root cause, not just symptoms',
+      database: [
+        '- [ ] Should handle connections properly',
+        '- [ ] Should manage transactions correctly',
+        '- [ ] Should handle query errors gracefully',
+        '- [ ] Should optimize for performance',
       ],
-      refactor: [
-        '- [ ] Should maintain existing functionality',
-        '- [ ] Should improve code quality metrics',
-        '- [ ] Should not change external behavior',
-        '- [ ] Should pass all existing tests',
+      api: [
+        '- [ ] Should validate request data',
+        '- [ ] Should return appropriate status codes',
+        '- [ ] Should handle errors consistently',
+        '- [ ] Should follow REST/GraphQL conventions',
+      ],
+      'api-endpoint': [
+        '- [ ] Should validate request data',
+        '- [ ] Should return appropriate status codes',
+        '- [ ] Should handle errors consistently',
+        '- [ ] Should follow REST/GraphQL conventions',
+      ],
+      ui: [
+        '- [ ] Should render without errors',
+        '- [ ] Should be responsive across devices',
+        '- [ ] Should handle user interactions correctly',
+        '- [ ] Should provide appropriate feedback',
+      ],
+      caching: [
+        '- [ ] Should store and retrieve data correctly',
+        '- [ ] Should respect TTL settings',
+        '- [ ] Should handle cache invalidation',
+        '- [ ] Should handle cache misses gracefully',
       ],
       performance: [
         '- [ ] Should improve targeted metrics',
@@ -625,11 +643,17 @@ ${this.generateImplementationHints(intent, _existingPatterns)}
         '- [ ] Should be measurable and reproducible',
         '- [ ] Should work under various load conditions',
       ],
-      security: [
-        '- [ ] Should address the security vulnerability',
-        '- [ ] Should not create new attack vectors',
-        '- [ ] Should include security-focused tests',
-        '- [ ] Should follow security best practices',
+      testing: [
+        '- [ ] Should cover critical paths',
+        '- [ ] Should run quickly and reliably',
+        '- [ ] Should use appropriate test doubles',
+        '- [ ] Should follow testing best practices',
+      ],
+      general: [
+        '- [ ] Should provide the intended functionality',
+        '- [ ] Should integrate with existing code',
+        '- [ ] Should handle errors appropriately',
+        '- [ ] Should be maintainable and documented',
       ],
       maintenance: [
         '- [ ] Should update dependencies safely',
@@ -653,7 +677,7 @@ These are not actual tests, but a checklist of behaviors to verify.
 ${baseIntentions.join('\n')}
 
 ## ${intent.type.charAt(0).toUpperCase() + intent.type.slice(1)}-Specific Requirements
-${intentSpecific[intent.type].join('\n') || ''}
+${intentSpecific[intent.type].join('\n') || intentSpecific.general.join('\n')}
 
 ## Approach-Specific Tests
 ${approachIntentions.join('\n')}
