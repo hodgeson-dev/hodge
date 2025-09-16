@@ -26,6 +26,25 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-16 - linting-standards-optimization
+
+**Status**: Accepted
+
+**Context**:
+General project decision
+
+**Decision**:
+linting-standards-optimization
+
+**Rationale**:
+Recorded via `hodge decide` command at 6:45:49 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-15 - Use Progressive Enhancement approach for interactive ship commits with environment-specific optimizations
 
 **Status**: Accepted
@@ -213,4 +232,43 @@ Delete all 47 skipped tests completely from the codebase.
 - Positive: No ambiguity about what should be tested
 - Negative: Cannot easily reference old test patterns (mitigated by git history)
 - Negative: Lose examples of what NOT to test (mitigated by documentation)
+
+---
+
+### 2025-09-16 - Progressive Type Safety for Linting Standards
+
+**Status**: Accepted
+
+**Context**:
+We regularly encounter two types of ESLint errors during the `/harden` phase that create friction:
+- `@typescript-eslint/no-explicit-any`: Use of `any` type
+- `@typescript-eslint/explicit-function-return-type`: Missing explicit return types
+
+After deep analysis, we determined:
+- `no-explicit-any` is CRITICAL for type safety (prevents runtime errors, refactoring hazards)
+- `explicit-function-return-type` has LOW-MEDIUM importance (TypeScript inference is sufficient 95%+ of the time)
+
+**Decision**:
+Implement Progressive Type Safety approach that aligns linting strictness with Hodge's explore → build → harden → ship philosophy.
+
+**Implementation**:
+1. Disable `explicit-function-return-type` entirely (rely on TypeScript inference)
+2. Keep `no-explicit-any` as error in production code
+3. Allow `any` as warning in test files and exploration code
+4. Add `no-unsafe-return` and `no-unsafe-assignment` as errors for additional safety
+
+**Rationale**:
+- Aligns perfectly with Hodge philosophy: "Freedom to explore, discipline to ship"
+- Reduces friction during development while maintaining production safety
+- Pragmatic acknowledgment that 100% type coverage isn't always valuable
+- TypeScript's inference is excellent and explicit return types add verbosity without safety benefit
+- Progressive enforcement allows fast prototyping with gradual type improvement
+
+**Consequences**:
+- Positive: No more late-stage type fixing during harden phase
+- Positive: Faster exploration and prototyping
+- Positive: Production code remains fully type-safe
+- Positive: Warnings guide learning without blocking progress
+- Negative: Risk of technical debt accumulation in explore phase (mitigated by warnings)
+- Negative: Need to track which mode code is in (acceptable trade-off)
 

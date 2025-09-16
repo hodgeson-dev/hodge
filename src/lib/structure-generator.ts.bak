@@ -284,6 +284,101 @@ export class StructureGenerator {
   // Removed: buildStandardsContent - Now using Hodge Way templates via installHodgeWay
 
   /* Keeping for reference - old implementation
+  private buildStandardsContent(_projectInfo: ProjectInfo): string {
+    const { name, type, detectedTools } = projectInfo;
+
+    let content = `# ${name} Development Standards
+
+## Project Overview
+- **Type**: ${type}
+- **Package Manager**: ${detectedTools.packageManager || 'Not detected'}
+- **Git Repository**: ${detectedTools.hasGit ? 'Yes' : 'No'}
+
+## Code Quality Standards
+
+`;
+
+    // Add testing standards if test frameworks detected
+    if (detectedTools.testFramework.length > 0) {
+      content += `### Testing
+- **Frameworks**: ${detectedTools.testFramework.join(', ')}
+- All features should have tests before moving to harden mode
+- Maintain test coverage above 80%
+- Use descriptive test names that explain the expected behavior
+
+`;
+    }
+
+    // Add linting standards if linters detected
+    if (detectedTools.linting.length > 0) {
+      content += `### Code Style
+- **Linting**: ${detectedTools.linting.join(', ')}
+- Follow configured linting rules strictly in harden mode
+- Auto-format code before commits
+- Use consistent naming conventions
+
+`;
+    }
+
+    // Add build standards if build tools detected
+    if (detectedTools.buildTools.length > 0) {
+      content += `### Build & Deployment
+- **Build Tools**: ${detectedTools.buildTools.join(', ')}
+- Code must build without warnings in harden mode
+- Maintain type safety (if TypeScript is detected)
+- Optimize bundle size for production
+
+`;
+    }
+
+    // Add Node.js specific standards
+    if (type === 'node') {
+      content += `### Node.js Standards
+- Use ES modules where possible
+- Handle errors appropriately with proper error types
+- Use async/await over callbacks
+- Keep dependencies minimal and up-to-date
+
+`;
+    }
+
+    // Add Python specific standards
+    if (type === 'python') {
+      content += `### Python Standards
+- Follow PEP 8 style guidelines
+- Use type hints for function signatures
+- Write docstrings for all public functions
+- Use virtual environments for dependency management
+
+`;
+    }
+
+    content += `## Mode-Specific Guidelines
+
+### Explore Mode
+- Focus on rapid prototyping and experimentation
+- Document key findings and decisions
+- Don't worry about perfect code quality initially
+
+### Build Mode  
+- Follow basic standards and conventions
+- Include essential tests for core functionality
+- Apply linting rules as recommendations
+
+### Harden Mode
+- All standards are strictly enforced
+- Complete test coverage required
+- Code must pass all quality checks
+- Documentation must be comprehensive
+
+## Custom Standards
+
+Add your project-specific standards here...
+
+`;
+
+    return content;
+  }
 
   /**
    * Generates the decisions.md template file
@@ -293,6 +388,47 @@ export class StructureGenerator {
   /**
    * @deprecated Now handled by installHodgeWay
    */
+  private async generateDecisions(hodgePath: string): Promise<void> {
+    try {
+      const decisionsContent = `# Architecture Decisions
+
+This file tracks key architectural and technical decisions made during development.
+
+## Decision Template
+
+### [Date] - Decision Title
+
+**Status**: Proposed | Accepted | Deprecated | Superseded
+
+**Context**: 
+Describe the context and problem that led to this decision.
+
+**Decision**: 
+State the decision clearly.
+
+**Rationale**: 
+Explain why this decision was made, considering alternatives.
+
+**Consequences**: 
+List the positive and negative consequences of this decision.
+
+---
+
+## Decisions
+
+<!-- Add your decisions below -->
+
+`;
+
+      const decisionsPath = path.join(hodgePath, 'decisions.md');
+      await fs.writeFile(decisionsPath, decisionsContent, 'utf8');
+    } catch (error) {
+      throw new StructureGenerationError(
+        `Failed to generate decisions.md: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        error as Error
+      );
+    }
+  }
 
   /**
    * Generates the patterns/README.md file
@@ -302,6 +438,51 @@ export class StructureGenerator {
   /**
    * @deprecated Now handled by installHodgeWay
    */
+  private async generatePatternsReadme(hodgePath: string): Promise<void> {
+    try {
+      const patternsContent = `# Hodge Patterns Library
+
+This directory contains reusable patterns discovered and extracted from the Hodge codebase.
+
+## Pattern Categories
+
+### Command Patterns
+Patterns for CLI command implementations.
+
+### Error Handling Patterns
+Patterns for consistent error handling across the codebase.
+
+### Testing Patterns
+Patterns for writing effective tests.
+
+### Integration Patterns
+Patterns for integrating with external services.
+
+## Pattern Lifecycle
+
+1. **Discovery**: Pattern identified in code
+2. **Documentation**: Pattern documented here
+3. **Reuse**: Pattern suggested when relevant
+4. **Standardization**: Pattern becomes a standard
+
+## Current Patterns
+
+*No patterns extracted yet - patterns will be added as they emerge from the codebase.*
+
+---
+
+Patterns are automatically suggested by Hodge when writing similar code.
+`;
+
+      const patternsReadmePath = path.join(hodgePath, 'patterns', 'README.md');
+      await fs.writeFile(patternsReadmePath, patternsContent, 'utf8');
+    } catch (error) {
+      throw new StructureGenerationError(
+        `Failed to generate patterns/README.md: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        error as Error
+      );
+    }
+  }
 
   /**
    * Generates PM scripts for the detected or selected PM tool

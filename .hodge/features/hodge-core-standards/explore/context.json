@@ -1,0 +1,47 @@
+{
+  "mode": "explore",
+  "feature": "hodge-core-standards",
+  "timestamp": "2025-09-16T13:56:07.428Z",
+  "intent": {
+    "type": "general",
+    "keywords": [
+      "hodge-core-standards"
+    ],
+    "suggestedPatterns": [
+      "service",
+      "utility",
+      "factory"
+    ],
+    "relatedCommands": [
+      "execute",
+      "process",
+      "handle"
+    ]
+  },
+  "standards": "suggested",
+  "validation": "optional",
+  "pmIssue": "hodge-core-standards",
+  "pmTool": null,
+  "approaches": [
+    {
+      "name": "Standard Implementation",
+      "description": "Implement hodge-core-standards following existing project patterns",
+      "relevance": 70,
+      "pros": [
+        "Consistent with codebase",
+        "Uses proven patterns",
+        "Easy for team to understand"
+      ],
+      "cons": [
+        "May not be optimal for specific use case",
+        "Could miss optimization opportunities"
+      ]
+    }
+  ],
+  "relatedFeatures": [
+    "foundational-standards",
+    "hodge-branding",
+    "linting-standards-optimization"
+  ],
+  "suggestedPatterns": []
+}

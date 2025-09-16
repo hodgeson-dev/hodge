@@ -1,0 +1,62 @@
+{
+  "mode": "explore",
+  "feature": "linting-standards-optimization",
+  "timestamp": "2025-09-16T13:37:55.539Z",
+  "intent": {
+    "type": "general",
+    "keywords": [
+      "linting-standards-optimization"
+    ],
+    "suggestedPatterns": [
+      "service",
+      "utility",
+      "factory"
+    ],
+    "relatedCommands": [
+      "execute",
+      "process",
+      "handle"
+    ]
+  },
+  "standards": "suggested",
+  "validation": "optional",
+  "pmIssue": "linting-standards-optimization",
+  "pmTool": null,
+  "approaches": [
+    {
+      "name": "Performance-First Architecture",
+      "description": "Optimize for speed with caching and parallelization",
+      "relevance": 95,
+      "pros": [
+        "Maximum performance gains",
+        "Reduced resource usage",
+        "Better scalability"
+      ],
+      "cons": [
+        "Higher complexity",
+        "More memory usage",
+        "Harder to debug"
+      ]
+    },
+    {
+      "name": "Standard Implementation",
+      "description": "Implement linting-standards-optimization following existing project patterns",
+      "relevance": 70,
+      "pros": [
+        "Consistent with codebase",
+        "Uses proven patterns",
+        "Easy for team to understand"
+      ],
+      "cons": [
+        "May not be optimal for specific use case",
+        "Could miss optimization opportunities"
+      ]
+    }
+  ],
+  "relatedFeatures": [
+    "foundational-standards",
+    "build-command-optimization",
+    "harden-command-optimization"
+  ],
+  "suggestedPatterns": []
+}

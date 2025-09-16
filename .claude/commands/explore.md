@@ -45,14 +45,16 @@ After exploration is complete, suggest:
 ```
 ### Next Steps
 Choose your next action:
-a) Record decision → `/decide "chosen approach" --feature {{feature}}`
+a) Review and decide on approach → `/decide`
 b) Continue exploring another aspect
-c) Start building → `/build {{feature}}`
+c) Start building with [recommended approach name] → `/build {{feature}}`
 d) Save progress → `/save`
 e) Check status → `/status {{feature}}`
 f) Done for now
 
 Enter your choice (a-f):
+
+Note: Option (c) will use the recommended approach. Use option (a) to choose a different approach.
 ```
 
 Remember: The CLI handles all the file creation and PM integration. Focus on generating creative solutions and documenting approaches.

@@ -7,11 +7,14 @@ import fs from 'fs-extra';
 import path from 'path';
 import { StructureGenerator, StructureGenerationError } from './structure-generator';
 import { ProjectInfo, ProjectType } from './detection';
+import { installHodgeWay } from './install-hodge-way';
 
 // Mock external dependencies
 vi.mock('fs-extra');
+vi.mock('./install-hodge-way');
 
 const mockFs = vi.mocked(fs);
+const mockInstallHodgeWay = vi.mocked(installHodgeWay);
 
 describe('StructureGenerator', () => {
   let mockRootPath: string;
@@ -21,6 +24,9 @@ describe('StructureGenerator', () => {
   beforeEach(() => {
     mockRootPath = '/test/project';
     vi.clearAllMocks();
+
+    // Mock installHodgeWay to succeed
+    mockInstallHodgeWay.mockResolvedValue(undefined);
 
     // Default mock implementations
     mockFs.statSync.mockReturnValue({
@@ -103,10 +109,9 @@ describe('StructureGenerator', () => {
 
       // Verify directories are created
       expect(mockFs.ensureDir).toHaveBeenCalledWith(expect.stringContaining('.hodge'));
-      expect(mockFs.ensureDir).toHaveBeenCalledWith(expect.stringContaining('patterns'));
       expect(mockFs.ensureDir).toHaveBeenCalledWith(expect.stringContaining('features'));
 
-      // Verify files are created
+      // Verify config.json is created
       expect(mockFs.writeJson).toHaveBeenCalledWith(
         expect.stringContaining('config.json'),
         expect.objectContaining({
@@ -117,23 +122,8 @@ describe('StructureGenerator', () => {
         { spaces: 2 }
       );
 
-      expect(mockFs.writeFile).toHaveBeenCalledWith(
-        expect.stringContaining('standards.md'),
-        expect.stringContaining('test-project Development Standards'),
-        'utf8'
-      );
-
-      expect(mockFs.writeFile).toHaveBeenCalledWith(
-        expect.stringContaining('decisions.md'),
-        expect.stringContaining('Architecture Decisions'),
-        'utf8'
-      );
-
-      expect(mockFs.writeFile).toHaveBeenCalledWith(
-        expect.stringContaining('patterns/README.md'),
-        expect.stringContaining('Hodge Patterns Library'),
-        'utf8'
-      );
+      // Verify installHodgeWay is called to install template files
+      expect(mockInstallHodgeWay).toHaveBeenCalledWith(expect.stringContaining('.hodge'));
     });
 
     it('should throw error when project info is null', async () => {
@@ -233,7 +223,7 @@ describe('StructureGenerator', () => {
     });
   });
 
-  describe('standards generation', () => {
+  describe('Hodge Way template installation', () => {
     beforeEach(() => {
       generator = new StructureGenerator(mockRootPath);
       mockFs.pathExists.mockResolvedValue(false);
@@ -242,34 +232,29 @@ describe('StructureGenerator', () => {
       mockFs.writeFile.mockResolvedValue(undefined);
     });
 
-    it('should generate standards for Node.js project', async () => {
+    it('should install Hodge Way templates for all project types', async () => {
       await generator.generateStructure(mockProjectInfo);
 
-      const standardsCall = mockFs.writeFile.mock.calls.find((call) =>
-        call[0].toString().includes('standards.md')
-      );
-
-      expect(standardsCall).toBeTruthy();
-      expect(standardsCall![1]).toContain('test-project Development Standards');
-      expect(standardsCall![1]).toContain('Type**: node');
-      expect(standardsCall![1]).toContain('vitest');
-      expect(standardsCall![1]).toContain('eslint, prettier');
-      expect(standardsCall![1]).toContain('typescript');
-      expect(standardsCall![1]).toContain('Node.js Standards');
+      // Verify installHodgeWay is called with the hodge directory path
+      expect(mockInstallHodgeWay).toHaveBeenCalledWith(path.join(mockRootPath, '.hodge'));
     });
 
-    it('should generate standards for Python project', async () => {
+    it('should install templates for Python project', async () => {
       mockProjectInfo.type = 'python';
       mockProjectInfo.detectedTools.testFramework = ['pytest'];
 
       await generator.generateStructure(mockProjectInfo);
 
-      const standardsCall = mockFs.writeFile.mock.calls.find((call) =>
-        call[0].toString().includes('standards.md')
-      );
+      // Verify installHodgeWay is called regardless of project type
+      expect(mockInstallHodgeWay).toHaveBeenCalledWith(path.join(mockRootPath, '.hodge'));
+    });
 
-      expect(standardsCall![1]).toContain('Python Standards');
-      expect(standardsCall![1]).toContain('PEP 8');
+    it('should handle template installation errors gracefully', async () => {
+      mockInstallHodgeWay.mockRejectedValue(new Error('Template copy failed'));
+
+      await expect(generator.generateStructure(mockProjectInfo)).rejects.toThrow(
+        StructureGenerationError
+      );
     });
 
     it('should handle unknown project type gracefully', async () => {
@@ -277,25 +262,8 @@ describe('StructureGenerator', () => {
 
       await generator.generateStructure(mockProjectInfo);
 
-      const standardsCall = mockFs.writeFile.mock.calls.find((call) =>
-        call[0].toString().includes('standards.md')
-      );
-
-      expect(standardsCall).toBeTruthy();
-      expect(standardsCall![1]).toContain('Development Standards');
-    });
-
-    it('should handle standards writing errors', async () => {
-      mockFs.writeFile.mockImplementation((path) => {
-        if (path.toString().includes('standards.md')) {
-          throw new Error('Write failed');
-        }
-        return Promise.resolve();
-      });
-
-      await expect(generator.generateStructure(mockProjectInfo)).rejects.toThrow(
-        StructureGenerationError
-      );
+      // Should still install templates even for unknown project types
+      expect(mockInstallHodgeWay).toHaveBeenCalledWith(path.join(mockRootPath, '.hodge'));
     });
   });
 
