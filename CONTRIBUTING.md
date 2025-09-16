@@ -166,24 +166,85 @@ hodge/
 
 ## Testing Guidelines
 
-- Write tests for new features
-- Use Vitest for testing framework
-- Aim for good test coverage
-- Test both success and error cases
-- Use descriptive test names
+### Our Testing Philosophy
 
-Example test structure:
+**"Test behavior, not implementation"**
+
+We follow a **Progressive Testing Strategy** - tests evolve with code maturity:
+
+| Stage | Required Tests | Command |
+|-------|---------------|---------|
+| Explore | Test intentions (markdown) | N/A |
+| Build | Smoke tests | `npm run test:smoke` |
+| Harden | Integration tests | `npm run test:integration` |
+| Ship | All tests passing | `npm test` |
+
+See [TEST-STRATEGY.md](./TEST-STRATEGY.md) for complete testing philosophy.
+
+### Writing Tests
+
+#### 1. During Explore Phase
+Create test intentions in your exploration document:
+```markdown
+## Test Intentions
+- [ ] Should handle invalid input gracefully
+- [ ] Should complete within 500ms
+- [ ] Should integrate with existing system
+```
+
+#### 2. During Build Phase
+Write at least one smoke test:
 ```typescript
-describe('CommandName', () => {
-  it('should handle valid input correctly', () => {
-    // Test implementation
-  });
-  
-  it('should throw error for invalid input', () => {
-    // Test error handling
+import { smokeTest } from '../test/helpers';
+
+smokeTest('should not crash', async () => {
+  await expect(command.execute()).resolves.not.toThrow();
+});
+```
+
+#### 3. During Harden Phase
+Add integration tests:
+```typescript
+import { integrationTest } from '../test/helpers';
+import { withTestWorkspace } from '../test/runners';
+
+integrationTest('should create expected structure', async () => {
+  await withTestWorkspace('test', async (workspace) => {
+    await workspace.hodge('your-command');
+    expect(await workspace.exists('expected-file')).toBe(true);
   });
 });
 ```
+
+### Test Categories
+
+- **Smoke Tests** (`[smoke]`) - Quick sanity checks
+- **Integration Tests** (`[integration]`) - Behavior verification
+- **Unit Tests** (`[unit]`) - Logic validation
+- **Acceptance Tests** (`[acceptance]`) - User story validation
+
+### Running Tests
+
+```bash
+# During development
+npm run test:watch         # Watch mode
+npm run test:smoke         # Quick smoke tests only
+
+# Before committing
+npm run test:integration   # Behavior tests
+npm test                   # All tests
+
+# Coverage
+npm run test:coverage      # Generate coverage report
+```
+
+### Test Utilities
+
+Use our test utilities for cleaner tests:
+
+- `src/test/mocks.ts` - Mock factories (createMockFs, createMockCache, etc.)
+- `src/test/runners.ts` - Test workspace and command runners
+- `src/test/helpers.ts` - Test categorization and assertions
 
 ## Documentation
 

@@ -98,6 +98,8 @@ describe('ExploreCommand', () => {
       vi.mocked(existsSync).mockReturnValue(true);
       vi.mocked(fs.mkdir).mockResolvedValue(undefined);
       vi.mocked(fs.writeFile).mockResolvedValue(undefined);
+      vi.mocked(fs.readFile).mockResolvedValue('### 2024-01-01 Decision 1\n### 2024-01-02 Decision 2');
+      vi.mocked(fs.readdir).mockResolvedValue([]);
 
       await command.execute(feature, { force: true });
 

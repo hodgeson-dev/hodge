@@ -33,9 +33,17 @@ The CLI will output:
    - **SHOULD** follow coding standards
    - **SHOULD** use established patterns
    - **SHOULD** include basic error handling
-   - **CONSIDER** adding tests
-3. Update the build plan as you progress
-4. Track files modified and decisions made
+   - **MUST** write at least one smoke test
+3. Write smoke tests (required):
+   ```typescript
+   import { smokeTest } from '../test/helpers';
+
+   smokeTest('should not crash', async () => {
+     await expect(command.execute()).resolves.not.toThrow();
+   });
+   ```
+4. Update the build plan as you progress
+5. Track files modified and decisions made
 
 ## Implementation Guidelines
 - Use existing patterns where applicable
@@ -43,12 +51,19 @@ The CLI will output:
 - Include helpful comments for complex logic
 - Balance quality with development speed
 
+## Testing Requirements (Progressive Model)
+- **Build Phase**: Minimum 1 smoke test required
+- **Test Type**: Quick sanity checks (<100ms)
+- **Focus**: Does it work without crashing?
+- **Run Command**: `npm run test:smoke`
+- Use test utilities from `src/test/helpers.ts`
+
 ## Next Steps Menu
 After building is complete, suggest:
 ```
 ### Next Steps
 Choose your next action:
-a) Add tests for this feature
+a) Run smoke tests → `npm run test:smoke`
 b) Proceed to hardening → `/harden {{feature}}`
 c) Review changes → `/review`
 d) Save progress → `/save`

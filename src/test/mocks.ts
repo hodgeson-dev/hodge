@@ -3,6 +3,8 @@
  * Provides easy-to-use mock creators for common dependencies
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { vi } from 'vitest';
 
 /**
@@ -17,33 +19,33 @@ export function createMockFs(options: {
   const { exists = false, content = '', files = [], throwOn = [] } = options;
 
   return {
-    existsSync: vi.fn((path: string) => {
+    existsSync: vi.fn((_path: string) => {
       if (throwOn.includes('existsSync')) throw new Error('Mock error');
       return exists;
     }),
     promises: {
-      readFile: vi.fn(async (path: string) => {
+      readFile: vi.fn(async (_path: string) => {
         if (throwOn.includes('readFile')) throw new Error('Mock error');
         return content;
       }),
-      writeFile: vi.fn(async (path: string, data: string) => {
+      writeFile: vi.fn(async (_path: string, _data: string) => {
         if (throwOn.includes('writeFile')) throw new Error('Mock error');
       }),
-      mkdir: vi.fn(async (path: string, options?: any) => {
+      mkdir: vi.fn(async (_path: string, _options?: any) => {
         if (throwOn.includes('mkdir')) throw new Error('Mock error');
       }),
-      readdir: vi.fn(async (path: string) => {
+      readdir: vi.fn(async (_path: string) => {
         if (throwOn.includes('readdir')) throw new Error('Mock error');
         return files;
       }),
-      access: vi.fn(async (path: string) => {
+      access: vi.fn(async (_path: string) => {
         if (throwOn.includes('access')) throw new Error('Mock error');
         if (!exists) throw new Error('ENOENT');
       }),
-      appendFile: vi.fn(async (path: string, data: string) => {
+      appendFile: vi.fn(async (_path: string, _data: string) => {
         if (throwOn.includes('appendFile')) throw new Error('Mock error');
       }),
-      rm: vi.fn(async (path: string, options?: any) => {
+      rm: vi.fn(async (_path: string, _options?: any) => {
         if (throwOn.includes('rm')) throw new Error('Mock error');
       }),
     }
@@ -57,7 +59,7 @@ export function createMockCache(options: {
   hits?: Map<string, any>;
   ttl?: number;
 } = {}) {
-  const { hits = new Map(), ttl = 5000 } = options;
+  const { hits = new Map() } = options;
 
   return {
     get: vi.fn((key: string) => hits.get(key)),

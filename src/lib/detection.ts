@@ -105,6 +105,11 @@ export class ProjectDetector {
       throw new ValidationError('Root path must be a non-empty string', 'rootPath');
     }
 
+    // Check for path traversal attempts
+    if (rootPath.includes('../') || rootPath.includes('..\\')) {
+      throw new ValidationError('Path traversal detected', 'rootPath');
+    }
+
     if (!path.isAbsolute(rootPath)) {
       // Convert to absolute path
       this.rootPath = path.resolve(rootPath);

@@ -28,9 +28,32 @@ hodge build "user authentication"
 hodge harden "user authentication"
 ```
 
+## Testing Philosophy
+
+We follow a **Progressive Testing Strategy** - tests evolve with code maturity:
+
+- **Explore**: Write test intentions (what should it do?)
+- **Build**: Write smoke tests (does it work at all?)
+- **Harden**: Add integration tests (does it behave correctly?)
+- **Ship**: Full test suite (is it production ready?)
+
+See [TEST-STRATEGY.md](./TEST-STRATEGY.md) for complete testing guidelines.
+
+### Quick Test Commands
+
+```bash
+npm run test:smoke       # Quick sanity checks
+npm run test:integration # Behavior verification
+npm run test:unit        # Logic validation
+npm run test:acceptance  # User story validation
+npm run test             # Run all tests
+```
+
 ## Documentation
 
-Full documentation coming soon. See [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md) for development roadmap.
+- [TEST-STRATEGY.md](./TEST-STRATEGY.md) - Testing philosophy and guidelines
+- [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md) - Development roadmap
+- [.hodge/standards.md](./.hodge/standards.md) - Project standards (after `hodge init`)
 
 ## License
 

@@ -3,7 +3,10 @@
  * Provides utilities to run actual commands and verify behavior
  */
 
-import { exec, execSync } from 'child_process';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
+import { exec } from 'child_process';
 import { promisify } from 'util';
 import path from 'path';
 import os from 'os';
@@ -217,17 +220,22 @@ export class TimeMock {
   }
 
   install() {
-    (global as any).Date = class extends this.originalDate {
+    const currentTime = this.currentTime;
+    const OriginalDate = this.originalDate;
+
+    (global as any).Date = class MockDate extends OriginalDate {
       constructor(...args: any[]) {
         if (args.length === 0) {
-          super(this.currentTime);
+          super(currentTime);
         } else {
-          super(...args);
+          // TypeScript workaround for spread arguments
+          const [arg0, arg1, arg2, arg3, arg4, arg5, arg6] = args;
+          super(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
         }
       }
 
       static now() {
-        return this.currentTime;
+        return currentTime;
       }
     };
   }

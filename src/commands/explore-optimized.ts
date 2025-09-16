@@ -15,8 +15,13 @@ export interface ExploreOptions {
 
 interface FeatureState {
   pmTool?: string;
-  issueId?: string;
+  issueId?: string | null;
   hasDecision?: boolean;
+  hasExploration?: boolean;
+  hasBuild?: boolean;
+  hasHarden?: boolean;
+  isProductionReady?: boolean;
+  validation?: Record<string, { passed: boolean }> | null;
   [key: string]: unknown;
 }
 

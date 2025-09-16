@@ -8,10 +8,11 @@ hodge explore {{feature}}
 
 ## What This Does
 1. Creates exploration directory: `.hodge/features/{{feature}}/explore/`
-2. Checks for PM issue and links if found
-3. Displays AI context for exploration mode
-4. Shows available patterns and decisions
-5. Creates exploration template for you to fill in
+2. Generates `test-intentions.md` with behavior checklist
+3. Checks for PM issue and links if found
+4. Displays AI context for exploration mode
+5. Shows available patterns and decisions
+6. Creates exploration template for you to fill in
 
 ## After Command Execution
 The CLI will output:
@@ -23,18 +24,21 @@ The CLI will output:
 
 ## Your Tasks After CLI Command
 1. Review the exploration template at `.hodge/features/{{feature}}/explore/exploration.md`
-2. Generate 2-3 different implementation approaches
-3. For each approach:
+2. Review test intentions at `.hodge/features/{{feature}}/explore/test-intentions.md`
+3. Generate 2-3 different implementation approaches
+4. For each approach:
    - Create a quick prototype or code sketch
    - Note pros/cons
    - Consider integration with existing stack
-4. Document your recommendation
+5. Update test intentions with discoveries
+6. Document your recommendation
 
 ## Exploration Guidelines
 - Standards are **suggested** but not enforced
 - Multiple approaches encouraged
 - Focus on rapid prototyping and idea validation
 - Be creative and explore alternatives
+- **No tests required** - only test intentions (what should it do?)
 
 ## Next Steps Menu
 After exploration is complete, suggest:

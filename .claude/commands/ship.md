@@ -54,32 +54,45 @@ The ship command intelligently examines:
 - 💔 **Breaking changes** - Identified from specific patterns
 - 🔗 **PM Integration** - Links to Linear/GitHub/Jira issues
 
+## Testing Requirements (Progressive Model)
+- **Ship Phase**: Full test suite required
+- **Test Types**: All categories (smoke, integration, unit, acceptance)
+- **Focus**: Is it production ready?
+- **Run Command**: `npm test` - All tests must pass
+- **Coverage**: Target >80% for shipped features
+
 ## Your Tasks Based on Results
 
 ### If Ship Succeeded ✅
-1. Copy the generated commit message
-2. Commit your changes:
+1. All tests passed (full suite)
+2. Copy the generated commit message
+3. Commit your changes:
    ```bash
    git add .
    git commit -m "paste commit message here"
    ```
-3. Push to main branch:
+4. Push to main branch:
    ```bash
    git push origin main
    ```
-4. Create release tag if needed:
+5. Create release tag if needed:
    ```bash
    git tag v1.0.0
    git push --tags
    ```
-5. Monitor production metrics
+6. Monitor production metrics
 
 ### If Ship Failed ❌
 1. Review quality gate failures
 2. Fix any issues:
-   - Missing tests → Add tests
-   - No documentation → Update README
-   - No changelog → Update CHANGELOG.md
+   - **Tests failing**: Add missing test categories:
+     - Smoke tests (basic functionality)
+     - Integration tests (behavior)
+     - Unit tests (logic validation)
+     - Acceptance tests (user requirements)
+   - **Coverage low**: Add tests for uncovered code
+   - **No documentation**: Update README
+   - **No changelog**: Update CHANGELOG.md
 3. Re-run hardening if needed: `hodge harden {{feature}}`
 4. Try shipping again
 

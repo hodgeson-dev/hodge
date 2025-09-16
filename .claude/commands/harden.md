@@ -16,8 +16,9 @@ hodge harden {{feature}} --auto-fix    # Attempt to auto-fix linting issues
 1. Checks that feature has been built
 2. Creates harden directory: `.hodge/features/{{feature}}/harden/`
 3. Displays strict AI context for production standards
-4. Runs validation checks:
-   - Tests (npm test)
+4. Runs progressive validation checks:
+   - Integration tests (npm run test:integration)
+   - Smoke tests (npm run test:smoke)
    - Linting (npm run lint)
    - Type checking (npm run typecheck)
    - Build (npm run build)
@@ -41,15 +42,38 @@ The CLI will output:
 ### If Validation Failed ❌
 1. Review the detailed output in the report
 2. Fix each failing check:
-   - **Tests failing**: Fix broken tests or implementation
+   - **Integration tests failing**: Write or fix integration tests (behavior verification)
+   - **Smoke tests failing**: Fix basic functionality issues
    - **Linting errors**: Run with `--auto-fix` or fix manually
    - **Type errors**: Fix TypeScript issues
    - **Build errors**: Resolve compilation problems
-3. Re-run `hodge harden {{feature}}`
+3. Write integration tests if missing:
+   ```typescript
+   import { integrationTest } from '../test/helpers';
+   import { withTestWorkspace } from '../test/runners';
+
+   integrationTest('should create expected files', async () => {
+     await withTestWorkspace('test', async (workspace) => {
+       await workspace.hodge('{{feature}}');
+       expect(await workspace.exists('expected-file')).toBe(true);
+     });
+   });
+   ```
+4. Re-run `hodge harden {{feature}}`
+
+## Testing Requirements (Progressive Model)
+- **Harden Phase**: Integration tests required
+- **Test Types**: Smoke + Integration tests
+- **Focus**: Does it behave correctly end-to-end?
+- **Run Commands**:
+  - `npm run test:integration` - Behavior verification
+  - `npm run test:smoke` - Basic functionality
+- Use test utilities from `src/test/helpers.ts` and `src/test/runners.ts`
 
 ## Production Checklist
 Ensure these are complete:
-- [ ] All tests passing (>80% coverage)
+- [ ] Integration tests passing (behavior verification)
+- [ ] Smoke tests passing (basic functionality)
 - [ ] No linting errors or warnings
 - [ ] TypeScript strict mode passing
 - [ ] Build succeeds without errors

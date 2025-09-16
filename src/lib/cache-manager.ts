@@ -363,7 +363,7 @@ export class FeatureStateCache {
     isProductionReady: boolean;
     issueId: string | null;
     validation: Record<string, { passed: boolean }> | null;
-    pmTool: string | null;
+    pmTool?: string;
   }> {
     const basePath = `.hodge/features/${feature}`;
 
@@ -406,7 +406,7 @@ export class FeatureStateCache {
       isProductionReady,
       issueId,
       validation,
-      pmTool: process.env.HODGE_PM_TOOL ?? null
+      ...(process.env.HODGE_PM_TOOL ? { pmTool: process.env.HODGE_PM_TOOL } : {})
     };
   }
 

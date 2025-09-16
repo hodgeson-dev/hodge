@@ -15,8 +15,11 @@ export interface ExploreOptions {
   verbose?: boolean;
 }
 
+// Simplified feature intent type
+type IntentType = 'authentication' | 'database' | 'api' | 'ui' | 'general';
+
 interface FeatureIntent {
-  type: string;
+  type: IntentType | string;  // Allow string for flexibility
   keywords: string[];
   suggestedPatterns: string[];
   relatedCommands: string[];
@@ -80,11 +83,15 @@ export class EnhancedExploreCommand {
     }
 
     // Generate smart template based on all context
-    const smartTemplate = await this.generateSmartTemplate(
+    const smartTemplate = this.generateSmartTemplate(
       feature,
       featureIntent,
       similarFeatures,
-      existingPatterns,
+      existingPatterns.map(p => ({
+        name: p.name,
+        description: p.description,
+        confidence: p.frequency / 100
+      })),
       projectContext,
       pmIssue
     );
@@ -103,7 +110,11 @@ export class EnhancedExploreCommand {
       feature,
       smartTemplate,
       similarFeatures,
-      existingPatterns
+      existingPatterns.map(p => ({
+        name: p.name,
+        description: p.description,
+        confidence: p.frequency / 100
+      }))
     );
 
     // Performance report
@@ -182,7 +193,7 @@ export class EnhancedExploreCommand {
   private async analyzeFeatureIntent(feature: string): Promise<FeatureIntent> {
     return this.cache.getOrLoad(
       `intent:${feature}`,
-      () => {
+      async () => {
         const intents: Record<string, FeatureIntent> = {
           auth: {
             type: 'authentication',
@@ -287,7 +298,7 @@ export class EnhancedExploreCommand {
       hasStandards: !!standards,
       patternCount: patterns.size ?? 0,
       patterns: patterns ? Array.from(patterns.keys()) : [],
-      config: config ?? null
+      config: (config as Record<string, unknown>) ?? null
     };
   }
 
@@ -323,7 +334,7 @@ export class EnhancedExploreCommand {
     _existingPatterns: Array<{ name: string; description: string; confidence: number }>,
     projectContext: { hasStandards: boolean; patternCount: number; patterns: string[]; config: Record<string, unknown> | null },
     pmIssue: { id: string; title: string; url: string } | null
-  ): Promise<SmartTemplate> {
+  ): SmartTemplate {
     // Generate intelligent approaches
     const approaches = this.generateApproaches(feature, intent, _existingPatterns);
 
@@ -339,7 +350,7 @@ export class EnhancedExploreCommand {
 **Type**: ${intent.type}
 **Keywords**: ${intent.keywords.join(', ')}
 **Related Commands**: ${intent.relatedCommands.join(', ')}
-${pmIssue ? `**PM Issue**: ${pmIssue.id} (${pmIssue.tool})` : ''}
+${pmIssue ? `**PM Issue**: ${pmIssue.id}` : ''}
 
 ## Context
 - **Date**: ${new Date().toLocaleDateString()}
@@ -577,7 +588,7 @@ ${this.generateImplementationHints(intent, _existingPatterns)}
       '- [ ] Should integrate with existing systems'
     ];
 
-    const intentSpecific: Record<FeatureIntent, string[]> = {
+    const intentSpecific: Record<string, string[]> = {
       feature: [
         '- [ ] Should provide the new functionality as described',
         '- [ ] Should not break existing features',
@@ -616,8 +627,8 @@ ${this.generateImplementationHints(intent, _existingPatterns)}
       ]
     };
 
-    const approachIntentions = template.approaches.map(approach =>
-      `- [ ] ${approach} approach should work correctly`
+    const approachIntentions = template.approaches.map((approach: Approach) =>
+      `- [ ] ${approach.name} approach should work correctly`
     );
 
     return `# Test Intentions for ${feature}
@@ -629,8 +640,8 @@ These are not actual tests, but a checklist of behaviors to verify.
 ## Core Requirements
 ${baseIntentions.join('\n')}
 
-## ${intent.charAt(0).toUpperCase() + intent.slice(1)}-Specific Requirements
-${intentSpecific[intent].join('\n')}
+## ${intent.type.charAt(0).toUpperCase() + intent.type.slice(1)}-Specific Requirements
+${intentSpecific[intent.type]?.join('\n') || ''}
 
 ## Approach-Specific Tests
 ${approachIntentions.join('\n')}

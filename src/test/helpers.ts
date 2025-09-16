@@ -3,7 +3,9 @@
  * Common functions for writing better tests
  */
 
-import { expect } from 'vitest';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { expect, it } from 'vitest';
 
 /**
  * Test categories for progressive testing
@@ -18,7 +20,7 @@ export const TestCategory = {
 /**
  * Mark a test with its category
  */
-export function testCategory(category: string, name: string) {
+export function testCategory(category: string, name: string): string {
   return `[${category}] ${name}`;
 }
 
@@ -53,7 +55,7 @@ export function acceptanceTest(name: string, fn: () => void | Promise<void>) {
 /**
  * Test that a function doesn't throw
  */
-export async function doesNotThrow(fn: () => any | Promise<any>) {
+export async function doesNotThrow(fn: () => any | Promise<any>): Promise<void> {
   let threw = false;
   let error: any;
 
@@ -75,7 +77,7 @@ export async function doesNotThrow(fn: () => any | Promise<any>) {
 export async function throwsWithMessage(
   fn: () => any | Promise<any>,
   message: string | RegExp
-) {
+): Promise<void> {
   let threw = false;
   let error: any;
 

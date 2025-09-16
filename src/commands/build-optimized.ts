@@ -170,7 +170,7 @@ export class OptimizedBuildCommand {
       console.log('  • Focus on ' + chalk.blue('structured implementation'));
       console.log('  • Balance ' + chalk.blue('quality and speed') + '\n');
 
-      if (patterns.length > 0) {
+      if (patterns && patterns.length > 0) {
         console.log(chalk.bold('Available patterns:'));
         patterns.forEach((p: string) => {
           console.log(chalk.gray(`  • ${p.replace('.md', '')}`));
@@ -326,6 +326,10 @@ After implementation:
     issueId: string | null,
     pmTool: string | null
   ): string {
+    if (!template) {
+      return '';
+    }
+
     const pmInfo =
       issueId && pmTool ? `**PM Issue**: ${issueId} (${pmTool})` : 'No PM issue linked';
 
