@@ -32,8 +32,8 @@ describe('PatternLearner', () => {
       const mockMkdir = vi.mocked(fs.promises.mkdir);
       const mockExecSync = vi.mocked(childProcess.execSync);
 
-      // Mock git diff to return test files
-      mockExecSync.mockReturnValue('src/test-file.ts\nsrc/another-file.js\n' as any);
+      // Mock git diff to return non-test files
+      mockExecSync.mockReturnValue('src/auth-manager.ts\nsrc/data-fetcher.js\n' as any);
 
       // Mock file content with patterns
       const fileContent = `

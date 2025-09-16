@@ -70,7 +70,7 @@ interface CacheOptions {
  */
 export class CacheManager {
   private static instance: CacheManager;
-  private cache = new Map<string, CacheEntry<any>>();
+  private cache = new Map<string, CacheEntry<unknown>>();
   private hits = 0;
   private misses = 0;
   private readonly defaultTTL: number;
@@ -129,7 +129,7 @@ export class CacheManager {
               const currentHash = await this.getFileHash(filePath);
               if (currentHash === cached.hash) {
                 this.hits++;
-                return cached.data;
+                return cached.data as T;
               }
             } catch (error) {
               // If hash validation fails, proceed to reload
@@ -138,7 +138,7 @@ export class CacheManager {
           }
         } else {
           this.hits++;
-          return cached.data;
+          return cached.data as T;
         }
       }
 
@@ -413,7 +413,7 @@ export class FeatureStateCache {
   /**
    * Load all features status in parallel
    */
-  async loadAllFeatures(): Promise<Map<string, any>> {
+  async loadAllFeatures(): Promise<Map<string, unknown>> {
     const featuresDir = '.hodge/features';
 
     if (!existsSync(featuresDir)) {
@@ -421,7 +421,7 @@ export class FeatureStateCache {
     }
 
     const features = await fs.readdir(featuresDir);
-    const results = new Map<string, any>();
+    const results = new Map<string, unknown>();
 
     await Promise.all(
       features.map(async (feature) => {
@@ -459,7 +459,7 @@ export class StandardsCache {
    * Load all patterns with caching
    */
   async loadPatterns(): Promise<Map<string, string>> {
-    return this.cache.getOrLoad(
+    return this.cache.getOrLoad<Map<string, string>>(
       'patterns',
       async () => {
         const patternsDir = '.hodge/patterns';
@@ -484,7 +484,7 @@ export class StandardsCache {
   /**
    * Load configuration with caching
    */
-  async loadConfig<T = any>(): Promise<T | null> {
+  async loadConfig<T = unknown>(): Promise<T | null> {
     return this.cache.loadJSON<T>('.hodge/config.json', { ttl: 60000 });
   }
 }

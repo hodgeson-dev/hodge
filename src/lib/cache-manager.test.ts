@@ -4,7 +4,8 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { promises as fs } from 'fs';
+import * as fs from 'fs';
+import { promises as fsPromises } from 'fs';
 import { CacheManager, FeatureStateCache, StandardsCache } from './cache-manager';
 
 // Mock fs module
@@ -12,15 +13,11 @@ vi.mock('fs', () => ({
   existsSync: vi.fn(),
   promises: {
     readFile: vi.fn(),
-    access: vi.fn(),
     readdir: vi.fn(),
-  }
-}));
-
-vi.mock('fs/promises', () => ({
+    access: vi.fn()
+  },
   readFile: vi.fn(),
-  access: vi.fn(),
-  readdir: vi.fn(),
+  access: vi.fn()
 }));
 
 describe('CacheManager', () => {
@@ -109,7 +106,7 @@ describe('CacheManager', () => {
 
   describe('batchLoad', () => {
     it('should load multiple files in parallel', async () => {
-      const mockReadFile = vi.mocked(fs.readFile);
+      const mockReadFile = vi.mocked(fsPromises.readFile);
       mockReadFile
         .mockResolvedValueOnce('content1' as any)
         .mockResolvedValueOnce('content2' as any);
@@ -123,7 +120,7 @@ describe('CacheManager', () => {
     });
 
     it('should apply transformer function', async () => {
-      const mockReadFile = vi.mocked(fs.readFile);
+      const mockReadFile = vi.mocked(fsPromises.readFile);
       mockReadFile.mockResolvedValue('{"key": "value"}' as any);
 
       const paths = ['/path/data.json'];
@@ -133,7 +130,7 @@ describe('CacheManager', () => {
     });
 
     it('should handle file read errors gracefully', async () => {
-      const mockReadFile = vi.mocked(fs.readFile);
+      const mockReadFile = vi.mocked(fsPromises.readFile);
       mockReadFile.mockRejectedValue(new Error('File not found'));
 
       const paths = ['/missing/file.txt'];
@@ -145,7 +142,7 @@ describe('CacheManager', () => {
 
   describe('checkExistence', () => {
     it('should check multiple paths in parallel', async () => {
-      const mockAccess = vi.mocked(fs.access);
+      const mockAccess = vi.mocked(fsPromises.access);
       mockAccess
         .mockResolvedValueOnce(undefined)
         .mockRejectedValueOnce(new Error('Not found'));
@@ -158,7 +155,7 @@ describe('CacheManager', () => {
     });
 
     it('should cache existence checks', async () => {
-      const mockAccess = vi.mocked(fs.access);
+      const mockAccess = vi.mocked(fsPromises.access);
       mockAccess.mockResolvedValue(undefined);
 
       const paths = ['/file.txt'];
@@ -175,7 +172,7 @@ describe('CacheManager', () => {
 
   describe('loadJSON', () => {
     it('should parse JSON files', async () => {
-      const mockReadFile = vi.mocked(fs.readFile);
+      const mockReadFile = vi.mocked(fsPromises.readFile);
       mockReadFile.mockResolvedValue('{"test": true}' as any);
 
       const result = await cacheManager.loadJSON('/config.json');
@@ -183,7 +180,7 @@ describe('CacheManager', () => {
     });
 
     it('should return null for invalid JSON', async () => {
-      const mockReadFile = vi.mocked(fs.readFile);
+      const mockReadFile = vi.mocked(fsPromises.readFile);
       mockReadFile.mockResolvedValue('invalid json' as any);
 
       const result = await cacheManager.loadJSON('/invalid.json');
@@ -191,7 +188,7 @@ describe('CacheManager', () => {
     });
 
     it('should return null for missing files', async () => {
-      const mockReadFile = vi.mocked(fs.readFile);
+      const mockReadFile = vi.mocked(fsPromises.readFile);
       mockReadFile.mockRejectedValue(new Error('File not found'));
 
       const result = await cacheManager.loadJSON('/missing.json');
@@ -273,9 +270,9 @@ describe('FeatureStateCache', () => {
     (CacheManager as any).instance = undefined;
     featureCache = new FeatureStateCache();
 
-    mockExistsSync = vi.mocked(require('fs').existsSync);
-    mockReadFile = vi.mocked(fs.readFile);
-    mockAccess = vi.mocked(fs.access);
+    mockExistsSync = vi.mocked(fs.existsSync);
+    mockReadFile = vi.mocked(fs.promises.readFile);
+    mockAccess = vi.mocked(fs.promises.access);
   });
 
   describe('loadFeatureState', () => {
@@ -334,9 +331,9 @@ describe('StandardsCache', () => {
     (CacheManager as any).instance = undefined;
     standardsCache = new StandardsCache();
 
-    mockExistsSync = vi.mocked(require('fs').existsSync);
-    mockReadFile = vi.mocked(fs.readFile);
-    mockReaddir = vi.mocked(fs.readdir);
+    mockExistsSync = vi.mocked(fs.existsSync);
+    mockReadFile = vi.mocked(fs.promises.readFile);
+    mockReaddir = vi.mocked(fs.promises.readdir);
   });
 
   describe('loadStandards', () => {

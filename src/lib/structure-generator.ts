@@ -140,6 +140,11 @@ export class StructureGenerator {
       throw new StructureGenerationError('Root path must be a non-empty string');
     }
 
+    // Check for path traversal attempts
+    if (rootPath.includes('../') || rootPath.includes('..\\')) {
+      throw new StructureGenerationError('Path traversal detected in root path');
+    }
+
     if (!path.isAbsolute(rootPath)) {
       this.rootPath = path.resolve(rootPath);
     }

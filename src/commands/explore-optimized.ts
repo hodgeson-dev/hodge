@@ -13,6 +13,13 @@ export interface ExploreOptions {
   force?: boolean;
 }
 
+interface FeatureState {
+  pmTool?: string;
+  issueId?: string;
+  hasDecision?: boolean;
+  [key: string]: unknown;
+}
+
 export class OptimizedExploreCommand {
   async execute(feature: string, options: ExploreOptions = {}): Promise<void> {
     console.log(chalk.cyan('🔍 Entering Explore Mode (Optimized)'));
@@ -85,7 +92,7 @@ export class OptimizedExploreCommand {
     // Use cached existence check
     const exists = await cacheManager.getOrLoad(
       `exists:${exploreDir}`,
-      async () => existsSync(exploreDir),
+      () => Promise.resolve(existsSync(exploreDir)),
       { ttl: 1000 }
     );
 
@@ -125,13 +132,13 @@ export class OptimizedExploreCommand {
   private async createExplorationStructure(
     feature: string,
     exploreDir: string,
-    featureState: any
+    featureState: FeatureState
   ): Promise<void> {
     // Create directory
     await fs.mkdir(exploreDir, { recursive: true });
 
     // Check PM integration in parallel with file creation
-    const [pmIssue, explorationContent, contextContent] = await Promise.all([
+    const [pmIssue, explorationContent, contextContent]: [{ id: string } | null, string, Record<string, unknown>] = await Promise.all([
       this.checkPMIntegration(feature),
       this.generateExplorationContent(feature),
       this.generateContextContent(feature, featureState)
@@ -157,25 +164,25 @@ export class OptimizedExploreCommand {
     cacheManager.invalidateFeature(feature);
 
     if (pmIssue) {
-      console.log(chalk.blue(`📋 Checking ${featureState.pmTool || 'PM tool'} for issue ${feature}...`));
-      console.log(chalk.green(`✓ Linked to ${featureState.pmTool || 'PM'} issue: ${pmIssue.id}`));
+      console.log(chalk.blue(`📋 Checking ${featureState.pmTool ?? 'PM tool'} for issue ${feature}...`));
+      console.log(chalk.green(`✓ Linked to ${featureState.pmTool ?? 'PM'} issue: ${pmIssue.id}`));
     }
   }
 
   /**
    * Check PM integration (simulated for now)
    */
-  private async checkPMIntegration(_feature: string): Promise<{ id: string } | null> {
+  private checkPMIntegration(_feature: string): Promise<{ id: string } | null> {
     // This would integrate with actual PM tools
     // For now, return null to indicate no PM issue found
-    return null;
+    return Promise.resolve(null);
   }
 
   /**
    * Generate exploration content
    */
-  private async generateExplorationContent(feature: string): Promise<string> {
-    return `# ${feature} Exploration
+  private generateExplorationContent(feature: string): Promise<string> {
+    return Promise.resolve(`# ${feature} Exploration
 
 ## Approaches
 
@@ -199,17 +206,17 @@ export class OptimizedExploreCommand {
 1. Review approaches
 2. Make decision with \`/decide\`
 3. Build with \`/build ${feature}\`
-`;
+`);
   }
 
   /**
    * Generate context content
    */
-  private async generateContextContent(
+  private generateContextContent(
     feature: string,
-    featureState: any
-  ): Promise<any> {
-    return {
+    featureState: FeatureState
+  ): Promise<Record<string, unknown>> {
+    return Promise.resolve({
       feature,
       timestamp: new Date().toISOString(),
       mode: 'explore',
@@ -220,14 +227,14 @@ export class OptimizedExploreCommand {
         node: process.version,
         platform: process.platform
       }
-    };
+    });
   }
 
   /**
    * Display exploration context using cached data
    */
   private displayExplorationContext(
-    featureState: any,
+    featureState: FeatureState,
     _standards: string | null,
     patterns: Map<string, string>
   ): void {
@@ -257,7 +264,7 @@ export class OptimizedExploreCommand {
   /**
    * Display next steps
    */
-  private displayNextSteps(feature: string, featureState: any): void {
+  private displayNextSteps(feature: string, featureState: FeatureState): void {
     console.log('\n' + chalk.bold('Files created:'));
     console.log(`  • .hodge/features/${feature}/explore/context.json`);
     console.log(`  • .hodge/features/${feature}/explore/exploration.md`);
@@ -300,22 +307,28 @@ export class ExploreCommandPerformance {
     await optimized.execute(`${feature}-optimized`, { force: true });
     const time2 = Date.now() - start2;
 
-    // Second run to show cache benefits
-    const start3 = Date.now();
-    await optimized.execute(`${feature}-cached`, { force: true });
-    const time3 = Date.now() - start3;
+    // Clear test directories
+    await fs.rm(`.hodge/features/${feature}-original`, { recursive: true, force: true });
+    await fs.rm(`.hodge/features/${feature}-optimized`, { recursive: true, force: true });
 
     // Display results
-    console.log(chalk.bold('\n═══ Performance Results ═══\n'));
-    console.log(`Original:          ${time1}ms`);
-    console.log(`Optimized (cold):  ${time2}ms (${((1 - time2/time1) * 100).toFixed(1)}% faster)`);
-    console.log(`Optimized (warm):  ${time3}ms (${((1 - time3/time1) * 100).toFixed(1)}% faster)`);
+    console.log(chalk.yellow('\n═══════════════════════════════════════'));
+    console.log(chalk.yellow.bold('Performance Results:'));
+    console.log(chalk.yellow('═══════════════════════════════════════'));
+    console.log(`Original implementation: ${chalk.red(`${time1}ms`)}`);
+    console.log(`Optimized implementation: ${chalk.green(`${time2}ms`)}`);
 
+    const improvement = ((time1 - time2) / time1 * 100).toFixed(1);
+    const speedup = (time1 / time2).toFixed(2);
+
+    if (time2 < time1) {
+      console.log(chalk.green.bold(`\n✨ ${improvement}% faster (${speedup}x speedup)`));
+    } else {
+      console.log(chalk.yellow(`\n⚠️  No improvement detected`));
+    }
+
+    // Show cache stats
     const stats = cacheManager.getStats();
-    console.log(`\nCache Stats:`);
-    console.log(`  Hits: ${stats.hits}`);
-    console.log(`  Misses: ${stats.misses}`);
-    console.log(`  Hit Rate: ${(stats.hitRate * 100).toFixed(1)}%`);
-    console.log(`  Memory: ${(stats.memoryUsage / 1024).toFixed(1)}KB`);
+    console.log(chalk.gray(`\nCache stats: ${stats.hits} hits, ${stats.misses} misses (${(stats.hitRate * 100).toFixed(1)}% hit rate)`));
   }
 }

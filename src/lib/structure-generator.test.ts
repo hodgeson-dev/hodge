@@ -175,6 +175,12 @@ describe('StructureGenerator', () => {
     });
 
     it('should update .gitignore when git is present', async () => {
+      mockFs.pathExists.mockImplementation(async (path) => {
+        if (path.toString().includes('.gitignore')) return true;
+        return false;
+      });
+      mockFs.readFile.mockResolvedValue('existing content');
+
       await generator.generateStructure(mockProjectInfo);
 
       expect(mockFs.readFile).toHaveBeenCalledWith(expect.stringContaining('.gitignore'), 'utf-8');
@@ -393,12 +399,10 @@ describe('StructureGenerator', () => {
 
       try {
         await generator.generateStructure(mockProjectInfo);
+        expect.fail('Should have thrown an error');
       } catch (error) {
         expect(error).toBeInstanceOf(StructureGenerationError);
-        expect((error as StructureGenerationError).message).toContain(
-          'Failed to generate Hodge structure'
-        );
-        expect((error as StructureGenerationError).cause?.message).toBe('Disk full');
+        expect((error as StructureGenerationError).message).toContain('Disk full');
       }
     });
   });

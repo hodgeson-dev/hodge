@@ -163,7 +163,7 @@ export class EnhancedExploreCommand {
         }
       );
 
-      if (content) {
+      if (content && typeof content === 'string') {
         const lines = content.split('\n').slice(0, 10);
         console.log(chalk.dim('--- Existing Exploration Preview ---'));
         console.log(chalk.dim(lines.join('\n')));
@@ -182,7 +182,7 @@ export class EnhancedExploreCommand {
   private async analyzeFeatureIntent(feature: string): Promise<FeatureIntent> {
     return this.cache.getOrLoad(
       `intent:${feature}`,
-      async () => {
+      () => {
         const intents: Record<string, FeatureIntent> = {
           auth: {
             type: 'authentication',
@@ -273,17 +273,21 @@ export class EnhancedExploreCommand {
     patterns: string[];
     config: Record<string, unknown> | null;
   }> {
+    const standardsPromise = this.standardsCache.loadStandards();
+    const patternsPromise = this.standardsCache.loadPatterns();
+    const configPromise = this.standardsCache.loadConfig();
+
     const [standards, patterns, config] = await Promise.all([
-      this.standardsCache.loadStandards(),
-      this.standardsCache.loadPatterns(),
-      this.standardsCache.loadConfig()
+      standardsPromise,
+      patternsPromise,
+      configPromise
     ]);
 
     return {
       hasStandards: !!standards,
-      patternCount: patterns.size,
-      patterns: Array.from(patterns.keys()),
-      config
+      patternCount: patterns.size ?? 0,
+      patterns: patterns ? Array.from(patterns.keys()) : [],
+      config: config ?? null
     };
   }
 
@@ -399,7 +403,7 @@ ${this.generateImplementationHints(intent, _existingPatterns)}
   private generateApproaches(
     feature: string,
     intent: FeatureIntent,
-    _existingPatterns: any[]
+    _existingPatterns: Array<{ name: string; description: string; confidence: number }>
   ): Approach[] {
     const approaches: Approach[] = [];
 
@@ -481,7 +485,7 @@ ${this.generateImplementationHints(intent, _existingPatterns)}
   /**
    * Generate implementation hints
    */
-  private generateImplementationHints(intent: FeatureIntent, patterns: any[]): string {
+  private generateImplementationHints(intent: FeatureIntent, patterns: Array<{ name: string; description: string; confidence: number }>): string {
     const hints: string[] = [];
 
     // Intent-specific hints
@@ -523,14 +527,18 @@ ${this.generateImplementationHints(intent, _existingPatterns)}
     exploreDir: string,
     template: SmartTemplate,
     intent: FeatureIntent,
-    pmIssue: any
+    pmIssue: { id: string; title: string; url: string } | null
   ): Promise<void> {
     // Create directory
     await fs.mkdir(exploreDir, { recursive: true });
 
+    // Generate test intentions based on feature intent
+    const testIntentions = this.generateTestIntentions(feature, intent, template);
+
     // Create all files in parallel
     await Promise.all([
       fs.writeFile(path.join(exploreDir, 'exploration.md'), template.content),
+      fs.writeFile(path.join(exploreDir, 'test-intentions.md'), testIntentions),
       fs.writeFile(path.join(exploreDir, 'context.json'), JSON.stringify({
         mode: 'explore',
         feature,
@@ -539,7 +547,7 @@ ${this.generateImplementationHints(intent, _existingPatterns)}
         standards: 'suggested',
         validation: 'optional',
         pmIssue: pmIssue?.id || null,
-        pmTool: pmIssue?.tool || null,
+        pmTool: null, // PM tool info would come from config
         approaches: template.approaches,
         relatedFeatures: template.relatedFeatures,
         suggestedPatterns: template.suggestedPatterns
@@ -555,13 +563,115 @@ ${this.generateImplementationHints(intent, _existingPatterns)}
   }
 
   /**
+   * Generate test intentions based on feature and intent
+   */
+  private generateTestIntentions(
+    feature: string,
+    intent: FeatureIntent,
+    template: SmartTemplate
+  ): string {
+    const baseIntentions = [
+      '- [ ] Should not crash when executed',
+      '- [ ] Should complete within reasonable time (<500ms)',
+      '- [ ] Should handle invalid input gracefully',
+      '- [ ] Should integrate with existing systems'
+    ];
+
+    const intentSpecific: Record<FeatureIntent, string[]> = {
+      feature: [
+        '- [ ] Should provide the new functionality as described',
+        '- [ ] Should not break existing features',
+        '- [ ] Should be accessible to target users',
+        '- [ ] Should handle edge cases appropriately'
+      ],
+      bugfix: [
+        '- [ ] Should fix the reported issue',
+        '- [ ] Should not introduce new bugs',
+        '- [ ] Should include regression test',
+        '- [ ] Should handle the root cause, not just symptoms'
+      ],
+      refactor: [
+        '- [ ] Should maintain existing functionality',
+        '- [ ] Should improve code quality metrics',
+        '- [ ] Should not change external behavior',
+        '- [ ] Should pass all existing tests'
+      ],
+      performance: [
+        '- [ ] Should improve targeted metrics',
+        '- [ ] Should not degrade other performance areas',
+        '- [ ] Should be measurable and reproducible',
+        '- [ ] Should work under various load conditions'
+      ],
+      security: [
+        '- [ ] Should address the security vulnerability',
+        '- [ ] Should not create new attack vectors',
+        '- [ ] Should include security-focused tests',
+        '- [ ] Should follow security best practices'
+      ],
+      maintenance: [
+        '- [ ] Should update dependencies safely',
+        '- [ ] Should not break compatibility',
+        '- [ ] Should improve maintainability',
+        '- [ ] Should be well-documented'
+      ]
+    };
+
+    const approachIntentions = template.approaches.map(approach =>
+      `- [ ] ${approach} approach should work correctly`
+    );
+
+    return `# Test Intentions for ${feature}
+
+## Purpose
+Document what we intend to test when this feature moves to build mode.
+These are not actual tests, but a checklist of behaviors to verify.
+
+## Core Requirements
+${baseIntentions.join('\n')}
+
+## ${intent.charAt(0).toUpperCase() + intent.slice(1)}-Specific Requirements
+${intentSpecific[intent].join('\n')}
+
+## Approach-Specific Tests
+${approachIntentions.join('\n')}
+
+## Integration Tests
+- [ ] Should work with current authentication system
+- [ ] Should respect user permissions
+- [ ] Should handle database transactions properly
+- [ ] Should emit appropriate events/logs
+
+## Performance Criteria
+- [ ] Response time < 200ms for typical operations
+- [ ] Memory usage should not increase significantly
+- [ ] Should handle concurrent operations
+- [ ] Should scale to expected load
+
+## User Experience
+- [ ] Should provide clear error messages
+- [ ] Should have appropriate loading states
+- [ ] Should be intuitive to use
+- [ ] Should work across supported browsers/platforms
+
+## Notes
+Add any specific test scenarios or edge cases discovered during exploration:
+
+-
+-
+-
+
+---
+*Generated during exploration phase. Convert to actual tests during build phase.*`;
+  }
+
+  /**
    * Display exploration guidance
    */
   private displayExplorationGuidance(
     feature: string,
     template: SmartTemplate,
     similarFeatures: string[],
-    _patterns: any[]
+    _patterns: Array<{ name: string; description: string; confidence: number }>
   ): void {
     console.log(chalk.green('✓ Enhanced exploration environment created\n'));
 
