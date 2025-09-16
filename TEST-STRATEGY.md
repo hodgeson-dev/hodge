@@ -328,11 +328,73 @@ A: Write test intentions during explore, implement tests during build. TDD is op
 **Q: Should I test generated code?**
 A: Test that generation works, not the generated output (unless it's complex logic).
 
+## Anti-Patterns: What NOT to Test
+
+Based on our experience removing 47 implementation tests, here are patterns to avoid:
+
+### ❌ Console Output Testing
+```typescript
+// DON'T test console.log calls
+it('should log the correct message', () => {
+  const spy = vi.spyOn(console, 'log');
+  myFunction();
+  expect(spy).toHaveBeenCalledWith('specific message');
+});
+```
+**Why it's bad**: Tests implementation, not behavior. Console output can change without breaking functionality.
+
+### ❌ Mock Call Verification
+```typescript
+// DON'T verify mock was called with exact arguments
+it('should call fs.writeFile with correct params', () => {
+  myFunction();
+  expect(mockFs.writeFile).toHaveBeenCalledWith(
+    'exact/path.txt',
+    'exact content',
+    'utf8'
+  );
+});
+```
+**Why it's bad**: Tests how code works internally, not what it accomplishes.
+
+### ❌ Internal State Testing
+```typescript
+// DON'T test private variables or internal cache
+it('should update internal cache', () => {
+  const instance = new MyClass();
+  instance.doSomething();
+  expect(instance['_privateCache']).toContain('value');
+});
+```
+**Why it's bad**: Tests implementation details that users never see.
+
+### ❌ Performance Micro-Benchmarks
+```typescript
+// DON'T test exact timing
+it('should complete in under 100ms', async () => {
+  const start = Date.now();
+  await myFunction();
+  expect(Date.now() - start).toBeLessThan(100);
+});
+```
+**Why it's bad**: Flaky, environment-dependent, not a functional requirement.
+
+### ✅ What to Test Instead
+
+Focus on **observable behavior**:
+- Return values
+- Side effects (files created, data saved)
+- Error handling
+- User-facing output
+- Integration between components
+
 ## Remember
 
 > "A test that never fails is worse than no test at all. A test that always fails is just as bad. Write tests that fail when behavior breaks."
 
+> "If you're testing HOW instead of WHAT, you're testing implementation, not behavior."
+
 ---
 
-*Last updated: 2025-01-15*
-*Version: 1.0.0*
+*Last updated: 2025-01-19*
+*Version: 1.1.0*

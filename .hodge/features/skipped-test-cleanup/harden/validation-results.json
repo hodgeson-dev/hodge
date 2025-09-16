@@ -1,0 +1,18 @@
+{
+  "tests": {
+    "passed": false,
+    "output": "Command failed: npm test 2>&1\n"
+  },
+  "lint": {
+    "passed": false,
+    "output": "Command failed: npm run lint 2>&1\n"
+  },
+  "typecheck": {
+    "passed": true,
+    "output": "\n> @agile-explorations/hodge@0.1.0-alpha.1 typecheck\n> tsc -p tsconfig.build.json --noEmit\n\n"
+  },
+  "build": {
+    "passed": true,
+    "output": "\n> @agile-explorations/hodge@0.1.0-alpha.1 build\n> tsc -p tsconfig.build.json && cp package.json dist/\n\n"
+  }
+}

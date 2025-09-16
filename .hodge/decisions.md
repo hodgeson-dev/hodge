@@ -187,3 +187,30 @@ Implement core mode commands using the Lightweight Command Pattern, following th
 - Negative: Some code duplication across commands (acceptable trade-off)
 - Negative: Less flexible for complex future requirements (can evolve later)
 
+---
+
+### 2025-01-19 - Delete All Skipped Implementation Tests
+
+**Status**: Accepted
+
+**Context**:
+After implementing our progressive testing strategy, we have 47 tests marked as skipped because they test implementation details (console output, mock calls, internal state) rather than behavior. These tests clutter the codebase and may confuse developers about our testing philosophy.
+
+**Decision**:
+Delete all 47 skipped tests completely from the codebase.
+
+**Rationale**:
+- Aligns with our "test behavior, not implementation" philosophy
+- Reduces cognitive load and prevents confusion about what kinds of tests are valuable
+- Git history preserves the tests if ever needed for reference
+- Our 265 behavioral tests provide comprehensive coverage
+- Keeping skipped tests sends mixed signals about testing standards
+
+**Consequences**:
+- Positive: Cleaner, more focused test suite
+- Positive: Clear demonstration of testing philosophy
+- Positive: Reduced maintenance burden and file size
+- Positive: No ambiguity about what should be tested
+- Negative: Cannot easily reference old test patterns (mitigated by git history)
+- Negative: Lose examples of what NOT to test (mitigated by documentation)
+

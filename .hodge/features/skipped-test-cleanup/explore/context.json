@@ -1,0 +1,19 @@
+{
+  "mode": "explore",
+  "feature": "skipped-test-cleanup",
+  "timestamp": "2025-01-19T22:48:00Z",
+  "standards": "suggested",
+  "validation": "optional",
+  "metrics": {
+    "totalSkippedTests": 47,
+    "totalPassingTests": 265,
+    "categories": {
+      "consoleOutput": 19,
+      "mockVerification": 16,
+      "internalState": 7,
+      "performance": 5
+    }
+  },
+  "recommendation": "complete-deletion",
+  "rationale": "Aligns with behavior-driven testing philosophy"
+}

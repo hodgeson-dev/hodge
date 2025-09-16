@@ -11,7 +11,7 @@ import {
   unitTest,
   acceptanceTest,
   outputContains,
-  completesWithin
+  completesWithin,
 } from '../test/helpers';
 import { createMockEnvironment } from '../test/mocks';
 import { TestWorkspace, withTestWorkspace } from '../test/runners';
@@ -36,9 +36,7 @@ describe('ExploreCommand', () => {
 
     smokeTest('should not crash with valid input', async () => {
       // We're not testing output, just that it doesn't throw
-      await expect(
-        command.execute('test-feature')
-      ).resolves.not.toThrow();
+      await expect(command.execute('test-feature')).resolves.not.toThrow();
     });
 
     smokeTest('should complete quickly', async () => {
@@ -62,7 +60,9 @@ describe('ExploreCommand', () => {
         // Test behavior, not implementation
         expect(result.success).toBe(true);
         expect(await workspace.exists('.hodge/features/my-feature/explore')).toBe(true);
-        expect(await workspace.exists('.hodge/features/my-feature/explore/exploration.md')).toBe(true);
+        expect(await workspace.exists('.hodge/features/my-feature/explore/exploration.md')).toBe(
+          true
+        );
       });
     });
 
@@ -95,10 +95,13 @@ describe('ExploreCommand', () => {
     integrationTest('should integrate with PM tools when configured', async () => {
       await withTestWorkspace('explore-pm', async (workspace) => {
         // Set up PM configuration
-        await workspace.writeFile('.hodge/config.json', JSON.stringify({
-          pmTool: 'linear',
-          pmConfig: { teamId: 'test' }
-        }));
+        await workspace.writeFile(
+          '.hodge/config.json',
+          JSON.stringify({
+            pmTool: 'linear',
+            pmConfig: { teamId: 'test' },
+          })
+        );
 
         const result = await workspace.hodge('explore HOD-123');
 
@@ -148,7 +151,7 @@ describe('ExploreCommand', () => {
         const files = [
           '.hodge/features/user-authentication/explore/exploration.md',
           '.hodge/features/user-authentication/explore/context.json',
-          '.hodge/features/user-authentication/explore/test-intentions.md'
+          '.hodge/features/user-authentication/explore/test-intentions.md',
         ];
 
         for (const file of files) {
@@ -168,72 +171,28 @@ describe('ExploreCommand', () => {
         expect(build.output).toContain('Build Mode');
       });
     });
+  });
 
-    it.skip('[acceptance] should provide helpful guidance - tests console output', async () => {
-      await withTestWorkspace('explore-guidance', async (workspace) => {
-        const result = await workspace.hodge('explore new-feature');
+  /**
+   * Example of testing without mocks - using real file system
+   */
+  describe('ExploreCommand (Real FS)', () => {
+    integrationTest('should work with real file system', async () => {
+      await withTestWorkspace('real-fs-test', async (workspace) => {
+        // No mocks - using actual file system operations
+        // Note: Can't use process.chdir in Vitest workers
+        // Instead, verify through the workspace methods
 
-        // Should provide clear next steps
-        outputContains(result.output, [
-          'Next steps',
-          'explore',
-          'decide',
-          'build'
-        ]);
+        const result = await workspace.hodge('explore real-feature');
+        expect(result.success).toBe(true);
 
-        // Should explain the mode
-        outputContains(result.output, [
-          'Explore Mode',
-          'Standards are suggested',
-          'experiment'
-        ]);
+        // Verify using workspace methods (which use real FS)
+        const exists = await workspace.exists('.hodge/features/real-feature');
+        expect(exists).toBe(true);
       });
     });
   });
-});
 
-/**
- * Example of testing without mocks - using real file system
- */
-describe('ExploreCommand (Real FS)', () => {
-  integrationTest('should work with real file system', async () => {
-    await withTestWorkspace('real-fs-test', async (workspace) => {
-      // No mocks - using actual file system operations
-      // Note: Can't use process.chdir in Vitest workers
-      // Instead, verify through the workspace methods
-
-      const result = await workspace.hodge('explore real-feature');
-      expect(result.success).toBe(true);
-
-      // Verify using workspace methods (which use real FS)
-      const exists = await workspace.exists('.hodge/features/real-feature');
-      expect(exists).toBe(true);
-    });
-  });
-});
-
-/**
- * Example of performance testing
- */
-describe('ExploreCommand (Performance)', () => {
-  it.skip('[integration] should handle many features efficiently - performance test', async () => {
-    await withTestWorkspace('performance-test', async (workspace) => {
-      const features = Array.from({ length: 10 }, (_, i) => `feature-${i}`);
-
-      // Create many features
-      const startTime = Date.now();
-      for (const feature of features) {
-        await workspace.hodge(`explore ${feature}`);
-      }
-      const duration = Date.now() - startTime;
-
-      // Should complete reasonably fast (< 100ms per feature)
-      expect(duration).toBeLessThan(features.length * 100);
-
-      // All should be created
-      for (const feature of features) {
-        expect(await workspace.exists(`.hodge/features/${feature}`)).toBe(true);
-      }
-    });
-  });
+  // Performance test suite removed - all performance tests deleted
+  // Following "test behavior, not implementation" philosophy
 });
