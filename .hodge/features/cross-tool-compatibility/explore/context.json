@@ -1,0 +1,15 @@
+{
+  "mode": "explore",
+  "feature": "cross-tool-compatibility",
+  "timestamp": "2025-01-16T16:00:00Z",
+  "standards": "suggested",
+  "validation": "optional",
+  "relatedFeatures": [
+    "session-management",
+    "pm-adapter-hooks",
+    "batch-decision-extraction"
+  ],
+  "phase": 1,
+  "priority": 1,
+  "implementationPlan": "IMPLEMENTATION_PLAN.md#phase-1-cross-tool-compatibility-priority-1"
+}

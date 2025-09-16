@@ -1,0 +1,17 @@
+{
+  "mode": "explore",
+  "feature": "HODGE-007-pm-auto-sync",
+  "timestamp": "2025-01-16T20:00:00Z",
+  "standards": "suggested",
+  "validation": "optional",
+  "relatedFeatures": [
+    "pm-adapter-hooks",
+    "HODGE-004-id-management",
+    "HODGE-006-local-pm-tracking",
+    "feature-context-organization"
+  ],
+  "parentFeature": "feature-context-organization",
+  "decisions": [
+    "Implement PM auto-sync with bidirectional updates and conflict resolution"
+  ]
+}

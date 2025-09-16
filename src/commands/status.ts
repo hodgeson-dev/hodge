@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import fs from 'fs/promises';
 import path from 'path';
 import { existsSync } from 'fs';
+import { HodgeMDGenerator } from '../lib/hodge-md-generator.js';
 
 export class StatusCommand {
   async execute(feature?: string): Promise<void> {
@@ -100,6 +101,9 @@ export class StatusCommand {
   private async showOverallStatus(): Promise<void> {
     console.log(chalk.blue('📊 Overall Hodge Status\n'));
 
+    // Generate HODGE.md for cross-tool compatibility
+    await this.updateHodgeMD();
+
     // Check if Hodge is initialized
     const configFile = path.join('.hodge', 'config.json');
     if (!existsSync(configFile)) {
@@ -185,5 +189,48 @@ export class StatusCommand {
     console.log(`Decisions Made: ${decisionCount}`);
     console.log('\nUse this context to maintain consistency across the project.');
     console.log(chalk.bold('═'.repeat(60)));
+
+    // Notify about HODGE.md
+    console.log();
+    console.log(chalk.gray('💡 HODGE.md updated for AI tool compatibility'));
+  }
+
+  private async updateHodgeMD(): Promise<void> {
+    try {
+      const generator = new HodgeMDGenerator();
+
+      // Get the most recent active feature if any
+      const featuresDir = path.join('.hodge', 'features');
+      let currentFeature = 'general';
+
+      if (existsSync(featuresDir)) {
+        const features = await fs.readdir(featuresDir);
+        // Find most recently modified feature
+        let mostRecent: { name: string; time: number } | null = null;
+
+        for (const feature of features) {
+          const featurePath = path.join(featuresDir, feature);
+          const stat = await fs.stat(featurePath);
+          if (!mostRecent || stat.mtimeMs > mostRecent.time) {
+            mostRecent = { name: feature, time: stat.mtimeMs };
+          }
+        }
+
+        if (mostRecent) {
+          currentFeature = mostRecent.name;
+        }
+      }
+
+      // Generate and save HODGE.md
+      await generator.saveToFile(currentFeature);
+
+      // Add tool-specific enhancements
+      await generator.addToolSpecificEnhancements(path.join('.hodge', 'HODGE.md'));
+    } catch (error) {
+      // Log error for debugging but don't break command
+      if (process.env.DEBUG) {
+        console.error('Failed to generate HODGE.md:', error);
+      }
+    }
   }
 }

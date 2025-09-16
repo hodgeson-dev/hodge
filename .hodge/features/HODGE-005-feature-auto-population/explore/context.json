@@ -1,0 +1,17 @@
+{
+  "mode": "explore",
+  "feature": "HODGE-005-feature-auto-population",
+  "timestamp": "2025-01-16T20:00:00Z",
+  "standards": "suggested",
+  "validation": "optional",
+  "relatedFeatures": [
+    "HODGE-003-feature-extraction",
+    "HODGE-004-id-management",
+    "cross-tool-compatibility",
+    "feature-context-organization"
+  ],
+  "parentFeature": "feature-context-organization",
+  "decisions": [
+    "Auto-populate feature directories with bundled context from exploration and decisions"
+  ]
+}

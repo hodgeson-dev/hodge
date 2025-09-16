@@ -1,0 +1,17 @@
+{
+  "mode": "explore",
+  "feature": "HODGE-006-local-pm-tracking",
+  "timestamp": "2025-01-16T20:00:00Z",
+  "standards": "suggested",
+  "validation": "optional",
+  "relatedFeatures": [
+    "HODGE-004-id-management",
+    "HODGE-007-pm-auto-sync",
+    "pm-adapter-hooks",
+    "feature-context-organization"
+  ],
+  "parentFeature": "feature-context-organization",
+  "decisions": [
+    "Add local project_management.md as PM tool fallback for basic issue tracking"
+  ]
+}

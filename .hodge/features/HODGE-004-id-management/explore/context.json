@@ -1,0 +1,17 @@
+{
+  "mode": "explore",
+  "feature": "HODGE-004-id-management",
+  "timestamp": "2025-01-16T20:00:00Z",
+  "standards": "suggested",
+  "validation": "optional",
+  "relatedFeatures": [
+    "HODGE-003-feature-extraction",
+    "HODGE-006-local-pm-tracking",
+    "HODGE-007-pm-auto-sync",
+    "feature-context-organization"
+  ],
+  "parentFeature": "feature-context-organization",
+  "decisions": [
+    "Create ID management system with local HODGE-xxx IDs and external PM tool mapping"
+  ]
+}

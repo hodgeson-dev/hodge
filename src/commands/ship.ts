@@ -6,14 +6,20 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import inquirer from 'inquirer';
 import { getCurrentEnvironment } from '../lib/environment-detector.js';
-import { InteractionStateManager, type ShipInteractionData, detectCommitType, detectScope, formatFileChanges } from '../lib/interaction-state.js';
+import {
+  InteractionStateManager,
+  type ShipInteractionData,
+  detectCommitType,
+  detectScope,
+  formatFileChanges,
+} from '../lib/interaction-state.js';
 import {
   getCurrentBranch,
   getGitStatus,
   analyzeBranch,
   gitPush,
   formatPushPreview,
-  formatPushSummary
+  formatPushSummary,
 } from '../lib/git-utils.js';
 import { getPRManager } from '../lib/pr-manager.js';
 import { getConfigManager } from '../lib/config-manager.js';
@@ -28,11 +34,11 @@ export interface ShipOptions {
   yes?: boolean;
   edit?: boolean;
   dryRun?: boolean;
-  push?: boolean;          // Enable push after ship
-  noPush?: boolean;        // Explicitly disable push
-  pushBranch?: string;     // Override push branch
-  forcePush?: boolean;     // Allow force push (with warnings)
-  continuePush?: boolean;  // Continue after reviewing push config
+  push?: boolean; // Enable push after ship
+  noPush?: boolean; // Explicitly disable push
+  pushBranch?: string; // Override push branch
+  forcePush?: boolean; // Allow force push (with warnings)
+  continuePush?: boolean; // Continue after reviewing push config
 }
 
 export class ShipCommand {
@@ -193,30 +199,37 @@ export class ShipCommand {
       const { stdout: gitDiff } = await execAsync('git diff --stat');
 
       // Parse git status to get file changes
-      const files = gitStatus.trim().split('\n').filter(Boolean).map(line => {
-        const [status, ...pathParts] = line.trim().split(/\s+/);
-        const filePath = pathParts.join(' ');
-        const stats = gitDiff.includes(filePath) ?
-          gitDiff.split('\n').find(l => l.includes(filePath)) : null;
+      const files = gitStatus
+        .trim()
+        .split('\n')
+        .filter(Boolean)
+        .map((line) => {
+          const [status, ...pathParts] = line.trim().split(/\s+/);
+          const filePath = pathParts.join(' ');
+          const stats = gitDiff.includes(filePath)
+            ? gitDiff.split('\n').find((l) => l.includes(filePath))
+            : null;
 
-        const insertions = stats ? parseInt(stats.match(/(\d+) insertion/)?.[1] ?? '0') : 0;
-        const deletions = stats ? parseInt(stats.match(/(\d+) deletion/)?.[1] ?? '0') : 0;
+          const insertions = stats ? parseInt(stats.match(/(\d+) insertion/)?.[1] ?? '0') : 0;
+          const deletions = stats ? parseInt(stats.match(/(\d+) deletion/)?.[1] ?? '0') : 0;
 
-        return {
-          path: filePath,
-          status: status.includes('A') ? 'added' as const :
-                  status.includes('D') ? 'deleted' as const :
-                  'modified' as const,
-          insertions,
-          deletions
-        };
-      });
+          return {
+            path: filePath,
+            status: status.includes('A')
+              ? ('added' as const)
+              : status.includes('D')
+                ? ('deleted' as const)
+                : ('modified' as const),
+            insertions,
+            deletions,
+          };
+        });
 
       gitAnalysis = {
         files,
         type: detectCommitType(files),
         scope: detectScope(files),
-        breaking: false
+        breaking: false,
       };
     } catch (error) {
       console.log(chalk.yellow('⚠️  Could not analyze git changes'));
@@ -234,53 +247,73 @@ export class ShipCommand {
         // File-based interaction for Claude Code and non-interactive environments
         console.log(chalk.cyan('\n🤖 Generating commit message...'));
 
-        const suggestedMessage = gitAnalysis ?
-          `${gitAnalysis.type}${gitAnalysis.scope !== 'general' ? `(${gitAnalysis.scope})` : ''}: ${feature}\n\n` +
-          `- Implementation complete\n` +
-          `- Tests passing\n` +
-          `- Documentation updated` +
-          (issueId ? `\n- Closes ${issueId}` : '') :
-          `ship: ${feature}${issueId ? ` (closes ${issueId})` : ''}\n\n` +
-          `- Implementation complete\n` +
-          `- Tests passing\n` +
-          `- Documentation updated` +
-          (issueId ? `\n- Closes ${issueId}` : '');
+        const suggestedMessage = gitAnalysis
+          ? `${gitAnalysis.type}${gitAnalysis.scope !== 'general' ? `(${gitAnalysis.scope})` : ''}: ${feature}\n\n` +
+            `- Implementation complete\n` +
+            `- Tests passing\n` +
+            `- Documentation updated` +
+            (issueId ? `\n- Closes ${issueId}` : '')
+          : `ship: ${feature}${issueId ? ` (closes ${issueId})` : ''}\n\n` +
+            `- Implementation complete\n` +
+            `- Tests passing\n` +
+            `- Documentation updated` +
+            (issueId ? `\n- Closes ${issueId}` : '');
 
-        const interactionData: ShipInteractionData = {
-          analysis: gitAnalysis || {
-            files: [],
-            type: 'ship',
-            scope: feature,
-            breaking: false
-          },
-          suggested: suggestedMessage,
-          issueId: issueId ?? undefined,
-          workLogPath: path.join(featureDir, 'work-log.md')
-        };
+        // Check if we already have a state from a previous run
+        const existingState = await interactionManager.load();
 
-        // Initialize interaction state
-        await interactionManager.initialize(interactionData, env.name);
+        if (existingState && existingState.status === 'confirmed') {
+          // User has already confirmed a message, use it
+          commitMessage = existingState.data.edited || existingState.data.suggested;
+          console.log(chalk.green('   ✓ Using previously confirmed commit message'));
+        } else {
+          // No existing state or not confirmed, initialize new one
+          const interactionData: ShipInteractionData = {
+            analysis: gitAnalysis || {
+              files: [],
+              type: 'ship',
+              scope: feature,
+              breaking: false,
+            },
+            suggested: suggestedMessage,
+            issueId: issueId ?? undefined,
+            workLogPath: path.join(featureDir, 'work-log.md'),
+          };
 
-        // For Claude Code, write markdown UI file
-        if (env.type === 'claude-code') {
-          const markdownUI = `# 🚀 Ship Commit - ${feature}\n\n` +
-            `## Changed Files\n\n` +
-            (gitAnalysis ? formatFileChanges(gitAnalysis.files) : 'No file analysis available') + '\n\n' +
-            `## Suggested Commit Message\n\n` +
-            '```\n' + suggestedMessage + '\n```\n\n' +
-            `## Actions\n\n` +
-            `- Edit the message above and save this file to use your custom message\n` +
-            `- Or use the suggested message as-is\n\n` +
-            `> The portable command will read your edits from:\n` +
-            `> ${interactionManager.getFilePath('state.json')}`;
+          // Initialize interaction state only if not already present
+          if (!existingState) {
+            await interactionManager.initialize(interactionData, env.name);
+          }
 
-          await interactionManager.writeFile('ui.md', markdownUI);
-          console.log(chalk.green(`   ✓ Review commit message in: ${interactionManager.getFilePath('ui.md')}`));
-          console.log(chalk.gray('   Edit the message and save, then re-run ship to continue'));
+          // For Claude Code, write markdown UI file
+          if (env.type === 'claude-code') {
+            const markdownUI =
+              `# 🚀 Ship Commit - ${feature}\n\n` +
+              `## Changed Files\n\n` +
+              (gitAnalysis ? formatFileChanges(gitAnalysis.files) : 'No file analysis available') +
+              '\n\n' +
+              `## Suggested Commit Message\n\n` +
+              '```\n' +
+              suggestedMessage +
+              '\n```\n\n' +
+              `## Actions\n\n` +
+              `- Edit the message above and save this file to use your custom message\n` +
+              `- Or use the suggested message as-is\n\n` +
+              `> The portable command will read your edits from:\n` +
+              `> ${interactionManager.getFilePath('state.json')}`;
 
-          // In Claude Code, we exit here and let the user edit
-          if (!options.yes) {
-            return;
+            await interactionManager.writeFile('ui.md', markdownUI);
+            console.log(
+              chalk.green(
+                `   ✓ Review commit message in: ${interactionManager.getFilePath('ui.md')}`
+              )
+            );
+            console.log(chalk.gray('   Edit the message and save, then re-run ship to continue'));
+
+            // In Claude Code, we exit here and let the user edit
+            if (!options.yes) {
+              return;
+            }
           }
         }
 
@@ -299,7 +332,6 @@ export class ShipCommand {
 
         // Clean up interaction files after use
         await interactionManager.cleanup();
-
       } else {
         // Interactive terminals (Warp, Aider, standard terminal)
         const { getPrompts } = await import('../lib/prompts.js');
@@ -310,20 +342,20 @@ export class ShipCommand {
             files: [],
             type: 'ship',
             scope: feature,
-            breaking: false
+            breaking: false,
           },
-          suggested: gitAnalysis ?
-            `${gitAnalysis.type}${gitAnalysis.scope !== 'general' ? `(${gitAnalysis.scope})` : ''}: ${feature}\n\n` +
-            `- Implementation complete\n` +
-            `- Tests passing\n` +
-            `- Documentation updated` +
-            (issueId ? `\n- Closes ${issueId}` : '') :
-            `ship: ${feature}${issueId ? ` (closes ${issueId})` : ''}\n\n` +
-            `- Implementation complete\n` +
-            `- Tests passing\n` +
-            `- Documentation updated` +
-            (issueId ? `\n- Closes ${issueId}` : ''),
-          issueId: issueId ?? undefined
+          suggested: gitAnalysis
+            ? `${gitAnalysis.type}${gitAnalysis.scope !== 'general' ? `(${gitAnalysis.scope})` : ''}: ${feature}\n\n` +
+              `- Implementation complete\n` +
+              `- Tests passing\n` +
+              `- Documentation updated` +
+              (issueId ? `\n- Closes ${issueId}` : '')
+            : `ship: ${feature}${issueId ? ` (closes ${issueId})` : ''}\n\n` +
+              `- Implementation complete\n` +
+              `- Tests passing\n` +
+              `- Documentation updated` +
+              (issueId ? `\n- Closes ${issueId}` : ''),
+          issueId: issueId ?? undefined,
         };
 
         try {
@@ -340,7 +372,8 @@ export class ShipCommand {
 
     // Fallback if no message was set
     if (!commitMessage) {
-      commitMessage = `ship: ${feature}${issueId ? ` (closes ${issueId})` : ''}\n\n` +
+      commitMessage =
+        `ship: ${feature}${issueId ? ` (closes ${issueId})` : ''}\n\n` +
         `- Implementation complete\n` +
         `- Tests passing\n` +
         `- Documentation updated` +
@@ -415,21 +448,25 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}
 
       console.log(chalk.green(`   ✓ Analyzed ${learningResult.statistics.filesAnalyzed} files`));
       console.log(chalk.green(`   ✓ Found ${learningResult.statistics.patternsFound} patterns`));
-      console.log(chalk.green(`   ✓ Detected ${learningResult.statistics.standardsDetected} standards`));
+      console.log(
+        chalk.green(`   ✓ Detected ${learningResult.statistics.standardsDetected} standards`)
+      );
 
       if (learningResult.patterns.length > 0) {
         console.log(chalk.dim('\n   Top patterns:'));
         learningResult.patterns
           .sort((a, b) => b.frequency - a.frequency)
           .slice(0, 3)
-          .forEach(p => {
-            console.log(chalk.dim(`   • ${p.name} (${p.frequency}x, ${p.metadata.confidence}% confidence)`));
+          .forEach((p) => {
+            console.log(
+              chalk.dim(`   • ${p.name} (${p.frequency}x, ${p.metadata.confidence}% confidence)`)
+            );
           });
       }
 
       if (learningResult.recommendations.length > 0) {
         console.log(chalk.dim('\n   Recommendations:'));
-        learningResult.recommendations.slice(0, 3).forEach(r => {
+        learningResult.recommendations.slice(0, 3).forEach((r) => {
           console.log(chalk.dim(`   • ${r}`));
         });
       }
@@ -603,7 +640,7 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}
       remote: 'origin',
       force: options.forcePush,
       setUpstream: needsUpstream,
-      dryRun: options.dryRun
+      dryRun: options.dryRun,
     });
 
     // Show result
@@ -648,7 +685,7 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}
       createFeatureBranch: branchInfo.isProtected,
       suggestedBranch: branchInfo.isProtected ? `feature/${feature}-${Date.now()}` : null,
       forcePush: options.forcePush || false,
-      createPR: branchInfo.type === 'feature'
+      createPR: branchInfo.type === 'feature',
     };
 
     // Create markdown content
@@ -670,7 +707,9 @@ ${branchInfo.issueId ? `| **Issue** | ${branchInfo.issueId} |` : ''}
 ${recentCommits}
 \`\`\`
 
-${branchInfo.isProtected ? `## ⚠️ Protected Branch Warning
+${
+  branchInfo.isProtected
+    ? `## ⚠️ Protected Branch Warning
 
 You are attempting to push to **${branch}**, which is a protected branch.
 
@@ -686,7 +725,9 @@ You are attempting to push to **${branch}**, which is a protected branch.
    - May affect other team members
    - Should only be used for emergency fixes
 
-` : ''}
+`
+    : ''
+}
 
 ## Push Configuration
 
@@ -807,7 +848,7 @@ ${!gitStatus.remote ? 'ℹ️ **Info**: No upstream branch exists - will create 
       remote: pushConfig.remote || 'origin',
       force: pushConfig.forcePush,
       setUpstream: true,
-      dryRun: options.dryRun
+      dryRun: options.dryRun,
     });
 
     // Show result
@@ -871,8 +912,8 @@ ${!gitStatus.remote ? 'ℹ️ **Info**: No upstream branch exists - will create 
             type: 'confirm',
             name: 'confirm',
             message: 'Create a pull request?',
-            default: branchInfo.type === 'feature' || branchInfo.type === 'fix'
-          }
+            default: branchInfo.type === 'feature' || branchInfo.type === 'fix',
+          },
         ]);
 
         shouldCreatePR = confirm;
@@ -922,7 +963,7 @@ ${!gitStatus.remote ? 'ℹ️ **Info**: No upstream branch exists - will create 
       branch,
       commits,
       issueId: branchInfo.issueId,
-      description: `Implementation of ${feature}`
+      description: `Implementation of ${feature}`,
     });
 
     // Create the PR
@@ -930,7 +971,7 @@ ${!gitStatus.remote ? 'ℹ️ **Info**: No upstream branch exists - will create 
       title: prTitle,
       body: prBody,
       base: 'main', // TODO: Make this configurable
-      labels: branchInfo.type ? [branchInfo.type] : undefined
+      labels: branchInfo.type ? [branchInfo.type] : undefined,
     });
 
     // Show result

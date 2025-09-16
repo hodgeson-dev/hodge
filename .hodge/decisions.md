@@ -26,6 +26,25 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-16 - Implement cross-tool-compatibility using Hybrid approach with HODGE
+
+**Status**: Accepted
+
+**Context**:
+General project decision
+
+**Decision**:
+Implement cross-tool-compatibility using Hybrid approach with HODGE.md Primary + Tool-Specific Enhancements
+
+**Rationale**:
+Recorded via `hodge decide` command at 1:17:05 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-16 - TODO Comment Convention
 
 **Status**: Accepted
@@ -50,6 +69,74 @@ Adopt a consistent `// TODO:` comment format for marking incomplete work. Includ
 - Positive: Reduces risk of shipping incomplete features
 - Negative: Requires discipline to review before shipping
 - Negative: Can accumulate if not regularly addressed
+
+---
+
+### 2025-01-16 - Defer GitHub and Jira PM adapters until Linear adapter is fully tested
+
+**Status**: Accepted
+
+**Context**:
+PM adapter implementation strategy
+
+**Decision**:
+Focus on completing and testing Linear adapter before implementing GitHub and Jira adapters
+
+**Rationale**:
+- Ensures one adapter works fully before expanding
+- Reduces complexity during initial PM integration
+- Can learn from Linear implementation before building others
+
+**Consequences**:
+- Positive: More focused development effort
+- Positive: Better testing of adapter pattern
+- Negative: Limits PM tool options initially
+
+---
+
+### 2025-01-16 - Implement actual tsconfig.json reading in standards validator
+
+**Status**: Accepted
+
+**Context**:
+TypeScript configuration validation accuracy
+
+**Decision**:
+Replace mock data with actual tsconfig.json file reading in standards-validator.ts
+
+**Rationale**:
+- Provides accurate validation based on real project configuration
+- Ensures standards validation reflects actual TypeScript settings
+- Better long-term maintainability
+
+**Consequences**:
+- Positive: More accurate standards validation
+- Positive: Real configuration awareness
+- Negative: Adds file I/O complexity
+- Negative: Need error handling for missing/invalid tsconfig
+
+---
+
+### 2025-01-16 - Document interaction state configuration as future enhancement
+
+**Status**: Accepted
+
+**Context**:
+Interaction state configuration approach
+
+**Decision**:
+Keep interaction state hardcoded for now, document configuration via .hodge/config.json as future enhancement
+
+**Rationale**:
+- Reduces initial complexity
+- Clear roadmap item for future releases
+- Can gather user feedback before implementing
+
+**Consequences**:
+- Positive: Simpler initial implementation
+- Positive: Clear enhancement path
+- Negative: Less flexibility initially
+- Negative: May need refactoring later
 
 ---
 

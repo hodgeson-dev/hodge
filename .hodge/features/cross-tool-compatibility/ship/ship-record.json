@@ -1,0 +1,14 @@
+{
+  "feature": "cross-tool-compatibility",
+  "timestamp": "2025-09-16T20:41:57.348Z",
+  "issueId": null,
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "feat: implement cross-tool compatibility with HODGE.md generation\n\n- Add HodgeMDGenerator class for universal AI context files\n- Integrate HODGE.md generation into status command\n- Support tool detection for Claude, Cursor, and Copilot\n- Include comprehensive tests with 93.72% coverage\n- Add JSDoc documentation for all public methods\n- Ensure performance under 500ms requirement (109ms)\n- Fix ship command state persistence for better UX\n\nThis enables Hodge to work with any AI assistant by generating\na universal context file that provides current workflow state,\nrecent decisions, active standards, and next steps.\n\n🤖 Generated with Claude Code\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}
