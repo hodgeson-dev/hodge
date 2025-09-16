@@ -26,6 +26,33 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-16 - TODO Comment Convention
+
+**Status**: Accepted
+
+**Context**:
+During development, we often need to mark code that needs future work. Without a consistent convention, these markers get lost or forgotten, leading to technical debt and missed requirements. We need a searchable, consistent way to track incomplete work directly in the codebase.
+
+**Decision**:
+Adopt a consistent `// TODO:` comment format for marking incomplete work. Include phase information when relevant (e.g., `// TODO: [harden] Add error handling`). All TODOs must be reviewed before shipping.
+
+**Rationale**:
+- Provides consistent, searchable markers for incomplete work
+- Phase information helps prioritize when to address each TODO
+- Visible directly in code where the work needs to be done
+- Can be easily searched across the entire codebase
+- Aligns with Hodge's phase-based development model
+
+**Consequences**:
+- Positive: Consistent tracking of incomplete work
+- Positive: Phase markers help with prioritization
+- Positive: Easy to search and audit before shipping
+- Positive: Reduces risk of shipping incomplete features
+- Negative: Requires discipline to review before shipping
+- Negative: Can accumulate if not regularly addressed
+
+---
+
 ### 2025-09-16 - linting-standards-optimization
 
 **Status**: Accepted

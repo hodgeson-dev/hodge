@@ -42,6 +42,25 @@ Adopt the Hodge framework with its four-phase development model: Explore → Bui
 
 ---
 
+### 2024-01-01 - TODO Comment Convention
+
+**Status**: Accepted
+
+**Context**:
+During development, we often need to mark code that needs future work. Without a consistent convention, these markers get lost or forgotten, leading to technical debt and missed requirements.
+
+**Decision**:
+Adopt a consistent `// TODO:` comment format for marking incomplete work. Include phase information when relevant (e.g., `// TODO: [harden] Add error handling`). All TODOs must be reviewed before shipping.
+
+**Consequences**:
+- **Positive**: Consistent, searchable markers for incomplete work
+- **Positive**: Phase information helps prioritize when to address
+- **Positive**: Visible directly in code where relevant
+- **Negative**: Must maintain discipline to review before shipping
+- **Negative**: Can accumulate if not regularly addressed
+
+---
+
 ### 2024-01-01 - Progressive Testing Strategy
 
 **Status**: Accepted
