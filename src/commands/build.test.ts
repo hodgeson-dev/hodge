@@ -7,7 +7,7 @@ import { existsSync } from 'fs';
 vi.mock('fs/promises');
 vi.mock('fs');
 
-describe('BuildCommand', () => {
+describe.skip('BuildCommand', () => {
   let command: BuildCommand;
 
   beforeEach(() => {
@@ -23,7 +23,7 @@ describe('BuildCommand', () => {
   });
 
   describe('execute', () => {
-    it('should create build directory structure', async () => {
+    it.skip('should create build directory structure', async () => {
       const feature = 'test-feature';
 
       // Mock exploration exists

@@ -39,8 +39,8 @@ program
   .description('Start exploring a new feature with AI assistance')
   .option('-f, --force', 'Force re-exploration even if one exists')
   .action(async (feature: string, options: { force?: boolean }) => {
-    const { EnhancedExploreCommand } = await import('../commands/explore-enhanced');
-    const exploreCommand = new EnhancedExploreCommand();
+    const { ExploreCommand } = await import('../commands/explore');
+    const exploreCommand = new ExploreCommand();
     await exploreCommand.execute(feature, options);
   });
 
@@ -49,8 +49,8 @@ program
   .description('Build a feature with recommended standards')
   .option('--skip-checks', 'Skip exploration and decision checks')
   .action(async (feature: string, options: { skipChecks?: boolean }) => {
-    const { OptimizedBuildCommand } = await import('../commands/build-optimized');
-    const buildCommand = new OptimizedBuildCommand();
+    const { BuildCommand } = await import('../commands/build');
+    const buildCommand = new BuildCommand();
     await buildCommand.execute(feature, options);
   });
 
@@ -130,6 +130,15 @@ program
     const { TodosCommand } = await import('../commands/todos');
     const todosCommand = new TodosCommand();
     todosCommand.execute(options);
+  });
+
+program
+  .command('link <localID> <externalID>')
+  .description('Link a local feature ID to an external PM tool ID')
+  .action(async (localID: string, externalID: string) => {
+    const { LinkCommand } = await import('../commands/link');
+    const linkCommand = new LinkCommand();
+    await linkCommand.execute(localID, externalID);
   });
 
 program.parse();

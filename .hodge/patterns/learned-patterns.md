@@ -1,19 +1,25 @@
 # Learned Patterns Summary
 
 ## Statistics
-- Total patterns detected: 1
-- High confidence patterns: 0
-- Most frequent category: error-handling
+- Total patterns detected: 3
+- High confidence patterns: 2
+- Most frequent category: performance
 
 ## Patterns by Category
 
 
 ### Error-handling
-- **Error Boundary** (2x, 40% confidence)
+- **Error Boundary** (4x, 80% confidence)
+
+
+### Performance
+- **Async Parallel Operations** (6x, 100% confidence)
+- **Caching Strategy** (1x, 20% confidence)
 
 
 ## Recommendations
-- Use Promise.all for parallel operations when possible
+- Consider using Async Parallel Operations pattern (used 6 times)
+- Consider using Error Boundary pattern (used 4 times)
 
 ---
-*Generated: 2025-09-16T20:41:57.379Z*
+*Generated: 2025-09-16T22:50:23.265Z*

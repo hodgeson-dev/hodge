@@ -4,7 +4,7 @@
  */
 
 import { describe, beforeEach, afterEach, it, expect } from 'vitest';
-import { EnhancedExploreCommand as ExploreCommand } from './explore-enhanced';
+import { ExploreCommand } from './explore';
 import {
   smokeTest,
   integrationTest,
@@ -59,10 +59,23 @@ describe('ExploreCommand', () => {
 
         // Test behavior, not implementation
         expect(result.success).toBe(true);
-        expect(await workspace.exists('.hodge/features/my-feature/explore')).toBe(true);
-        expect(await workspace.exists('.hodge/features/my-feature/explore/exploration.md')).toBe(
-          true
-        );
+        // With ID management, feature is created with a HODGE-xxx ID
+        // Check that the output contains the success message
+        expect(result.output).toContain('Created new feature: HODGE-');
+        // ID mappings file should exist
+        expect(await workspace.exists('.hodge/id-mappings.json')).toBe(true);
+
+        // Extract the created feature ID from the output
+        const match = result.output.match(/Created new feature: (HODGE-\d+)/);
+        expect(match).toBeDefined();
+
+        if (match) {
+          const createdFeature = match[1];
+          expect(await workspace.exists(`.hodge/features/${createdFeature}/explore`)).toBe(true);
+          expect(
+            await workspace.exists(`.hodge/features/${createdFeature}/explore/exploration.md`)
+          ).toBe(true);
+        }
       });
     });
 
@@ -71,8 +84,8 @@ describe('ExploreCommand', () => {
         // Create first exploration
         await workspace.hodge('explore my-feature');
 
-        // Try to create again
-        const result = await workspace.hodge('explore my-feature');
+        // Try to explore with same ID (HODGE-001)
+        const result = await workspace.hodge('explore HODGE-001');
 
         // Should warn about existing exploration
         outputContains(result.output, ['already exists']);
@@ -83,8 +96,9 @@ describe('ExploreCommand', () => {
       await withTestWorkspace('explore-test-intentions', async (workspace) => {
         await workspace.hodge('explore auth-feature');
 
+        // With ID management, auth-feature becomes HODGE-001
         const intentions = await workspace.readFile(
-          '.hodge/features/auth-feature/explore/test-intentions.md'
+          '.hodge/features/HODGE-001/explore/test-intentions.md'
         );
 
         expect(intentions).toContain('Test Intentions');
@@ -105,8 +119,10 @@ describe('ExploreCommand', () => {
 
         const result = await workspace.hodge('explore HOD-123');
 
-        // Should attempt PM integration - look for feature ID in output
-        outputContains(result.output, ['HOD-123']);
+        // With ID management, HOD-123 becomes linked to a HODGE-xxx ID
+        // The output should show that a new feature was created and linked
+        expect(result.success).toBe(true);
+        expect(result.output).toMatch(/Created new feature HODGE-\d+ linked to HOD-123/);
       });
     });
   });
@@ -148,10 +164,12 @@ describe('ExploreCommand', () => {
         expect(explore.success).toBe(true);
 
         // 2. Check that all necessary files are created
+        // With ID management, user-authentication becomes HODGE-001
         const files = [
-          '.hodge/features/user-authentication/explore/exploration.md',
-          '.hodge/features/user-authentication/explore/context.json',
-          '.hodge/features/user-authentication/explore/test-intentions.md',
+          '.hodge/features/HODGE-001/explore/exploration.md',
+          '.hodge/features/HODGE-001/explore/context.json',
+          '.hodge/features/HODGE-001/explore/test-intentions.md',
+          '.hodge/id-mappings.json', // ID management file
         ];
 
         for (const file of files) {
@@ -160,13 +178,13 @@ describe('ExploreCommand', () => {
 
         // 3. Verify AI context is set up
         const context = JSON.parse(
-          await workspace.readFile('.hodge/features/user-authentication/explore/context.json')
+          await workspace.readFile('.hodge/features/HODGE-001/explore/context.json')
         );
         expect(context.mode).toBe('explore');
         expect(context.standards).toBe('suggested');
 
         // 4. Can transition to build
-        const build = await workspace.hodge('build user-authentication');
+        const build = await workspace.hodge('build HODGE-001');
         expect(build.success).toBe(true);
         expect(build.output).toContain('Build Mode');
       });
@@ -187,8 +205,13 @@ describe('ExploreCommand', () => {
         expect(result.success).toBe(true);
 
         // Verify using workspace methods (which use real FS)
-        const exists = await workspace.exists('.hodge/features/real-feature');
+        // With ID management, real-feature becomes HODGE-001
+        const exists = await workspace.exists('.hodge/features/HODGE-001');
         expect(exists).toBe(true);
+
+        // Verify ID mappings exist
+        const mappingsExist = await workspace.exists('.hodge/id-mappings.json');
+        expect(mappingsExist).toBe(true);
       });
     });
   });

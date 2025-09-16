@@ -1,0 +1,49 @@
+{
+  "mode": "explore",
+  "feature": "HODGE-008",
+  "localID": "HODGE-008",
+  "externalID": null,
+  "timestamp": "2025-09-16T21:38:44.092Z",
+  "intent": {
+    "type": "general",
+    "keywords": [
+      "HODGE-008"
+    ],
+    "suggestedPatterns": [
+      "service",
+      "utility",
+      "factory"
+    ],
+    "relatedCommands": [
+      "execute",
+      "process",
+      "handle"
+    ]
+  },
+  "standards": "suggested",
+  "validation": "optional",
+  "pmIssue": "HODGE-008",
+  "pmTool": null,
+  "approaches": [
+    {
+      "name": "Standard Implementation",
+      "description": "Implement HODGE-008 following existing project patterns",
+      "relevance": 70,
+      "pros": [
+        "Consistent with codebase",
+        "Uses proven patterns",
+        "Easy for team to understand"
+      ],
+      "cons": [
+        "May not be optimal for specific use case",
+        "Could miss optimization opportunities"
+      ]
+    }
+  ],
+  "relatedFeatures": [
+    "HODGE-001",
+    "HODGE-002",
+    "HODGE-003"
+  ],
+  "suggestedPatterns": []
+}
