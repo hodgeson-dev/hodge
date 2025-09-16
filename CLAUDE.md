@@ -97,8 +97,9 @@ Before shipping, ensure:
 
 1. **Standards are non-negotiable** - Always follow `.hodge/standards.md`
 2. **Test progressively** - Match test depth to development phase
-3. **Use patterns** - Copy from `.hodge/patterns/` for consistency
-4. **Load context wisely** - Don't overload with unnecessary docs
+3. **Never bypass Git hooks** - NEVER use `--no-verify` or skip pre-commit/pre-push hooks without explicit user permission. These hooks ensure code quality and should always run unless the user specifically asks to bypass them
+4. **Use patterns** - Copy from `.hodge/patterns/` for consistency
+5. **Load context wisely** - Don't overload with unnecessary docs
 
 ---
 *For detailed testing philosophy, see TEST-STRATEGY.md*

@@ -14,7 +14,7 @@ export const TestCategory = {
   SMOKE: 'smoke',
   INTEGRATION: 'integration',
   UNIT: 'unit',
-  ACCEPTANCE: 'acceptance'
+  ACCEPTANCE: 'acceptance',
 } as const;
 
 /**
@@ -27,37 +27,37 @@ export function testCategory(category: string, name: string): string {
 /**
  * Create a smoke test
  */
-export function smokeTest(name: string, fn: () => void | Promise<void>) {
+export function smokeTest(name: string, fn: () => void | Promise<void>): void {
   return it(testCategory(TestCategory.SMOKE, name), fn);
 }
 
 /**
  * Create an integration test
  */
-export function integrationTest(name: string, fn: () => void | Promise<void>) {
+export function integrationTest(name: string, fn: () => void | Promise<void>): void {
   return it(testCategory(TestCategory.INTEGRATION, name), fn);
 }
 
 /**
  * Create a unit test
  */
-export function unitTest(name: string, fn: () => void | Promise<void>) {
+export function unitTest(name: string, fn: () => void | Promise<void>): void {
   return it(testCategory(TestCategory.UNIT, name), fn);
 }
 
 /**
  * Create an acceptance test
  */
-export function acceptanceTest(name: string, fn: () => void | Promise<void>) {
+export function acceptanceTest(name: string, fn: () => void | Promise<void>): void {
   return it(testCategory(TestCategory.ACCEPTANCE, name), fn);
 }
 
 /**
  * Test that a function doesn't throw
  */
-export async function doesNotThrow(fn: () => any | Promise<any>): Promise<void> {
+export async function doesNotThrow(fn: () => Promise<unknown>): Promise<void> {
   let threw = false;
-  let error: any;
+  let error: unknown;
 
   try {
     await fn();
@@ -67,7 +67,7 @@ export async function doesNotThrow(fn: () => any | Promise<any>): Promise<void> 
   }
 
   if (threw) {
-    throw new Error(`Expected function not to throw, but it threw: ${error}`);
+    throw new Error(`Expected function not to throw, but it threw: ${String(error)}`);
   }
 }
 
@@ -75,11 +75,11 @@ export async function doesNotThrow(fn: () => any | Promise<any>): Promise<void> 
  * Test that a function throws with a specific message
  */
 export async function throwsWithMessage(
-  fn: () => any | Promise<any>,
+  fn: () => Promise<unknown>,
   message: string | RegExp
 ): Promise<void> {
   let threw = false;
-  let error: any;
+  let error: unknown;
 
   try {
     await fn();
@@ -92,7 +92,7 @@ export async function throwsWithMessage(
     throw new Error('Expected function to throw, but it did not');
   }
 
-  const errorMessage = error?.message || String(error);
+  const errorMessage = error instanceof Error ? error.message : String(error);
   if (typeof message === 'string') {
     expect(errorMessage).toContain(message);
   } else {
@@ -112,13 +112,16 @@ export function outputContains(output: string, expected: string[]) {
 /**
  * Test output matches snapshot-like structure
  */
-export function outputMatches(output: string, pattern: {
-  includes?: string[];
-  excludes?: string[];
-  startsWith?: string;
-  endsWith?: string;
-  lineCount?: number;
-}) {
+export function outputMatches(
+  output: string,
+  pattern: {
+    includes?: string[];
+    excludes?: string[];
+    startsWith?: string;
+    endsWith?: string;
+    lineCount?: number;
+  }
+): void {
   const { includes = [], excludes = [], startsWith, endsWith, lineCount } = pattern;
 
   for (const str of includes) {
@@ -248,7 +251,7 @@ export async function retry<T>(
     } catch (error) {
       lastError = error;
       if (i < times - 1) {
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
   }
@@ -269,10 +272,7 @@ export async function measureTime(fn: () => void | Promise<void>) {
 /**
  * Assert that a function completes within a time limit
  */
-export async function completesWithin(
-  fn: () => void | Promise<void>,
-  ms: number
-) {
+export async function completesWithin(fn: () => void | Promise<void>, ms: number) {
   const time = await measureTime(fn);
   if (time > ms) {
     throw new Error(`Expected to complete within ${ms}ms, but took ${time}ms`);

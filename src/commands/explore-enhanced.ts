@@ -16,10 +16,19 @@ export interface ExploreOptions {
 }
 
 // Simplified feature intent type
-type IntentType = 'authentication' | 'database' | 'api' | 'ui' | 'general';
+type IntentType =
+  | 'authentication'
+  | 'database'
+  | 'api'
+  | 'ui'
+  | 'general'
+  | 'api-endpoint'
+  | 'caching'
+  | 'performance'
+  | 'testing';
 
 interface FeatureIntent {
-  type: IntentType | string;  // Allow string for flexibility
+  type: IntentType;
   keywords: string[];
   suggestedPatterns: string[];
   relatedCommands: string[];
@@ -67,14 +76,14 @@ export class EnhancedExploreCommand {
       featureIntent,
       similarFeatures,
       pmIssue,
-      existingPatterns
+      existingPatterns,
     ] = await Promise.all([
       this.checkExistingExploration(exploreDir, options.force),
       this.loadProjectContext(),
       this.analyzeFeatureIntent(feature),
       this.findSimilarFeatures(feature),
       this.checkPMIntegration(feature),
-      this.patternLearner.loadExistingPatterns()
+      this.patternLearner.loadExistingPatterns(),
     ]);
 
     // Early return if exploration exists and not forcing
@@ -87,10 +96,10 @@ export class EnhancedExploreCommand {
       feature,
       featureIntent,
       similarFeatures,
-      existingPatterns.map(p => ({
+      existingPatterns.map((p) => ({
         name: p.name,
         description: p.description,
-        confidence: p.frequency / 100
+        confidence: p.frequency / 100,
       })),
       projectContext,
       pmIssue
@@ -110,10 +119,10 @@ export class EnhancedExploreCommand {
       feature,
       smartTemplate,
       similarFeatures,
-      existingPatterns.map(p => ({
+      existingPatterns.map((p) => ({
         name: p.name,
         description: p.description,
-        confidence: p.frequency / 100
+        confidence: p.frequency / 100,
       }))
     );
 
@@ -124,7 +133,11 @@ export class EnhancedExploreCommand {
     if (process.env.DEBUG || options.verbose) {
       console.log(chalk.gray(`\n⚡ Execution time: ${executionTime}ms`));
       const stats = this.cache.getStats();
-      console.log(chalk.gray(`📊 Cache: ${stats.hits} hits, ${stats.misses} misses (${(stats.hitRate * 100).toFixed(1)}% hit rate)`));
+      console.log(
+        chalk.gray(
+          `📊 Cache: ${stats.hits} hits, ${stats.misses} misses (${(stats.hitRate * 100).toFixed(1)}% hit rate)`
+        )
+      );
     }
   }
 
@@ -163,16 +176,13 @@ export class EnhancedExploreCommand {
       console.log(chalk.gray(`   ${exploreDir}\n`));
 
       const explorationPath = path.join(exploreDir, 'exploration.md');
-      const content = await this.cache.getOrLoad(
-        `file:${explorationPath}`,
-        async () => {
-          try {
-            return await fs.readFile(explorationPath, 'utf-8');
-          } catch {
-            return null;
-          }
+      const content = await this.cache.getOrLoad(`file:${explorationPath}`, async () => {
+        try {
+          return await fs.readFile(explorationPath, 'utf-8');
+        } catch {
+          return null;
         }
-      );
+      });
 
       if (content && typeof content === 'string') {
         const lines = content.split('\n').slice(0, 10);
@@ -193,55 +203,58 @@ export class EnhancedExploreCommand {
   private async analyzeFeatureIntent(feature: string): Promise<FeatureIntent> {
     return this.cache.getOrLoad(
       `intent:${feature}`,
-      async () => {
-        const intents: Record<string, FeatureIntent> = {
-          auth: {
-            type: 'authentication',
-            keywords: ['login', 'logout', 'session', 'token', 'jwt', 'oauth'],
-            suggestedPatterns: ['singleton-auth', 'middleware', 'token-manager'],
-            relatedCommands: ['login', 'logout', 'verify', 'refresh']
-          },
-          api: {
-            type: 'api-endpoint',
-            keywords: ['REST', 'GraphQL', 'endpoint', 'route', 'controller'],
-            suggestedPatterns: ['controller', 'router', 'validation', 'error-handler'],
-            relatedCommands: ['get', 'post', 'put', 'delete', 'patch']
-          },
-          cache: {
-            type: 'caching',
-            keywords: ['cache', 'memoize', 'store', 'ttl', 'invalidate'],
-            suggestedPatterns: ['singleton-cache', 'cache-manager', 'lazy-loading'],
-            relatedCommands: ['get', 'set', 'invalidate', 'clear']
-          },
-          perf: {
-            type: 'performance',
-            keywords: ['optimization', 'speed', 'parallel', 'async', 'profiling'],
-            suggestedPatterns: ['async-parallel', 'caching', 'lazy-loading'],
-            relatedCommands: ['profile', 'benchmark', 'optimize']
-          },
-          test: {
-            type: 'testing',
-            keywords: ['unit', 'integration', 'mock', 'coverage', 'vitest'],
-            suggestedPatterns: ['test-factory', 'mock-builder', 'fixture'],
-            relatedCommands: ['test', 'mock', 'assert', 'coverage']
-          }
-        };
+      () =>
+        Promise.resolve(
+          (function () {
+            const intents: Record<string, FeatureIntent> = {
+              auth: {
+                type: 'authentication',
+                keywords: ['login', 'logout', 'session', 'token', 'jwt', 'oauth'],
+                suggestedPatterns: ['singleton-auth', 'middleware', 'token-manager'],
+                relatedCommands: ['login', 'logout', 'verify', 'refresh'],
+              },
+              api: {
+                type: 'api-endpoint',
+                keywords: ['REST', 'GraphQL', 'endpoint', 'route', 'controller'],
+                suggestedPatterns: ['controller', 'router', 'validation', 'error-handler'],
+                relatedCommands: ['get', 'post', 'put', 'delete', 'patch'],
+              },
+              cache: {
+                type: 'caching',
+                keywords: ['cache', 'memoize', 'store', 'ttl', 'invalidate'],
+                suggestedPatterns: ['singleton-cache', 'cache-manager', 'lazy-loading'],
+                relatedCommands: ['get', 'set', 'invalidate', 'clear'],
+              },
+              perf: {
+                type: 'performance',
+                keywords: ['optimization', 'speed', 'parallel', 'async', 'profiling'],
+                suggestedPatterns: ['async-parallel', 'caching', 'lazy-loading'],
+                relatedCommands: ['profile', 'benchmark', 'optimize'],
+              },
+              test: {
+                type: 'testing',
+                keywords: ['unit', 'integration', 'mock', 'coverage', 'vitest'],
+                suggestedPatterns: ['test-factory', 'mock-builder', 'fixture'],
+                relatedCommands: ['test', 'mock', 'assert', 'coverage'],
+              },
+            };
 
-        const featureLower = feature.toLowerCase();
-        for (const [key, intent] of Object.entries(intents)) {
-          if (featureLower.includes(key)) {
-            return intent;
-          }
-        }
+            const featureLower = feature.toLowerCase();
+            for (const [key, intent] of Object.entries(intents)) {
+              if (featureLower.includes(key)) {
+                return intent;
+              }
+            }
 
-        // Default intent
-        return {
-          type: 'general',
-          keywords: [feature],
-          suggestedPatterns: ['service', 'utility', 'factory'],
-          relatedCommands: ['execute', 'process', 'handle']
-        };
-      },
+            // Default intent
+            return {
+              type: 'general',
+              keywords: [feature],
+              suggestedPatterns: ['service', 'utility', 'factory'],
+              relatedCommands: ['execute', 'process', 'handle'],
+            };
+          })()
+        ),
       { ttl: 60000 } // Cache for 1 minute
     );
   }
@@ -252,16 +265,16 @@ export class EnhancedExploreCommand {
   private async findSimilarFeatures(feature: string): Promise<string[]> {
     const allFeatures = await this.featureStateCache.loadAllFeatures();
 
-    const similarities = Array.from(allFeatures.keys()).map(f => ({
+    const similarities = Array.from(allFeatures.keys()).map((f) => ({
       feature: f,
-      score: this.calculateSimilarity(feature, f)
+      score: this.calculateSimilarity(feature, f),
     }));
 
     return similarities
-      .filter(s => s.score > 0.3 && s.feature !== feature)
+      .filter((s) => s.score > 0.3 && s.feature !== feature)
       .sort((a, b) => b.score - a.score)
       .slice(0, 3)
-      .map(s => s.feature);
+      .map((s) => s.feature);
   }
 
   /**
@@ -271,7 +284,7 @@ export class EnhancedExploreCommand {
     const aTokens = a.toLowerCase().split(/[-_\s]+/);
     const bTokens = b.toLowerCase().split(/[-_\s]+/);
 
-    const commonTokens = aTokens.filter(t => bTokens.includes(t));
+    const commonTokens = aTokens.filter((t) => bTokens.includes(t));
     return (commonTokens.length * 2) / (aTokens.length + bTokens.length);
   }
 
@@ -291,21 +304,23 @@ export class EnhancedExploreCommand {
     const [standards, patterns, config] = await Promise.all([
       standardsPromise,
       patternsPromise,
-      configPromise
+      configPromise,
     ]);
 
     return {
       hasStandards: !!standards,
       patternCount: patterns.size ?? 0,
       patterns: patterns ? Array.from(patterns.keys()) : [],
-      config: (config as Record<string, unknown>) ?? null
+      config: (config as Record<string, unknown>) ?? null,
     };
   }
 
   /**
    * Check PM integration
    */
-  private async checkPMIntegration(feature: string): Promise<{ id: string; title: string; url: string } | null> {
+  private async checkPMIntegration(
+    feature: string
+  ): Promise<{ id: string; title: string; url: string } | null> {
     const pmTool = process.env.HODGE_PM_TOOL;
 
     if (!pmTool) {
@@ -332,7 +347,12 @@ export class EnhancedExploreCommand {
     intent: FeatureIntent,
     similarFeatures: string[],
     _existingPatterns: Array<{ name: string; description: string; confidence: number }>,
-    projectContext: { hasStandards: boolean; patternCount: number; patterns: string[]; config: Record<string, unknown> | null },
+    projectContext: {
+      hasStandards: boolean;
+      patternCount: number;
+      patterns: string[];
+      config: Record<string, unknown> | null;
+    },
     pmIssue: { id: string; title: string; url: string } | null
   ): SmartTemplate {
     // Generate intelligent approaches
@@ -340,8 +360,8 @@ export class EnhancedExploreCommand {
 
     // Find patterns that match this feature type
     const suggestedPatterns = _existingPatterns
-      .filter(p => intent.suggestedPatterns.some(sp => p.name.toLowerCase().includes(sp)))
-      .map(p => p.name);
+      .filter((p) => intent.suggestedPatterns.some((sp) => p.name.toLowerCase().includes(sp)))
+      .map((p) => p.name);
 
     // Generate template content
     const content = `# Exploration: ${feature}
@@ -358,28 +378,40 @@ ${pmIssue ? `**PM Issue**: ${pmIssue.id}` : ''}
 - **Standards**: Suggested (${projectContext.hasStandards ? 'loaded' : 'not enforced'})
 - **Existing Patterns**: ${projectContext.patternCount}
 
-${similarFeatures.length > 0 ? `
+${
+  similarFeatures.length > 0
+    ? `
 ## Similar Features
-${similarFeatures.map(f => `- ${f}`).join('\n')}
-` : ''}
+${similarFeatures.map((f) => `- ${f}`).join('\n')}
+`
+    : ''
+}
 
-${suggestedPatterns.length > 0 ? `
+${
+  suggestedPatterns.length > 0
+    ? `
 ## Suggested Patterns
-${suggestedPatterns.map(p => `- ${p}`).join('\n')}
-` : ''}
+${suggestedPatterns.map((p) => `- ${p}`).join('\n')}
+`
+    : ''
+}
 
 ## Recommended Approaches
 
-${approaches.map((approach, i) => `
+${approaches
+  .map(
+    (approach, i) => `
 ### Approach ${i + 1}: ${approach.name} (${approach.relevance}% relevant)
 **Description**: ${approach.description}
 
 **Pros**:
-${approach.pros.map(p => `- ${p}`).join('\n')}
+${approach.pros.map((p) => `- ${p}`).join('\n')}
 
 **Cons**:
-${approach.cons.map(c => `- ${c}`).join('\n')}
-`).join('\n')}
+${approach.cons.map((c) => `- ${c}`).join('\n')}
+`
+  )
+  .join('\n')}
 
 ## Recommendation
 Based on the analysis, **${approaches[0].name}** appears most suitable because:
@@ -404,7 +436,7 @@ ${this.generateImplementationHints(intent, _existingPatterns)}
       content,
       approaches,
       relatedFeatures: similarFeatures,
-      suggestedPatterns
+      suggestedPatterns,
     };
   }
 
@@ -423,15 +455,8 @@ ${this.generateImplementationHints(intent, _existingPatterns)}
       name: 'Standard Implementation',
       description: `Implement ${feature} following existing project patterns`,
       relevance: 70,
-      pros: [
-        'Consistent with codebase',
-        'Uses proven patterns',
-        'Easy for team to understand'
-      ],
-      cons: [
-        'May not be optimal for specific use case',
-        'Could miss optimization opportunities'
-      ]
+      pros: ['Consistent with codebase', 'Uses proven patterns', 'Easy for team to understand'],
+      cons: ['May not be optimal for specific use case', 'Could miss optimization opportunities'],
     });
 
     // Add intent-specific approaches
@@ -440,16 +465,8 @@ ${this.generateImplementationHints(intent, _existingPatterns)}
         name: 'Performance-First Architecture',
         description: 'Optimize for speed with caching and parallelization',
         relevance: 95,
-        pros: [
-          'Maximum performance gains',
-          'Reduced resource usage',
-          'Better scalability'
-        ],
-        cons: [
-          'Higher complexity',
-          'More memory usage',
-          'Harder to debug'
-        ]
+        pros: ['Maximum performance gains', 'Reduced resource usage', 'Better scalability'],
+        cons: ['Higher complexity', 'More memory usage', 'Harder to debug'],
       });
     }
 
@@ -458,16 +475,8 @@ ${this.generateImplementationHints(intent, _existingPatterns)}
         name: 'Secure Token-Based Auth',
         description: 'JWT-based authentication with refresh tokens',
         relevance: 90,
-        pros: [
-          'Stateless and scalable',
-          'Industry standard',
-          'Works across services'
-        ],
-        cons: [
-          'Token management complexity',
-          'Need secure storage',
-          'Revocation challenges'
-        ]
+        pros: ['Stateless and scalable', 'Industry standard', 'Works across services'],
+        cons: ['Token management complexity', 'Need secure storage', 'Revocation challenges'],
       });
     }
 
@@ -476,16 +485,8 @@ ${this.generateImplementationHints(intent, _existingPatterns)}
         name: 'Multi-Layer Cache Strategy',
         description: 'Memory cache with TTL and persistent fallback',
         relevance: 85,
-        pros: [
-          'Fast access times',
-          'Automatic invalidation',
-          'Resilient to failures'
-        ],
-        cons: [
-          'Memory overhead',
-          'Cache coherency challenges',
-          'Complex invalidation logic'
-        ]
+        pros: ['Fast access times', 'Automatic invalidation', 'Resilient to failures'],
+        cons: ['Memory overhead', 'Cache coherency challenges', 'Complex invalidation logic'],
       });
     }
 
@@ -496,7 +497,10 @@ ${this.generateImplementationHints(intent, _existingPatterns)}
   /**
    * Generate implementation hints
    */
-  private generateImplementationHints(intent: FeatureIntent, patterns: Array<{ name: string; description: string; confidence: number }>): string {
+  private generateImplementationHints(
+    intent: FeatureIntent,
+    patterns: Array<{ name: string; description: string; confidence: number }>
+  ): string {
     const hints: string[] = [];
 
     // Intent-specific hints
@@ -523,7 +527,7 @@ ${this.generateImplementationHints(intent, _existingPatterns)}
     }
 
     // Add pattern-based hints
-    if (patterns.some(p => p.name.includes('Singleton'))) {
+    if (patterns.some((p) => p.name.includes('Singleton'))) {
       hints.push('- Consider using Singleton pattern (already in codebase)');
     }
 
@@ -547,27 +551,35 @@ ${this.generateImplementationHints(intent, _existingPatterns)}
     const testIntentions = this.generateTestIntentions(feature, intent, template);
 
     // Create all files in parallel
-    await Promise.all([
-      fs.writeFile(path.join(exploreDir, 'exploration.md'), template.content),
-      fs.writeFile(path.join(exploreDir, 'test-intentions.md'), testIntentions),
-      fs.writeFile(path.join(exploreDir, 'context.json'), JSON.stringify({
-        mode: 'explore',
-        feature,
-        timestamp: new Date().toISOString(),
-        intent,
-        standards: 'suggested',
-        validation: 'optional',
-        pmIssue: pmIssue?.id || null,
-        pmTool: null, // PM tool info would come from config
-        approaches: template.approaches,
-        relatedFeatures: template.relatedFeatures,
-        suggestedPatterns: template.suggestedPatterns
-      }, null, 2)),
-      pmIssue ? fs.writeFile(
-        path.join('.hodge', 'features', feature, 'issue-id.txt'),
-        pmIssue.id
-      ) : Promise.resolve()
-    ].filter(Boolean));
+    await Promise.all(
+      [
+        fs.writeFile(path.join(exploreDir, 'exploration.md'), template.content),
+        fs.writeFile(path.join(exploreDir, 'test-intentions.md'), testIntentions),
+        fs.writeFile(
+          path.join(exploreDir, 'context.json'),
+          JSON.stringify(
+            {
+              mode: 'explore',
+              feature,
+              timestamp: new Date().toISOString(),
+              intent,
+              standards: 'suggested',
+              validation: 'optional',
+              pmIssue: pmIssue?.id || null,
+              pmTool: null, // PM tool info would come from config
+              approaches: template.approaches,
+              relatedFeatures: template.relatedFeatures,
+              suggestedPatterns: template.suggestedPatterns,
+            },
+            null,
+            2
+          )
+        ),
+        pmIssue
+          ? fs.writeFile(path.join('.hodge', 'features', feature, 'issue-id.txt'), pmIssue.id)
+          : Promise.resolve(),
+      ].filter(Boolean)
+    );
 
     // Invalidate cache for this feature
     this.cache.invalidateFeature(feature);
@@ -585,7 +597,7 @@ ${this.generateImplementationHints(intent, _existingPatterns)}
       '- [ ] Should not crash when executed',
       '- [ ] Should complete within reasonable time (<500ms)',
       '- [ ] Should handle invalid input gracefully',
-      '- [ ] Should integrate with existing systems'
+      '- [ ] Should integrate with existing systems',
     ];
 
     const intentSpecific: Record<string, string[]> = {
@@ -593,42 +605,42 @@ ${this.generateImplementationHints(intent, _existingPatterns)}
         '- [ ] Should provide the new functionality as described',
         '- [ ] Should not break existing features',
         '- [ ] Should be accessible to target users',
-        '- [ ] Should handle edge cases appropriately'
+        '- [ ] Should handle edge cases appropriately',
       ],
       bugfix: [
         '- [ ] Should fix the reported issue',
         '- [ ] Should not introduce new bugs',
         '- [ ] Should include regression test',
-        '- [ ] Should handle the root cause, not just symptoms'
+        '- [ ] Should handle the root cause, not just symptoms',
       ],
       refactor: [
         '- [ ] Should maintain existing functionality',
         '- [ ] Should improve code quality metrics',
         '- [ ] Should not change external behavior',
-        '- [ ] Should pass all existing tests'
+        '- [ ] Should pass all existing tests',
       ],
       performance: [
         '- [ ] Should improve targeted metrics',
         '- [ ] Should not degrade other performance areas',
         '- [ ] Should be measurable and reproducible',
-        '- [ ] Should work under various load conditions'
+        '- [ ] Should work under various load conditions',
       ],
       security: [
         '- [ ] Should address the security vulnerability',
         '- [ ] Should not create new attack vectors',
         '- [ ] Should include security-focused tests',
-        '- [ ] Should follow security best practices'
+        '- [ ] Should follow security best practices',
       ],
       maintenance: [
         '- [ ] Should update dependencies safely',
         '- [ ] Should not break compatibility',
         '- [ ] Should improve maintainability',
-        '- [ ] Should be well-documented'
-      ]
+        '- [ ] Should be well-documented',
+      ],
     };
 
-    const approachIntentions = template.approaches.map((approach: Approach) =>
-      `- [ ] ${approach.name} approach should work correctly`
+    const approachIntentions = template.approaches.map(
+      (approach: Approach) => `- [ ] ${approach.name} approach should work correctly`
     );
 
     return `# Test Intentions for ${feature}
@@ -641,7 +653,7 @@ These are not actual tests, but a checklist of behaviors to verify.
 ${baseIntentions.join('\n')}
 
 ## ${intent.type.charAt(0).toUpperCase() + intent.type.slice(1)}-Specific Requirements
-${intentSpecific[intent.type]?.join('\n') || ''}
+${intentSpecific[intent.type].join('\n') || ''}
 
 ## Approach-Specific Tests
 ${approachIntentions.join('\n')}
@@ -692,12 +704,12 @@ Add any specific test scenarios or edge cases discovered during exploration:
 
     if (similarFeatures.length > 0) {
       console.log(`  • Similar features found: ${chalk.cyan(similarFeatures.length)}`);
-      similarFeatures.forEach(f => console.log(chalk.gray(`    - ${f}`)));
+      similarFeatures.forEach((f) => console.log(chalk.gray(`    - ${f}`)));
     }
 
     if (template.suggestedPatterns.length > 0) {
       console.log(`  • Suggested patterns: ${chalk.green(template.suggestedPatterns.length)}`);
-      template.suggestedPatterns.slice(0, 3).forEach(p => console.log(chalk.gray(`    - ${p}`)));
+      template.suggestedPatterns.slice(0, 3).forEach((p) => console.log(chalk.gray(`    - ${p}`)));
     }
 
     console.log('\n' + chalk.bold('Recommended Approach:'));

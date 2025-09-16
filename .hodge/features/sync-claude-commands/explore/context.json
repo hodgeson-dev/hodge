@@ -1,0 +1,13 @@
+{
+  "mode": "explore",
+  "feature": "sync-claude-commands",
+  "timestamp": "2025-01-20T05:40:00Z",
+  "standards": "suggested",
+  "validation": "optional",
+  "analysis": {
+    "filesOutOfSync": 4,
+    "affectedCommands": ["explore", "build", "harden", "ship"],
+    "missingUpdates": "progressive testing guidance",
+    "impact": "new installations get outdated commands"
+  }
+}

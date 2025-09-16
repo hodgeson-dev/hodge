@@ -113,6 +113,20 @@ User asks "how to X"  → Load relevant pattern
 4. Reference other docs instead of duplicating
 5. Trust AI to proactively load relevant patterns
 
+## AI Behavior Guidelines
+
+### Git and Quality Gates
+1. **Never bypass Git hooks** - NEVER use `--no-verify` or skip pre-commit/pre-push hooks without explicit user permission
+2. **Respect quality gates** - Pre-commit hooks (linting, formatting, tests) exist to ensure code quality
+3. **Fix issues properly** - When hooks fail, fix the underlying issues rather than bypassing checks
+4. **Ask before skipping** - If hooks are blocking progress, explain the issue and ask for permission before using `--no-verify`
+
+### Code Quality Practices
+- Always run tests before committing
+- Fix linting errors rather than disabling rules
+- Ensure proper formatting via hooks
+- Maintain the test suite integrity
+
 ## Scaling Considerations
 
 **Current Load:** ~1,400 lines maximum (manageable)

@@ -149,12 +149,7 @@ describe('InitCommand Integration Tests', () => {
       expect(mockInquirer.prompt).not.toHaveBeenCalled();
       expect(mockFs.ensureDir).toHaveBeenCalled();
     });
-    describe('interactive question flow', () => {
-      beforeEach(() => {
-        initCommand = new InitCommand(mockRootPath);
-        mockFs.pathExists.mockResolvedValue(false);
-      });
-    });
+    // Interactive question flow test suites removed - implementation tests deleted
 
     describe('error handling', () => {
       it('should handle validation errors properly', async () => {
@@ -168,29 +163,7 @@ describe('InitCommand Integration Tests', () => {
           }
         }).toThrow(ValidationError);
       });
-      describe('display and messaging', () => {
-        beforeEach(() => {
-          initCommand = new InitCommand(mockRootPath);
-        });
-      });
-
-      describe('PM tool functionality', () => {
-        beforeEach(() => {
-          initCommand = new InitCommand(mockRootPath);
-          mockFs.pathExists.mockResolvedValue(false);
-          mockFs.readdir.mockResolvedValue([]);
-        });
-
-        // PM tool test suites removed - implementation tests deleted
-      });
-
-      describe('validation and security', () => {
-        beforeEach(() => {
-          initCommand = new InitCommand(mockRootPath);
-        });
-
-        // Validation test suites removed - implementation tests deleted
-      });
+      // Display, PM tool, and validation test suites removed - implementation tests deleted
     });
   });
 });
