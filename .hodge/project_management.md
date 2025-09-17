@@ -5,27 +5,13 @@ This file tracks all Hodge features and their implementation status. Features ar
 
 ## Active Features
 
-### HODGE-004: ID Management
-- **Status**: Exploring
-- **Priority**: 1 (Required for PM integration)
-- **Created**: 2025-01-16
-- **Updated**: 2025-01-16
-- **Description**: Manage feature IDs across local (HODGE-xxx) and external PM tools
-- **Dependencies**: None (foundational)
-- **Decisions**:
-  - Create ID management system with local HODGE-xxx IDs
-  - Support external PM tool mapping
-- **Next Steps**:
-  - Implement IDManager class
-  - Add ID resolution to commands
-
 ### session-management
 - **Status**: Exploring
-- **Priority**: 2 (Depends on cross-tool-compatibility - now completed)
+- **Priority**: 1 (Ready to implement - dependencies completed)
 - **Created**: 2025-01-16
 - **Updated**: 2025-01-16
 - **Description**: Enable context persistence between AI sessions
-- **Dependencies**: cross-tool-compatibility
+- **Dependencies**: cross-tool-compatibility ✅
 - **Decisions**:
   - Implement basic session checkpointing now
   - Command-based triggers (not daemon)
@@ -34,13 +20,14 @@ This file tracks all Hodge features and their implementation status. Features ar
   - Build after cross-tool-compatibility
   - Implement SessionManager class
 
+
 ### HODGE-003: Feature Extraction
 - **Status**: Exploring
-- **Priority**: 3 (Improves workflow)
+- **Priority**: 2 (Improves workflow)
 - **Created**: 2025-01-16
 - **Updated**: 2025-01-16
 - **Description**: Extract concrete features from decisions made during exploration
-- **Dependencies**: HODGE-004 (for feature IDs)
+- **Dependencies**: HODGE-004 ✅
 - **Decisions**:
   - Build feature extraction system
   - Parse decisions for feature implications
@@ -50,11 +37,11 @@ This file tracks all Hodge features and their implementation status. Features ar
 
 ### HODGE-005: Feature Auto-Population
 - **Status**: Exploring
-- **Priority**: 4 (Enhances feature creation)
+- **Priority**: 3 (Enhances feature creation)
 - **Created**: 2025-01-16
 - **Updated**: 2025-01-16
 - **Description**: Automatically populate feature directories with bundled context
-- **Dependencies**: HODGE-003, HODGE-004
+- **Dependencies**: HODGE-003, HODGE-004 ✅
 - **Decisions**:
   - Auto-populate directories with context
   - Generate HODGE.md aggregated view
@@ -64,11 +51,11 @@ This file tracks all Hodge features and their implementation status. Features ar
 
 ### HODGE-006: Local PM Tracking
 - **Status**: Exploring
-- **Priority**: 5 (Fallback for PM)
+- **Priority**: 4 (Fallback for PM)
 - **Created**: 2025-01-16
 - **Updated**: 2025-01-16
 - **Description**: Local project_management.md file as fallback when no PM tool configured
-- **Dependencies**: HODGE-004 (for ID management)
+- **Dependencies**: HODGE-004 ✅
 - **Decisions**:
   - Add local project_management.md as PM fallback
   - Support migration to external PM tools
@@ -78,11 +65,11 @@ This file tracks all Hodge features and their implementation status. Features ar
 
 ### pm-adapter-hooks
 - **Status**: Exploring
-- **Priority**: 6 (Can build parallel to session-management)
+- **Priority**: 5 (Can build parallel to session-management)
 - **Created**: 2025-01-16
 - **Updated**: 2025-01-16
 - **Description**: Automate PM tool status updates and issue tracking
-- **Dependencies**: HODGE-004, HODGE-006 (for fallback)
+- **Dependencies**: HODGE-004 ✅, HODGE-006 (for fallback)
 - **Decisions**:
   - Build PM adapter interface and hooks now
   - Start with Linear implementation
@@ -94,17 +81,33 @@ This file tracks all Hodge features and their implementation status. Features ar
 
 ### HODGE-007: PM Auto-Sync
 - **Status**: Exploring
-- **Priority**: 7 (Requires PM hooks)
+- **Priority**: 6 (Requires PM hooks)
 - **Created**: 2025-01-16
 - **Updated**: 2025-01-16
 - **Description**: Automatic synchronization between Hodge and PM tools
-- **Dependencies**: pm-adapter-hooks, HODGE-004, HODGE-006
+- **Dependencies**: pm-adapter-hooks, HODGE-004 ✅, HODGE-006
 - **Decisions**:
   - Implement bidirectional sync
   - Add conflict resolution
 - **Next Steps**:
   - Implement PMSyncManager
   - Add sync hooks to commands
+
+### HODGE-045: PM Auto-Update After Ship
+- **Status**: Exploring
+- **Priority**: 7 (Critical for ship workflow)
+- **Created**: 2025-01-16
+- **Updated**: 2025-01-16
+- **Description**: Automatically update project management status when features are shipped
+- **Dependencies**: HODGE-006 (for local PM), pm-adapter-hooks
+- **Decisions**:
+  - Use local-first approach with external sync
+  - Always update project_management.md
+  - External PM updates are best-effort
+- **Next Steps**:
+  - Create LocalPMAdapter class
+  - Add updateIssueStatus to PM interface
+  - Integrate with ship command
 
 ### batch-decision-extraction
 - **Status**: Exploring
@@ -123,6 +126,24 @@ This file tracks all Hodge features and their implementation status. Features ar
   - Start with simple pattern matching
 
 ## Completed Features
+
+### HODGE-004: ID Management
+- **Status**: Shipped
+- **Completed**: 2025-01-16
+- **Description**: Manage feature IDs across local (HODGE-xxx) and external PM tools
+- **Implementation**:
+  - Built IDManager class with dual ID system
+  - Integrated ID management into all commands
+  - Fixed regex pattern matching for external IDs
+  - Preserved all AI features during command consolidation
+  - Test coverage: 100% (all tests passing)
+  - Performance: ID resolution <50ms
+- **Command Consolidation**:
+  - Merged EnhancedExploreCommand into ExploreCommand
+  - Merged optimized versions of build, harden, ship commands
+  - Eliminated 6 redundant command files
+  - Added --sequential flags for debugging
+- **Impact**: Foundation for PM tool integration and consistent feature tracking
 
 ### cross-tool-compatibility
 - **Status**: Shipped
@@ -162,9 +183,9 @@ _No items currently in backlog - all identified features are active_
 
 ## Implementation Phases
 
-### Phase 1: Cross-Tool Compatibility (1-2 days)
+### Phase 1: Foundation (1-2 days) ✅
 - [x] cross-tool-compatibility ✅
-- [ ] HODGE-004: ID Management
+- [x] HODGE-004: ID Management ✅
 
 ### Phase 2: Session Management (1 day)
 - [ ] session-management
@@ -176,6 +197,7 @@ _No items currently in backlog - all identified features are active_
 
 ### Phase 4: PM Integration (2-3 days)
 - [ ] pm-adapter-hooks
+- [ ] HODGE-045: PM Auto-Update After Ship
 - [ ] HODGE-007: PM Auto-Sync
 
 ### Phase 5: Enhanced Features (2-3 days)
@@ -210,3 +232,10 @@ HODGE-004 (ID Management)
   - Fixed ship command state persistence bug
   - Achieved 93.72% test coverage
   - Performance: 109ms response time
+- Built and shipped HODGE-004: ID Management feature
+  - Integrated IDManager into all commands
+  - Consolidated 6 redundant command files
+  - Fixed all test failures and ESLint errors
+  - Preserved AI features during consolidation
+  - Added --sequential debugging flags
+  - Documented ship command workflow

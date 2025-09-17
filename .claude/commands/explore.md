@@ -1,5 +1,13 @@
 # Hodge Explore Mode
 
+## IMPORTANT: Template Compliance
+When presenting exploration results, you MUST follow this template EXACTLY:
+- Option (c) MUST include the recommended approach name: "Start building with [approach name]"
+- The note "Note: Option (c) will use the recommended approach..." MUST be included
+- Don't abbreviate or modify the menu structure
+- Include ALL menu options (a-f) even if they seem redundant
+- Follow the exact wording shown in the "Next Steps Menu" section below
+
 ## Command Execution
 Execute the portable Hodge CLI command:
 ```bash
