@@ -26,6 +26,63 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-17 - Implement AI-Executable Slash Commands using Command Orchestration Protocol
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-051
+
+**Decision**:
+Implement AI-Executable Slash Commands using Command Orchestration Protocol
+
+**Rationale**:
+Recorded via `hodge decide` command at 5:43:37 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-17 - Implement PM auto-update using Local-First with Sync approach
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-045
+
+**Decision**:
+Implement PM auto-update using Local-First with Sync approach
+
+**Rationale**:
+Recorded via `hodge decide` command at 5:13:23 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-17 - Implement session-management using Hybrid with HODGE
+
+**Status**: Accepted
+
+**Context**:
+Feature: session-management
+
+**Decision**:
+Implement session-management using Hybrid with HODGE.md Enhancement approach
+
+**Rationale**:
+Recorded via `hodge decide` command at 5:12:54 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-16 - Implement cross-tool-compatibility using Hybrid approach with HODGE
 
 **Status**: Accepted

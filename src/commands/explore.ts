@@ -10,6 +10,7 @@ import { existsSync } from 'fs';
 import { cacheManager, featureCache, standardsCache } from '../lib/cache-manager.js';
 import { PatternLearner } from '../lib/pattern-learner.js';
 import { IDManager, type FeatureID } from '../lib/id-manager.js';
+import { sessionManager } from '../lib/session-manager.js';
 
 export interface ExploreOptions {
   force?: boolean;
@@ -181,6 +182,14 @@ export class ExploreCommand {
         confidence: p.frequency / 100,
       }))
     );
+
+    // Save session checkpoint
+    await sessionManager.updateContext(featureName, 'explore');
+    await sessionManager.addCommand(`hodge explore ${featureName}`);
+    await sessionManager.setSummary(
+      `Explored ${featureName} with ${smartTemplate.approaches.length} approaches`
+    );
+    await sessionManager.suggestNext(`Review exploration and decide with 'hodge decide'`);
 
     // Performance report
     const endTime = Date.now();

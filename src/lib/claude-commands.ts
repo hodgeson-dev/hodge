@@ -198,6 +198,14 @@ Remember: The CLI handles decision recording and PM updates. Focus on making tho
       name: 'explore',
       content: `# Hodge Explore Mode
 
+## IMPORTANT: Template Compliance
+When presenting exploration results, you MUST follow this template EXACTLY:
+- Option (c) MUST include the recommended approach name: "Start building with [approach name]"
+- The note "Note: Option (c) will use the recommended approach..." MUST be included
+- Don't abbreviate or modify the menu structure
+- Include ALL menu options (a-f) even if they seem redundant
+- Follow the exact wording shown in the "Next Steps Menu" section below
+
 ## Command Execution
 Execute the portable Hodge CLI command:
 \`\`\`bash
@@ -762,10 +770,19 @@ When in Claude Code, the command creates:
 
 You can edit the commit message directly in the markdown file!
 
+**IMPORTANT: How to Continue After Editing:**
+1. Edit the commit message in the \`ui.md\` file
+2. Update the \`state.json\` file:
+   - Change \`"status": "pending"\` to \`"status": "confirmed"\`
+   - OR add your custom message to the \`"customMessage"\` field
+3. Re-run the command - it will detect your changes and proceed
+
 ### Step 3: Finalize Ship
 Re-run the command to use your edited message:
 \`\`\`bash
-hodge ship {{feature}} --yes
+hodge ship {{feature}}        # Will detect confirmed state
+# OR
+hodge ship {{feature}} --yes   # Use suggested message as-is
 \`\`\`
 
 ## Options
@@ -826,6 +843,31 @@ The ship command intelligently examines:
    - **No changelog**: Update CHANGELOG.md
 3. Re-run hardening if needed: \`hodge harden {{feature}}\`
 4. Try shipping again
+
+## Troubleshooting
+
+### "Edit the message and save, then re-run ship to continue" Loop
+If you're stuck in a loop where the command keeps asking you to edit:
+1. Make sure you're updating the \`state.json\` file, not just the \`ui.md\`
+2. Set \`"status": "confirmed"\` in state.json
+3. Or use \`--yes\` flag to accept the suggested message
+
+### Example state.json Update
+\`\`\`json
+{
+  "command": "ship",
+  "status": "confirmed",  // ← Change from "pending" to "confirmed"
+  "data": {
+    "customMessage": "Your custom commit message here",  // ← Optional
+    // ... rest of the data
+  }
+}
+\`\`\`
+
+### Common Issues
+- **Command regenerates ui.md**: You need to set status to "confirmed" not "ready"
+- **Custom message not used**: Add it to both \`customMessage\` and \`suggested\` fields in state.json
+- **Can't find state files**: Check \`.hodge/temp/ship-interaction/{{feature}}/\`
 
 ## Post-Ship Checklist
 - [ ] Code committed with ship message

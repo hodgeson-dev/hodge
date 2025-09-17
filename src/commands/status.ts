@@ -2,10 +2,34 @@ import chalk from 'chalk';
 import fs from 'fs/promises';
 import path from 'path';
 import { existsSync } from 'fs';
+import inquirer from 'inquirer';
 import { HodgeMDGenerator } from '../lib/hodge-md-generator.js';
+import { sessionManager } from '../lib/session-manager.js';
 
 export class StatusCommand {
   async execute(feature?: string): Promise<void> {
+    // Check for existing session first
+    const session = await sessionManager.load();
+    if (session && !feature) {
+      const formatted = sessionManager.formatForDisplay(session);
+      console.log(chalk.blue('📂 Previous Session Found'));
+      console.log(formatted);
+
+      const { continueSession } = await inquirer.prompt<{ continueSession: boolean }>([
+        {
+          type: 'confirm',
+          name: 'continueSession',
+          message: `Continue working on ${session.feature}?`,
+          default: true,
+        },
+      ]);
+
+      if (continueSession) {
+        feature = session.feature;
+        console.log(chalk.green(`✓ Resuming ${feature} in ${session.mode} mode\n`));
+      }
+    }
+
     if (feature) {
       await this.showFeatureStatus(feature);
     } else {

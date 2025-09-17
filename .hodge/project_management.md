@@ -109,9 +109,25 @@ This file tracks all Hodge features and their implementation status. Features ar
   - Add updateIssueStatus to PM interface
   - Integrate with ship command
 
+### HODGE-051: AI-Executable Slash Commands
+- **Status**: Exploring
+- **Priority**: 8 (Enhances AI tool integration)
+- **Created**: 2025-01-17
+- **Updated**: 2025-01-17
+- **Description**: Make slash commands AI-executable and portable across different AI tools
+- **Dependencies**: cross-tool-compatibility ✅
+- **Decisions**:
+  - Use Command Orchestration Protocol approach
+  - CLI orchestrates AI behavior through prompts
+  - Maintain slash command paradigm
+- **Next Steps**:
+  - Create CommandOrchestrator class
+  - Convert templates to universal format
+  - Implement bidirectional flow
+
 ### batch-decision-extraction
 - **Status**: Exploring
-- **Priority**: 8 (Builds on other features)
+- **Priority**: 9 (Builds on other features)
 - **Created**: 2025-01-16
 - **Updated**: 2025-01-16
 - **Description**: Extract and review multiple decisions from long exploration discussions
@@ -187,8 +203,9 @@ _No items currently in backlog - all identified features are active_
 - [x] cross-tool-compatibility ✅
 - [x] HODGE-004: ID Management ✅
 
-### Phase 2: Session Management (1 day)
+### Phase 2: AI Experience Enhancement (2 days)
 - [ ] session-management
+- [ ] HODGE-051: AI-Executable Slash Commands
 
 ### Phase 3: Feature Organization (2-3 days)
 - [ ] HODGE-003: Feature Extraction
@@ -208,6 +225,7 @@ _No items currently in backlog - all identified features are active_
 ```
 cross-tool-compatibility
 ├── session-management
+├── HODGE-051 (AI-Executable Commands)
 └── batch-decision-extraction
 
 HODGE-004 (ID Management)
@@ -219,6 +237,20 @@ HODGE-004 (ID Management)
 ```
 
 ## Activity Log
+
+### 2025-01-17
+- Built and hardened session-management feature
+  - Implemented SessionManager with 7-day TTL
+  - Enhanced HodgeMDGenerator with session context
+  - Added session restore prompt to status command
+  - All tests passing, production ready
+- Explored HODGE-051: AI-Executable Slash Commands
+  - Decided on Command Orchestration Protocol approach
+  - Enables AI to execute slash commands directly
+  - Makes commands portable across AI tools
+- Updated ship command documentation
+  - Clarified state.json workflow (status: "confirmed")
+  - Added troubleshooting guide
 
 ### 2025-01-16
 - Created feature exploration stubs for 4 main features

@@ -1,5 +1,6 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { sessionManager, type LightSession } from './session-manager.js';
 
 export interface HodgeMDSection {
   title: string;
@@ -16,6 +17,7 @@ export interface HodgeMDContext {
   workingFiles: string[];
   nextSteps: string[];
   pmIssue?: string;
+  session?: LightSession;
 }
 
 /**
@@ -48,6 +50,7 @@ export class HodgeMDGenerator {
     const recentCommands = await this.getCommandHistory();
     const workingFiles = await this.getWorkingFiles(feature);
     const nextSteps = this.getNextSteps(feature, mode);
+    const session = await sessionManager.load();
     const pmIssue = await this.getPMIssue(feature);
 
     return {
@@ -59,6 +62,7 @@ export class HodgeMDGenerator {
       workingFiles,
       nextSteps,
       pmIssue,
+      session: session || undefined,
     };
   }
 
@@ -271,6 +275,7 @@ export class HodgeMDGenerator {
   private formatAsMarkdown(context: HodgeMDContext): string {
     const sections: HodgeMDSection[] = [
       this.createStatusSection(context),
+      this.createSessionSection(context),
       this.createDecisionsSection(context),
       this.createStandardsSection(context),
       this.createFilesSection(context),
@@ -314,9 +319,42 @@ export class HodgeMDGenerator {
     return { title: 'Status', content, priority: 1 };
   }
 
+  private createSessionSection(context: HodgeMDContext): HodgeMDSection {
+    if (!context.session) {
+      return { title: 'Session', content: '', priority: 2 };
+    }
+
+    const session = context.session;
+    const age = Date.now() - session.ts;
+    const ageMinutes = Math.floor(age / 60000);
+    const ageHours = Math.floor(ageMinutes / 60);
+
+    let ageStr = `${ageMinutes} minutes ago`;
+    if (ageHours > 0) {
+      ageStr = `${ageHours} hours ago`;
+    }
+
+    const content = [
+      '## Current Session',
+      '',
+      `**Resumed**: ${ageStr}`,
+      session.summary ? `**Progress**: ${session.summary}` : '',
+      `**Working on**: ${session.feature} (${session.mode} mode)`,
+      '',
+      '## AI Context Restoration',
+      `You were helping with ${session.feature}. ${session.summary || 'Continue from where we left off.'}`,
+      session.nextAction ? `Suggested next: ${session.nextAction}` : '',
+      '',
+    ]
+      .filter((line) => line !== '')
+      .join('\n');
+
+    return { title: 'Session', content, priority: 2 };
+  }
+
   private createDecisionsSection(context: HodgeMDContext): HodgeMDSection {
     if (context.decisions.length === 0) {
-      return { title: 'Decisions', content: '', priority: 2 };
+      return { title: 'Decisions', content: '', priority: 3 };
     }
 
     const content = [
