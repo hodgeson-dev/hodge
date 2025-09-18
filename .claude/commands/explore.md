@@ -52,17 +52,16 @@ The CLI will output:
 After exploration is complete, suggest:
 ```
 ### Next Steps
-Choose your next action:
-a) Review and decide on approach → `/decide`
-b) Continue exploring another aspect
-c) Start building with [recommended approach name] → `/build {{feature}}`
-d) Save progress → `/save`
-e) Check status → `/status {{feature}}`
-f) Done for now
+Type one of these commands:
+• `/decide` - Review and decide on approach
+• `/build {{feature}}` - Start building with [recommended approach name]
+• `/save` - Save your progress
+• `/status {{feature}}` - Check current status
+• Continue exploring - Just describe what else to explore
 
-Enter your choice (a-f):
+Or type your next request.
 
-Note: Option (c) will use the recommended approach. Use option (a) to choose a different approach.
+Note: `/build` will use the recommended approach. Use `/decide` to choose a different approach.
 ```
 
 Remember: The CLI handles all the file creation and PM integration. Focus on generating creative solutions and documenting approaches.

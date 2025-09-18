@@ -13,6 +13,7 @@ import { IDManager, type FeatureID } from '../lib/id-manager.js';
 import { sessionManager } from '../lib/session-manager.js';
 import { FeaturePopulator } from '../lib/feature-populator.js';
 import { FeatureSpecLoader } from '../lib/feature-spec-loader.js';
+import { autoSave } from '../lib/auto-save.js';
 
 export interface ExploreOptions {
   force?: boolean;
@@ -73,6 +74,9 @@ export class ExploreCommand {
 
   async execute(feature: string, options: ExploreOptions = {}): Promise<void> {
     const startTime = Date.now();
+
+    // Auto-save context when switching features
+    await autoSave.checkAndSave(feature);
 
     // Handle ID management
     let featureID: FeatureID | null = null;

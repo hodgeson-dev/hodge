@@ -4,6 +4,7 @@ import * as path from 'path';
 import { existsSync } from 'fs';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import { autoSave } from '../lib/auto-save.js';
 
 const execAsync = promisify(exec);
 
@@ -42,6 +43,9 @@ export class HardenCommand {
    */
   async execute(feature: string, options: HardenOptions = {}): Promise<void> {
     const startTime = Date.now();
+
+    // Auto-save context when switching features
+    await autoSave.checkAndSave(feature);
 
     try {
       // Validate inputs

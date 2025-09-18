@@ -22,10 +22,14 @@ export interface LightSession {
  * Implements lightweight checkpoints that enhance HODGE.md
  */
 export class SessionManager {
-  private readonly sessionFile = '.hodge/.session';
+  private readonly sessionFile: string;
   private readonly maxCommands = 10;
   private readonly maxDecisions = 5;
   private readonly sessionTTL = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+  constructor(basePath: string = '.') {
+    this.sessionFile = join(basePath, '.hodge', '.session');
+  }
 
   /**
    * Save or update the current session

@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { CacheManager } from '../lib/cache-manager.js';
+import { autoSave } from '../lib/auto-save.js';
 
 export interface BuildOptions {
   skipChecks?: boolean;
@@ -37,6 +38,9 @@ export class BuildCommand {
    */
   async execute(feature: string, options: BuildOptions = {}): Promise<void> {
     const startTime = Date.now();
+
+    // Auto-save context when switching features
+    await autoSave.checkAndSave(feature);
 
     try {
       // Validate inputs

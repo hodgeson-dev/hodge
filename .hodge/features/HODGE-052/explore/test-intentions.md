@@ -1,48 +1,81 @@
-# Test Intentions for HODGE-052
+# Test Intentions for HODGE-052 - Auto-Save Context
 
 ## Purpose
-Document what we intend to test when this feature moves to build mode.
+Document what we intend to test for the auto-save context feature.
 These are not actual tests, but a checklist of behaviors to verify.
 
 ## Core Requirements
-- [ ] Should not crash when executed
-- [ ] Should complete within reasonable time (<500ms)
-- [ ] Should handle invalid input gracefully
-- [ ] Should integrate with existing systems
+- [ ] Should auto-save when switching from one feature to another
+- [ ] Should show notification when auto-save occurs
+- [ ] Should not auto-save when no feature is currently active
+- [ ] Should not auto-save when switching to the same feature
+- [ ] Should complete auto-save quickly (<100ms)
+- [ ] Should handle auto-save failures gracefully
 
-## General-Specific Requirements
-- [ ] Should provide the intended functionality
-- [ ] Should integrate with existing code
-- [ ] Should handle errors appropriately
-- [ ] Should be maintainable and documented
+## Auto-Save Trigger Tests
+- [ ] Should trigger on `hodge explore <new-feature>` when another feature is active
+- [ ] Should trigger on `hodge build <new-feature>` when another feature is active
+- [ ] Should trigger on `hodge harden <new-feature>` when another feature is active
+- [ ] Should trigger on `hodge ship <new-feature>` when another feature is active
+- [ ] Should NOT trigger on non-feature commands (init, status, etc.)
 
-## Approach-Specific Tests
-- [ ] Standard Implementation approach should work correctly
+## Save Behavior Tests
+- [ ] Should create save in `.hodge/saves/` directory
+- [ ] Should use timestamp-based naming for auto-saves
+- [ ] Should preserve all context files (exploration.md, decisions, etc.)
+- [ ] Should update `.hodge/context.json` with new feature
+- [ ] Should not overwrite manual saves
+
+## Notification Tests
+- [ ] Should display feature name being auto-saved
+- [ ] Should display save location
+- [ ] Should use appropriate color coding (yellow for auto-save)
+- [ ] Should be concise (single line notification)
+
+## Error Handling Tests
+- [ ] Should handle disk full gracefully
+- [ ] Should handle permission denied on save directory
+- [ ] Should handle corrupted context.json file
+- [ ] Should handle missing SessionManager
+- [ ] Should continue with command even if auto-save fails
+
+## Performance Tests
+- [ ] Auto-save overhead should be <100ms
+- [ ] Should not block command execution
+- [ ] Should handle rapid feature switches (debouncing)
+- [ ] Memory usage should not increase significantly
+
+## Configuration Tests
+- [ ] Should respect auto-save disabled setting (if implemented)
+- [ ] Should log auto-saves if logging enabled
+- [ ] Should work with custom save directories
 
 ## Integration Tests
-- [ ] Should work with current authentication system
-- [ ] Should respect user permissions
-- [ ] Should handle database transactions properly
-- [ ] Should emit appropriate events/logs
+- [ ] Should work with existing /save command
+- [ ] Should work with /load command
+- [ ] Should integrate with SessionManager correctly
+- [ ] Should update HodgeMDGenerator context
+- [ ] Should work with PM integration
 
-## Performance Criteria
-- [ ] Response time < 200ms for typical operations
-- [ ] Memory usage should not increase significantly
-- [ ] Should handle concurrent operations
-- [ ] Should scale to expected load
+## Edge Cases
+- [ ] Switching to non-existent feature
+- [ ] Switching from unsaved new feature
+- [ ] Multiple concurrent hodge processes
+- [ ] Auto-save during long-running command
+- [ ] Circular feature switching (A→B→A)
 
 ## User Experience
-- [ ] Should provide clear error messages
-- [ ] Should have appropriate loading states
-- [ ] Should be intuitive to use
-- [ ] Should work across supported browsers/platforms
+- [ ] Should feel seamless and automatic
+- [ ] Should not interrupt workflow
+- [ ] Should provide confidence that work is saved
+- [ ] Should be discoverable through notifications
 
 ## Notes
-Add any specific test scenarios or edge cases discovered during exploration:
-
--
--
--
+Discovered during exploration:
+- Need to check if feature has unsaved changes
+- Consider debouncing for rapid switches
+- May need to add auto-save history/log
+- Consider max auto-saves limit to prevent disk fill
 
 ---
-*Generated during exploration phase. Convert to actual tests during build phase.*
+*Test intentions for auto-save context feature. Convert to actual tests during build phase.*

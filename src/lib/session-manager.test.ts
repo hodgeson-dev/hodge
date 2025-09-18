@@ -2,13 +2,19 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { promises as fs } from 'fs';
 import { SessionManager } from './session-manager';
 import { existsSync } from 'fs';
+import path from 'path';
+import { mkdir } from 'fs/promises';
+import { rm } from 'fs/promises';
 
 describe('SessionManager', () => {
   let sessionManager: SessionManager;
-  const testSessionFile = '.hodge/.session';
+  const testDir = path.join(process.cwd(), '.test-session');
+  const testSessionFile = path.join(testDir, '.hodge', '.session');
 
   beforeEach(async () => {
-    sessionManager = new SessionManager();
+    // Create isolated test directory
+    await mkdir(path.join(testDir, '.hodge'), { recursive: true });
+    sessionManager = new SessionManager(testDir);
     // Clean up any existing session
     if (existsSync(testSessionFile)) {
       await fs.unlink(testSessionFile);
@@ -16,10 +22,8 @@ describe('SessionManager', () => {
   });
 
   afterEach(async () => {
-    // Clean up after tests
-    if (existsSync(testSessionFile)) {
-      await fs.unlink(testSessionFile);
-    }
+    // Clean up test directory
+    await rm(testDir, { recursive: true, force: true });
   });
 
   describe('Smoke Tests', () => {

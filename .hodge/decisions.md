@@ -26,6 +26,25 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-18 - Implement Event-Based Auto-Save approach for HODGE-052: auto-save context through command interceptor pattern that wraps feature commands, providing transparent auto-save with minimal code changes
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-052
+
+**Decision**:
+Implement Event-Based Auto-Save approach for HODGE-052: auto-save context through command interceptor pattern that wraps feature commands, providing transparent auto-save with minimal code changes
+
+**Rationale**:
+Recorded via `hodge decide` command at 10:15:55 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-18 - HODGE-003 is production-ready despite project-wide lint issues - the feature extraction code itself has no lint errors, all tests pass, and the functionality is complete
 
 **Status**: Accepted

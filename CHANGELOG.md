@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Auto-save context when switching features (HODGE-052)
+  - Automatically saves context.json when switching between features
+  - Non-blocking implementation with error resilience
+  - User notification on successful saves
+  - Integration with explore, build, harden, and ship commands
+  - Behavioral test coverage following "test behavior, not implementation" principle
 - Cross-tool compatibility feature with HODGE.md generation
   - Automatic context file generation for any AI assistant
   - Integration with `hodge status` command
@@ -17,9 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Status command now generates HODGE.md automatically
+- Session manager now supports basePath parameter for test isolation
 
 ### Fixed
-- N/A
+- Session manager test isolation to prevent test interference
 
 ## [0.1.0-alpha.1] - 2025-01-16
 

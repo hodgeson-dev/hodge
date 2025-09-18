@@ -23,6 +23,7 @@ import {
 } from '../lib/git-utils.js';
 import { getPRManager } from '../lib/pr-manager.js';
 import { getConfigManager } from '../lib/config-manager.js';
+import { autoSave } from '../lib/auto-save.js';
 
 const execAsync = promisify(exec);
 
@@ -48,6 +49,9 @@ export class ShipCommand {
       await this.continuePushFromReview(feature, options);
       return;
     }
+
+    // Auto-save context when switching features
+    await autoSave.checkAndSave(feature);
 
     console.log(chalk.green('🚀 Entering Ship Mode'));
     console.log(chalk.gray(`Feature: ${feature}\n`));
