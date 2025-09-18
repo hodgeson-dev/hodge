@@ -26,6 +26,44 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-18 - Implement Context-Aware Workflow Commands using Implicit Context Reading approach - commands will automatically read from context
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-054
+
+**Decision**:
+Implement Context-Aware Workflow Commands using Implicit Context Reading approach - commands will automatically read from context.json when no feature argument is provided, maintaining backward compatibility while providing seamless workflow progression
+
+**Rationale**:
+Recorded via `hodge decide` command at 10:58:30 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-18 - Use Implicit Context Reading approach for context-aware workflow commands - commands will read from context
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-054
+
+**Decision**:
+Use Implicit Context Reading approach for context-aware workflow commands - commands will read from context.json by default with optional feature override
+
+**Rationale**:
+Recorded via `hodge decide` command at 10:53:42 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-18 - Implement Event-Based Auto-Save approach for HODGE-052: auto-save context through command interceptor pattern that wraps feature commands, providing transparent auto-save with minimal code changes
 
 **Status**: Accepted

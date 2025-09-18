@@ -14,6 +14,7 @@ import { sessionManager } from '../lib/session-manager.js';
 import { FeaturePopulator } from '../lib/feature-populator.js';
 import { FeatureSpecLoader } from '../lib/feature-spec-loader.js';
 import { autoSave } from '../lib/auto-save.js';
+import { contextManager } from '../lib/context-manager.js';
 
 export interface ExploreOptions {
   force?: boolean;
@@ -243,6 +244,9 @@ export class ExploreCommand {
       `Explored ${featureName} with ${smartTemplate.approaches.length} approaches`
     );
     await sessionManager.suggestNext(`Review exploration and decide with 'hodge decide'`);
+
+    // Update context manager for context-aware commands
+    await contextManager.updateForCommand('explore', featureName, 'explore');
 
     // Performance report
     const endTime = Date.now();

@@ -53,25 +53,27 @@ const exploreCmd = program
   );
 
 const buildCmd = program
-  .command('build <feature>')
-  .description('[Internal] Build a feature')
+  .command('build [feature]')
+  .description('[Internal] Build a feature (uses current context if not specified)')
   .option('--skip-checks', 'Skip exploration and decision checks')
-  .action(async (feature: string, options: { skipChecks?: boolean }) => {
+  .action(async (feature: string | undefined, options: { skipChecks?: boolean }) => {
     const { BuildCommand } = await import('../commands/build');
     const buildCommand = new BuildCommand();
     await buildCommand.execute(feature, options);
   });
 
 const hardenCmd = program
-  .command('harden <feature>')
-  .description('[Internal] Harden a feature for production')
+  .command('harden [feature]')
+  .description('[Internal] Harden a feature for production (uses current context if not specified)')
   .option('--skip-tests', 'Skip test execution')
   .option('--auto-fix', 'Attempt to auto-fix linting issues')
-  .action(async (feature: string, options: { skipTests?: boolean; autoFix?: boolean }) => {
-    const { HardenCommand } = await import('../commands/harden');
-    const hardenCommand = new HardenCommand();
-    await hardenCommand.execute(feature, options);
-  });
+  .action(
+    async (feature: string | undefined, options: { skipTests?: boolean; autoFix?: boolean }) => {
+      const { HardenCommand } = await import('../commands/harden');
+      const hardenCommand = new HardenCommand();
+      await hardenCommand.execute(feature, options);
+    }
+  );
 
 const statusCmd = program
   .command('status [feature]')
@@ -105,8 +107,8 @@ const decideCmd = program
   });
 
 const shipCmd = program
-  .command('ship <feature>')
-  .description('[Internal] Ship a feature')
+  .command('ship [feature]')
+  .description('[Internal] Ship a feature (uses current context if not specified)')
   .option('--skip-tests', 'Skip test execution (not recommended)')
   .option('-m, --message <message>', 'Custom commit message')
   .option('--no-commit', 'Skip automatic git commit')
@@ -120,7 +122,7 @@ const shipCmd = program
   .option('--continue-push', 'Continue push from saved review')
   .action(
     async (
-      feature: string,
+      feature: string | undefined,
       options: {
         skipTests?: boolean;
         message?: string;

@@ -24,6 +24,7 @@ import {
 import { getPRManager } from '../lib/pr-manager.js';
 import { getConfigManager } from '../lib/config-manager.js';
 import { autoSave } from '../lib/auto-save.js';
+import { contextManager } from '../lib/context-manager.js';
 
 const execAsync = promisify(exec);
 
@@ -43,7 +44,19 @@ export interface ShipOptions {
 }
 
 export class ShipCommand {
-  async execute(feature: string, options: ShipOptions = {}): Promise<void> {
+  async execute(feature?: string, options: ShipOptions = {}): Promise<void> {
+    // Get feature from argument or context
+    const resolvedFeature = await contextManager.getFeature(feature);
+
+    if (!resolvedFeature) {
+      throw new Error(
+        'No feature specified. Please provide a feature name or run "hodge explore <feature>" first to set context.'
+      );
+    }
+
+    // Use resolved feature from here on
+    feature = resolvedFeature;
+
     // Check if continuing from push review
     if (options.continuePush) {
       await this.continuePushFromReview(feature, options);
@@ -52,6 +65,9 @@ export class ShipCommand {
 
     // Auto-save context when switching features
     await autoSave.checkAndSave(feature);
+
+    // Update context for this command
+    await contextManager.updateForCommand('ship', feature, 'ship');
 
     console.log(chalk.green('🚀 Entering Ship Mode'));
     console.log(chalk.gray(`Feature: ${feature}\n`));

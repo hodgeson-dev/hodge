@@ -3,6 +3,7 @@ import { promises as fs } from 'fs';
 import * as path from 'path';
 import { CacheManager } from '../lib/cache-manager.js';
 import { autoSave } from '../lib/auto-save.js';
+import { contextManager } from '../lib/context-manager.js';
 
 export interface BuildOptions {
   skipChecks?: boolean;
@@ -31,19 +32,34 @@ export class BuildCommand {
 
   /**
    * Execute the build command for a feature
-   * @param {string} feature - The feature name to build
+   * @param {string} feature - The feature name to build (optional, uses context if not provided)
    * @param {BuildOptions} options - Build options including skipChecks flag
    * @returns {Promise<void>}
    * @throws {Error} If critical file operations fail
    */
-  async execute(feature: string, options: BuildOptions = {}): Promise<void> {
+  async execute(feature?: string, options: BuildOptions = {}): Promise<void> {
     const startTime = Date.now();
+
+    // Get feature from argument or context
+    const resolvedFeature = await contextManager.getFeature(feature);
+
+    if (!resolvedFeature) {
+      throw new Error(
+        'No feature specified. Please provide a feature name or run "hodge explore <feature>" first to set context.'
+      );
+    }
+
+    // Use resolved feature from here on
+    feature = resolvedFeature;
 
     // Auto-save context when switching features
     await autoSave.checkAndSave(feature);
 
+    // Update context for this command
+    await contextManager.updateForCommand('build', feature, 'build');
+
     try {
-      // Validate inputs
+      // Validate inputs (redundant but keeping for safety)
       if (!feature || typeof feature !== 'string') {
         throw new Error('Feature name is required and must be a string');
       }

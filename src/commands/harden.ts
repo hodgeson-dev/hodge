@@ -5,6 +5,7 @@ import { existsSync } from 'fs';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { autoSave } from '../lib/auto-save.js';
+import { contextManager } from '../lib/context-manager.js';
 
 const execAsync = promisify(exec);
 
@@ -36,16 +37,31 @@ interface ValidationResults {
 export class HardenCommand {
   /**
    * Execute the harden command for a feature
-   * @param {string} feature - The feature name to harden
+   * @param {string} feature - The feature name to harden (optional, uses context if not provided)
    * @param {HardenOptions} options - Harden options including skipTests and autoFix
    * @returns {Promise<void>}
    * @throws {Error} If critical validation fails
    */
-  async execute(feature: string, options: HardenOptions = {}): Promise<void> {
+  async execute(feature?: string, options: HardenOptions = {}): Promise<void> {
     const startTime = Date.now();
+
+    // Get feature from argument or context
+    const resolvedFeature = await contextManager.getFeature(feature);
+
+    if (!resolvedFeature) {
+      throw new Error(
+        'No feature specified. Please provide a feature name or run "hodge explore <feature>" first to set context.'
+      );
+    }
+
+    // Use resolved feature from here on
+    feature = resolvedFeature;
 
     // Auto-save context when switching features
     await autoSave.checkAndSave(feature);
+
+    // Update context for this command
+    await contextManager.updateForCommand('harden', feature, 'harden');
 
     try {
       // Validate inputs
