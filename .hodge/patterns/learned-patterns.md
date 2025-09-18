@@ -14,11 +14,11 @@
 
 
 ### Error-handling
-- **Error Boundary** (1x, 20% confidence)
+- **Error Boundary** (2x, 40% confidence)
 
 
 ## Recommendations
 
 
 ---
-*Generated: 2025-09-17T00:51:50.889Z*
+*Generated: 2025-09-18T16:24:30.440Z*

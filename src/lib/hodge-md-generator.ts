@@ -13,6 +13,7 @@ export interface HodgeMDContext {
   mode: string;
   decisions: Array<{ date: string; decision: string }>;
   standards: Array<{ category: string; rules: string[] }>;
+  principles?: Array<{ title: string; description: string }>;
   recentCommands: string[];
   workingFiles: string[];
   nextSteps: string[];
@@ -47,6 +48,7 @@ export class HodgeMDGenerator {
     const mode = await this.getCurrentMode(feature);
     const decisions = await this.getRecentDecisions(feature);
     const standards = await this.getActiveStandards();
+    const principles = await this.getCorePrinciples();
     const recentCommands = await this.getCommandHistory();
     const workingFiles = await this.getWorkingFiles(feature);
     const nextSteps = this.getNextSteps(feature, mode);
@@ -58,6 +60,7 @@ export class HodgeMDGenerator {
       mode,
       decisions,
       standards,
+      principles,
       recentCommands,
       workingFiles,
       nextSteps,
@@ -272,10 +275,43 @@ export class HodgeMDGenerator {
     }
   }
 
+  private async getCorePrinciples(): Promise<
+    Array<{ title: string; description: string }> | undefined
+  > {
+    const principlesPath = path.join('.hodge', 'principles.md');
+
+    try {
+      const content = await fs.readFile(principlesPath, 'utf-8');
+      const principles: Array<{ title: string; description: string }> = [];
+
+      // Parse the Core Principles section
+      const corePrinciplesMatch = content.match(/## Core Principles\n\n([\s\S]*?)(?=\n##|$)/);
+      if (!corePrinciplesMatch) return undefined;
+
+      const principlesText = corePrinciplesMatch[1];
+      const principleBlocks = principlesText.split(/\n### /).filter(Boolean);
+
+      for (const block of principleBlocks) {
+        const lines = block.split('\n');
+        const title = lines[0].replace('### ', '');
+        const description = lines.slice(1).join('\n').trim().split('\n')[0]; // Get first line of description
+
+        if (title && description) {
+          principles.push({ title, description });
+        }
+      }
+
+      return principles.length > 0 ? principles : undefined;
+    } catch {
+      return undefined;
+    }
+  }
+
   private formatAsMarkdown(context: HodgeMDContext): string {
     const sections: HodgeMDSection[] = [
       this.createStatusSection(context),
       this.createSessionSection(context),
+      this.createPrinciplesSection(context),
       this.createDecisionsSection(context),
       this.createStandardsSection(context),
       this.createFilesSection(context),
@@ -426,6 +462,21 @@ export class HodgeMDGenerator {
     ].join('\n');
 
     return { title: 'Next Steps', content, priority: 6 };
+  }
+
+  private createPrinciplesSection(context: HodgeMDContext): HodgeMDSection {
+    if (!context.principles || context.principles.length === 0) {
+      return { title: 'Principles', content: '', priority: 2 };
+    }
+
+    const content = [
+      '## Core Principles',
+      '',
+      ...context.principles.map((p) => `- **${p.title}**: ${p.description}`),
+      '',
+    ].join('\n');
+
+    return { title: 'Principles', content, priority: 2 };
   }
 
   /**

@@ -11,11 +11,16 @@ import { cacheManager, featureCache, standardsCache } from '../lib/cache-manager
 import { PatternLearner } from '../lib/pattern-learner.js';
 import { IDManager, type FeatureID } from '../lib/id-manager.js';
 import { sessionManager } from '../lib/session-manager.js';
+import { FeaturePopulator } from '../lib/feature-populator.js';
+import { FeatureSpecLoader } from '../lib/feature-spec-loader.js';
 
 export interface ExploreOptions {
   force?: boolean;
   verbose?: boolean;
   skipIdManagement?: boolean; // For testing
+  prePopulate?: boolean; // Pre-populate from decisions (legacy)
+  decisions?: string[]; // Specific decisions to link (legacy)
+  fromSpec?: string; // Path to YAML spec file (new approach)
 }
 
 // Simplified feature intent type
@@ -109,6 +114,50 @@ export class ExploreCommand {
           console.log(chalk.blue(`ℹ️  Using existing feature ${featureID.localID}`));
         }
       }
+    }
+
+    // Handle from-spec mode (new approach)
+    if (options.fromSpec) {
+      console.log(chalk.cyan('🔍 Creating feature from specification'));
+
+      const specLoader = new FeatureSpecLoader();
+      const spec = await specLoader.loadSpec(options.fromSpec);
+
+      // Override feature name from spec if provided
+      if (spec.feature.name && spec.feature.name !== featureName) {
+        console.log(chalk.yellow(`Note: Using feature name from spec: ${spec.feature.name}`));
+        featureName = spec.feature.name;
+      }
+
+      const populator = new FeaturePopulator();
+      const decisions = specLoader.extractDecisions(spec);
+      const metadata = specLoader.toPopulatorMetadata(spec);
+
+      await populator.populateFromDecisions(featureName, decisions, metadata);
+
+      // Update session context
+      await sessionManager.updateContext(featureName, 'explore');
+      await sessionManager.suggestNext('Complete exploration and make decisions');
+
+      console.log(chalk.green('\n✓ Feature created from specification'));
+      console.log(chalk.gray(`  Spec file retained: ${options.fromSpec}`));
+      console.log(chalk.gray(`  Review: .hodge/features/${featureName}/explore/exploration.md`));
+      return;
+    }
+
+    // Handle pre-populate mode (legacy approach)
+    if (options.prePopulate) {
+      console.log(chalk.cyan('🔍 Pre-populating feature from decisions'));
+      const populator = new FeaturePopulator();
+      await populator.populateFromDecisions(featureName, options.decisions || []);
+
+      // Update session context
+      await sessionManager.updateContext(featureName, 'explore');
+      await sessionManager.suggestNext('Complete exploration and make decisions');
+
+      console.log(chalk.green('\n✓ Feature pre-populated and ready for exploration'));
+      console.log(chalk.gray(`  Review: .hodge/features/${featureName}/explore/exploration.md`));
+      return;
     }
 
     console.log(chalk.cyan('🔍 Entering Explore Mode (Enhanced)'));

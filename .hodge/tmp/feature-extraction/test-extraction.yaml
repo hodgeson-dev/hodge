@@ -1,0 +1,48 @@
+version: "1.0"
+metadata:
+  extracted_at: "2025-09-18T16:15:00Z"
+  extracted_by: "Claude"
+  session_id: "test-extraction-workflow"
+
+feature:
+  name: "TEST-EXTRACTION"
+  description: "End-to-end test of feature extraction workflow"
+
+  decisions:
+    - text: "Use YAML for feature specifications"
+      date: "2025-09-18"
+    - text: "Preserve context through metadata"
+      date: "2025-09-18"
+    - text: "Support user modification of extracted features"
+      date: "2025-09-18"
+
+  rationale: |
+    These decisions form a coherent feature around the extraction workflow.
+    The YAML spec provides structure, metadata preserves context, and
+    user modification ensures accuracy.
+
+  scope:
+    included:
+      - "YAML specification loading"
+      - "Metadata preservation in exploration files"
+      - "User review workflow"
+    excluded:
+      - "Automatic extraction without review"
+      - "Binary format support"
+
+  dependencies:
+    - "js-yaml"
+    - "fs-extra"
+
+  effort: "Medium"
+  priority: 2
+
+  exploration_areas:
+    - area: "Error Handling"
+      questions:
+        - "How to handle malformed YAML?"
+        - "What if required fields are missing?"
+    - area: "User Experience"
+      questions:
+        - "How to present extracted features for review?"
+        - "Should we support batch extraction?"

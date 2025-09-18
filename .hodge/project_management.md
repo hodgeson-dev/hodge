@@ -5,6 +5,55 @@ This file tracks all Hodge features and their implementation status. Features ar
 
 ## Active Features
 
+### TEST-EXTRACTION
+- **Status**: Exploring
+- **Priority**: 2
+- **Created**: 2025-09-18
+- **Updated**: 2025-09-18
+- **Description**: End-to-end test of feature extraction workflow
+- **Dependencies**: js-yaml, fs-extra
+- **Decisions**:
+  - Use YAML for feature specifications
+  - Preserve context through metadata
+  - Support user modification of extracted features
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### auth-system
+- **Status**: Exploring
+- **Priority**: 2
+- **Created**: 2025-09-18
+- **Updated**: 2025-09-18
+- **Description**: JWT-based authentication system with role-based access control
+- **Dependencies**: jsonwebtoken library, bcrypt for password hashing, Redis for token blacklisting
+- **Decisions**:
+  - Use JWT tokens for stateless authentication
+  - Implement role-based access control (RBAC)
+  - Add refresh token rotation for security
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-056
+- **Status**: Exploring
+- **Priority**: 3
+- **Created**: 2025-09-18
+- **Updated**: 2025-09-18
+- **Description**: Feature extracted from 2 decisions
+- **Decisions**:
+  - Use React for UI
+  - Implement dark mode
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
 ### session-management
 - **Status**: Exploring
 - **Priority**: 1 (Ready to implement - dependencies completed)
@@ -22,18 +71,27 @@ This file tracks all Hodge features and their implementation status. Features ar
 
 
 ### HODGE-003: Feature Extraction
-- **Status**: Exploring
-- **Priority**: 2 (Improves workflow)
+- **Status**: Building
+- **Priority**: 1 (ACTIVE - Critical workflow issue)
 - **Created**: 2025-01-16
-- **Updated**: 2025-01-16
+- **Updated**: 2025-09-18
 - **Description**: Extract concrete features from decisions made during exploration
 - **Dependencies**: HODGE-004 ✅
 - **Decisions**:
   - Build feature extraction system
   - Parse decisions for feature implications
+  - Use file-based extraction via .hodge/tmp/
+  - AI extracts features, backend creates files
+  - Switched focus here after HODGE-051 pivot
+- **Implementation**:
+  - ✅ Created FeatureSpecLoader class
+  - ✅ Enhanced FeaturePopulator with metadata
+  - ✅ Added --from-spec option to explore command
+  - ✅ Documented principles and lessons learned
 - **Next Steps**:
-  - Implement DecisionParser class
-  - Add extract-features command
+  - Complete feature extraction workflow
+  - Test with real decisions
+  - Update /decide template
 
 ### HODGE-005: Feature Auto-Population
 - **Status**: Exploring
@@ -110,20 +168,80 @@ This file tracks all Hodge features and their implementation status. Features ar
   - Integrate with ship command
 
 ### HODGE-051: AI-Executable Slash Commands
-- **Status**: Exploring
-- **Priority**: 8 (Enhances AI tool integration)
+- **Status**: Closed
+- **Priority**: N/A (Architectural pivot)
 - **Created**: 2025-01-17
-- **Updated**: 2025-01-17
+- **Updated**: 2025-09-18
+- **Closed**: 2025-09-18
 - **Description**: Make slash commands AI-executable and portable across different AI tools
 - **Dependencies**: cross-tool-compatibility ✅
+- **Closure Reason**: Architectural pivot to Claude Code only - multi-tool approach abandoned
 - **Decisions**:
   - Use Command Orchestration Protocol approach
   - CLI orchestrates AI behavior through prompts
   - Maintain slash command paradigm
+  - Implement /hodge as primary session/context manager
+  - Include principles in generated HODGE.md
+  - **CLOSED**: Original approach abandoned, core functionality achieved via /hodge
+- **Completed Work**:
+  - ✅ Created /hodge command template
+  - ✅ Implemented hodge context backend command
+  - ✅ Enhanced HodgeMDGenerator with principles section
+  - ✅ Fixed empty feature name error in context command
+- **Deferred Work**:
+  - Declarative command system (may revisit later)
+  - CLI timeout fixes (not critical with new approach)
+
+### HODGE-052: Persistent Current Feature Context
+- **Status**: Planning
+- **Priority**: 3 (Foundation for context-aware commands)
+- **Created**: 2025-09-18
+- **Updated**: 2025-09-18
+- **Description**: Implement persistent current feature context in .hodge/context.json with feature switching via /hodge command
+- **Dependencies**: HODGE-051 (for /hodge command)
+- **Decisions**:
+  - Track current feature in .hodge/context.json
+  - /hodge {{feature}} switches current feature
+  - Commands default to current feature
+  - Support explicit feature override
 - **Next Steps**:
-  - Create CommandOrchestrator class
-  - Convert templates to universal format
-  - Implement bidirectional flow
+  - Create ContextManager class
+  - Update /hodge command for feature switching
+  - Add getCurrentFeature helper
+
+### HODGE-053: Discovery Exploration Mode
+- **Status**: Planning
+- **Priority**: 4 (Enhances exploration workflow)
+- **Created**: 2025-09-18
+- **Updated**: 2025-09-18
+- **Description**: Implement discovery exploration mode for exploring topics without specific features
+- **Dependencies**: HODGE-052 (for context awareness)
+- **Decisions**:
+  - Support /explore "topic" for non-feature exploration
+  - Create .hodge/explorations/ directory structure
+  - Detect quotes or natural language vs feature IDs
+  - Topics result in decisions that create features
+- **Next Steps**:
+  - Implement topic detection logic
+  - Create exploration directory structure
+  - Update explore command with dual modes
+
+### HODGE-054: Context-Aware Workflow Commands
+- **Status**: Planning
+- **Priority**: 3 (Core workflow improvement)
+- **Created**: 2025-09-18
+- **Updated**: 2025-09-18
+- **Description**: Update all workflow commands to be context-aware with optional feature override
+- **Dependencies**: HODGE-052 (requires current feature context)
+- **Decisions**:
+  - Commands use current feature by default
+  - Support optional explicit feature override
+  - Show helpful error if no current feature
+  - Maintain backward compatibility
+- **Next Steps**:
+  - Update all workflow commands (explore, build, ship, etc.)
+  - Add context validation
+  - Update command templates
 
 ### batch-decision-extraction
 - **Status**: Exploring
@@ -203,9 +321,12 @@ _No items currently in backlog - all identified features are active_
 - [x] cross-tool-compatibility ✅
 - [x] HODGE-004: ID Management ✅
 
-### Phase 2: AI Experience Enhancement (2 days)
+### Phase 2: AI Experience Enhancement (3-4 days)
 - [ ] session-management
-- [ ] HODGE-051: AI-Executable Slash Commands
+- [~] HODGE-051: AI-Executable Slash Commands (In Progress)
+- [ ] HODGE-052: Persistent Current Feature Context
+- [ ] HODGE-054: Context-Aware Workflow Commands
+- [ ] HODGE-053: Discovery Exploration Mode
 
 ### Phase 3: Feature Organization (2-3 days)
 - [ ] HODGE-003: Feature Extraction
@@ -237,6 +358,27 @@ HODGE-004 (ID Management)
 ```
 
 ## Activity Log
+
+### 2025-09-18
+- Continued work on HODGE-051: AI-Executable Slash Commands
+  - Implemented /hodge command as primary session/context manager
+  - Created hodge context backend command with --list, --recent, --feature options
+  - Enhanced HodgeMDGenerator to include principles from .hodge/principles.md
+  - Fixed empty feature name error in context command
+  - **CLOSED HODGE-051** due to architectural pivot to Claude Code only
+- Made architectural decisions about context-aware commands
+  - Decided on persistent current feature context approach
+  - Designed dual-mode exploration (feature vs discovery)
+  - Created separation of concerns: /hodge owns context, commands own actions
+- Created three new features:
+  - HODGE-052: Persistent Current Feature Context
+  - HODGE-053: Discovery Exploration Mode
+  - HODGE-054: Context-Aware Workflow Commands
+- **Switched to HODGE-003**: Feature Extraction
+  - Identified as critical workflow issue
+  - Previously implemented FeatureSpecLoader and enhanced FeaturePopulator
+  - Current focus on completing extraction workflow
+- Updated project_management.md with new features and progress
 
 ### 2025-01-17
 - Built and hardened session-management feature

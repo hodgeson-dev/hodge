@@ -17,10 +17,10 @@ const program = new Command();
 
 program
   .name('hodge')
-  .description(
-    'AI development framework: Freedom to explore, discipline to build, confidence to ship'
-  )
-  .version(packageJson.version);
+  .description('Claude Code companion tool for AI-driven development')
+  .version(packageJson.version)
+  .option('--show-internal', 'Show internal commands used by Claude Code')
+  .helpOption('-h, --help', 'Display help for command');
 
 program
   .command('init')
@@ -34,19 +34,27 @@ program
     await initCommand.execute(options);
   });
 
-program
+const exploreCmd = program
   .command('explore <feature>')
-  .description('Start exploring a new feature with AI assistance')
+  .description('[Internal] Start exploring a new feature')
   .option('-f, --force', 'Force re-exploration even if one exists')
-  .action(async (feature: string, options: { force?: boolean }) => {
-    const { ExploreCommand } = await import('../commands/explore');
-    const exploreCommand = new ExploreCommand();
-    await exploreCommand.execute(feature, options);
-  });
+  .option('--from-spec <path>', 'Create feature from YAML specification file')
+  .option('--pre-populate', 'Pre-populate feature from decisions (legacy)')
+  .option('--decisions <decisions...>', 'Link specific decisions to the feature (legacy)')
+  .action(
+    async (
+      feature: string,
+      options: { force?: boolean; fromSpec?: string; prePopulate?: boolean; decisions?: string[] }
+    ) => {
+      const { ExploreCommand } = await import('../commands/explore');
+      const exploreCommand = new ExploreCommand();
+      await exploreCommand.execute(feature, options);
+    }
+  );
 
-program
+const buildCmd = program
   .command('build <feature>')
-  .description('Build a feature with recommended standards')
+  .description('[Internal] Build a feature')
   .option('--skip-checks', 'Skip exploration and decision checks')
   .action(async (feature: string, options: { skipChecks?: boolean }) => {
     const { BuildCommand } = await import('../commands/build');
@@ -54,9 +62,9 @@ program
     await buildCommand.execute(feature, options);
   });
 
-program
+const hardenCmd = program
   .command('harden <feature>')
-  .description('Harden a feature for production with enforced standards')
+  .description('[Internal] Harden a feature for production')
   .option('--skip-tests', 'Skip test execution')
   .option('--auto-fix', 'Attempt to auto-fix linting issues')
   .action(async (feature: string, options: { skipTests?: boolean; autoFix?: boolean }) => {
@@ -65,18 +73,30 @@ program
     await hardenCommand.execute(feature, options);
   });
 
-program
+const statusCmd = program
   .command('status [feature]')
-  .description('Show status of features and current context')
+  .description('[Internal] Show status of features')
   .action(async (feature?: string) => {
     const { StatusCommand } = await import('../commands/status');
     const statusCommand = new StatusCommand();
     await statusCommand.execute(feature);
   });
 
-program
+const contextCmd = program
+  .command('context')
+  .description('[Internal] Load project context and manage sessions')
+  .option('--list', 'List all saved sessions')
+  .option('--recent', 'Load most recent saved session')
+  .option('--feature <feature>', 'Load context for specific feature')
+  .action(async (options: { list?: boolean; recent?: boolean; feature?: string }) => {
+    const { ContextCommand } = await import('../commands/context');
+    const contextCommand = new ContextCommand();
+    await contextCommand.execute(options);
+  });
+
+const decideCmd = program
   .command('decide <decision>')
-  .description('Record a project decision')
+  .description('[Internal] Record a project decision')
   .option('-f, --feature <feature>', 'Associate decision with a specific feature')
   .action(async (decision: string, options: { feature?: string }) => {
     const { DecideCommand } = await import('../commands/decide');
@@ -84,9 +104,9 @@ program
     await decideCommand.execute(decision, options);
   });
 
-program
+const shipCmd = program
   .command('ship <feature>')
-  .description('Ship a feature to production')
+  .description('[Internal] Ship a feature')
   .option('--skip-tests', 'Skip test execution (not recommended)')
   .option('-m, --message <message>', 'Custom commit message')
   .option('--no-commit', 'Skip automatic git commit')
@@ -121,9 +141,9 @@ program
     }
   );
 
-program
+const todosCmd = program
   .command('todos')
-  .description('List all TODO comments in the codebase')
+  .description('[Internal] List TODO comments')
   .option('-p, --pattern <pattern>', 'Glob pattern for files to search')
   .option('--json', 'Output as JSON')
   .action(async (options: { pattern?: string; json?: boolean }) => {
@@ -132,13 +152,47 @@ program
     todosCommand.execute(options);
   });
 
-program
+const linkCmd = program
   .command('link <localID> <externalID>')
-  .description('Link a local feature ID to an external PM tool ID')
+  .description('[Internal] Link feature IDs')
   .action(async (localID: string, externalID: string) => {
     const { LinkCommand } = await import('../commands/link');
     const linkCommand = new LinkCommand();
     await linkCommand.execute(localID, externalID);
   });
+
+// Check if --show-internal is in the args BEFORE we parse
+const showInternal = process.argv.includes('--show-internal');
+
+// Hide internal commands unless --show-internal is used
+if (!showInternal) {
+  const internalCommands = [
+    exploreCmd,
+    buildCmd,
+    hardenCmd,
+    statusCmd,
+    contextCmd,
+    decideCmd,
+    shipCmd,
+    todosCmd,
+    linkCmd,
+  ];
+
+  internalCommands.forEach((cmd) => {
+    // TypeScript doesn't know about hidden property, use type assertion
+    (cmd as unknown as { _hidden: boolean })._hidden = true;
+  });
+}
+
+// Add custom help text
+program.on('--help', () => {
+  if (!showInternal) {
+    console.log('');
+    console.log('This tool is designed to work with Claude Code.');
+    console.log('Run "hodge init" to set up your project, then use Claude Code slash commands.');
+    console.log('');
+    console.log('For internal commands (used by Claude), run: hodge --show-internal --help');
+  }
+});
 
 program.parse();

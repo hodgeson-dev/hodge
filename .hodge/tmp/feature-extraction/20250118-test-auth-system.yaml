@@ -1,0 +1,68 @@
+version: "1.0"
+metadata:
+  extracted_at: "2025-01-18T14:30:00Z"
+  extracted_by: "Claude"
+  session_id: "test-session-001"
+
+feature:
+  name: "auth-system"
+  description: "JWT-based authentication system with role-based access control"
+
+  decisions:
+    - text: "Use JWT tokens for stateless authentication"
+      date: "2025-01-18"
+    - text: "Implement role-based access control (RBAC)"
+      date: "2025-01-17"
+    - text: "Add refresh token rotation for security"
+      date: "2025-01-17"
+
+  rationale: |
+    These three decisions all relate to the authentication and authorization layer.
+    They form a coherent unit because:
+    - JWT provides the authentication mechanism
+    - RBAC provides the authorization framework
+    - Refresh tokens enhance the security of the JWT implementation
+    Together they create a complete auth solution.
+
+  scope:
+    included:
+      - "JWT token generation and validation"
+      - "Role and permission models"
+      - "Refresh token rotation logic"
+      - "Middleware for route protection"
+    excluded:
+      - "User registration flow"
+      - "Password reset functionality"
+      - "OAuth/SSO integration"
+
+  dependencies:
+    - "jsonwebtoken library"
+    - "bcrypt for password hashing"
+    - "Redis for token blacklisting"
+
+  effort: "3 days"
+  priority: 1
+
+  exploration_areas:
+    - area: "Token Strategy"
+      questions:
+        - "What should be the JWT expiration time?"
+        - "Should we use symmetric or asymmetric signing?"
+        - "How to handle token revocation?"
+
+    - area: "RBAC Design"
+      questions:
+        - "Should roles be hierarchical or flat?"
+        - "How granular should permissions be?"
+        - "Dynamic vs static role assignment?"
+
+    - area: "Security Considerations"
+      questions:
+        - "How to detect and prevent token replay attacks?"
+        - "Should we implement rate limiting?"
+        - "How to handle concurrent refresh token requests?"
+
+  risks:
+    - "JWT tokens can't be invalidated without blacklisting"
+    - "Token size might exceed header limits with many permissions"
+    - "Refresh token rotation complexity"

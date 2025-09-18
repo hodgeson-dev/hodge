@@ -3,24 +3,26 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: HODGE-051
+**Feature**: general
 **Mode**: explore
-**PM Issue**: HODGE-051
-**Last Updated**: 2025-09-17T00:48:49.483Z
+**Last Updated**: 2025-09-18T14:49:12.386Z
 ## Current Session
-**Resumed**: 10 minutes ago
-**Progress**: Explored HODGE-051 with 1 approaches
-**Working on**: HODGE-051 (explore mode)
+**Resumed**: 47 minutes ago
+**Working on**: auth-system (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-051. Explored HODGE-051 with 1 approaches
-Suggested next: Review exploration and decide with 'hodge decide'
+You were helping with auth-system. Continue from where we left off.
+Suggested next: Complete exploration and make decisions
+## Core Principles
+
+- **1. AI-Backend Separation**: - **AI (Claude) Role**: Intellectual work - analysis, extraction, design, proposals
+
 ## Recent Decisions
 
+- **2025-09-18**: The only hodge CLI command typically used by developers will be init
+- **2025-09-18**: There will no longer be any effort given toward making hodge a tool intended for developers to use from the command line
+- **2025-09-18**: All AI interactions and workflows for Claude Code slash commands will be in the
+- **2025-09-18**: We are abandoning all effort to enable Hodge to integrate with any AI-assisted software development tool other than Claude Code
 - **2025-09-17**: Implement AI-Executable Slash Commands using Command Orchestration Protocol
-- **2025-09-17**: Implement PM auto-update using Local-First with Sync approach
-- **2025-09-17**: Implement session-management using Hybrid with HODGE
-- **2025-09-16**: Implement cross-tool-compatibility using Hybrid approach with HODGE
-- **2025-09-16**: TODO Comment Convention
 
 ## Active Standards
 
@@ -53,17 +55,11 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - Build completes within 30s
 - Tests complete within 30s
 
-## Working Files
-
-- `.hodge/features/HODGE-051/explore/context.json`
-- `.hodge/features/HODGE-051/explore/exploration.md`
-- `.hodge/features/HODGE-051/explore/test-intentions.md`
-
 ## Next Steps
 
 1. Review exploration approaches
 2. Make decision with `hodge decide`
-3. Start building with `hodge build HODGE-051`
+3. Start building with `hodge build general`
 
 
 ---

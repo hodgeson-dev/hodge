@@ -1,0 +1,17 @@
+{
+  "feature": "HODGE-056",
+  "mode": "explore",
+  "createdAt": "2025-09-18T12:51:18.133Z",
+  "origin": "extracted-from-decisions",
+  "linkedDecisions": [
+    "Use React for UI",
+    "Implement dark mode"
+  ],
+  "status": "pre-populated",
+  "nextSteps": [
+    "Review and refine exploration areas",
+    "Complete technical analysis",
+    "Make architectural decisions",
+    "Define concrete test intentions"
+  ]
+}

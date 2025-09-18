@@ -3,7 +3,7 @@
 ## Command Execution
 
 ### For Single Decision
-Execute the portable Hodge CLI command:
+Claude will execute the following backend operation:
 ```bash
 hodge decide "{{decision}}"
 ```
@@ -14,18 +14,10 @@ hodge decide "{{decision}}" --feature {{feature}}
 ```
 
 ## What This Does
-1. Records decision in `.hodge/decisions.md`
-2. Adds timestamp and formatting
-3. Associates with feature if specified
-4. Updates PM issue with decision comment (if feature linked)
-5. Displays AI context update about the decision
+Records the decision with appropriate context and associations.
 
 ## After Command Execution
-The CLI will output:
-- Decision confirmation
-- File location
-- Total decision count
-- Feature association (if specified)
+The decision is recorded and ready for reference.
 
 ## Interactive Decision Mode
 If you need to make multiple decisions or review pending ones:
@@ -64,35 +56,165 @@ If you need to make multiple decisions or review pending ones:
    ```
 
 ## Decision Format
-Decisions are stored as:
-```markdown
-### YYYY-MM-DD - Decision Title
-
-**Status**: Accepted
-**Context**: Feature or general context
-**Decision**: Full decision text
-**Rationale**: Why this was chosen
-**Consequences**: Impact of decision
-```
+Decisions follow a structured format with date, status, context, rationale, and consequences.
 
 ## PM Integration
-If decision is about a feature with PM issue:
-- Automatically adds comment to PM issue
-- Marks issue as "decided" if appropriate
-- Updates issue description with decision
+Decisions about features are synchronized with project management tools when configured.
+
+## Feature Extraction from Decisions
+After making decisions, review them to identify potential features:
+
+### Extraction Process
+1. **Review recent decisions** (last 5-10):
+   - Look for related technical choices
+   - Identify coherent work boundaries
+   - Find natural feature groupings
+
+2. **For each potential feature, present for review**:
+   ```
+   ## Proposed Feature {{number}} of {{total}}
+
+   **Feature Name**: {{feature_name}}
+   **Description**: {{brief_description}}
+
+   **Related Decisions**:
+   - {{decision_1}}
+   - {{decision_2}}
+   - {{decision_3}}
+
+   **Scope**: {{what_it_includes}}
+   **Out of Scope**: {{what_it_excludes}}
+   **Dependencies**: {{any_dependencies}}
+   **Estimated Effort**: {{small/medium/large}}
+
+   Options:
+   a) Accept as-is
+   b) Modify (you'll specify changes)
+   c) Split into smaller features
+   d) Merge with another feature
+   e) Skip (not ready for feature)
+
+   Your choice:
+   ```
+
+3. **After user approval/modification**:
+
+   First, create the feature specification file:
+   ```yaml
+   # .hodge/tmp/feature-extraction/{{timestamp}}-{{feature_name}}.yaml
+   version: "1.0"
+   metadata:
+     extracted_at: "{{current_iso_timestamp}}"
+     extracted_by: "Claude"
+
+   feature:
+     name: "{{approved_feature_name}}"
+     description: "{{feature_description}}"
+
+     decisions:
+       - text: "{{decision_1}}"
+         date: "{{decision_1_date}}"
+       - text: "{{decision_2}}"
+         date: "{{decision_2_date}}"
+
+     rationale: |
+       {{why_these_decisions_form_coherent_feature}}
+
+     scope:
+       included:
+         - "{{included_item_1}}"
+         - "{{included_item_2}}"
+       excluded:
+         - "{{excluded_item_1}}"
+
+     dependencies:
+       - "{{dependency_1}}"
+
+     effort: "{{effort_estimate}}"
+     priority: {{priority_number}}
+
+     exploration_areas:
+       - area: "{{exploration_area_1}}"
+         questions:
+           - "{{question_1}}"
+           - "{{question_2}}"
+   ```
+
+   Save this to: `.hodge/tmp/feature-extraction/{{timestamp}}-{{feature_name}}.yaml`
+
+   Then create the feature from the specification:
+   ```bash
+   hodge explore "{{approved_feature_name}}" --from-spec .hodge/tmp/feature-extraction/{{timestamp}}-{{feature_name}}.yaml
+   ```
+
+   The feature is now created and ready for exploration. The specification file is preserved for reference.
+
+### Feature Identification Guidelines
+- **Cohesive**: Feature should have a single clear purpose
+- **Loosely-coupled**: Minimize dependencies on other features
+- **Testable**: Clear success criteria from decisions
+- **Valuable**: Delivers concrete user or developer value
+- **Right-sized**: Can be built in 1-3 days
+
+### Example Feature Extraction Flow
+```
+From decisions:
+- "Use TypeScript decorators for command metadata"
+- "Implement command registry pattern"
+- "Add runtime validation for command options"
+
+Proposed Feature:
+Name: command-metadata-system
+Description: Decorator-based command registration with validation
+Scope: Decorators, registry, runtime validation
+Dependencies: None (foundational)
+Effort: Medium (2 days)
+
+User chooses: b) Modify
+User specifies: "Rename to 'command-decorators' and reduce scope to just decorators"
+
+Updated Feature:
+Name: command-decorators
+Description: TypeScript decorators for command metadata
+Scope: Decorator implementation only
+Dependencies: None
+Effort: Small (1 day)
+
+# Save specification:
+cat > .hodge/tmp/feature-extraction/$(date +%Y%m%d-%H%M%S)-command-decorators.yaml << 'EOF'
+version: "1.0"
+feature:
+  name: "command-decorators"
+  description: "TypeScript decorators for command metadata"
+  decisions:
+    - text: "Use TypeScript decorators for command metadata"
+  scope:
+    included: ["Decorator implementation only"]
+  effort: "1 day"
+EOF
+
+# Create feature from spec:
+hodge explore "command-decorators" --from-spec .hodge/tmp/feature-extraction/[filename].yaml
+
+Result: Feature created with full context, spec file preserved
+```
+
+### PM Integration
+Features extracted from decisions will be tracked in project management.
 
 ## Next Steps Menu
-After decisions are recorded:
+After decisions are recorded and features reviewed:
 ```
 ### Next Steps
 Choose your next action:
-a) Start building decided feature → `/build {{feature}}`
-b) Explore another feature → `/explore`
+a) Start exploring extracted feature → `/explore {{feature}}`
+b) Start building existing feature → `/build {{feature}}`
 c) Review all decisions → `/status`
-d) Continue development
-e) Done for now
+d) View project roadmap → `hodge status`
+e) Continue development
+f) Done for now
 
-Enter your choice (a-e):
+Enter your choice (a-f):
 ```
 
-Remember: The CLI handles decision recording and PM updates. Focus on making thoughtful technical choices.
+Remember: The CLI handles decision recording and PM updates. Focus on making thoughtful technical choices and organizing work into manageable features.

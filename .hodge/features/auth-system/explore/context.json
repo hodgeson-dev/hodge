@@ -1,0 +1,18 @@
+{
+  "feature": "auth-system",
+  "mode": "explore",
+  "createdAt": "2025-09-18T14:01:29.977Z",
+  "origin": "extracted-from-decisions",
+  "linkedDecisions": [
+    "Use JWT tokens for stateless authentication",
+    "Implement role-based access control (RBAC)",
+    "Add refresh token rotation for security"
+  ],
+  "status": "pre-populated",
+  "nextSteps": [
+    "Review and refine exploration areas",
+    "Complete technical analysis",
+    "Make architectural decisions",
+    "Define concrete test intentions"
+  ]
+}

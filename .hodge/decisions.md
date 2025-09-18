@@ -26,6 +26,367 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-18 - HODGE-003 is production-ready despite project-wide lint issues - the feature extraction code itself has no lint errors, all tests pass, and the functionality is complete
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-003
+
+**Decision**:
+HODGE-003 is production-ready despite project-wide lint issues - the feature extraction code itself has no lint errors, all tests pass, and the functionality is complete
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:16:37 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-18 - Implement formal feature closure workflow: /close command or closure option in /ship to properly transition features to closed state with reasons
+
+**Status**: Accepted
+
+**Context**:
+General project decision
+
+**Decision**:
+Implement formal feature closure workflow: /close command or closure option in /ship to properly transition features to closed state with reasons
+
+**Rationale**:
+Recorded via `hodge decide` command at 8:55:32 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-18 - Auto-save current context when switching features with notification to user - provides seamless workflow without data loss
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-052
+
+**Decision**:
+Auto-save current context when switching features with notification to user - provides seamless workflow without data loss
+
+**Rationale**:
+Recorded via `hodge decide` command at 8:55:27 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-18 - Use combined detection for feature vs topic: strict pattern (CAPS-123) indicates feature, quotes indicate topic, natural language indicates topic - provides maximum flexibility
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-053
+
+**Decision**:
+Use combined detection for feature vs topic: strict pattern (CAPS-123) indicates feature, quotes indicate topic, natural language indicates topic - provides maximum flexibility
+
+**Rationale**:
+Recorded via `hodge decide` command at 8:55:22 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-18 - Use simple format for
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-052
+
+**Decision**:
+Use simple format for .hodge/context.json initially: { currentFeature, mode, timestamp } - can evolve to richer context as needed
+
+**Rationale**:
+Recorded via `hodge decide` command at 8:55:17 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-18 - The /review command must provide dual awareness: 1) Current Claude Code conversation context (actual work in flight), 2) Filesystem persisted state, and 3) Identify any mismatches between them
+
+**Status**: Accepted
+
+**Context**:
+General project decision
+
+**Decision**:
+The /review command must provide dual awareness: 1) Current Claude Code conversation context (actual work in flight), 2) Filesystem persisted state, and 3) Identify any mismatches between them. This ensures review accuracy.
+
+**Rationale**:
+Recorded via `hodge decide` command at 8:52:48 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-18 - Switch focus to HODGE-003 (Feature Extraction) - This addresses the core problem of context loss when extracting features from decisions
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-003
+
+**Decision**:
+Switch focus to HODGE-003 (Feature Extraction) - This addresses the core problem of context loss when extracting features from decisions. Will implement proper feature extraction workflow.
+
+**Rationale**:
+Recorded via `hodge decide` command at 8:52:05 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-18 - Close HODGE-051 (AI-Executable Commands) - Original multi-tool approach abandoned due to architectural pivot to Claude Code only
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-051
+
+**Decision**:
+Close HODGE-051 (AI-Executable Commands) - Original multi-tool approach abandoned due to architectural pivot to Claude Code only. Core functionality (context management) implemented via /hodge command. Remaining declarative command work deferred.
+
+**Rationale**:
+Recorded via `hodge decide` command at 8:51:59 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-18 - Create HODGE-054: Update all workflow commands to be context-aware with optional feature override
+
+**Status**: Accepted
+
+**Context**:
+General project decision
+
+**Decision**:
+Create HODGE-054: Update all workflow commands to be context-aware with optional feature override
+
+**Rationale**:
+Recorded via `hodge decide` command at 8:04:52 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-18 - Create HODGE-053: Implement discovery exploration mode for exploring topics without specific features
+
+**Status**: Accepted
+
+**Context**:
+General project decision
+
+**Decision**:
+Create HODGE-053: Implement discovery exploration mode for exploring topics without specific features
+
+**Rationale**:
+Recorded via `hodge decide` command at 8:04:47 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-18 - Create HODGE-052: Implement persistent current feature context in
+
+**Status**: Accepted
+
+**Context**:
+General project decision
+
+**Decision**:
+Create HODGE-052: Implement persistent current feature context in .hodge/context.json with feature switching via /hodge command
+
+**Rationale**:
+Recorded via `hodge decide` command at 8:04:44 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-18 - Support dual-mode exploration: feature exploration for specific features, and discovery exploration for topics that result in feature creation
+
+**Status**: Accepted
+
+**Context**:
+General project decision
+
+**Decision**:
+Support dual-mode exploration: feature exploration for specific features, and discovery exploration for topics that result in feature creation
+
+**Rationale**:
+Recorded via `hodge decide` command at 8:04:34 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-18 - Implement context-aware commands with persistent current feature state in
+
+**Status**: Accepted
+
+**Context**:
+General project decision
+
+**Decision**:
+Implement context-aware commands with persistent current feature state in .hodge/context.json - commands operate on current feature by default, with optional explicit feature override
+
+**Rationale**:
+Recorded via `hodge decide` command at 8:04:29 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-18 - Include core principles from
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-051
+
+**Decision**:
+Include core principles from .hodge/principles.md in generated HODGE.md for AI context
+
+**Rationale**:
+Recorded via `hodge decide` command at 8:04:24 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-18 - Implement /hodge command as primary session and context manager - replaces /context, provides session discovery, feature switching, and context loading
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-051
+
+**Decision**:
+Implement /hodge command as primary session and context manager - replaces /context, provides session discovery, feature switching, and context loading
+
+**Rationale**:
+Recorded via `hodge decide` command at 8:04:19 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-18 - The only hodge CLI command typically used by developers will be init
+
+**Status**: Accepted
+
+**Context**:
+General project decision
+
+**Decision**:
+The only hodge CLI command typically used by developers will be init.
+
+**Rationale**:
+Recorded via `hodge decide` command at 11:07:32 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-18 - There will no longer be any effort given toward making hodge a tool intended for developers to use from the command line
+
+**Status**: Accepted
+
+**Context**:
+General project decision
+
+**Decision**:
+There will no longer be any effort given toward making hodge a tool intended for developers to use from the command line. Instead, it provides functionality accessed by the Claude Code slash commands to support their workflows.
+
+**Rationale**:
+Recorded via `hodge decide` command at 11:06:14 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-18 - All AI interactions and workflows for Claude Code slash commands will be in the
+
+**Status**: Accepted
+
+**Context**:
+General project decision
+
+**Decision**:
+All AI interactions and workflows for Claude Code slash commands will be in the .claude/commands markdown files. These markdown files will make calls to hodge for those things where coded solutions shine: writing features, decisions, standards, patterns, etc. to files, making calls to PM software, executing Git commands and accessing GitHub, and so on.
+
+**Rationale**:
+Recorded via `hodge decide` command at 11:03:15 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-18 - We are abandoning all effort to enable Hodge to integrate with any AI-assisted software development tool other than Claude Code
+
+**Status**: Accepted
+
+**Context**:
+General project decision
+
+**Decision**:
+We are abandoning all effort to enable Hodge to integrate with any AI-assisted software development tool other than Claude Code. We may revisit interoperability once we have it working well for Claude Code.
+
+**Rationale**:
+Recorded via `hodge decide` command at 10:57:50 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-17 - Implement AI-Executable Slash Commands using Command Orchestration Protocol
 
 **Status**: Accepted
