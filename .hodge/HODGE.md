@@ -3,26 +3,24 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: general
-**Mode**: explore
-**Last Updated**: 2025-09-18T14:49:12.386Z
+**Feature**: HODGE-054
+**Mode**: ship
+**PM Issue**: HODGE-054
+**Last Updated**: 2025-09-18T20:40:58.125Z
 ## Current Session
-**Resumed**: 47 minutes ago
-**Working on**: auth-system (explore mode)
+**Resumed**: 6 minutes ago
+**Progress**: Explored HODGE-106 with 1 approaches
+**Working on**: HODGE-106 (explore mode)
 ## AI Context Restoration
-You were helping with auth-system. Continue from where we left off.
-Suggested next: Complete exploration and make decisions
+You were helping with HODGE-106. Explored HODGE-106 with 1 approaches
+Suggested next: Review exploration and decide with 'hodge decide'
 ## Core Principles
 
 - **1. AI-Backend Separation**: - **AI (Claude) Role**: Intellectual work - analysis, extraction, design, proposals
 
 ## Recent Decisions
 
-- **2025-09-18**: The only hodge CLI command typically used by developers will be init
-- **2025-09-18**: There will no longer be any effort given toward making hodge a tool intended for developers to use from the command line
-- **2025-09-18**: All AI interactions and workflows for Claude Code slash commands will be in the
-- **2025-09-18**: We are abandoning all effort to enable Hodge to integrate with any AI-assisted software development tool other than Claude Code
-- **2025-09-17**: Implement AI-Executable Slash Commands using Command Orchestration Protocol
+- **2025-09-18**: Create HODGE-054: Update all workflow commands to be context-aware with optional feature override
 
 ## Active Standards
 
@@ -55,11 +53,22 @@ Suggested next: Complete exploration and make decisions
 - Build completes within 30s
 - Tests complete within 30s
 
+## Working Files
+
+- `.hodge/features/HODGE-054/explore/context.json`
+- `.hodge/features/HODGE-054/explore/exploration.md`
+- `.hodge/features/HODGE-054/explore/test-intentions.md`
+- `.hodge/features/HODGE-054/build/build-plan.md`
+- `.hodge/features/HODGE-054/build/context.json`
+- `.hodge/features/HODGE-054/ship/release-notes.md`
+- `.hodge/features/HODGE-054/ship/ship-record.json`
+- `.hodge/features/HODGE-054/ship/ship-summary.md`
+
 ## Next Steps
 
-1. Review exploration approaches
-2. Make decision with `hodge decide`
-3. Start building with `hodge build general`
+1. Commit changes
+2. Create pull request
+3. Update documentation
 
 
 ---

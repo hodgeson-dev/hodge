@@ -79,6 +79,21 @@ export class ExploreCommand {
     // Auto-save context when switching features
     await autoSave.checkAndSave(feature);
 
+    // HODGE-053: Detect if input is a feature or topic
+    const inputType = this.detectInputType(feature);
+
+    if (options.verbose || process.env.DEBUG) {
+      console.log(chalk.gray(`Input detection: "${feature}" → ${inputType}`));
+    }
+
+    if (inputType === 'topic') {
+      // Handle as topic exploration (future implementation)
+      console.log(chalk.cyan('🔍 Exploring Topic: ' + feature));
+      console.log(
+        chalk.yellow('Topic exploration not yet implemented. Treating as feature for now.\n')
+      );
+    }
+
     // Handle ID management
     let featureID: FeatureID | null = null;
     let featureName = feature;
@@ -261,6 +276,41 @@ export class ExploreCommand {
         )
       );
     }
+  }
+
+  /**
+   * HODGE-053: Detect if input is a feature ID or a topic
+   * Rules:
+   * - Quoted strings → topic
+   * - Pattern: any-chars-123 (non-space chars, hyphen, numbers) → feature
+   * - Natural language (contains spaces, no pattern match) → topic
+   */
+  private detectInputType(input: string): 'feature' | 'topic' {
+    // Remove surrounding quotes if present for detection
+    const trimmed = input.trim();
+
+    // Rule 1: Quoted strings are always topics
+    if (
+      (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+      (trimmed.startsWith("'") && trimmed.endsWith("'"))
+    ) {
+      return 'topic';
+    }
+
+    // Rule 2: Feature pattern - any non-space chars, hyphen, numbers
+    // Examples: HODGE-053, auth-123, feature-1, ABC-999
+    const featurePattern = /^[^\s]+-\d+$/;
+    if (featurePattern.test(trimmed)) {
+      return 'feature';
+    }
+
+    // Rule 3: Hash or exclamation patterns for external IDs
+    if (/^[#!]\d+$/.test(trimmed)) {
+      return 'feature';
+    }
+
+    // Rule 4: Everything else is a topic (natural language, spaces, etc.)
+    return 'topic';
   }
 
   /**

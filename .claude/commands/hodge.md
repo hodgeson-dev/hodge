@@ -3,6 +3,17 @@
 ## Purpose
 Initialize or resume your Hodge development session with appropriate context.
 
+**What this command does:**
+- Loads existing context for a feature or project
+- Shows current state (exploration, decisions, build progress)
+- Suggests possible next actions
+
+**What this command does NOT do:**
+- Does NOT automatically start building
+- Does NOT run any development commands
+- Does NOT make assumptions about what you want to do next
+- Simply loads context and waits for your direction
+
 ## Usage Patterns
 - `/hodge` - Load project context and offer recent saves
 - `/hodge {{feature}}` - Load context for specific feature
@@ -30,22 +41,43 @@ This loads the most recent save and displays the context for resuming work.
 {{else if feature}}
 ### Loading Feature-Specific Context
 
+**IMPORTANT: This command ONLY loads context. It does not start any work.**
+
 First, load the project context:
 ```bash
 hodge status
 ```
 
-Review `.hodge/HODGE.md` for current project state.
-
-Then check for feature-specific saves:
+Then check what exists for {{feature}}:
 ```bash
+# Check for feature directory
+ls -la .hodge/features/{{feature}}/ 2>/dev/null || echo "No feature directory yet"
+
+# Check for any saved contexts
 hodge context --feature {{feature}}
 ```
 
-Load feature exploration/build files:
-- `.hodge/features/{{feature}}/explore/exploration.md`
-- `.hodge/features/{{feature}}/build/build-plan.md`
-- `.hodge/features/{{feature}}/linked-decisions.md`
+After loading context, review what's available:
+- Exploration: `.hodge/features/{{feature}}/explore/exploration.md`
+- Decisions: `.hodge/features/{{feature}}/decision.md`
+- Build plan: `.hodge/features/{{feature}}/build/build-plan.md`
+- Test intentions: `.hodge/features/{{feature}}/explore/test-intentions.md`
+
+**STOP HERE and present the context to the user.**
+
+Based on what you find, present the current state:
+- If exploration exists → "Exploration complete"
+- If decision exists → "Decision made: [brief summary]"
+- If build started → "Build in progress"
+- If nothing exists → "No work started yet"
+
+Then list available options WITHOUT taking action:
+- "Continue with `/explore {{feature}}`" (if not explored)
+- "Continue with `/build {{feature}}`" (if explored and decided)
+- "Continue with `/harden {{feature}}`" (if built)
+- "Review existing work at `.hodge/features/{{feature}}/`"
+
+**Wait for explicit user direction before proceeding.**
 
 {{else}}
 ### Standard Session Initialization
@@ -148,4 +180,8 @@ The `/hodge` command coordinates with the Hodge CLI to:
 - Load feature-specific files from `.hodge/features/`
 - Ensure principles and standards are available
 
-Ready to start development. What would you like to work on?
+## Context Loading Complete
+
+**This command has finished loading context. No actions have been taken.**
+
+What would you like to do next?
