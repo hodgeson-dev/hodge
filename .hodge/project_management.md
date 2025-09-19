@@ -326,10 +326,10 @@ _No items currently in backlog - all identified features are active_
 - [~] HODGE-051: AI-Executable Slash Commands (In Progress)
 - [x] HODGE-052: Persistent Current Feature Context ✅
 - [x] HODGE-054: Context-Aware Workflow Commands ✅
-- [ ] HODGE-053: Discovery Exploration Mode
+- [x] HODGE-053: Discovery Exploration Mode ✅
 
 ### Phase 3: Feature Organization (2-3 days)
-- [ ] HODGE-003: Feature Extraction
+- [x] HODGE-003: Feature Extraction ✅
 - [ ] HODGE-005: Feature Auto-Population
 - [ ] HODGE-006: Local PM Tracking
 

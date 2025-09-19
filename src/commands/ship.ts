@@ -25,6 +25,7 @@ import { getPRManager } from '../lib/pr-manager.js';
 import { getConfigManager } from '../lib/config-manager.js';
 import { autoSave } from '../lib/auto-save.js';
 import { contextManager } from '../lib/context-manager.js';
+import { FeaturePopulator } from '../lib/feature-populator.js';
 
 const execAsync = promisify(exec);
 
@@ -564,6 +565,10 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}
 
     console.log();
     console.log(chalk.gray('Ship record saved to: ' + shipDir));
+
+    // Regenerate feature HODGE.md to include ship summary (HODGE-005)
+    const populator = new FeaturePopulator();
+    await populator.generateFeatureHodgeMD(feature);
   }
 
   /**

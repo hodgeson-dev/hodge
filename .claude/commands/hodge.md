@@ -48,18 +48,33 @@ First, load the project context:
 hodge status
 ```
 
-Then check what exists for {{feature}}:
+Then load feature-specific and global context:
 ```bash
-# Check for feature directory
+# 1. Check for feature directory
 ls -la .hodge/features/{{feature}}/ 2>/dev/null || echo "No feature directory yet"
 
-# Check for any saved contexts
+# 2. Load feature-specific context
 hodge context --feature {{feature}}
+
+# 3. Load feature HODGE.md if it exists
+echo "=== FEATURE CONTEXT ==="
+cat .hodge/features/{{feature}}/HODGE.md 2>/dev/null || echo "No feature HODGE.md yet"
+
+# 4. Load global context files
+echo "=== PROJECT STANDARDS ==="
+cat .hodge/standards.md
+
+echo "=== PROJECT DECISIONS ==="
+cat .hodge/decisions.md
+
+echo "=== AVAILABLE PATTERNS ==="
+ls -1 .hodge/patterns/*.md 2>/dev/null | xargs -I {} basename {} .md
 ```
 
-After loading context, review what's available:
+After loading context, these files are available:
+- Feature HODGE.md: `.hodge/features/{{feature}}/HODGE.md` (if generated)
 - Exploration: `.hodge/features/{{feature}}/explore/exploration.md`
-- Decisions: `.hodge/features/{{feature}}/decision.md`
+- Decisions: `.hodge/features/{{feature}}/linked-decisions.md`
 - Build plan: `.hodge/features/{{feature}}/build/build-plan.md`
 - Test intentions: `.hodge/features/{{feature}}/explore/test-intentions.md`
 
@@ -87,11 +102,29 @@ Then list available options WITHOUT taking action:
    hodge context
    ```
 
-   Review the generated `.hodge/HODGE.md` file for:
-   - Current feature and mode
-   - Recent decisions
-   - Active standards
-   - Working files
+2. **Load Full Context Files**
+   ```bash
+   # Load project HODGE.md (session info)
+   cat .hodge/HODGE.md
+
+   # Load complete standards
+   echo "=== PROJECT STANDARDS ==="
+   cat .hodge/standards.md
+
+   # Load all decisions
+   echo "=== PROJECT DECISIONS ==="
+   cat .hodge/decisions.md
+
+   # List available patterns
+   echo "=== AVAILABLE PATTERNS ==="
+   ls -la .hodge/patterns/
+   ```
+
+   This provides:
+   - Current feature and mode (from HODGE.md)
+   - Complete standards (full file)
+   - All decisions (full file)
+   - Available patterns (list)
 
 2. **Check for Recent Saves**
 

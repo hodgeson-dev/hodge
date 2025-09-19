@@ -1,49 +1,90 @@
 {
   "mode": "explore",
   "feature": "HODGE-005",
+  "name": "Feature Auto-Population",
   "localID": "HODGE-005",
   "externalID": null,
   "timestamp": "2025-09-16T21:38:31.500Z",
+  "updated": "2025-09-18T21:40:00.000Z",
   "intent": {
-    "type": "general",
+    "type": "development-tool",
     "keywords": [
+      "auto-populate",
+      "context bundling",
+      "feature creation",
       "HODGE-005"
     ],
     "suggestedPatterns": [
-      "service",
-      "utility",
+      "context-bundler",
+      "feature-populator",
       "factory"
     ],
     "relatedCommands": [
-      "execute",
-      "process",
-      "handle"
+      "explore",
+      "build",
+      "extract-features"
     ]
   },
   "standards": "suggested",
   "validation": "optional",
   "pmIssue": "HODGE-005",
-  "pmTool": null,
+  "pmTool": "linear",
   "approaches": [
     {
-      "name": "Standard Implementation",
-      "description": "Implement HODGE-005 following existing project patterns",
-      "relevance": 70,
+      "name": "Context Bundler Class",
+      "description": "Create a dedicated ContextBundler class to gather and organize feature context",
+      "relevance": 90,
       "pros": [
-        "Consistent with codebase",
-        "Uses proven patterns",
-        "Easy for team to understand"
+        "Clean separation of concerns",
+        "Reusable across commands",
+        "Testable in isolation",
+        "Extensible for future context sources"
       ],
       "cons": [
-        "May not be optimal for specific use case",
-        "Could miss optimization opportunities"
+        "Additional class to maintain",
+        "May over-engineer for simple cases"
+      ]
+    },
+    {
+      "name": "Feature Populator Integration",
+      "description": "Extend the existing FeaturePopulator class to handle all context bundling",
+      "relevance": 75,
+      "pros": [
+        "Reuses existing infrastructure",
+        "Less new code to maintain",
+        "Already integrated with explore command"
+      ],
+      "cons": [
+        "May overload single class responsibility",
+        "Harder to test specific behaviors"
+      ]
+    },
+    {
+      "name": "Template-Based System",
+      "description": "Use file templates with variable substitution",
+      "relevance": 60,
+      "pros": [
+        "Easy to customize templates",
+        "Non-developers can modify",
+        "Visual representation of structure"
+      ],
+      "cons": [
+        "Less flexible for complex logic",
+        "Template management overhead",
+        "String manipulation risks"
       ]
     }
   ],
   "relatedFeatures": [
-    "HODGE-005-feature-auto-population",
-    "hodge-branding",
-    "HODGE-001"
+    "HODGE-003-feature-extraction",
+    "HODGE-004-id-management",
+    "cross-tool-compatibility"
   ],
-  "suggestedPatterns": []
+  "suggestedPatterns": [
+    "context-bundler"
+  ],
+  "mergedFrom": [
+    "HODGE-005",
+    "HODGE-005-feature-auto-population"
+  ]
 }

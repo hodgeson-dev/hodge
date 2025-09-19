@@ -4,6 +4,7 @@ import * as path from 'path';
 import { CacheManager } from '../lib/cache-manager.js';
 import { autoSave } from '../lib/auto-save.js';
 import { contextManager } from '../lib/context-manager.js';
+import { FeaturePopulator } from '../lib/feature-populator.js';
 
 export interface BuildOptions {
   skipChecks?: boolean;
@@ -232,6 +233,10 @@ export class BuildCommand {
       );
 
       console.log(chalk.dim('Build context saved to: ' + buildDir));
+
+      // Regenerate feature HODGE.md to include build plan (HODGE-005)
+      const populator = new FeaturePopulator();
+      await populator.generateFeatureHodgeMD(feature);
 
       // Performance metrics (only in development)
       if (process.env.NODE_ENV === 'development' || process.env.HODGE_DEBUG) {

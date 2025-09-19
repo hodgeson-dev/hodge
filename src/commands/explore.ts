@@ -756,6 +756,10 @@ ${this.generateImplementationHints(intent, _existingPatterns)}
       ].filter(Boolean)
     );
 
+    // Generate feature HODGE.md for aggregation (HODGE-005)
+    const populator = new FeaturePopulator();
+    await populator.generateFeatureHodgeMD(feature);
+
     // Invalidate cache for this feature
     this.cache.invalidateFeature(feature);
   }

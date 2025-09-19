@@ -861,3 +861,22 @@ Implement Progressive Type Safety approach that aligns linting strictness with H
 - Negative: Risk of technical debt accumulation in explore phase (mitigated by warnings)
 - Negative: Need to track which mode code is in (acceptable trade-off)
 
+
+### 2025-09-19 - Abandoning cross-tool compatibility, focusing on Claude Code only
+
+**Status**: Accepted
+
+**Decision**:
+Focus exclusively on Claude Code integration for now. Cross-tool compatibility (HODGE.md generation, tool-agnostic formats) will be revisited in a future version.
+
+**Rationale**:
+- Simplifies implementation significantly
+- Allows faster iteration on Claude-specific features
+- Can always add cross-tool support later
+- Most users are using Claude Code anyway
+
+**Impact**:
+- No need for HODGE.md generation in features
+- Can use Claude-specific optimizations
+- Simpler architecture overall
+
