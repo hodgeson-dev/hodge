@@ -1,0 +1,49 @@
+{
+  "mode": "explore",
+  "feature": "HODGE-144",
+  "localID": "HODGE-144",
+  "externalID": null,
+  "timestamp": "2025-09-20T20:44:30.246Z",
+  "intent": {
+    "type": "general",
+    "keywords": [
+      "HODGE-144"
+    ],
+    "suggestedPatterns": [
+      "service",
+      "utility",
+      "factory"
+    ],
+    "relatedCommands": [
+      "execute",
+      "process",
+      "handle"
+    ]
+  },
+  "standards": "suggested",
+  "validation": "optional",
+  "pmIssue": "HODGE-144",
+  "pmTool": null,
+  "approaches": [
+    {
+      "name": "Standard Implementation",
+      "description": "Implement HODGE-144 following existing project patterns",
+      "relevance": 70,
+      "pros": [
+        "Consistent with codebase",
+        "Uses proven patterns",
+        "Easy for team to understand"
+      ],
+      "cons": [
+        "May not be optimal for specific use case",
+        "Could miss optimization opportunities"
+      ]
+    }
+  ],
+  "relatedFeatures": [
+    "HODGE-029",
+    "HODGE-030",
+    "HODGE-056"
+  ],
+  "suggestedPatterns": []
+}

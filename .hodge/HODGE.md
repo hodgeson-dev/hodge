@@ -3,34 +3,49 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: general
-**Mode**: explore
-**Last Updated**: 2025-09-20T18:28:15.868Z
+**Feature**: HODGE-135
+**Mode**: ship
+**PM Issue**: HODGE-135
+**Last Updated**: 2025-09-20T20:20:33.843Z
 ## Current Session
-**Resumed**: 23 minutes ago
-**Progress**: Explored HODGE-130 with 1 approaches
-**Working on**: HODGE-130 (explore mode)
+**Resumed**: 7 minutes ago
+**Progress**: Explored HODGE-142 with 1 approaches
+**Working on**: HODGE-142 (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-130. Explored HODGE-130 with 1 approaches
+You were helping with HODGE-142. Explored HODGE-142 with 1 approaches
 Suggested next: Review exploration and decide with 'hodge decide'
-## Core Principles
-
-- **1. AI-Backend Separation**: - **AI (Claude) Role**: Intellectual work - analysis, extraction, design, proposals
-
 ## Recent Decisions
 
+- **2025-09-20**: Use AI-Based Standards Enforcement - leverage Claude Code's natural language understanding to review standards compliance during /harden and /ship commands, allowing standards to be written in any format
+- **2025-09-20**: Use AI-Based Standards Enforcement approach - leverage Claude Code's natural language understanding to review standards compliance during /harden and /ship commands, allowing standards to be written in any format
 - **2025-09-18**: Implement Context-Aware Workflow Commands using Implicit Context Reading approach - commands will automatically read from context
 - **2025-09-18**: Use Implicit Context Reading approach for context-aware workflow commands - commands will read from context
 - **2025-09-18**: Implement Event-Based Auto-Save approach for HODGE-052: auto-save context through command interceptor pattern that wraps feature commands, providing transparent auto-save with minimal code changes
-- **2025-09-18**: HODGE-003 is production-ready despite project-wide lint issues - the feature extraction code itself has no lint errors, all tests pass, and the functionality is complete
-- **2025-09-18**: Implement formal feature closure workflow: /close command or closure option in /ship to properly transition features to closed state with reasons
 
 ## Active Standards
+
+### The Hodge Way
+- - Test behavior, not implementation
+- - Never test console.log calls or mock interactions
+- - Tests evolve with code maturity
+- - `any` is allowed in explore mode
+- - Types tighten as code matures
+- - TypeScript inference over explicit types
+- - **Explore**: Rapid prototyping, no rules
+- - **Build**: Basic standards, smoke tests
+- - **Harden**: Strict standards, integration tests
+- - **Ship**: Production ready, full coverage
 
 ### Core Standards
 - TypeScript with strict mode
 - ESLint rules enforced
 - Prettier formatting
+
+### Testing Requirements
+- Test what users see, not how it works
+- Focus on behavior and contracts
+- Prefer integration tests over unit tests
+- Use real dependencies when possible
 
 ### Code Comments and TODOs
 - **TODO Convention**: Always use `// TODO:` comments for incomplete work
@@ -56,11 +71,39 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - Build completes within 30s
 - Tests complete within 30s
 
+### Progressive Enforcement
+- Standards are **suggestions only**
+- Use `any` types freely
+- Skip tests entirely
+- Focus on proving concepts
+- Standards **should** be followed
+- Basic type safety
+- Smoke tests required
+- Error handling sketched
+- Standards **must** be followed (warnings)
+- Strict types required
+- Integration tests required
+- Comprehensive error handling
+- Standards **strictly enforced** (blocking)
+- All quality gates must pass
+- Full test coverage required
+- Performance benchmarks met
+
+## Working Files
+
+- `.hodge/features/HODGE-135/explore/context.json`
+- `.hodge/features/HODGE-135/explore/exploration.md`
+- `.hodge/features/HODGE-135/explore/test-intentions.md`
+- `.hodge/features/HODGE-135/build/build-plan.md`
+- `.hodge/features/HODGE-135/build/context.json`
+- `.hodge/features/HODGE-135/ship/release-notes.md`
+- `.hodge/features/HODGE-135/ship/ship-record.json`
+
 ## Next Steps
 
-1. Review exploration approaches
-2. Make decision with `hodge decide`
-3. Start building with `hodge build general`
+1. Commit changes
+2. Create pull request
+3. Update documentation
 
 
 ---

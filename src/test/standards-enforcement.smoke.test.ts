@@ -9,9 +9,9 @@ describe('Standards Enforcement Smoke Tests', () => {
     const hardenPath = path.join(process.cwd(), '.claude', 'commands', 'harden.md');
     const hardenContent = fs.readFileSync(hardenPath, 'utf-8');
 
-    expect(hardenContent).toContain('Standards Review Process');
-    expect(hardenContent).toContain('AI Standards Compliance Check');
-    expect(hardenContent).toContain('WARNING Level');
+    expect(hardenContent).toContain('Pre-Harden Standards Review');
+    expect(hardenContent).toContain('AI Standards Compliance Checklist');
+    expect(hardenContent).toContain('MANDATORY');
 
     // Check that ship.md contains standards review
     const shipPath = path.join(process.cwd(), '.claude', 'commands', 'ship.md');

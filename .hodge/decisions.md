@@ -26,6 +26,44 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-20 - Tests must NEVER modify the Hodge project's own
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-143
+
+**Decision**:
+Tests must NEVER modify the Hodge project's own .hodge directory - all tests should use temporary directories or mocks to avoid altering project state
+
+**Rationale**:
+Recorded via `hodge decide` command at 1:50:20 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-20 - Implement PM Adapter Hooks using Command-Level Integration with phase-appropriate timing: explore/build/harden update PM at START of phase (marking entry), ship updates PM only on SUCCESS (marking completion)
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-143
+
+**Decision**:
+Implement PM Adapter Hooks using Command-Level Integration with phase-appropriate timing: explore/build/harden update PM at START of phase (marking entry), ship updates PM only on SUCCESS (marking completion). This ensures PM accurately reflects work state - 'in progress' for active phases, 'done' only for successful completion.
+
+**Rationale**:
+Recorded via `hodge decide` command at 1:38:07 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-20 - Use AI-Based Standards Enforcement - leverage Claude Code's natural language understanding to review standards compliance during /harden and /ship commands, allowing standards to be written in any format
 
 **Status**: Accepted

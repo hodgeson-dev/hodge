@@ -7,6 +7,7 @@ import { promisify } from 'util';
 import { autoSave } from '../lib/auto-save.js';
 import { contextManager } from '../lib/context-manager.js';
 import { FeaturePopulator } from '../lib/feature-populator.js';
+import { PMHooks } from '../lib/pm/pm-hooks.js';
 
 const execAsync = promisify(exec);
 
@@ -36,6 +37,8 @@ interface ValidationResults {
  * @description Production-ready harden command with parallel validation by default
  */
 export class HardenCommand {
+  private pmHooks = new PMHooks();
+
   /**
    * Execute the harden command for a feature
    * @param {string} feature - The feature name to harden (optional, uses context if not provided)
@@ -72,6 +75,9 @@ export class HardenCommand {
 
       console.log(chalk.magenta('🛡️  Entering Harden Mode'));
       console.log(chalk.gray(`Feature: ${feature}\n`));
+
+      // Update PM tracking - mark as hardening at START of phase
+      await this.pmHooks.onPhaseStart(feature, 'harden');
 
       // Display AI context
       this.displayAIContext(feature);

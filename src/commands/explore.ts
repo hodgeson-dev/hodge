@@ -15,6 +15,7 @@ import { FeaturePopulator } from '../lib/feature-populator.js';
 import { FeatureSpecLoader } from '../lib/feature-spec-loader.js';
 import { autoSave } from '../lib/auto-save.js';
 import { contextManager } from '../lib/context-manager.js';
+import { PMHooks } from '../lib/pm/pm-hooks.js';
 
 export interface ExploreOptions {
   force?: boolean;
@@ -68,6 +69,7 @@ export class ExploreCommand {
   private standardsCache = standardsCache;
   private patternLearner = new PatternLearner();
   private idManager: IDManager;
+  private pmHooks = new PMHooks();
 
   constructor(idManager?: IDManager) {
     this.idManager = idManager || new IDManager();
@@ -108,6 +110,10 @@ export class ExploreCommand {
         featureID = await this.idManager.createFeature(feature);
         featureName = featureID.localID;
         console.log(chalk.green(`✓ Created new feature: ${featureID.localID}`));
+        // Update PM tracking - mark as exploring at START of phase (fire-and-forget for performance)
+        this.pmHooks.onExplore(featureID.localID, feature).catch(() => {
+          // Silently handle PM update failures
+        });
       } else if (!featureID) {
         // It looks like an ID but we couldn't find it
         // Create a new feature and link it if it's an external ID
@@ -122,10 +128,18 @@ export class ExploreCommand {
           console.log(
             chalk.green(`✓ Created new feature ${featureID.localID} linked to ${feature}`)
           );
+          // Update PM tracking - mark as exploring at START of phase (fire-and-forget for performance)
+          this.pmHooks.onExplore(featureID.localID, feature).catch(() => {
+            // Silently handle PM update failures
+          });
         }
       } else {
         // Found existing feature
         featureName = featureID.localID;
+        // Update PM tracking - mark as exploring at START of phase (fire-and-forget for performance)
+        this.pmHooks.onPhaseStart(featureID.localID, 'explore').catch(() => {
+          // Silently handle PM update failures
+        });
         if (featureID.externalID) {
           console.log(
             chalk.blue(`ℹ️  Using existing feature ${featureID.localID} (${featureID.externalID})`)

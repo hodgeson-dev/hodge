@@ -46,6 +46,14 @@ This project follows the Hodge development philosophy:
 - Prefer integration tests over unit tests
 - Use real dependencies when possible
 
+### Test Isolation Requirement
+**⚠️ CRITICAL**: Tests must NEVER modify the Hodge project's own `.hodge` directory.
+- All tests must use temporary directories (`os.tmpdir()`) for file operations
+- Use mocks or stubs instead of modifying actual project state
+- Any test that needs a `.hodge` structure should create it in an isolated temp directory
+- This prevents tests from corrupting project data or affecting other tests
+- Violation of this rule can lead to data loss and unpredictable test behavior
+
 ## Code Comments and TODOs
 - **TODO Convention**: Always use `// TODO:` comments for incomplete work
   - Format: `// TODO: [phase] description`

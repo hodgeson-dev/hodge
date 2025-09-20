@@ -26,6 +26,7 @@ import { getConfigManager } from '../lib/config-manager.js';
 import { autoSave } from '../lib/auto-save.js';
 import { contextManager } from '../lib/context-manager.js';
 import { FeaturePopulator } from '../lib/feature-populator.js';
+import { PMHooks } from '../lib/pm/pm-hooks.js';
 
 const execAsync = promisify(exec);
 
@@ -45,6 +46,8 @@ export interface ShipOptions {
 }
 
 export class ShipCommand {
+  private pmHooks = new PMHooks();
+
   async execute(feature?: string, options: ShipOptions = {}): Promise<void> {
     // Get feature from argument or context
     const resolvedFeature = await contextManager.getFeature(feature);
@@ -453,6 +456,10 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}
 
     // Success message
     console.log('\n' + chalk.green.bold('✅ Feature Shipped Successfully!'));
+
+    // Update PM tracking - ONLY on successful ship completion
+    await this.pmHooks.onShip(feature);
+
     console.log();
     console.log(chalk.bold('Commit Message:'));
     console.log(chalk.gray('─'.repeat(40)));
