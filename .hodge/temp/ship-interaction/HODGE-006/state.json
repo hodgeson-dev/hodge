@@ -1,0 +1,151 @@
+{
+  "command": "ship",
+  "status": "ready",
+  "timestamp": "2025-09-20T18:20:59.439Z",
+  "environment": "Claude Code",
+  "data": {
+    "analysis": {
+      "files": [
+        {
+          "path": ".hodge/.session",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/context.json",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/id-counter.json",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/id-mappings.json",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "src/commands/build.ts",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "src/lib/claude-commands.ts",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "src/lib/pm-manager.ts",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/features/HODGE-006/INVALID_STATE.md",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/features/HODGE-006/harden/",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/features/HODGE-123/",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/features/HODGE-124/",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/features/HODGE-125/",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/features/HODGE-126/",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/features/HODGE-127/",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/features/HODGE-128/",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/features/HODGE-129/",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/features/HODGE-130/",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "src/lib/pm/integration.test.ts",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "src/lib/pm/local-pm-adapter.test.ts",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "src/lib/pm/local-pm-adapter.ts",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "src/lib/pm/pm-hooks.ts",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        }
+      ],
+      "type": "feat",
+      "scope": "general",
+      "breaking": false
+    },
+    "suggested": "feat: implement local PM tracking with project plan maintenance (HODGE-006)\n\n- Add LocalPMAdapter for managing project_management.md file\n- Implement PMHooks to integrate with workflow commands\n- Track feature status through explore/build/harden/ship phases\n- Maintain project plan with implementation phases and dependency graph\n- Add 10 smoke tests and 7 integration tests\n- Use temporary directories for test isolation to prevent data loss\n- Closes HODGE-006",
+    "custom": "feat: implement local PM tracking with project plan maintenance (HODGE-006)\n\n- Add LocalPMAdapter for managing project_management.md file\n- Implement PMHooks to integrate with workflow commands\n- Track feature status through explore/build/harden/ship phases\n- Maintain project plan with implementation phases and dependency graph\n- Add 10 smoke tests and 7 integration tests\n- Use temporary directories for test isolation to prevent data loss\n- Closes HODGE-006",
+    "issueId": "HODGE-006",
+    "workLogPath": ".hodge/features/HODGE-006/work-log.md"
+  },
+  "history": [
+    {
+      "timestamp": "2025-09-20T18:20:59.439Z",
+      "type": "init"
+    }
+  ]
+}

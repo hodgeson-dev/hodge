@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import chalk from 'chalk';
+import { LocalPMAdapter } from './pm/local-pm-adapter';
 
 interface FeatureConfig {
   status: string;
@@ -16,6 +17,18 @@ interface FeatureConfig {
  */
 export class PMManager {
   private pmPath = path.join('.hodge', 'project_management.md');
+  private localAdapter: LocalPMAdapter;
+
+  constructor() {
+    this.localAdapter = new LocalPMAdapter();
+  }
+
+  /**
+   * Initialize PM tracking
+   */
+  async init(): Promise<void> {
+    await this.localAdapter.init();
+  }
 
   /**
    * Add a new feature to project management tracking

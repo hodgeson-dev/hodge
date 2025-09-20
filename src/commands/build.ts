@@ -5,6 +5,7 @@ import { CacheManager } from '../lib/cache-manager.js';
 import { autoSave } from '../lib/auto-save.js';
 import { contextManager } from '../lib/context-manager.js';
 import { FeaturePopulator } from '../lib/feature-populator.js';
+import { PMHooks } from '../lib/pm/pm-hooks.js';
 
 export interface BuildOptions {
   skipChecks?: boolean;
@@ -30,6 +31,7 @@ interface BuildContext {
  */
 export class BuildCommand {
   private cache = CacheManager.getInstance();
+  private pmHooks = new PMHooks();
 
   /**
    * Execute the build command for a feature
@@ -164,6 +166,9 @@ export class BuildCommand {
           { ttl: 600000 } // 10 minutes cache
         ),
       ]);
+
+      // Update PM tracking
+      await this.pmHooks.onPhaseStart(feature, 'build');
 
       // Display PM integration if available
       const pmTool = process.env.HODGE_PM_TOOL;

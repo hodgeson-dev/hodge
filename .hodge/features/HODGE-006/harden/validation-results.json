@@ -1,0 +1,30 @@
+{
+  "timestamp": "2025-09-20T18:05:30.000Z",
+  "feature": "HODGE-006",
+  "integration": {
+    "passed": true,
+    "tests": 7,
+    "failures": 0
+  },
+  "smoke": {
+    "passed": true,
+    "tests": 10,
+    "failures": 0
+  },
+  "lint": {
+    "passed": true,
+    "errors": 0,
+    "warnings": 179
+  },
+  "typecheck": {
+    "passed": true,
+    "errors": 0
+  },
+  "build": {
+    "passed": true,
+    "duration": "3.2s"
+  },
+  "overall": {
+    "passed": true
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-006",
+  "timestamp": "2025-09-20T18:24:16.951Z",
+  "issueId": "HODGE-006",
+  "pmTool": "linear",
+  "validationPassed": false,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "feat: implement local PM tracking with project plan maintenance (HODGE-006)\n\n- Add LocalPMAdapter for managing project_management.md file\n- Implement PMHooks to integrate with workflow commands\n- Track feature status through explore/build/harden/ship phases\n- Maintain project plan with implementation phases and dependency graph\n- Add 10 smoke tests and 7 integration tests\n- Use temporary directories for test isolation to prevent data loss\n- Closes HODGE-006"
+}
