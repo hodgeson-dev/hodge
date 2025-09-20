@@ -97,10 +97,75 @@ Remember: The CLI handles all file management and PM integration. Focus on imple
       name: 'decide',
       content: `# Hodge Decide - Decision Management
 
-## Command Execution
+## ⚠️ DEFAULT BEHAVIOR: Interactive Decision Mode
+
+**IMPORTANT**: Unless the user explicitly provides a pre-made decision, ALWAYS use Interactive Decision Mode (see below). Do NOT jump directly to recording a decision without presenting options first.
+
+### ❌ WRONG: Jumping to recording
+\`\`\`
+User: /decide
+AI: *immediately executes hodge decide "Some decision"*
+\`\`\`
+
+### ✅ RIGHT: Present options first
+\`\`\`
+User: /decide
+AI: *presents decision options with pros/cons*
+User: chooses option 'a'
+AI: *then executes hodge decide with chosen option*
+\`\`\`
+
+## Interactive Decision Mode (DEFAULT)
+When \`/decide\` is invoked, follow this process:
+
+1. **Review Guiding Principles**:
+   \`\`\`bash
+   cat .hodge/principles.md | head -20
+   \`\`\`
+   Consider how principles might guide the decision.
+
+2. **Gather pending decisions from**:
+   - Code comments (TODO, FIXME, QUESTION)
+   - Previous exploration notes
+   - Uncommitted changes
+   - Open questions in conversation
+
+3. **Present each decision with Principle Alignment**:
+   \`\`\`
+   ## Decision {{number}} of {{total}}
+
+   **Topic**: {{decision_topic}}
+   **Context**: {{brief_context}}
+
+   **Principle Consideration**:
+   [Note if decision aligns with or conflicts with any principles]
+
+   Options:
+   a) {{option_1}}
+      Pros: {{pros}}
+      Cons: {{cons}}
+      Alignment: [Aligns with "Progressive Enhancement" principle]
+
+   b) {{option_2}}
+      Pros: {{pros}}
+      Cons: {{cons}}
+      Alignment: [May conflict with "Behavior-Focused Testing"]
+
+   c) Skip for now
+   d) Need more exploration
+
+   Your choice:
+   \`\`\`
+
+4. **For each decision made**:
+   \`\`\`bash
+   hodge decide "{{chosen_option_description}}" --feature {{feature}}
+   \`\`\`
+
+## Recording the Decision (ONLY after user chooses)
 
 ### For Single Decision
-Claude will execute the following backend operation:
+After the user has chosen an option (a, b, c, etc.), execute:
 \`\`\`bash
 hodge decide "{{decision}}"
 \`\`\`
@@ -110,47 +175,7 @@ With feature association:
 hodge decide "{{decision}}" --feature {{feature}}
 \`\`\`
 
-## What This Does
-Records the decision with appropriate context and associations.
-
-## After Command Execution
-The decision is recorded and ready for reference.
-
-## Interactive Decision Mode
-If you need to make multiple decisions or review pending ones:
-
-1. **Gather pending decisions from**:
-   - Code comments (TODO, FIXME, QUESTION)
-   - Previous exploration notes
-   - Uncommitted changes
-   - Open questions in conversation
-
-2. **Present each decision**:
-   \`\`\`
-   ## Decision {{number}} of {{total}}
-
-   **Topic**: {{decision_topic}}
-   **Context**: {{brief_context}}
-
-   Options:
-   a) {{option_1}}
-      Pros: {{pros}}
-      Cons: {{cons}}
-
-   b) {{option_2}}
-      Pros: {{pros}}
-      Cons: {{cons}}
-
-   c) Skip for now
-   d) Need more exploration
-
-   Your choice:
-   \`\`\`
-
-3. **For each decision made**:
-   \`\`\`bash
-   hodge decide "{{chosen_option_description}}" --feature {{feature}}
-   \`\`\`
+**WARNING**: Never execute this command until the user has explicitly chosen from presented options.
 
 ## Decision Format
 Decisions follow a structured format with date, status, context, rationale, and consequences.
@@ -350,6 +375,35 @@ The CLI will output:
 - Created files location
 - Next steps
 
+## Review Relevant Context
+
+### 1. Check Lessons from Similar Features
+\`\`\`bash
+# Search for relevant lessons
+ls -la .hodge/lessons/ | grep -i "{{feature-keyword}}"
+
+# Review any relevant lessons found
+cat .hodge/lessons/SIMILAR-FEATURE.md
+\`\`\`
+Consider what worked well and what to avoid based on past experience.
+
+### 2. Review Applicable Patterns
+\`\`\`bash
+# List available patterns
+ls -la .hodge/patterns/
+
+# Review patterns that might apply to {{feature}}
+cat .hodge/patterns/relevant-pattern.md
+\`\`\`
+Consider which patterns might guide your exploration.
+
+### 3. Check Related Principles
+\`\`\`bash
+# Review principles for exploration phase guidance
+grep -A 5 "Explore" .hodge/principles.md
+\`\`\`
+Remember: "Freedom to explore" - Standards are suggestions only in this phase.
+
 ## Your Tasks After CLI Command
 1. Review the exploration template at \`.hodge/features/{{feature}}/explore/exploration.md\`
 2. Review test intentions at \`.hodge/features/{{feature}}/explore/test-intentions.md\`
@@ -421,6 +475,45 @@ The CLI will output:
 - Validation results for each check
 - Overall pass/fail status
 - Detailed report location
+
+## Standards Review Process (AI-Based Enforcement)
+
+### 1. Load Current Standards
+\`\`\`bash
+cat .hodge/standards.md
+\`\`\`
+
+### 2. Review Recent Changes
+\`\`\`bash
+git diff HEAD  # Or git diff main...HEAD for branch changes
+\`\`\`
+
+### 3. AI Standards Compliance Check
+Review the changes against ALL standards and evaluate:
+- **Core Standards**: TypeScript strict, ESLint, Prettier
+- **Testing Requirements**: Integration tests present and meaningful
+- **Code Comments/TODOs**: Proper format with phase markers
+- **Quality Gates**: No lint/type errors, adequate test coverage
+- **Performance Standards**: CLI <500ms, tests <30s
+
+### 4. Report Violations (WARNING Level)
+If standards violations found, report them clearly:
+\`\`\`
+⚠️  STANDARDS REVIEW - Warnings Found:
+
+1. **TODO Format Violation** (line 45 in src/commands/example.ts)
+   Found: // TODO fix this later
+   Required: // TODO: [phase] description
+
+2. **Missing Integration Tests**
+   Feature has only smoke tests. Integration tests required for harden phase.
+
+3. **Performance Concern**
+   New command may exceed 500ms response time due to synchronous file operations.
+
+These are WARNINGS in harden phase. Consider addressing them before shipping.
+Continue with hardening? (y/n)
+\`\`\`
 
 ## Your Tasks Based on Results
 
@@ -1146,6 +1239,47 @@ The ship command intelligently examines:
 - 💔 **Breaking changes** - Identified from specific patterns
 - 🔗 **PM Integration** - Links to Linear/GitHub/Jira issues
 
+## Standards Review Process (AI-Based STRICT Enforcement)
+
+### 1. Load and Review Standards
+\`\`\`bash
+cat .hodge/standards.md
+\`\`\`
+
+### 2. Review ALL Changes Since Last Release
+\`\`\`bash
+git diff main...HEAD  # All changes in feature branch
+\`\`\`
+
+### 3. AI Standards Compliance Check (BLOCKING)
+Review ALL changes against EVERY standard with ZERO tolerance:
+- **Core Standards**: Must have TypeScript strict, ESLint clean, Prettier formatted
+- **Testing Requirements**: Full test suite with >80% coverage
+- **Code Comments/TODOs**: ALL TODOs must have proper phase markers
+- **Quality Gates**: ZERO lint errors, ZERO type errors
+- **Performance Standards**: ALL operations <500ms, tests <30s total
+
+### 4. Report Violations (BLOCKING Level)
+If ANY standards violations found, BLOCK shipping:
+\`\`\`
+❌ STANDARDS REVIEW - Ship Blocked:
+
+1. **TODO Format Violations** (3 found)
+   src/commands/example.ts:45 - Missing phase marker
+   src/lib/helper.ts:12 - Incomplete TODO without description
+   tests/unit.test.ts:78 - Naked TODO
+
+2. **Test Coverage Below 80%**
+   Current: 72.3% - Required: 80%
+   Missing coverage in: src/lib/validator.ts
+
+3. **ESLint Errors** (2 found)
+   no-explicit-any violations in src/types.ts
+
+SHIP BLOCKED: All standards MUST be met before shipping.
+Fix all violations and run /ship again.
+\`\`\`
+
 ## Testing Requirements (Progressive Model)
 - **Ship Phase**: Full test suite required
 - **Test Types**: All categories (smoke, integration, unit, acceptance)
@@ -1172,7 +1306,61 @@ The ship command intelligently examines:
    git tag v1.0.0
    git push --tags
    \`\`\`
-6. Monitor production metrics
+6. Capture lessons learned (optional but valuable):
+   \`\`\`markdown
+   ## Lessons from {{feature}}
+
+   **What worked well:**
+   - [What approach or pattern was effective?]
+
+   **What was challenging:**
+   - [What took longer than expected?]
+
+   **What to do differently next time:**
+   - [What would you change?]
+
+   Save to: .hodge/lessons/{{feature}}.md
+   \`\`\`
+
+7. Consider Global Improvements (if lessons suggest it):
+
+   **Pattern Candidate?** If something worked particularly well:
+   \`\`\`bash
+   # Check if similar patterns exist
+   grep -r "similar-concept" .hodge/patterns/
+
+   # If novel and reusable, create pattern:
+   cat > .hodge/patterns/{{pattern-name}}.md << 'EOF'
+   # Pattern: {{Pattern Name}}
+
+   ## Problem
+   [What problem does this solve?]
+
+   ## Solution
+   [The approach that worked]
+
+   ## Example from {{feature}}
+   [Code or approach example]
+
+   ## When to Use
+   - [Scenario where this helps]
+   EOF
+   \`\`\`
+
+   **Standards Gap?** If you hit a preventable issue:
+   - Review if existing standards could have prevented it
+   - If 3+ features hit the same issue, consider proposing a standard
+   - Document in decisions: "Considering new standard based on {{feature}} lessons"
+
+   **Review Similar Lessons:**
+   \`\`\`bash
+   # Check if others hit similar issues
+   grep -r "similar-issue" .hodge/lessons/
+   \`\`\`
+
+   If pattern emerges across multiple features, elevate to team discussion.
+
+8. Monitor production metrics
 
 ### If Ship Failed ❌
 1. Review quality gate failures

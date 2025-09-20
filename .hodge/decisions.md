@@ -26,6 +26,44 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-20 - Use AI-Based Standards Enforcement - leverage Claude Code's natural language understanding to review standards compliance during /harden and /ship commands, allowing standards to be written in any format
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-131-standards-enforcement
+
+**Decision**:
+Use AI-Based Standards Enforcement - leverage Claude Code's natural language understanding to review standards compliance during /harden and /ship commands, allowing standards to be written in any format
+
+**Rationale**:
+Recorded via `hodge decide` command at 11:52:47 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-20 - Use AI-Based Standards Enforcement approach - leverage Claude Code's natural language understanding to review standards compliance during /harden and /ship commands, allowing standards to be written in any format
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-131-standards-enforcement
+
+**Decision**:
+Use AI-Based Standards Enforcement approach - leverage Claude Code's natural language understanding to review standards compliance during /harden and /ship commands, allowing standards to be written in any format
+
+**Rationale**:
+Recorded via `hodge decide` command at 11:50:13 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-18 - Implement Context-Aware Workflow Commands using Implicit Context Reading approach - commands will automatically read from context
 
 **Status**: Accepted

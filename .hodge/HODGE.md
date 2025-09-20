@@ -3,16 +3,15 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: HODGE-054
-**Mode**: ship
-**PM Issue**: HODGE-054
-**Last Updated**: 2025-09-18T20:40:58.125Z
+**Feature**: general
+**Mode**: explore
+**Last Updated**: 2025-09-20T18:28:15.868Z
 ## Current Session
-**Resumed**: 6 minutes ago
-**Progress**: Explored HODGE-106 with 1 approaches
-**Working on**: HODGE-106 (explore mode)
+**Resumed**: 23 minutes ago
+**Progress**: Explored HODGE-130 with 1 approaches
+**Working on**: HODGE-130 (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-106. Explored HODGE-106 with 1 approaches
+You were helping with HODGE-130. Explored HODGE-130 with 1 approaches
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Core Principles
 
@@ -20,7 +19,11 @@ Suggested next: Review exploration and decide with 'hodge decide'
 
 ## Recent Decisions
 
-- **2025-09-18**: Create HODGE-054: Update all workflow commands to be context-aware with optional feature override
+- **2025-09-18**: Implement Context-Aware Workflow Commands using Implicit Context Reading approach - commands will automatically read from context
+- **2025-09-18**: Use Implicit Context Reading approach for context-aware workflow commands - commands will read from context
+- **2025-09-18**: Implement Event-Based Auto-Save approach for HODGE-052: auto-save context through command interceptor pattern that wraps feature commands, providing transparent auto-save with minimal code changes
+- **2025-09-18**: HODGE-003 is production-ready despite project-wide lint issues - the feature extraction code itself has no lint errors, all tests pass, and the functionality is complete
+- **2025-09-18**: Implement formal feature closure workflow: /close command or closure option in /ship to properly transition features to closed state with reasons
 
 ## Active Standards
 
@@ -53,22 +56,11 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - Build completes within 30s
 - Tests complete within 30s
 
-## Working Files
-
-- `.hodge/features/HODGE-054/explore/context.json`
-- `.hodge/features/HODGE-054/explore/exploration.md`
-- `.hodge/features/HODGE-054/explore/test-intentions.md`
-- `.hodge/features/HODGE-054/build/build-plan.md`
-- `.hodge/features/HODGE-054/build/context.json`
-- `.hodge/features/HODGE-054/ship/release-notes.md`
-- `.hodge/features/HODGE-054/ship/ship-record.json`
-- `.hodge/features/HODGE-054/ship/ship-summary.md`
-
 ## Next Steps
 
-1. Commit changes
-2. Create pull request
-3. Update documentation
+1. Review exploration approaches
+2. Make decision with `hodge decide`
+3. Start building with `hodge build general`
 
 
 ---

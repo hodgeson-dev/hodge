@@ -1,5 +1,32 @@
 # Project Standards
 
+⚠️ **THESE STANDARDS ARE MANDATORY**
+All standards below are CRITICAL and MUST be followed.
+Non-compliance will block shipping. Standards are automatically enforced by Hodge workflow commands.
+
+## The Hodge Way
+
+This project follows the Hodge development philosophy:
+> "Freedom to explore, discipline to ship"
+
+### Core Approach
+
+1. **Progressive Testing** - "Vibe testing for vibe coding"
+   - Test behavior, not implementation
+   - Never test console.log calls or mock interactions
+   - Tests evolve with code maturity
+
+2. **Progressive Type Safety**
+   - `any` is allowed in explore mode
+   - Types tighten as code matures
+   - TypeScript inference over explicit types
+
+3. **Phase-Based Development**
+   - **Explore**: Rapid prototyping, no rules
+   - **Build**: Basic standards, smoke tests
+   - **Harden**: Strict standards, integration tests
+   - **Ship**: Production ready, full coverage
+
 ## Core Standards
 - TypeScript with strict mode
 - ESLint rules enforced
@@ -12,6 +39,12 @@
 | **Build** | 1+ smoke test | <100ms each |
 | **Harden** | Integration tests | <500ms each |
 | **Ship** | All tests pass | <30s total |
+
+### Testing Philosophy
+- Test what users see, not how it works
+- Focus on behavior and contracts
+- Prefer integration tests over unit tests
+- Use real dependencies when possible
 
 ## Code Comments and TODOs
 - **TODO Convention**: Always use `// TODO:` comments for incomplete work
@@ -36,6 +69,34 @@
 - CLI commands respond within 500ms
 - Build completes within 30s
 - Tests complete within 30s
+
+## Progressive Enforcement
+
+Standards are enforced progressively through the development phases:
+
+### Explore Phase (Freedom)
+- Standards are **suggestions only**
+- Use `any` types freely
+- Skip tests entirely
+- Focus on proving concepts
+
+### Build Phase (Structure Emerges)
+- Standards **should** be followed
+- Basic type safety
+- Smoke tests required
+- Error handling sketched
+
+### Harden Phase (Discipline)
+- Standards **must** be followed (warnings)
+- Strict types required
+- Integration tests required
+- Comprehensive error handling
+
+### Ship Phase (Production)
+- Standards **strictly enforced** (blocking)
+- All quality gates must pass
+- Full test coverage required
+- Performance benchmarks met
 
 ---
 *Standards are enforced during harden and ship phases.*

@@ -330,8 +330,8 @@ _No items currently in backlog - all identified features are active_
 
 ### Phase 3: Feature Organization (2-3 days)
 - [x] HODGE-003: Feature Extraction ✅
-- [ ] HODGE-005: Feature Auto-Population
-- [ ] HODGE-006: Local PM Tracking
+- [x] HODGE-005: Feature Auto-Population ✅
+- [x] HODGE-006: Local PM Tracking ✅
 
 ### Phase 4: PM Integration (2-3 days)
 - [ ] pm-adapter-hooks

@@ -1,9 +1,74 @@
 # Hodge Decide - Decision Management
 
-## Command Execution
+## ⚠️ DEFAULT BEHAVIOR: Interactive Decision Mode
+
+**IMPORTANT**: Unless the user explicitly provides a pre-made decision, ALWAYS use Interactive Decision Mode (see below). Do NOT jump directly to recording a decision without presenting options first.
+
+### ❌ WRONG: Jumping to recording
+```
+User: /decide
+AI: *immediately executes hodge decide "Some decision"*
+```
+
+### ✅ RIGHT: Present options first
+```
+User: /decide
+AI: *presents decision options with pros/cons*
+User: chooses option 'a'
+AI: *then executes hodge decide with chosen option*
+```
+
+## Interactive Decision Mode (DEFAULT)
+When `/decide` is invoked, follow this process:
+
+1. **Review Guiding Principles**:
+   ```bash
+   cat .hodge/principles.md | head -20
+   ```
+   Consider how principles might guide the decision.
+
+2. **Gather pending decisions from**:
+   - Code comments (TODO, FIXME, QUESTION)
+   - Previous exploration notes
+   - Uncommitted changes
+   - Open questions in conversation
+
+3. **Present each decision with Principle Alignment**:
+   ```
+   ## Decision {{number}} of {{total}}
+
+   **Topic**: {{decision_topic}}
+   **Context**: {{brief_context}}
+
+   **Principle Consideration**:
+   [Note if decision aligns with or conflicts with any principles]
+
+   Options:
+   a) {{option_1}}
+      Pros: {{pros}}
+      Cons: {{cons}}
+      Alignment: [Aligns with "Progressive Enhancement" principle]
+
+   b) {{option_2}}
+      Pros: {{pros}}
+      Cons: {{cons}}
+      Alignment: [May conflict with "Behavior-Focused Testing"]
+
+   c) Skip for now
+   d) Need more exploration
+
+   Your choice:
+   ```
+
+4. **For each decision made**:
+   ```bash
+   hodge decide "{{chosen_option_description}}" --feature {{feature}}
+   ```
+
+## Recording the Decision (ONLY after user chooses)
 
 ### For Single Decision
-Claude will execute the following backend operation:
+After the user has chosen an option (a, b, c, etc.), execute:
 ```bash
 hodge decide "{{decision}}"
 ```
@@ -13,47 +78,7 @@ With feature association:
 hodge decide "{{decision}}" --feature {{feature}}
 ```
 
-## What This Does
-Records the decision with appropriate context and associations.
-
-## After Command Execution
-The decision is recorded and ready for reference.
-
-## Interactive Decision Mode
-If you need to make multiple decisions or review pending ones:
-
-1. **Gather pending decisions from**:
-   - Code comments (TODO, FIXME, QUESTION)
-   - Previous exploration notes
-   - Uncommitted changes
-   - Open questions in conversation
-
-2. **Present each decision**:
-   ```
-   ## Decision {{number}} of {{total}}
-
-   **Topic**: {{decision_topic}}
-   **Context**: {{brief_context}}
-
-   Options:
-   a) {{option_1}}
-      Pros: {{pros}}
-      Cons: {{cons}}
-
-   b) {{option_2}}
-      Pros: {{pros}}
-      Cons: {{cons}}
-
-   c) Skip for now
-   d) Need more exploration
-
-   Your choice:
-   ```
-
-3. **For each decision made**:
-   ```bash
-   hodge decide "{{chosen_option_description}}" --feature {{feature}}
-   ```
+**WARNING**: Never execute this command until the user has explicitly chosen from presented options.
 
 ## Decision Format
 Decisions follow a structured format with date, status, context, rationale, and consequences.

@@ -30,6 +30,35 @@ The CLI will output:
 - Created files location
 - Next steps
 
+## Review Relevant Context
+
+### 1. Check Lessons from Similar Features
+```bash
+# Search for relevant lessons
+ls -la .hodge/lessons/ | grep -i "{{feature-keyword}}"
+
+# Review any relevant lessons found
+cat .hodge/lessons/SIMILAR-FEATURE.md
+```
+Consider what worked well and what to avoid based on past experience.
+
+### 2. Review Applicable Patterns
+```bash
+# List available patterns
+ls -la .hodge/patterns/
+
+# Review patterns that might apply to {{feature}}
+cat .hodge/patterns/relevant-pattern.md
+```
+Consider which patterns might guide your exploration.
+
+### 3. Check Related Principles
+```bash
+# Review principles for exploration phase guidance
+grep -A 5 "Explore" .hodge/principles.md
+```
+Remember: "Freedom to explore" - Standards are suggestions only in this phase.
+
 ## Your Tasks After CLI Command
 1. Review the exploration template at `.hodge/features/{{feature}}/explore/exploration.md`
 2. Review test intentions at `.hodge/features/{{feature}}/explore/test-intentions.md`

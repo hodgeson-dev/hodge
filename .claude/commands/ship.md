@@ -63,6 +63,47 @@ The ship command intelligently examines:
 - 💔 **Breaking changes** - Identified from specific patterns
 - 🔗 **PM Integration** - Links to Linear/GitHub/Jira issues
 
+## Standards Review Process (AI-Based STRICT Enforcement)
+
+### 1. Load and Review Standards
+```bash
+cat .hodge/standards.md
+```
+
+### 2. Review ALL Changes Since Last Release
+```bash
+git diff main...HEAD  # All changes in feature branch
+```
+
+### 3. AI Standards Compliance Check (BLOCKING)
+Review ALL changes against EVERY standard with ZERO tolerance:
+- **Core Standards**: Must have TypeScript strict, ESLint clean, Prettier formatted
+- **Testing Requirements**: Full test suite with >80% coverage
+- **Code Comments/TODOs**: ALL TODOs must have proper phase markers
+- **Quality Gates**: ZERO lint errors, ZERO type errors
+- **Performance Standards**: ALL operations <500ms, tests <30s total
+
+### 4. Report Violations (BLOCKING Level)
+If ANY standards violations found, BLOCK shipping:
+```
+❌ STANDARDS REVIEW - Ship Blocked:
+
+1. **TODO Format Violations** (3 found)
+   src/commands/example.ts:45 - Missing phase marker
+   src/lib/helper.ts:12 - Incomplete TODO without description
+   tests/unit.test.ts:78 - Naked TODO
+
+2. **Test Coverage Below 80%**
+   Current: 72.3% - Required: 80%
+   Missing coverage in: src/lib/validator.ts
+
+3. **ESLint Errors** (2 found)
+   no-explicit-any violations in src/types.ts
+
+SHIP BLOCKED: All standards MUST be met before shipping.
+Fix all violations and run /ship again.
+```
+
 ## Testing Requirements (Progressive Model)
 - **Ship Phase**: Full test suite required
 - **Test Types**: All categories (smoke, integration, unit, acceptance)
@@ -89,7 +130,61 @@ The ship command intelligently examines:
    git tag v1.0.0
    git push --tags
    ```
-6. Monitor production metrics
+6. Capture lessons learned (optional but valuable):
+   ```markdown
+   ## Lessons from {{feature}}
+
+   **What worked well:**
+   - [What approach or pattern was effective?]
+
+   **What was challenging:**
+   - [What took longer than expected?]
+
+   **What to do differently next time:**
+   - [What would you change?]
+
+   Save to: .hodge/lessons/{{feature}}.md
+   ```
+
+7. Consider Global Improvements (if lessons suggest it):
+
+   **Pattern Candidate?** If something worked particularly well:
+   ```bash
+   # Check if similar patterns exist
+   grep -r "similar-concept" .hodge/patterns/
+
+   # If novel and reusable, create pattern:
+   cat > .hodge/patterns/{{pattern-name}}.md << 'EOF'
+   # Pattern: {{Pattern Name}}
+
+   ## Problem
+   [What problem does this solve?]
+
+   ## Solution
+   [The approach that worked]
+
+   ## Example from {{feature}}
+   [Code or approach example]
+
+   ## When to Use
+   - [Scenario where this helps]
+   EOF
+   ```
+
+   **Standards Gap?** If you hit a preventable issue:
+   - Review if existing standards could have prevented it
+   - If 3+ features hit the same issue, consider proposing a standard
+   - Document in decisions: "Considering new standard based on {{feature}} lessons"
+
+   **Review Similar Lessons:**
+   ```bash
+   # Check if others hit similar issues
+   grep -r "similar-issue" .hodge/lessons/
+   ```
+
+   If pattern emerges across multiple features, elevate to team discussion.
+
+8. Monitor production metrics
 
 ### If Ship Failed ❌
 1. Review quality gate failures
