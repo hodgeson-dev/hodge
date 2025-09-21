@@ -5,6 +5,149 @@ This file tracks all Hodge features and their implementation status. Features ar
 
 ## Active Features
 
+### HODGE-228
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-227
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-226
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-225
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-224
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-223
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-222
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-221
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+
+- **Status**: Shipped
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: ship-uncommitted-files
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-219
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-218
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
 ### HODGE-217
 - **Status**: Exploring
 - **Priority**: TBD
@@ -1236,12 +1379,42 @@ This file tracks all Hodge features and their implementation status. Features ar
 
 ## Completed Features
 
-### HODGE-180
+### HODGE-220
 - **Completed**: 2025-09-21
 
 
 
 ### test-feature
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+### HODGE-180
+- **Completed**: 2025-09-21
+
+
+
+
 - **Completed**: 2025-09-21
 
 

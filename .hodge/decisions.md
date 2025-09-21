@@ -26,6 +26,25 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-21 - Pre-Commit All Updates with rollback on failure - Move all file updates (autoSave, HODGE
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-220
+
+**Decision**:
+Pre-Commit All Updates with rollback on failure - Move all file updates (autoSave, HODGE.md, PM tracking) BEFORE git commit, with state rollback if commit fails to prevent inconsistent state
+
+**Rationale**:
+Recorded via `hodge decide` command at 2:43:19 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-21 - Implement Hybrid Progressive Enhancement for test isolation - fix critical bugs immediately (session-manager
 
 **Status**: Accepted

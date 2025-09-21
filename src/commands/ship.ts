@@ -30,6 +30,70 @@ import { PMHooks } from '../lib/pm/pm-hooks.js';
 
 const execAsync = promisify(exec);
 
+// HODGE-220: Backup/restore mechanism for metadata rollback
+interface MetadataBackup {
+  featureHodgeMd?: string;
+  projectManagement?: string;
+  session?: string;
+  context?: string;
+}
+
+async function backupMetadata(feature: string): Promise<MetadataBackup> {
+  const backup: MetadataBackup = {};
+
+  // Backup feature HODGE.md if it exists
+  const featureHodgePath = path.join('.hodge', 'features', feature, 'HODGE.md');
+  if (existsSync(featureHodgePath)) {
+    backup.featureHodgeMd = await fs.readFile(featureHodgePath, 'utf-8');
+  }
+
+  // Backup project management file
+  const pmPath = path.join('.hodge', 'project_management.md');
+  if (existsSync(pmPath)) {
+    backup.projectManagement = await fs.readFile(pmPath, 'utf-8');
+  }
+
+  // Backup session file
+  const sessionPath = path.join('.hodge', '.session');
+  if (existsSync(sessionPath)) {
+    backup.session = await fs.readFile(sessionPath, 'utf-8');
+  }
+
+  // Backup context file
+  const contextPath = path.join('.hodge', 'context.json');
+  if (existsSync(contextPath)) {
+    backup.context = await fs.readFile(contextPath, 'utf-8');
+  }
+
+  return backup;
+}
+
+async function restoreMetadata(feature: string, backup: MetadataBackup): Promise<void> {
+  // Restore feature HODGE.md
+  if (backup.featureHodgeMd) {
+    const featureHodgePath = path.join('.hodge', 'features', feature, 'HODGE.md');
+    await fs.writeFile(featureHodgePath, backup.featureHodgeMd);
+  }
+
+  // Restore project management file
+  if (backup.projectManagement) {
+    const pmPath = path.join('.hodge', 'project_management.md');
+    await fs.writeFile(pmPath, backup.projectManagement);
+  }
+
+  // Restore session file
+  if (backup.session) {
+    const sessionPath = path.join('.hodge', '.session');
+    await fs.writeFile(sessionPath, backup.session);
+  }
+
+  // Restore context file
+  if (backup.context) {
+    const contextPath = path.join('.hodge', 'context.json');
+    await fs.writeFile(contextPath, backup.context);
+  }
+}
+
 export interface ShipOptions {
   skipTests?: boolean;
   message?: string;
@@ -183,7 +247,7 @@ export class ShipCommand {
 
     // Check coverage
     console.log(chalk.cyan('📊 Checking code coverage...'));
-    // TODO: Implement actual code coverage check (e.g., via nyc or jest coverage)
+    // TODO: [ship] Implement actual code coverage check (e.g., via nyc or jest coverage)
     shipChecks.coverage = true;
     console.log(chalk.green('   ✓ Coverage meets requirements'));
 
@@ -510,72 +574,96 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}
     // Update PM issue to Done
     if (pmTool && issueId) {
       console.log(chalk.blue(`\n📋 Updating ${pmTool} issue ${issueId} to Done...`));
-      // TODO: Update PM issue to "Done" status via PM adapter
+      // TODO: [ship] Update PM issue to "Done" status via PM adapter
     }
 
-    // Create git commit (unless --no-commit flag is used)
-    if (!options.noCommit) {
-      console.log(chalk.bold('\n📝 Creating git commit...'));
-      try {
-        // Stage all changes in the feature directory
-        await execAsync('git add .');
+    // HODGE-220: Backup metadata before updates for rollback on failure
+    const metadataBackup = await backupMetadata(feature);
 
-        // Create commit with the generated message
-        await execAsync(
-          `git commit -m "${commitMessage.replace(/"/g, '\\"').replace(/\n/g, '\\n')}"`
-        );
-        console.log(chalk.green('   ✓ Commit created successfully'));
+    try {
+      // Move all metadata updates BEFORE git commit to prevent uncommitted files
+      // Regenerate feature HODGE.md to include ship summary
+      const populator = new FeaturePopulator();
+      await populator.generateFeatureHodgeMD(feature);
 
-        // Get current branch
-        const currentBranch = await getCurrentBranch();
-        console.log(chalk.gray(`   Branch: ${currentBranch}`));
+      // Create git commit (unless --no-commit flag is used)
+      if (!options.noCommit) {
+        console.log(chalk.bold('\n📝 Creating git commit...'));
+        try {
+          // Stage all changes including metadata updates
+          await execAsync('git add -A');
 
-        // Check config for auto-push
-        const configManager = getConfigManager();
-        const shouldAutoPush = await configManager.isAutoPushEnabled();
+          // Create commit with the generated message
+          await execAsync(
+            `git commit -m "${commitMessage.replace(/"/g, '\\"').replace(/\n/g, '\\n')}"`
+          );
+          console.log(chalk.green('   ✓ Commit created successfully'));
 
-        // Handle push if requested or configured
-        if ((options.push || shouldAutoPush) && !options.noPush) {
-          await this.handlePush(currentBranch, feature, options);
-        } else if (!options.noPush) {
-          // Show push instructions if not auto-pushing
-          console.log(chalk.bold('\nNext Steps:'));
-          console.log('  1. Push to remote: git push');
-          console.log('  2. Create pull request if needed');
-          console.log('  3. Create release tag if needed');
-          console.log('  4. Monitor production metrics');
-          console.log('  5. Gather user feedback');
-          console.log();
-          console.log(chalk.gray('Tip: Use --push flag to automatically push after shipping'));
+          // Get current branch
+          const currentBranch = await getCurrentBranch();
+          console.log(chalk.gray(`   Branch: ${currentBranch}`));
+
+          // Check config for auto-push
+          const configManager = getConfigManager();
+          const shouldAutoPush = await configManager.isAutoPushEnabled();
+
+          // Handle push if requested or configured
+          if ((options.push || shouldAutoPush) && !options.noPush) {
+            await this.handlePush(currentBranch, feature, options);
+          } else if (!options.noPush) {
+            // Show push instructions if not auto-pushing
+            console.log(chalk.bold('\nNext Steps:'));
+            console.log('  1. Push to remote: git push');
+            console.log('  2. Create pull request if needed');
+            console.log('  3. Create release tag if needed');
+            console.log('  4. Monitor production metrics');
+            console.log('  5. Gather user feedback');
+            console.log();
+            console.log(chalk.gray('Tip: Use --push flag to automatically push after shipping'));
+          }
+        } catch (error) {
+          // Inner catch for git commit failure
+          console.log(chalk.yellow('   ⚠️  Could not create commit automatically'));
+          console.log(
+            chalk.gray(`   Error: ${error instanceof Error ? error.message : String(error)}`)
+          );
+
+          // Rollback metadata changes on commit failure
+          console.log(chalk.yellow('   ⚠️  Rolling back metadata changes...'));
+          await restoreMetadata(feature, metadataBackup);
+          console.log(chalk.green('   ✓ Metadata rolled back successfully'));
+
+          console.log(chalk.bold('\nManual Steps Required:'));
+          console.log('  1. Stage changes: git add .');
+          console.log('  2. Commit with the message above');
+          console.log('  3. Push to main branch');
+          console.log('  4. Create release tag if needed');
+          console.log('  5. Monitor production metrics');
+          console.log('  6. Gather user feedback');
+
+          // Re-throw to be caught by outer catch
+          throw error;
         }
-      } catch (error) {
-        console.log(chalk.yellow('   ⚠️  Could not create commit automatically'));
-        console.log(
-          chalk.gray(`   Error: ${error instanceof Error ? error.message : String(error)}`)
-        );
-        console.log(chalk.bold('\nManual Steps Required:'));
+      } else {
+        console.log(chalk.bold('\nNext Steps:'));
         console.log('  1. Stage changes: git add .');
-        console.log('  2. Commit with the message above');
-        console.log('  3. Push to main branch');
+        console.log(`  2. Commit: git commit -m "${commitMessage.split('\n')[0]}"`);
+        console.log('  3. Push to remote: git push');
         console.log('  4. Create release tag if needed');
         console.log('  5. Monitor production metrics');
-        console.log('  6. Gather user feedback');
       }
-    } else {
-      console.log(chalk.bold('\nNext Steps:'));
-      console.log('  1. Stage changes: git add .');
-      console.log(`  2. Commit: git commit -m "${commitMessage.split('\n')[0]}"`);
-      console.log('  3. Push to remote: git push');
-      console.log('  4. Create release tag if needed');
-      console.log('  5. Monitor production metrics');
+
+      console.log();
+      console.log(chalk.gray('Ship record saved to: ' + shipDir));
+    } catch (error) {
+      // Outer catch for any failures during the ship process
+      console.log(chalk.red('\n❌ Ship process failed'));
+      if (error instanceof Error) {
+        console.log(chalk.gray(`   Error: ${error.message}`));
+      }
+      // Metadata has already been rolled back if needed
+      return;
     }
-
-    console.log();
-    console.log(chalk.gray('Ship record saved to: ' + shipDir));
-
-    // Regenerate feature HODGE.md to include ship summary (HODGE-005)
-    const populator = new FeaturePopulator();
-    await populator.generateFeatureHodgeMD(feature);
   }
 
   /**
@@ -1002,7 +1090,7 @@ ${!gitStatus.remote ? 'ℹ️ **Info**: No upstream branch exists - will create 
     const result = await prManager.createPR({
       title: prTitle,
       body: prBody,
-      base: 'main', // TODO: Make this configurable
+      base: 'main', // TODO: [ship] Make this configurable
       labels: branchInfo.type ? [branchInfo.type] : undefined,
     });
 

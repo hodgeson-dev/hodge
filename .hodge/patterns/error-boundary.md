@@ -1,25 +1,13 @@
 # Error Boundary
 
 **Category**: error-handling
-**Frequency**: Used 6 times
+**Frequency**: Used 5 times
 **Confidence**: 100%
 
 ## Description
 Consistent error handling with logging
 
 ## Examples
-
-### src/commands/harden.ts
-```typescript
-try {
-      // Validate inputs
-      if (!feature || typeof feature !== 'string') {
-        throw new Error('Feature name is required and must be a string');
-      }
-
-      console.log(chalk.magenta('
-```
-
 
 ### src/commands/load.ts
 ```typescript
@@ -40,11 +28,21 @@ try {
 ```typescript
 try {
       // Generate save name if not provided
-      const saveName = name || await this.generateSaveName();
+      const saveName = name || (await this.generateSaveName());
 
       // Determine save type based on options
-      const saveOptions: SaveOptions = {
+      const saveOptions: SaveOptions = 
+```
 
+
+### src/commands/ship.ts
+```typescript
+try {
+        const results = JSON.parse(await fs.readFile(validationFile, 'utf-8')) as Record<
+          string,
+          { passed: boolean }
+        >;
+        validationPassed = Object.values(resu
 ```
 
 
@@ -54,5 +52,5 @@ try {
 - 
 
 ---
-*First seen: 2025-09-21T21:35:15.299Z*
-*Last used: 2025-09-21T21:35:15.302Z*
+*First seen: 2025-09-21T23:36:22.895Z*
+*Last used: 2025-09-21T23:36:22.903Z*
