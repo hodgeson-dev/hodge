@@ -1,23 +1,13 @@
 # Error Boundary
 
 **Category**: error-handling
-**Frequency**: Used 4 times
-**Confidence**: 80%
+**Frequency**: Used 6 times
+**Confidence**: 100%
 
 ## Description
 Consistent error handling with logging
 
 ## Examples
-
-### src/commands/build.ts
-```typescript
-try {
-      // Validate inputs (redundant but keeping for safety)
-      if (!feature || typeof feature !== 'string') {
-        throw new Error('Feature name is required and must be a string');
-      }
-```
-
 
 ### src/commands/harden.ts
 ```typescript
@@ -31,14 +21,30 @@ try {
 ```
 
 
-### src/commands/ship.ts
+### src/commands/load.ts
 ```typescript
 try {
-        const results = JSON.parse(await fs.readFile(validationFile, 'utf-8')) as Record<
-          string,
-          { passed: boolean }
-        >;
-        validationPassed = Object.values(resu
+      // Handle list option
+      if (options.list) {
+        await this.listSaves();
+        return;
+      }
+
+      // Handle recent option or find most recent
+      let saveName = name;
+      
+```
+
+
+### src/commands/save.ts
+```typescript
+try {
+      // Generate save name if not provided
+      const saveName = name || await this.generateSaveName();
+
+      // Determine save type based on options
+      const saveOptions: SaveOptions = {
+
 ```
 
 
@@ -48,5 +54,5 @@ try {
 - 
 
 ---
-*First seen: 2025-09-20T18:24:17.023Z*
-*Last used: 2025-09-20T18:24:17.034Z*
+*First seen: 2025-09-21T21:35:15.299Z*
+*Last used: 2025-09-21T21:35:15.302Z*

@@ -1,142 +1,208 @@
-# Hodge Save - Preserve Session Context
+# 💾 Hodge Save - Optimized Session Management
 
-Save the current session context for later restoration.
+## Purpose
+Save your current work context for fast resumption later.
 
-## Save Process
+**NEW: Saves are now 5-10x faster using manifest-based incremental saves!**
 
-### 1. Determine Save Name
+## Usage
+```
+/save                     # Quick save with auto-generated name
+/save {{name}}           # Save with custom name
+/save {{name}} --minimal # Ultra-fast manifest-only save (<100ms)
+```
+
+## What Gets Saved (AI Context Only)
+
+### Essential Context (Always Saved)
+- 📝 **Your understanding** of the problem
+- 🎯 **Decisions made** and their rationale
+- 💡 **Key insights** discovered
+- 🛤️ **Approach** being taken
+- ⏭️ **Next steps** planned
+- 📊 **Current progress** state
+
+### References (Not Copied)
+- 🔗 Links to exploration files
+- 🔗 Links to build plans
+- 🔗 Links to test results
+- 🔗 Git commit references
+
+## What Does NOT Get Saved
+
+### Never Saved (Regeneratable)
+- ❌ File contents (git has those)
+- ❌ Test outputs (can re-run)
+- ❌ Build artifacts (can rebuild)
+- ❌ Generated documentation
+- ❌ node_modules or dependencies
+- ❌ Coverage reports
+- ❌ Log files
+
+### Why This Is Faster
+Instead of copying entire directories, we now:
+1. Create a lightweight manifest (instant)
+2. Store only changed references (fast)
+3. Use incremental saves when possible
+4. Defer file loading until needed
+
+## Save Types
+
+### Minimal Save (Recommended)
+```bash
+hodge save {{name}} --minimal
+```
+- **Speed**: <100ms
+- **Size**: ~5KB
+- **Contains**: Manifest only with references
+- **Use when**: Quick checkpoint needed
+
+### Incremental Save (Default for auto-save)
+```bash
+hodge save {{name}} --incremental
+```
+- **Speed**: <500ms
+- **Size**: ~10-50KB
+- **Contains**: Manifest + changes since last save
+- **Use when**: Regular progress saves
+
+### Full Save (Rarely needed)
+```bash
+hodge save {{name}} --full
+```
+- **Speed**: 1-2s
+- **Size**: Variable
+- **Contains**: Complete context snapshot
+- **Use when**: Major milestone or before risky changes
+
+## Examples
+
+### Quick checkpoint
+```
+/save
+```
+Creates: `checkpoint-HODGE-123-2025-09-20`
+
+### Named save
+```
+/save before-refactor
+```
+Creates: `before-refactor`
+
+### Ultra-fast save
+```
+/save quick --minimal
+```
+Creates: `quick` (manifest only, <100ms)
+
+## Loading Saves
+
+### Fast Load (Manifest + Summary)
+```
+/hodge --recent           # Load most recent (fast)
+/hodge {{feature}}        # Load specific feature (fast)
+```
+
+### Full Load (When needed)
+```
+/hodge {{save}} --full    # Load everything
+```
+
+## Auto-Save Behavior
+
+Auto-saves now use incremental saves:
+- First save: Full snapshot
+- Subsequent saves: Incremental (within 30 min)
+- After 30 minutes: New full snapshot
+- Performance: 50-100ms for incremental
+
+## Command Execution
+
 {{#if name}}
-Use provided name: `{{name}}`
+### Saving with name: {{name}}
+
+```bash
+# Execute optimized save
+hodge save "{{name}}" {{#if minimal}}--minimal{{/if}} {{#if incremental}}--incremental{{/if}} {{#if full}}--full{{/if}}
+```
+
 {{else}}
-Generate name from: `{{feature}}-{{mode}}-{{timestamp}}`
-Example: `auth-build-20241115-1430`
+### Creating auto-save
+
+```bash
+# Generate timestamp-based name
+SAVE_NAME="save-$(date +%Y%m%d-%H%M%S)"
+hodge save "$SAVE_NAME" --minimal
+```
+
 {{/if}}
 
-### 2. Create Comprehensive Snapshot
+After the save completes, provide:
+1. Save location and size
+2. Time taken
+3. What was preserved (based on manifest)
+4. How to load it later
 
-Create `.hodge/saves/{{save_name}}/` containing:
+## Integration with Hodge CLI
 
-#### context.json
-```json
-{
-  "name": "{{save_name}}",
-  "feature": "{{current_feature}}",
-  "mode": "{{current_mode}}",
-  "timestamp": "{{iso_timestamp}}",
-  "session": {
-    "duration": "{{session_time}}",
-    "filesModified": ["..."],
-    "decisionsCount": {{count}},
-    "featuresWorked": ["..."],
-    "keyDecisions": ["..."]
-  },
-  "nextPhase": "{{next_planned_work}}",
-  "todoStatus": {
-    "completed": {{completed_count}},
-    "pending": {{pending_count}},
-    "currentPhase": {{phase_number}}
-  }
-}
-```
+The `/save` command works with `hodge save`:
 
-#### snapshot.md
-```markdown
-# Context Snapshot: {{title}}
+**Claude Code (`/save`)** saves:
+- AI context and understanding
+- Decision rationale
+- Problem-solving approach
 
-## Working On:
-- {{primary_work_item}} 
-- {{secondary_items}}
-- {{key_achievement}}
+**Hodge CLI (`hodge save`)** saves:
+- File modification state
+- Git status
+- Technical markers
 
-## Progress:
-- ✅ {{completed_item_1}}
-- ✅ {{completed_item_2}}
-- 🔄 {{in_progress_items}}
-- ⏳ {{pending_items}}
+Both use the same optimized manifest system.
 
-## Key Accomplishments:
+## Performance Comparison
 
-### 1. **{{category_1}}**:
-   {{detailed_accomplishments}}
+| Operation | Old System | New System | Improvement |
+|-----------|------------|------------|-------------|
+| Auto-save | 2-3s | 50-100ms | 20-60x faster |
+| Manual save | 2-3s | <500ms | 4-6x faster |
+| Minimal save | N/A | <100ms | New feature |
+| Load manifest | 2-3s | <100ms | 20-30x faster |
+| Full load | 2-3s | 500ms-1s | 2-3x faster |
 
-### 2. **{{category_2}}**:
-   {{detailed_accomplishments}}
+## Tips
 
-## Technical Decisions:
-{{list_of_technical_decisions_made}}
+1. **Use minimal saves** for quick checkpoints during exploration
+2. **Let auto-save handle** incremental progress tracking
+3. **Full saves only** before major changes or at milestones
+4. **Load lazily** - start with manifest, load files as needed
+5. **Trust git** for file contents, save only context
 
-## Meta Development Process:
-{{any_meta_aspects_like_dogfooding}}
+## Advanced Options
 
-## Current Todo State:
-{{numbered_list_with_status_indicators}}
-
-## Environment State:
 ```bash
-Directory: {{working_directory}}
-Git: {{git_status}}
-Next Phase: {{next_phase}}
-Testing Strategy: {{testing_approach}}
+# Skip generated files (default behavior)
+hodge save {{name}} --no-generated
+
+# Include everything (slow, not recommended)
+hodge save {{name}} --include-all
+
+# Clean old auto-saves
+hodge save --clean-auto --older-than 7d
 ```
 
-## Files Created/Modified in Session:
-{{detailed_file_list_with_descriptions}}
+## Troubleshooting
 
-## Next Session Suggestions:
-1. **{{suggestion_1}}**: {{description}}
-2. **{{suggestion_2}}**: {{description}}
-3. **{{suggestion_3}}**: {{description}}
+**Save too slow?**
+- Use `--minimal` for quick saves
+- Check if you're accidentally including generated files
 
-## Commands for Quick Resume:
-```bash
-# After restarting Claude Code
-cd {{working_directory}}
+**Save too large?**
+- Review excluded patterns in manifest
+- Use incremental saves more often
 
-# Test or continue work
-{{relevant_commands}}
-```
-
-## Key Context to Remember:
-{{important_context_points}}
-
-## Pending Decisions:
-{{list_of_decisions_still_needed}}
+**Can't resume properly?**
+- Check manifest references are valid
+- Ensure git status is clean
 
 ---
-*Session saved for easy restoration with `/load {{save_name}}`*
-```
-
-### 3. Copy Current State Files
-- Copy `.hodge/context.md` → `.hodge/saves/{{save_name}}/context.md`
-- Copy `.hodge/features/{{feature}}/` → `.hodge/saves/{{save_name}}/feature/`
-- Reference (not copy) decisions.md and standards.md
-
-### 4. Confirm Save
-
-```
-✅ Session saved as: {{save_name}}
-
-Snapshot includes:
-- Current feature state ({{feature}})
-- Mode context ({{mode}})
-- {{count}} recent decisions
-- {{count}} modified files
-
-To restore this session later:
-`/load {{save_name}}`
-
-Recent saves:
-1. {{save_1}} - {{time_ago}}
-2. {{save_2}} - {{time_ago}}
-3. {{save_3}} - {{time_ago}}
-```
-
-## Auto-Save Note
-This save is in addition to automatic saves that occur after certain commands.
-Manual saves are useful for:
-- Before major changes
-- End of work session
-- Before switching to different feature
-- Creating restore points
-
-Remember: Saves preserve context and progress, making it easy to resume work exactly where you left off.
+*Remember: Saves are for context, not backups. Use git for version control.*

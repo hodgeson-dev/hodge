@@ -1,0 +1,18 @@
+{
+  "tests": {
+    "passed": false,
+    "output": "Command failed: npm test 2>&1\n"
+  },
+  "lint": {
+    "passed": false,
+    "output": "Command failed: npm run lint 2>&1\n"
+  },
+  "typecheck": {
+    "passed": true,
+    "output": "\n> @agile-explorations/hodge@0.1.0-alpha.1 typecheck\n> tsc -p tsconfig.build.json --noEmit\n\n"
+  },
+  "build": {
+    "passed": true,
+    "output": "\n> @agile-explorations/hodge@0.1.0-alpha.1 build\n> npm run sync:commands && tsc -p tsconfig.build.json && cp package.json dist/ && cp -r src/templates dist/src/\n\n\n> @agile-explorations/hodge@0.1.0-alpha.1 sync:commands\n> node scripts/sync-claude-commands.js\n\n🔄 Syncing Claude slash commands...\n📖 Found 10 command files\n  ✓ build\n  ✓ decide\n  ✓ explore\n  ✓ harden\n  ✓ hodge\n  ✓ load\n  ✓ review\n  ✓ save\n  ✓ ship\n  ✓ status\n✅ Successfully synced 10 commands to /Users/michaelkelly/Projects/hodge/src/lib/claude-commands.ts\n📝 Remember to commit the updated claude-commands.ts file\n"
+  }
+}

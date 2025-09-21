@@ -2,22 +2,24 @@ import chalk from 'chalk';
 import { existsSync } from 'fs';
 import { readFile, writeFile, mkdir, copyFile } from 'fs/promises';
 import path from 'path';
+import { saveManager } from './save-manager.js';
 
 /**
  * Auto-save utility for preserving context when switching features
- * Implements Event-Based Auto-Save pattern from HODGE-052
+ * Now uses optimized incremental saves for speed
  */
 export class AutoSave {
   private basePath: string;
   private contextPath: string;
   private savesPath: string;
   private enabled: boolean;
+  private lastSaveTime: Map<string, number> = new Map();
+  private FULL_SAVE_INTERVAL = 30 * 60 * 1000; // Full save every 30 minutes
 
   constructor(basePath: string = '.') {
     this.basePath = basePath;
     this.contextPath = path.join(basePath, '.hodge', 'context.json');
     this.savesPath = path.join(basePath, '.hodge', 'saves');
-    // TODO: [harden] Load from config when config management is implemented
     this.enabled = true;
   }
 
@@ -71,28 +73,67 @@ export class AutoSave {
   }
 
   /**
-   * Perform auto-save for the specified feature
+   * Perform optimized auto-save for the specified feature
+   * Uses incremental saves when possible for speed
    * @param feature - Feature to auto-save
    */
   private async performAutoSave(feature: string): Promise<void> {
+    const startTime = Date.now();
+
     try {
-      // Create save directory with auto-save prefix
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').substring(0, 19);
+      const saveName = `auto-${feature}-${timestamp}`;
+
+      // Determine if we should do full or incremental save
+      const lastSave = this.lastSaveTime.get(feature) || 0;
+      const timeSinceLastSave = Date.now() - lastSave;
+      const saveType = timeSinceLastSave > this.FULL_SAVE_INTERVAL ? 'full' : 'incremental';
+
+      // Use the new SaveManager for optimized saves
+      await saveManager.save(saveName, {
+        type: saveType,
+        minimal: saveType === 'incremental', // Incremental saves are minimal
+        includeGenerated: false, // Never include generated files in auto-saves
+      });
+
+      this.lastSaveTime.set(feature, Date.now());
+
+      const elapsed = Date.now() - startTime;
+      console.log(
+        chalk.blue(
+          `📦 Auto-saved: ${feature} → ${path.join(this.savesPath, saveName)} (${elapsed}ms)`
+        )
+      );
+    } catch (error) {
+      // Don't let auto-save errors block the workflow
+      console.error(
+        chalk.gray(
+          `Auto-save failed for ${feature}: ${error instanceof Error ? error.message : 'Unknown'}`
+        )
+      );
+    }
+  }
+
+  /**
+   * Legacy method for compatibility
+   * @deprecated Use performAutoSave with SaveManager instead
+   * @internal Kept for reference but not used
+   */
+  // @ts-expect-error - Kept for reference but not used
+  private async performLegacyAutoSave(feature: string): Promise<void> {
+    try {
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').substring(0, 19);
       const saveName = `auto-${feature}-${timestamp}`;
       const saveDir = path.join(this.savesPath, saveName);
 
-      // Create save directory
       await mkdir(saveDir, { recursive: true });
 
-      // Copy current context.json to save
       if (existsSync(this.contextPath)) {
         await copyFile(this.contextPath, path.join(saveDir, 'context.json'));
       }
 
-      // Copy feature directory if it exists
       const featureDir = path.join(this.basePath, '.hodge', 'features', feature);
       if (existsSync(featureDir)) {
-        // Create simple snapshot of feature state
         const snapshot = {
           feature,
           timestamp: new Date().toISOString(),

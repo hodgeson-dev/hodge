@@ -1,254 +1,165 @@
-# 🚀 Hodge Ship Mode - Interactive Commit Experience
+# 🚀 Ship Command - Interactive Commit & Ship
 
-## Smart Ship Command
-Execute the enhanced ship command with intelligent commit message generation:
+## Standards Review Process
+
+### AI Standards Compliance Check
+Before shipping, you MUST ensure all standards are met at the **BLOCKING Level**:
+
+- [ ] **All tests passing** (no failures allowed)
+- [ ] **No TypeScript errors** (strict mode compliance)
+- [ ] **No ESLint errors** (warnings acceptable)
+- [ ] **Performance standards met** (CLI < 500ms response)
+- [ ] **Documentation updated** (if public APIs changed)
+- [ ] **Test coverage >80%** for new code
+
+If any BLOCKING standards are not met, return to `/harden` phase.
+
+## Step 1: Analyze Changes
+First, let me analyze your git changes and generate a commit message:
+
 ```bash
-hodge ship {{feature}}
+# Get current feature and check status
+feature="{{feature}}"
+if [ -z "$feature" ]; then
+    hodge status
+    echo "Please provide a feature name to ship"
+    exit 1
+fi
+
+# Check if feature is ready to ship
+if [ ! -d ".hodge/features/$feature/harden" ]; then
+    echo "⚠️ Feature has not been hardened yet"
+    echo "Run: hodge harden $feature"
+    exit 1
+fi
+
+# Analyze git changes
+echo "📊 Analyzing changes for $feature..."
+git status --short
+echo ""
+echo "📝 Detailed changes:"
+git diff --stat
 ```
 
-## 🎯 Progressive Enhancement Active
-This command adapts to Claude Code with:
-- **Smart commit analysis** - Automatically detects type (feat/fix/docs) from your changes
-- **Interactive markdown UI** - Review and edit commit messages right here
-- **File-based state** - Seamless integration between CLI and Claude
+## Step 2: Generate Commit Message
+Based on the changes, here's the suggested commit message:
 
-## How It Works
-
-### Step 1: Initial Analysis
 ```bash
-hodge ship {{feature}}
+# Detect commit type from changes
+files_changed=$(git diff --name-only)
+if echo "$files_changed" | grep -q "test"; then
+    type="test"
+elif echo "$files_changed" | grep -q "docs\|README\|CHANGELOG"; then
+    type="docs"
+elif echo "$files_changed" | grep -q "src/commands"; then
+    type="feat"
+else
+    type="feat"
+fi
+
+# Get issue ID if available
+issue_id=""
+if [ -f ".hodge/features/$feature/issue-id.txt" ]; then
+    issue_id=$(cat ".hodge/features/$feature/issue-id.txt")
+fi
+
+# Generate commit message
+if [ -n "$issue_id" ]; then
+    commit_msg="$type: $feature ($issue_id)
+
+- Implementation complete
+- Tests passing
+- Documentation updated
+- Closes $issue_id"
+else
+    commit_msg="$type: $feature
+
+- Implementation complete
+- Tests passing
+- Documentation updated"
+fi
+
+echo "Suggested commit message:"
+echo "========================"
+echo "$commit_msg"
+echo "========================"
 ```
-The command will:
-1. Analyze your git changes
-2. Detect commit type and scope
-3. Generate a smart commit message
-4. Create an interactive UI file for you
 
-### Step 2: Review & Edit (Claude Code Special)
-When in Claude Code, the command creates:
-- `.hodge/temp/ship-interaction/{{feature}}/ui.md` - Your interactive UI
-- `.hodge/temp/ship-interaction/{{feature}}/state.json` - State tracking
+## Step 3: Review and Approve
 
-You can edit the commit message directly in the markdown file!
+**Review the commit message above.** You can either:
+1. **Approve it as-is** - I'll use this message
+2. **Edit it** - Provide your custom message
+3. **Cancel** - Stop the ship process
 
-**IMPORTANT: How to Continue After Editing:**
-1. Edit the commit message in the `ui.md` file
-2. Update the `state.json` file:
-   - Change `"status": "pending"` to `"status": "confirmed"`
-   - OR add your custom message to the `"customMessage"` field
-3. Re-run the command - it will detect your changes and proceed
+### To proceed with shipping:
 
-### Step 3: Finalize Ship
-Re-run the command to use your edited message:
+**Option A: Use suggested message**
 ```bash
-hodge ship {{feature}}        # Will detect confirmed state
-# OR
-hodge ship {{feature}} --yes   # Use suggested message as-is
+# Use printf to properly handle multi-line message
+hodge ship "$feature" --message "$(printf '%s' "$commit_msg")" --yes
 ```
 
-## Options
+**Option B: Use custom message**
 ```bash
-hodge ship {{feature}} --skip-tests              # Skip tests (emergency only!)
-hodge ship {{feature}} -m "Custom message"       # Direct message (skip interaction)
-hodge ship {{feature}} --no-interactive          # Disable all interaction
-hodge ship {{feature}} --yes                      # Accept suggested message
-hodge ship {{feature}} --dry-run                  # Preview without committing
+# Replace with your custom message (use \n for line breaks)
+hodge ship "$feature" --message "feat: your feature
+
+- Implementation complete
+- Tests passing
+- Documentation updated" --yes
 ```
 
-## What Gets Analyzed
-The ship command intelligently examines:
-- 📁 **File changes** - Added, modified, deleted files
-- 🏷️ **Commit type** - feat, fix, docs, style, refactor, test, chore
-- 📦 **Scope** - Detected from common directory patterns
-- 💔 **Breaking changes** - Identified from specific patterns
-- 🔗 **PM Integration** - Links to Linear/GitHub/Jira issues
+## Step 4: Ship Quality Checks
+The ship command will:
+- ✅ Run all tests
+- ✅ Check code coverage
+- ✅ Verify documentation
+- ✅ Create git commit with approved message
+- ✅ Update PM tracking
+- ✅ Learn patterns from shipped code
 
-## Standards Review Process (AI-Based STRICT Enforcement)
+## Step 5: Capture lessons learned
+After shipping, reflect on what was learned:
 
-### 1. Load and Review Standards
+### Consider Global Improvements
+- **Pattern Candidate**: Did you create reusable code that could become a pattern?
+- **Standards Update**: Should any standards be updated based on this work?
+- **Tool Enhancement**: Any workflow improvements to suggest?
+
+### Document Lessons
 ```bash
-cat .hodge/standards.md
+# Create lessons learned entry
+lessons_file=".hodge/lessons/$feature-$(date +%Y%m%d).md"
+mkdir -p .hodge/lessons
+
+cat > "$lessons_file" << EOF
+# Lessons from $feature
+
+## What Worked Well
+- [Document successes]
+
+## Challenges Faced
+- [Document challenges and solutions]
+
+## Patterns Discovered
+- [Any reusable patterns identified]
+
+## Recommendations
+- [Future improvements]
+
+EOF
 ```
 
-### 2. Review ALL Changes Since Last Release
-```bash
-git diff main...HEAD  # All changes in feature branch
-```
-
-### 3. AI Standards Compliance Check (BLOCKING)
-Review ALL changes against EVERY standard with ZERO tolerance:
-- **Core Standards**: Must have TypeScript strict, ESLint clean, Prettier formatted
-- **Testing Requirements**: Full test suite with >80% coverage
-- **Code Comments/TODOs**: ALL TODOs must have proper phase markers
-- **Quality Gates**: ZERO lint errors, ZERO type errors
-- **Performance Standards**: ALL operations <500ms, tests <30s total
-
-### 4. Report Violations (BLOCKING Level)
-If ANY standards violations found, BLOCK shipping:
-```
-❌ STANDARDS REVIEW - Ship Blocked:
-
-1. **TODO Format Violations** (3 found)
-   src/commands/example.ts:45 - Missing phase marker
-   src/lib/helper.ts:12 - Incomplete TODO without description
-   tests/unit.test.ts:78 - Naked TODO
-
-2. **Test Coverage Below 80%**
-   Current: 72.3% - Required: 80%
-   Missing coverage in: src/lib/validator.ts
-
-3. **ESLint Errors** (2 found)
-   no-explicit-any violations in src/types.ts
-
-SHIP BLOCKED: All standards MUST be met before shipping.
-Fix all violations and run /ship again.
-```
-
-## Testing Requirements (Progressive Model)
-- **Ship Phase**: Full test suite required
-- **Test Types**: All categories (smoke, integration, unit, acceptance)
-- **Focus**: Is it production ready?
-- **Run Command**: `npm test` - All tests must pass
-- **Coverage**: Target >80% for shipped features
-
-## Your Tasks Based on Results
-
-### If Ship Succeeded ✅
-1. All tests passed (full suite)
-2. Copy the generated commit message
-3. Commit your changes:
-   ```bash
-   git add .
-   git commit -m "paste commit message here"
-   ```
-4. Push to main branch:
-   ```bash
-   git push origin main
-   ```
-5. Create release tag if needed:
-   ```bash
-   git tag v1.0.0
-   git push --tags
-   ```
-6. Capture lessons learned (optional but valuable):
-   ```markdown
-   ## Lessons from {{feature}}
-
-   **What worked well:**
-   - [What approach or pattern was effective?]
-
-   **What was challenging:**
-   - [What took longer than expected?]
-
-   **What to do differently next time:**
-   - [What would you change?]
-
-   Save to: .hodge/lessons/{{feature}}.md
-   ```
-
-7. Consider Global Improvements (if lessons suggest it):
-
-   **Pattern Candidate?** If something worked particularly well:
-   ```bash
-   # Check if similar patterns exist
-   grep -r "similar-concept" .hodge/patterns/
-
-   # If novel and reusable, create pattern:
-   cat > .hodge/patterns/{{pattern-name}}.md << 'EOF'
-   # Pattern: {{Pattern Name}}
-
-   ## Problem
-   [What problem does this solve?]
-
-   ## Solution
-   [The approach that worked]
-
-   ## Example from {{feature}}
-   [Code or approach example]
-
-   ## When to Use
-   - [Scenario where this helps]
-   EOF
-   ```
-
-   **Standards Gap?** If you hit a preventable issue:
-   - Review if existing standards could have prevented it
-   - If 3+ features hit the same issue, consider proposing a standard
-   - Document in decisions: "Considering new standard based on {{feature}} lessons"
-
-   **Review Similar Lessons:**
-   ```bash
-   # Check if others hit similar issues
-   grep -r "similar-issue" .hodge/lessons/
-   ```
-
-   If pattern emerges across multiple features, elevate to team discussion.
-
-8. Monitor production metrics
-
-### If Ship Failed ❌
-1. Review quality gate failures
-2. Fix any issues:
-   - **Tests failing**: Add missing test categories:
-     - Smoke tests (basic functionality)
-     - Integration tests (behavior)
-     - Unit tests (logic validation)
-     - Acceptance tests (user requirements)
-   - **Coverage low**: Add tests for uncovered code
-   - **No documentation**: Update README
-   - **No changelog**: Update CHANGELOG.md
-3. Re-run hardening if needed: `hodge harden {{feature}}`
-4. Try shipping again
+## Post-Ship Actions
+After successful shipping:
+1. Push to remote: `git push`
+2. Create PR if needed
+3. Monitor production metrics
+4. Review and document lessons learned
+5. Start next feature with `/explore`
 
 ## Troubleshooting
-
-### "Edit the message and save, then re-run ship to continue" Loop
-If you're stuck in a loop where the command keeps asking you to edit:
-1. Make sure you're updating the `state.json` file, not just the `ui.md`
-2. Set `"status": "confirmed"` in state.json
-3. Or use `--yes` flag to accept the suggested message
-
-### Example state.json Update
-```json
-{
-  "command": "ship",
-  "status": "confirmed",  // ← Change from "pending" to "confirmed"
-  "data": {
-    "customMessage": "Your custom commit message here",  // ← Optional
-    // ... rest of the data
-  }
-}
-```
-
-### Common Issues
-- **Command regenerates ui.md**: You need to set status to "confirmed" not "ready"
-- **Custom message not used**: Add it to both `customMessage` and `suggested` fields in state.json
-- **Can't find state files**: Check `.hodge/temp/ship-interaction/{{feature}}/`
-
-## Post-Ship Checklist
-- [ ] Code committed with ship message
-- [ ] Pushed to main branch
-- [ ] Release tag created (if applicable)
-- [ ] PM issue marked as Done
-- [ ] Team notified of release
-- [ ] Monitoring dashboards checked
-- [ ] User feedback channels monitored
-
-## Next Steps Menu
-After shipping is complete, suggest:
-```
-### Next Steps
-Choose your next action:
-a) Monitor production metrics
-b) Start new feature → `/explore`
-c) Review project status → `/status`
-d) Create release notes
-e) Archive feature context
-f) Gather user feedback
-g) Update documentation
-h) Done for now
-
-Enter your choice (a-h):
-```
-
-Remember: The CLI handles all quality checks and PM updates. Focus on the actual deployment and monitoring.
+- **Tests failing?** Fix them first with `/build {{feature}}`
+- **Not hardened?** Run `/harden {{feature}}` first
+- **Need to skip tests?** Add `--skip-tests` (not recommended)

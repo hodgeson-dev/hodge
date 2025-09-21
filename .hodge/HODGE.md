@@ -3,24 +3,23 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: HODGE-135
-**Mode**: ship
-**PM Issue**: HODGE-135
-**Last Updated**: 2025-09-20T20:20:33.843Z
+**Feature**: general
+**Mode**: explore
+**Last Updated**: 2025-09-21T15:22:28.405Z
 ## Current Session
-**Resumed**: 7 minutes ago
-**Progress**: Explored HODGE-142 with 1 approaches
-**Working on**: HODGE-142 (explore mode)
+**Resumed**: 19 minutes ago
+**Progress**: Explored HODGE-183 with 1 approaches
+**Working on**: HODGE-183 (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-142. Explored HODGE-142 with 1 approaches
+You were helping with HODGE-183. Explored HODGE-183 with 1 approaches
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
+- **2025-09-21**: Implement Hybrid Progressive Enhancement for test isolation - fix critical bugs immediately (session-manager
+- **2025-09-21**: Implement Hybrid Progressive Enhancement for save/load optimization with clear AI/CLI separation - slash commands handle user interaction, context presentation, and intelligent orchestration (what AI does best), while CLI commands handle file operations, git integration, and data processing (what code does best)
+- **2025-09-20**: Tests must NEVER modify the Hodge project's own
+- **2025-09-20**: Implement PM Adapter Hooks using Command-Level Integration with phase-appropriate timing: explore/build/harden update PM at START of phase (marking entry), ship updates PM only on SUCCESS (marking completion)
 - **2025-09-20**: Use AI-Based Standards Enforcement - leverage Claude Code's natural language understanding to review standards compliance during /harden and /ship commands, allowing standards to be written in any format
-- **2025-09-20**: Use AI-Based Standards Enforcement approach - leverage Claude Code's natural language understanding to review standards compliance during /harden and /ship commands, allowing standards to be written in any format
-- **2025-09-18**: Implement Context-Aware Workflow Commands using Implicit Context Reading approach - commands will automatically read from context
-- **2025-09-18**: Use Implicit Context Reading approach for context-aware workflow commands - commands will read from context
-- **2025-09-18**: Implement Event-Based Auto-Save approach for HODGE-052: auto-save context through command interceptor pattern that wraps feature commands, providing transparent auto-save with minimal code changes
 
 ## Active Standards
 
@@ -46,6 +45,11 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - Focus on behavior and contracts
 - Prefer integration tests over unit tests
 - Use real dependencies when possible
+- All tests must use temporary directories (`os.tmpdir()`) for file operations
+- Use mocks or stubs instead of modifying actual project state
+- Any test that needs a `.hodge` structure should create it in an isolated temp directory
+- This prevents tests from corrupting project data or affecting other tests
+- Violation of this rule can lead to data loss and unpredictable test behavior
 
 ### Code Comments and TODOs
 - **TODO Convention**: Always use `// TODO:` comments for incomplete work
@@ -89,21 +93,11 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - Full test coverage required
 - Performance benchmarks met
 
-## Working Files
-
-- `.hodge/features/HODGE-135/explore/context.json`
-- `.hodge/features/HODGE-135/explore/exploration.md`
-- `.hodge/features/HODGE-135/explore/test-intentions.md`
-- `.hodge/features/HODGE-135/build/build-plan.md`
-- `.hodge/features/HODGE-135/build/context.json`
-- `.hodge/features/HODGE-135/ship/release-notes.md`
-- `.hodge/features/HODGE-135/ship/ship-record.json`
-
 ## Next Steps
 
-1. Commit changes
-2. Create pull request
-3. Update documentation
+1. Review exploration approaches
+2. Make decision with `hodge decide`
+3. Start building with `hodge build general`
 
 
 ---

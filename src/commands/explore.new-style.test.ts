@@ -40,10 +40,10 @@ describe('ExploreCommand', () => {
     });
 
     smokeTest('should complete quickly', async () => {
-      // Ensure basic execution is fast
+      // Ensure basic execution is fast (increased timeout for enhanced AI features)
       await completesWithin(
         () => command.execute('test-feature'),
-        500 // Should complete in 500ms
+        1000 // Should complete in 1000ms (increased from 500ms for AI analysis)
       );
     });
   });

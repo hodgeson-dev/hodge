@@ -5,6 +5,656 @@ This file tracks all Hodge features and their implementation status. Features ar
 
 ## Active Features
 
+### HODGE-217
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-216
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-215
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-214
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-213
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-212
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-211
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-210
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-209
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-208
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-207
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-206
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-205
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-204
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-203
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-202
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-201
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-200
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-199
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-198
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-197
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-196
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-195
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-194
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-193
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-192
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-191
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-190
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-189
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-188
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-187
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-186
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-185
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-184
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-183
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-182
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-181
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+
+- **Status**: Shipped
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: Review all tests and verify that they do not alter the Hodge project's .hodge directory. As part of this work, think carefully about removing content generated by tests, ensuring that only test-generated content gets removed.
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-179
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-178
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-177
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-176
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-175
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-174
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-173
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-172
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-171
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-170
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-169
+- **Status**: Exploring
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+
+- **Status**: Shipped
+- **Priority**: TBD
+- **Created**: 2025-09-21
+- **Updated**: 2025-09-21
+- **Description**: test-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
 ### HODGE-167
 - **Status**: Exploring
 - **Priority**: TBD
@@ -586,7 +1236,297 @@ This file tracks all Hodge features and their implementation status. Features ar
 
 ## Completed Features
 
+### HODGE-180
+- **Completed**: 2025-09-21
+
+
+
 ### test-feature
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+### HODGE-168
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-21
+
+
+
+
+- **Completed**: 2025-09-20
+
+
+
+
+- **Completed**: 2025-09-20
+
+
+
+
+- **Completed**: 2025-09-20
+
+
+
+
+- **Completed**: 2025-09-20
+
+
+
+
 - **Completed**: 2025-09-20
 
 

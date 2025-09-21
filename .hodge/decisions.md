@@ -26,6 +26,44 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-21 - Implement Hybrid Progressive Enhancement for test isolation - fix critical bugs immediately (session-manager
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-180
+
+**Decision**:
+Implement Hybrid Progressive Enhancement for test isolation - fix critical bugs immediately (session-manager.test.ts direct .hodge writes), then gradually migrate tests to use tmpdir() and eventually add TestWorkspace utility for consistent isolation patterns
+
+**Rationale**:
+Recorded via `hodge decide` command at 7:32:41 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-21 - Implement Hybrid Progressive Enhancement for save/load optimization with clear AI/CLI separation - slash commands handle user interaction, context presentation, and intelligent orchestration (what AI does best), while CLI commands handle file operations, git integration, and data processing (what code does best)
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-168
+
+**Decision**:
+Implement Hybrid Progressive Enhancement for save/load optimization with clear AI/CLI separation - slash commands handle user interaction, context presentation, and intelligent orchestration (what AI does best), while CLI commands handle file operations, git integration, and data processing (what code does best)
+
+**Rationale**:
+Recorded via `hodge decide` command at 10:23:54 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-20 - Tests must NEVER modify the Hodge project's own
 
 **Status**: Accepted

@@ -3,12 +3,15 @@ import { ContextManager } from '../context-manager';
 import { rm, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import path from 'path';
+import { tmpdir } from 'os';
+import { randomBytes } from 'crypto';
 
 describe('[smoke] ContextManager', () => {
-  const testDir = path.join(process.cwd(), '.test-context');
+  let testDir: string;
   let contextManager: ContextManager;
 
   beforeEach(async () => {
+    testDir = path.join(tmpdir(), `hodge-test-${Date.now()}-${randomBytes(4).toString('hex')}`);
     await mkdir(path.join(testDir, '.hodge'), { recursive: true });
     contextManager = new ContextManager(testDir);
   });

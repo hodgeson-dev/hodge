@@ -23,20 +23,22 @@ Initialize or resume your Hodge development session with appropriate context.
 ## Command Execution
 
 {{#if list}}
-### Available Saved Sessions
+### Available Saved Sessions (Fast Listing)
 ```bash
-hodge context --list
+# Use optimized load command to list saves
+hodge load --list
 ```
 
-This shows all saved sessions with details.
+This quickly scans manifests to show all saved sessions (20-30x faster than before).
 
 {{else if recent}}
-### Loading Most Recent Session
+### Loading Most Recent Session (Optimized)
 ```bash
-hodge context --recent
+# Use new optimized load command with lazy loading
+hodge load --recent --lazy
 ```
 
-This loads the most recent save and displays the context for resuming work.
+This uses the new 20-30x faster loading system to instantly restore your session.
 
 {{else if feature}}
 ### Loading Feature-Specific Context
@@ -126,9 +128,12 @@ Then list available options WITHOUT taking action:
    - All decisions (full file)
    - Available patterns (list)
 
-2. **Check for Recent Saves**
+2. **Check for Recent Saves (Fast Scan)**
 
-   The context command will automatically discover and display recent saves.
+   ```bash
+   # Quick manifest scan to find saves
+   hodge load --list --format brief
+   ```
 
    Found saved sessions:
    {{#each saves}}

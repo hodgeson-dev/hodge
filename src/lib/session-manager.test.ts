@@ -5,14 +5,22 @@ import { existsSync } from 'fs';
 import path from 'path';
 import { mkdir } from 'fs/promises';
 import { rm } from 'fs/promises';
+import { tmpdir } from 'os';
+import { randomBytes } from 'crypto';
 
 describe('SessionManager', () => {
   let sessionManager: SessionManager;
-  const testDir = path.join(process.cwd(), '.test-session');
-  const testSessionFile = path.join(testDir, '.hodge', '.session');
+  let testDir: string;
+  let testSessionFile: string;
+
+  const createTestDir = () => {
+    return path.join(tmpdir(), `hodge-test-${Date.now()}-${randomBytes(4).toString('hex')}`);
+  };
 
   beforeEach(async () => {
     // Create isolated test directory
+    testDir = createTestDir();
+    testSessionFile = path.join(testDir, '.hodge', '.session');
     await mkdir(path.join(testDir, '.hodge'), { recursive: true });
     sessionManager = new SessionManager(testDir);
     // Clean up any existing session
@@ -104,7 +112,7 @@ describe('SessionManager', () => {
 
     it('should handle corrupted session files gracefully', async () => {
       // Create a corrupted session file
-      await fs.mkdir('.hodge', { recursive: true });
+      await fs.mkdir(path.join(testDir, '.hodge'), { recursive: true });
       await fs.writeFile(testSessionFile, 'invalid json content', 'utf-8');
 
       const session = await sessionManager.load();
@@ -124,7 +132,7 @@ describe('SessionManager', () => {
         recentDecisions: [],
       };
 
-      await fs.mkdir('.hodge', { recursive: true });
+      await fs.mkdir(path.join(testDir, '.hodge'), { recursive: true });
       await fs.writeFile(testSessionFile, JSON.stringify(oldSession), 'utf-8');
 
       const session = await sessionManager.load();

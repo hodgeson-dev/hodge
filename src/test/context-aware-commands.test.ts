@@ -6,12 +6,15 @@ import { ExploreCommand } from '../commands/explore';
 import { ContextManager } from '../lib/context-manager';
 import { rm, mkdir } from 'fs/promises';
 import path from 'path';
+import { tmpdir } from 'os';
+import { randomBytes } from 'crypto';
 
 describe('[integration] Context-Aware Workflow Commands', () => {
-  const testDir = path.join(process.cwd(), '.test-workflow');
+  let testDir: string;
   let contextManager: ContextManager;
 
   beforeEach(async () => {
+    testDir = path.join(tmpdir(), `hodge-test-${Date.now()}-${randomBytes(4).toString('hex')}`);
     await mkdir(path.join(testDir, '.hodge'), { recursive: true });
     contextManager = new ContextManager(testDir);
   });
