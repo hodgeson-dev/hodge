@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-229",
+  "timestamp": "2025-09-21T23:58:47.826Z",
+  "issueId": "HODGE-229",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "feat: HODGE-229\n\n- Implementation complete\n- Tests passing\n- Documentation updated\n- Closes HODGE-229"
+}

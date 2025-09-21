@@ -1,0 +1,9 @@
+{
+  "mode": "harden",
+  "feature": "HODGE-229",
+  "timestamp": "2025-09-21T23:55:45.437Z",
+  "standards": "enforced",
+  "validation": "required",
+  "pmIssue": "HODGE-229",
+  "pmTool": "linear"
+}

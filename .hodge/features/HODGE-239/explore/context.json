@@ -1,0 +1,49 @@
+{
+  "mode": "explore",
+  "feature": "HODGE-239",
+  "localID": "HODGE-239",
+  "externalID": null,
+  "timestamp": "2025-09-21T23:58:09.007Z",
+  "intent": {
+    "type": "general",
+    "keywords": [
+      "HODGE-239"
+    ],
+    "suggestedPatterns": [
+      "service",
+      "utility",
+      "factory"
+    ],
+    "relatedCommands": [
+      "execute",
+      "process",
+      "handle"
+    ]
+  },
+  "standards": "suggested",
+  "validation": "optional",
+  "pmIssue": "HODGE-239",
+  "pmTool": null,
+  "approaches": [
+    {
+      "name": "Standard Implementation",
+      "description": "Implement HODGE-239 following existing project patterns",
+      "relevance": 70,
+      "pros": [
+        "Consistent with codebase",
+        "Uses proven patterns",
+        "Easy for team to understand"
+      ],
+      "cons": [
+        "May not be optimal for specific use case",
+        "Could miss optimization opportunities"
+      ]
+    }
+  ],
+  "relatedFeatures": [
+    "HODGE-001",
+    "HODGE-002",
+    "HODGE-005.backup"
+  ],
+  "suggestedPatterns": []
+}
