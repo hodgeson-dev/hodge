@@ -657,8 +657,32 @@ Initialize or resume your Hodge development session with appropriate context.
 
 ## Command Execution
 
+### 1. Always Load Core Context First (ALL MODES)
+\`\`\`bash
+# Load project HODGE.md (session info)
+cat .hodge/HODGE.md
+
+# Load complete standards
+echo "=== PROJECT STANDARDS ==="
+cat .hodge/standards.md
+
+# Load all decisions
+echo "=== PROJECT DECISIONS ==="
+cat .hodge/decisions.md
+
+# List available patterns
+echo "=== AVAILABLE PATTERNS ==="
+ls -la .hodge/patterns/
+\`\`\`
+
+This provides core context for ALL modes:
+- Current feature and mode (from HODGE.md)
+- Complete standards (full file)
+- All decisions (full file)
+- Available patterns (list)
+
 {{#if list}}
-### Available Saved Sessions (Fast Listing)
+### 2. Handle List Mode - Available Saved Sessions (Fast Listing)
 \`\`\`bash
 # Use optimized load command to list saves
 hodge load --list
@@ -667,7 +691,7 @@ hodge load --list
 This quickly scans manifests to show all saved sessions (20-30x faster than before).
 
 {{else if recent}}
-### Loading Most Recent Session (Optimized)
+### 2. Handle Recent Mode - Loading Most Recent Session (Optimized)
 \`\`\`bash
 # Use new optimized load command with lazy loading
 hodge load --recent --lazy
@@ -676,36 +700,24 @@ hodge load --recent --lazy
 This uses the new 20-30x faster loading system to instantly restore your session.
 
 {{else if feature}}
-### Loading Feature-Specific Context
+### 2. Handle Feature Mode - Loading Feature-Specific Context
 
 **IMPORTANT: This command ONLY loads context. It does not start any work.**
 
-First, load the project context:
+Load the project state and feature-specific context:
 \`\`\`bash
+# Get current project status
 hodge status
-\`\`\`
 
-Then load feature-specific and global context:
-\`\`\`bash
-# 1. Check for feature directory
+# Check for feature directory
 ls -la .hodge/features/{{feature}}/ 2>/dev/null || echo "No feature directory yet"
 
-# 2. Load feature-specific context
+# Load feature-specific context
 hodge context --feature {{feature}}
 
-# 3. Load feature HODGE.md if it exists
+# Load feature HODGE.md if it exists
 echo "=== FEATURE CONTEXT ==="
 cat .hodge/features/{{feature}}/HODGE.md 2>/dev/null || echo "No feature HODGE.md yet"
-
-# 4. Load global context files
-echo "=== PROJECT STANDARDS ==="
-cat .hodge/standards.md
-
-echo "=== PROJECT DECISIONS ==="
-cat .hodge/decisions.md
-
-echo "=== AVAILABLE PATTERNS ==="
-ls -1 .hodge/patterns/*.md 2>/dev/null | xargs -I {} basename {} .md
 \`\`\`
 
 After loading context, these files are available:
@@ -732,66 +744,41 @@ Then list available options WITHOUT taking action:
 **Wait for explicit user direction before proceeding.**
 
 {{else}}
-### Standard Session Initialization
+### 2. Handle Standard Mode - Session Initialization
 
-1. **Load Current Project State**
-   \`\`\`bash
-   hodge context
-   \`\`\`
+Load current project state:
+\`\`\`bash
+hodge context
+\`\`\`
 
-2. **Load Full Context Files**
-   \`\`\`bash
-   # Load project HODGE.md (session info)
-   cat .hodge/HODGE.md
+Check for recent saves (Fast Scan):
+\`\`\`bash
+# Quick manifest scan to find saves
+hodge load --list
+\`\`\`
 
-   # Load complete standards
-   echo "=== PROJECT STANDARDS ==="
-   cat .hodge/standards.md
+Found saved sessions:
+{{#each saves}}
+**{{name}}**
+- Feature: {{feature}}
+- Mode: {{mode}}
+- Saved: {{timestamp}}
+- Summary: {{summary}}
+{{/each}}
 
-   # Load all decisions
-   echo "=== PROJECT DECISIONS ==="
-   cat .hodge/decisions.md
+**Restoration Options:**
 
-   # List available patterns
-   echo "=== AVAILABLE PATTERNS ==="
-   ls -la .hodge/patterns/
-   \`\`\`
+{{#if saves}}
+Would you like to:
+a) Restore most recent: "{{most_recent_save}}"
+b) Choose a different save
+c) Start fresh without restoring
+d) View more details about saves
 
-   This provides:
-   - Current feature and mode (from HODGE.md)
-   - Complete standards (full file)
-   - All decisions (full file)
-   - Available patterns (list)
-
-2. **Check for Recent Saves (Fast Scan)**
-
-   \`\`\`bash
-   # Quick manifest scan to find saves
-   hodge load --list --format brief
-   \`\`\`
-
-   Found saved sessions:
-   {{#each saves}}
-   **{{name}}**
-   - Feature: {{feature}}
-   - Mode: {{mode}}
-   - Saved: {{timestamp}}
-   - Summary: {{summary}}
-   {{/each}}
-
-3. **Restoration Options**
-
-   {{#if saves}}
-   Would you like to:
-   a) Restore most recent: "{{most_recent_save}}"
-   b) Choose a different save
-   c) Start fresh without restoring
-   d) View more details about saves
-
-   Your choice:
-   {{else}}
-   No saved sessions found. Starting fresh.
-   {{/if}}
+Your choice:
+{{else}}
+No saved sessions found. Starting fresh.
+{{/if}}
 
 {{/if}}
 

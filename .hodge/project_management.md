@@ -5,6 +5,19 @@ This file tracks all Hodge features and their implementation status. Features ar
 
 ## Active Features
 
+### HODGE-280
+- **Status**: Hardening
+- **Priority**: TBD
+- **Created**: 2025-09-22
+- **Updated**: 2025-09-22
+- **Description**: hodge-context-loading
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
 ### HODGE-279
 - **Status**: Exploring
 - **Priority**: TBD
@@ -2042,12 +2055,47 @@ This file tracks all Hodge features and their implementation status. Features ar
 
 ## Completed Features
 
+### test-feature
+- **Completed**: 2025-09-22
+
+
+
+
+- **Completed**: 2025-09-22
+
+
+
+
+- **Completed**: 2025-09-22
+
+
+
+
+- **Completed**: 2025-09-22
+
+
+
+
+- **Completed**: 2025-09-22
+
+
+
+
+- **Completed**: 2025-09-22
+
+
+
+
+- **Completed**: 2025-09-22
+
+
+
 ### HODGE-242
 - **Completed**: 2025-09-22
 
 
 
-### test-feature
+
 - **Completed**: 2025-09-22
 
 
