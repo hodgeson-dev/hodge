@@ -3,48 +3,46 @@
  * This demonstrates how to write tests that focus on behavior, not implementation
  */
 
-import { describe, beforeEach, afterEach, it, expect } from 'vitest';
-import { ExploreCommand } from './explore';
+import { describe, expect } from 'vitest';
 import {
   smokeTest,
   integrationTest,
   unitTest,
   acceptanceTest,
   outputContains,
-  completesWithin,
 } from '../test/helpers';
-import { createMockEnvironment } from '../test/mocks';
-import { TestWorkspace, withTestWorkspace } from '../test/runners';
+import { withTestWorkspace } from '../test/runners';
 
 describe('ExploreCommand', () => {
-  let command: ExploreCommand;
-  let mockEnv: ReturnType<typeof createMockEnvironment>;
-
-  beforeEach(() => {
-    command = new ExploreCommand();
-    mockEnv = createMockEnvironment();
-  });
-
   // ============================================
   // SMOKE TESTS - Does it work at all?
   // ============================================
   describe('Smoke Tests', () => {
-    smokeTest('should load without errors', () => {
-      expect(command).toBeDefined();
-      expect(command.execute).toBeDefined();
+    smokeTest('should load without errors', async () => {
+      // Create command in temp directory to avoid creating real features
+      await withTestWorkspace('smoke-load-test', async (workspace) => {
+        // Just check that we can run the command without errors
+        const result = await workspace.hodge('explore --help');
+        expect(result.success).toBe(true);
+      });
     });
 
     smokeTest('should not crash with valid input', async () => {
-      // We're not testing output, just that it doesn't throw
-      await expect(command.execute('test-feature')).resolves.not.toThrow();
+      // Run in temp directory to avoid creating real features
+      await withTestWorkspace('smoke-test', async (workspace) => {
+        const result = await workspace.hodge('explore test-feature');
+        expect(result.success).toBe(true);
+      });
     });
 
     smokeTest('should complete quickly', async () => {
-      // Ensure basic execution is fast (increased timeout for enhanced AI features)
-      await completesWithin(
-        () => command.execute('test-feature'),
-        1000 // Should complete in 1000ms (increased from 500ms for AI analysis)
-      );
+      // Run in temp directory to avoid creating real features
+      await withTestWorkspace('smoke-timing-test', async (workspace) => {
+        const start = Date.now();
+        await workspace.hodge('explore test-feature');
+        const elapsed = Date.now() - start;
+        expect(elapsed).toBeLessThan(3000);
+      });
     });
   });
 

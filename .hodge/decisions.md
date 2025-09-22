@@ -26,6 +26,25 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-22 - Implement Hybrid Progressive Enhancement for ship commit messages - Phase 1: Smart templates that analyze git diff, Phase 2: State persistence for edits, Phase 3: Interactive approval workflow
+
+**Status**: Accepted
+
+**Context**:
+General project decision
+
+**Decision**:
+Implement Hybrid Progressive Enhancement for ship commit messages - Phase 1: Smart templates that analyze git diff, Phase 2: State persistence for edits, Phase 3: Interactive approval workflow. This aligns with Progressive Enhancement principle, starting simple and adding sophistication progressively.
+
+**Rationale**:
+Recorded via `hodge decide` command at 5:22:36 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-21 - 1
 
 **Status**: Accepted

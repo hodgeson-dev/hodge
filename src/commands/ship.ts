@@ -350,12 +350,15 @@ export class ShipCommand {
         // Check if we already have a state from a previous run
         const existingState = await interactionManager.load();
 
-        if (existingState && existingState.status === 'confirmed') {
-          // User has already confirmed a message, use it
+        if (
+          existingState &&
+          (existingState.status === 'confirmed' || existingState.status === 'edited')
+        ) {
+          // User has already edited or confirmed a message, use it
           commitMessage = existingState.data.edited || existingState.data.suggested;
-          console.log(chalk.green('   ✓ Using previously confirmed commit message'));
+          console.log(chalk.green('   ✓ Using previously edited/confirmed commit message'));
         } else {
-          // No existing state or not confirmed, initialize new one
+          // No existing state or not edited/confirmed, initialize new one
           const interactionData: ShipInteractionData = {
             analysis: gitAnalysis || {
               files: [],
@@ -374,7 +377,11 @@ export class ShipCommand {
           }
 
           // For Claude Code, write markdown UI file
-          if (env.type === 'claude-code') {
+          // HODGE-242: Only write ui.md if it doesn't exist or hasn't been edited
+          if (
+            env.type === 'claude-code' &&
+            (!existingState || existingState.status === 'pending')
+          ) {
             const markdownUI =
               `# 🚀 Ship Commit - ${feature}\n\n` +
               `## Changed Files\n\n` +
@@ -399,6 +406,15 @@ export class ShipCommand {
             console.log(chalk.gray('   Edit the message and save, then re-run ship to continue'));
 
             // In Claude Code, we exit here and let the user edit
+            if (!options.yes) {
+              return;
+            }
+          } else if (env.type === 'claude-code' && existingState?.status === 'edited') {
+            // User has edited the message, show that we're using it
+            console.log(chalk.green('   ✓ Using edited commit message from ui.md'));
+            console.log(chalk.gray('   Re-run ship to commit with this message'));
+
+            // In Claude Code, we exit here to let user confirm
             if (!options.yes) {
               return;
             }

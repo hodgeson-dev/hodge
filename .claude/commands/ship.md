@@ -15,99 +15,122 @@ Before shipping, you MUST ensure all standards are met at the **BLOCKING Level**
 If any BLOCKING standards are not met, return to `/harden` phase.
 
 ## Step 1: Analyze Changes
-First, let me analyze your git changes and generate a commit message:
+First, analyze the git changes to understand what was modified:
 
 ```bash
-# Get current feature and check status
+# Check if feature is ready
 feature="{{feature}}"
-if [ -z "$feature" ]; then
-    hodge status
-    echo "Please provide a feature name to ship"
-    exit 1
-fi
-
-# Check if feature is ready to ship
 if [ ! -d ".hodge/features/$feature/harden" ]; then
     echo "⚠️ Feature has not been hardened yet"
     echo "Run: hodge harden $feature"
     exit 1
 fi
 
-# Analyze git changes
+# Gather change information
 echo "📊 Analyzing changes for $feature..."
 git status --short
 echo ""
 echo "📝 Detailed changes:"
 git diff --stat
+echo ""
+echo "📄 File-by-file changes:"
+git diff --name-status
 ```
 
-## Step 2: Generate Commit Message
-Based on the changes, here's the suggested commit message:
+## Step 2: Generate Rich Commit Message
 
-```bash
-# Detect commit type from changes
-files_changed=$(git diff --name-only)
-if echo "$files_changed" | grep -q "test"; then
-    type="test"
-elif echo "$files_changed" | grep -q "docs\|README\|CHANGELOG"; then
-    type="docs"
-elif echo "$files_changed" | grep -q "src/commands"; then
-    type="feat"
-else
-    type="feat"
-fi
+Based on the git analysis above, generate a detailed commit message that:
+1. Uses conventional commit format (feat:, fix:, test:, docs:, refactor:, chore:)
+2. Provides a clear, concise summary in the first line
+3. Includes a "What Changed" section with specific details
+4. Explains "Why This Change" when the context is clear
+5. Lists the "Impact" of the changes
+6. References the issue ID if available
 
-# Get issue ID if available
-issue_id=""
-if [ -f ".hodge/features/$feature/issue-id.txt" ]; then
-    issue_id=$(cat ".hodge/features/$feature/issue-id.txt")
-fi
+**Analyze the actual changes from the git diff above to create a contextual message.**
 
-# Generate commit message
-if [ -n "$issue_id" ]; then
-    commit_msg="$type: $feature ($issue_id)
+For example, if package.json changed, list specific dependencies updated.
+If tests were added, mention the test count and what they test.
+If it's a bug fix, explain what was broken and how it's fixed.
 
-- Implementation complete
-- Tests passing
-- Documentation updated
-- Closes $issue_id"
-else
-    commit_msg="$type: $feature
+### Generated Commit Message:
+```
+[Create a rich, detailed commit message based on the actual git diff analysis above]
 
-- Implementation complete
-- Tests passing
-- Documentation updated"
-fi
+## What Changed
+- [Specific files and changes, e.g., "Modified 3 ship command files"]
+- [Dependencies if package.json changed]
+- [Test additions with counts]
+- [Documentation updates]
 
-echo "Suggested commit message:"
-echo "========================"
-echo "$commit_msg"
-echo "========================"
+## Why This Change
+[Explain the motivation based on the feature name and changes]
+
+## Impact
+- [User-facing impacts]
+- [Developer experience improvements]
+- [Performance or reliability changes]
 ```
 
-## Step 3: Review and Approve
+## Step 3: Interactive Approval
 
-**Review the commit message above.** You can either:
-1. **Approve it as-is** - I'll use this message
-2. **Edit it** - Provide your custom message
-3. **Cancel** - Stop the ship process
+Present the generated commit message for approval:
 
-### To proceed with shipping:
+```
+════════════════════════════════════════════════════════════
+COMMIT MESSAGE FOR REVIEW:
+════════════════════════════════════════════════════════════
+[Display the generated message from Step 2]
+════════════════════════════════════════════════════════════
 
-**Option A: Use suggested message**
-```bash
-# Use printf to properly handle multi-line message
-hodge ship "$feature" --message "$(printf '%s' "$commit_msg")" --yes
+Options:
+(a) ✅ Approve - Use this message
+(r) 🔄 Regenerate - Create a different message
+(e) ✏️ Edit - Let me modify this message
+(c) ❌ Cancel - Stop the ship process
+
+Your choice [a/r/e/c]:
 ```
 
-**Option B: Use custom message**
-```bash
-# Replace with your custom message (use \n for line breaks)
-hodge ship "$feature" --message "feat: your feature
+### Based on User Choice:
 
-- Implementation complete
-- Tests passing
-- Documentation updated" --yes
+**If (a) Approve:**
+Save the message to the interaction state and proceed with shipping:
+```bash
+# Save the approved message to ui.md for hodge ship to use
+mkdir -p .hodge/temp/ship-interaction/{{feature}}
+cat > .hodge/temp/ship-interaction/{{feature}}/ui.md << 'EOF'
+# Ship Commit - {{feature}}
+
+## Approved Commit Message
+
+```
+[The approved commit message]
+```
+EOF
+
+# Run ship with the message
+hodge ship "{{feature}}"
+```
+
+**If (r) Regenerate:**
+Return to Step 2 and create a different version of the commit message, varying:
+- The phrasing and structure
+- The level of detail
+- The emphasis on different aspects
+
+**If (e) Edit:**
+Ask the user to provide their edited version:
+```
+Please provide your edited commit message:
+(Paste the complete message below)
+```
+Then save their edited version and proceed with shipping.
+
+**If (c) Cancel:**
+```bash
+echo "Ship cancelled. Your changes remain uncommitted."
+echo "Run '/ship {{feature}}' when ready to try again."
 ```
 
 ## Step 4: Ship Quality Checks

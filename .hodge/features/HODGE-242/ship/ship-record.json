@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-242",
+  "timestamp": "2025-09-22T01:20:11.255Z",
+  "issueId": "HODGE-242",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "fix: restore rich commit messages and fix test isolation (HODGE-242)\n\n## What Changed\n- Fixed ship command to generate rich commit messages from actual git changes\n- Added state persistence for commit messages between ship runs\n- Fixed ALL test isolation issues - no tests create features in project directory\n- Added metadata backup/restore mechanism for safe rollback\n- Created integration tests for commit message workflow\n- Fixed explore command timing test (3s timeout for AI operations)\n\n## Why This Change\nThe ship command was generating generic \"Implementation complete\" messages instead\nof analyzing actual git changes. Users lost their edits between ship command runs.\nTests were violating isolation by creating HODGE features in the project directory.\n\n## Impact\n- Ship command now generates detailed, meaningful commit messages\n- User edits to commit messages are preserved between runs\n- All tests properly isolated using temp directories\n- No more test pollution of project .hodge directory\n- Improved reliability and user experience\n\n## Technical Details\n- InteractionStateManager preserves user edits (ship.ts:353)\n- AI analyzes git diff to generate rich messages (ship.md)\n- Tests use withTestWorkspace() for proper isolation\n- Added 9 new tests (4 integration, 5 smoke)\n\nCloses HODGE-242"
+}
