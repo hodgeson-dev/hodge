@@ -5,6 +5,19 @@ This file tracks all Hodge features and their implementation status. Features ar
 
 ## Active Features
 
+
+- **Status**: Shipped
+- **Priority**: TBD
+- **Created**: 2025-09-22
+- **Updated**: 2025-09-22
+- **Description**: hodge-command-issues
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
 ### HODGE-280
 - **Status**: Hardening
 - **Priority**: TBD
@@ -2055,7 +2068,32 @@ This file tracks all Hodge features and their implementation status. Features ar
 
 ## Completed Features
 
+### HODGE-281
+- **Completed**: 2025-09-22
+
+
+
 ### test-feature
+- **Completed**: 2025-09-22
+
+
+
+
+- **Completed**: 2025-09-22
+
+
+
+
+- **Completed**: 2025-09-22
+
+
+
+
+- **Completed**: 2025-09-22
+
+
+
+
 - **Completed**: 2025-09-22
 
 

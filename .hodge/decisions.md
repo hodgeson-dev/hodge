@@ -26,6 +26,25 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-22 - Immediate Complete Fix for Non-Interactive CLI Commands - Remove ALL interactive prompts and status file updates, ensure explore/build/harden/ship/context properly update HODGE
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-281
+
+**Decision**:
+Immediate Complete Fix for Non-Interactive CLI Commands - Remove ALL interactive prompts and status file updates, ensure explore/build/harden/ship/context properly update HODGE.md. Keep hodge context command as it's used by /hodge and /load slash commands.
+
+**Rationale**:
+Recorded via `hodge decide` command at 7:31:34 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-22 - Implement Hybrid Progressive Enhancement for ship commit messages - Phase 1: Smart templates that analyze git diff, Phase 2: State persistence for edits, Phase 3: Interactive approval workflow
 
 **Status**: Accepted

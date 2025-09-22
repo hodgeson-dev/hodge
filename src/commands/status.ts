@@ -2,8 +2,6 @@ import chalk from 'chalk';
 import fs from 'fs/promises';
 import path from 'path';
 import { existsSync } from 'fs';
-import inquirer from 'inquirer';
-import { HodgeMDGenerator } from '../lib/hodge-md-generator.js';
 import { sessionManager } from '../lib/session-manager.js';
 
 export class StatusCommand {
@@ -11,23 +9,9 @@ export class StatusCommand {
     // Check for existing session first
     const session = await sessionManager.load();
     if (session && !feature) {
-      const formatted = sessionManager.formatForDisplay(session);
-      console.log(chalk.blue('📂 Previous Session Found'));
-      console.log(formatted);
-
-      const { continueSession } = await inquirer.prompt<{ continueSession: boolean }>([
-        {
-          type: 'confirm',
-          name: 'continueSession',
-          message: `Continue working on ${session.feature}?`,
-          default: true,
-        },
-      ]);
-
-      if (continueSession) {
-        feature = session.feature;
-        console.log(chalk.green(`✓ Resuming ${feature} in ${session.mode} mode\n`));
-      }
+      // Non-interactive: just use the session feature if no feature specified
+      feature = session.feature;
+      console.log(chalk.blue(`📂 Showing status for ${session.feature} from session\n`));
     }
 
     if (feature) {
@@ -125,9 +109,6 @@ export class StatusCommand {
   private async showOverallStatus(): Promise<void> {
     console.log(chalk.blue('📊 Overall Hodge Status\n'));
 
-    // Generate HODGE.md for cross-tool compatibility
-    await this.updateHodgeMD();
-
     // Check if Hodge is initialized
     const configFile = path.join('.hodge', 'config.json');
     if (!existsSync(configFile)) {
@@ -213,48 +194,10 @@ export class StatusCommand {
     console.log(`Decisions Made: ${decisionCount}`);
     console.log('\nUse this context to maintain consistency across the project.');
     console.log(chalk.bold('═'.repeat(60)));
-
-    // Notify about HODGE.md
-    console.log();
-    console.log(chalk.gray('💡 HODGE.md updated for AI tool compatibility'));
   }
 
-  private async updateHodgeMD(): Promise<void> {
-    try {
-      const generator = new HodgeMDGenerator();
-
-      // Get the most recent active feature if any
-      const featuresDir = path.join('.hodge', 'features');
-      let currentFeature = 'general';
-
-      if (existsSync(featuresDir)) {
-        const features = await fs.readdir(featuresDir);
-        // Find most recently modified feature
-        let mostRecent: { name: string; time: number } | null = null;
-
-        for (const feature of features) {
-          const featurePath = path.join(featuresDir, feature);
-          const stat = await fs.stat(featurePath);
-          if (!mostRecent || stat.mtimeMs > mostRecent.time) {
-            mostRecent = { name: feature, time: stat.mtimeMs };
-          }
-        }
-
-        if (mostRecent) {
-          currentFeature = mostRecent.name;
-        }
-      }
-
-      // Generate and save HODGE.md
-      await generator.saveToFile(currentFeature);
-
-      // Add tool-specific enhancements
-      await generator.addToolSpecificEnhancements(path.join('.hodge', 'HODGE.md'));
-    } catch (error) {
-      // Log error for debugging but don't break command
-      if (process.env.DEBUG) {
-        console.error('Failed to generate HODGE.md:', error);
-      }
-    }
-  }
+  // Removed updateHodgeMD method - status should be read-only
+  // HODGE.md updates now happen in commands that actually change state:
+  // - explore, build, harden, ship (for feature HODGE.md)
+  // - context (for main HODGE.md when explicitly requested)
 }

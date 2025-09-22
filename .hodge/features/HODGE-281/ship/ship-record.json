@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-281",
+  "timestamp": "2025-09-22T05:13:21.301Z",
+  "issueId": "HODGE-281",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "fix: make all CLI commands non-interactive and status read-only (HODGE-281)\n\n## What Changed\n- Removed interactive prompt from `hodge status` command (71 lines removed)\n- Removed PR creation functionality from `hodge ship` command (138 lines removed)\n- Made `status` command read-only by removing HODGE.md update functionality\n- Added critical CLI architecture standard requiring non-interactive commands\n- Created smoke tests for status command non-interactive behavior\n\n## Why This Change\nHodge CLI commands are exclusively called by Claude Code slash commands, never\ndirectly by developers. Interactive prompts were blocking execution and causing\nerrors. The status command was violating read-only principles by updating files.\n\n## Impact\n- ✅ All CLI commands now work correctly from slash commands\n- ✅ Status command is truly read-only (no side effects)\n- ✅ Removed ~200 lines of unnecessary PR creation code\n- ✅ Improved architectural clarity and consistency\n- ✅ Tests verify non-interactive behavior\n\n## Technical Details\n- Removed inquirer prompts from status.ts and ship.ts\n- Deleted handlePRCreation method and all PR-related imports\n- Status no longer calls updateHodgeMD() or modifies any files\n- Added .hodge/standards.md enforcement of non-interactive requirement\n\nCloses HODGE-281"
+}

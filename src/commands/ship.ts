@@ -4,7 +4,6 @@ import path from 'path';
 import { existsSync } from 'fs';
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import inquirer from 'inquirer';
 import { getCurrentEnvironment } from '../lib/environment-detector.js';
 import {
   InteractionStateManager,
@@ -21,7 +20,6 @@ import {
   formatPushPreview,
   formatPushSummary,
 } from '../lib/git-utils.js';
-import { getPRManager } from '../lib/pr-manager.js';
 import { getConfigManager } from '../lib/config-manager.js';
 import { autoSave } from '../lib/auto-save.js';
 import { contextManager } from '../lib/context-manager.js';
@@ -783,10 +781,7 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}
     console.log();
     console.log(formatPushSummary(pushResult, branchInfo));
 
-    // Handle PR creation if push was successful
-    if (pushResult.success && !options.dryRun) {
-      await this.handlePRCreation(branch, feature, branchInfo, options);
-    }
+    // PR creation removed - users can create PRs manually through their preferred tool
   }
 
   /**
@@ -821,7 +816,6 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}
       createFeatureBranch: branchInfo.isProtected,
       suggestedBranch: branchInfo.isProtected ? `feature/${feature}-${Date.now()}` : null,
       forcePush: options.forcePush || false,
-      createPR: branchInfo.type === 'feature',
     };
 
     // Create markdown content
@@ -875,24 +869,12 @@ push: true
 branch: ${pushConfig.suggestedBranch || branch}
 remote: origin
 forcePush: ${pushConfig.forcePush}
-createPR: ${pushConfig.createPR}
 
 # If creating feature branch
 createFeatureBranch: ${pushConfig.createFeatureBranch}
 ${pushConfig.suggestedBranch ? `newBranchName: ${pushConfig.suggestedBranch}` : ''}
 
-# PR settings (if applicable)
-prTitle: "${branchInfo.type}${branchInfo.issueId ? `(${branchInfo.issueId})` : ''}: ${feature}"
-prBody: |
-  ## Summary
-  - Implementation of ${feature}
-  ${branchInfo.issueId ? `- Closes ${branchInfo.issueId}` : ''}
-
-  ## Changes
-  - See commit history
-
-  ## Testing
-  - Tests passed
+# PR creation removed - create PRs manually through GitHub/GitLab/etc
   - Manual testing completed
 \`\`\`
 
@@ -951,7 +933,6 @@ ${!gitStatus.remote ? 'ℹ️ **Info**: No upstream branch exists - will create 
       newBranchName?: string;
       suggestedBranch?: string | null;
       forcePush: boolean;
-      createPR: boolean;
     }
 
     let pushConfig: PushConfig;
@@ -998,120 +979,7 @@ ${!gitStatus.remote ? 'ℹ️ **Info**: No upstream branch exists - will create 
       await fs.rm(pushDir, { recursive: true, force: true });
       console.log(chalk.gray('\n✓ Cleaned up review files'));
 
-      // Create PR if requested
-      if (pushConfig.createPR) {
-        const branchInfo = analyzeBranch(pushConfig.branch);
-        await this.handlePRCreation(pushConfig.branch, feature, branchInfo, options);
-      }
+      // PR creation removed - users can create PRs manually through their preferred tool
     }
-  }
-
-  /**
-   * Handle PR creation after successful push
-   */
-  private async handlePRCreation(
-    branch: string,
-    feature: string,
-    branchInfo: ReturnType<typeof analyzeBranch>,
-    options: ShipOptions
-  ): Promise<void> {
-    // Check configuration for PR creation
-    const configManager = getConfigManager();
-    const pushConfig = await configManager.getPushConfig();
-
-    // Determine if we should create PR
-    let shouldCreatePR = false;
-    const env = getCurrentEnvironment();
-
-    if (pushConfig.createPR === 'always') {
-      shouldCreatePR = true;
-    } else if (pushConfig.createPR === 'never') {
-      shouldCreatePR = false;
-    } else if (pushConfig.createPR === 'prompt' && !options.noInteractive) {
-      // Check if PR already exists
-      const prManager = getPRManager();
-      const existingPR = await prManager.checkExistingPR(branch);
-
-      if (existingPR) {
-        console.log(chalk.blue('\n📋 Existing PR found'));
-        console.log(`   PR #${existingPR.number}: ${existingPR.title}`);
-        console.log(`   URL: ${chalk.cyan(existingPR.url)}`);
-        console.log(`   Status: ${existingPR.state}`);
-        return;
-      }
-
-      // Prompt for PR creation in terminal
-      if (env.capabilities.prompts && !env.type.includes('claude')) {
-        console.log(chalk.bold('\n📝 Pull Request'));
-        const { confirm } = await inquirer.prompt<{ confirm: boolean }>([
-          {
-            type: 'confirm',
-            name: 'confirm',
-            message: 'Create a pull request?',
-            default: branchInfo.type === 'feature' || branchInfo.type === 'fix',
-          },
-        ]);
-
-        shouldCreatePR = confirm;
-      } else if (branchInfo.type === 'feature' || branchInfo.type === 'fix') {
-        // Auto-create for feature/fix branches in non-interactive mode
-        shouldCreatePR = true;
-      }
-    }
-
-    if (!shouldCreatePR) {
-      if (branchInfo.type === 'feature' || branchInfo.type === 'fix') {
-        console.log(chalk.gray('\nSkipping PR creation. Create manually when ready.'));
-      }
-      return;
-    }
-
-    // Create the PR
-    console.log(chalk.cyan('\n📝 Creating Pull Request...'));
-
-    const prManager = getPRManager();
-
-    // Check for conflicts first
-    const hasConflicts = await prManager.checkConflicts();
-    if (hasConflicts) {
-      console.log(chalk.yellow('\n⚠️  Potential conflicts detected'));
-      console.log(prManager.getConflictInstructions());
-
-      if (!options.forcePush) {
-        console.log(chalk.yellow('\nResolve conflicts before creating PR'));
-        return;
-      }
-    }
-
-    // Get recent commits for PR body
-    let commits: string[] = [];
-    try {
-      const { stdout } = await execAsync('git log --oneline -5 --pretty=format:"%s"');
-      commits = stdout.trim().split('\n').filter(Boolean);
-    } catch {
-      // Ignore if we can't get commits
-    }
-
-    // Generate PR title and body
-    const prTitle = prManager.generatePRTitle(branch, feature);
-    const prBody = prManager.generatePRBody({
-      feature,
-      branch,
-      commits,
-      issueId: branchInfo.issueId,
-      description: `Implementation of ${feature}`,
-    });
-
-    // Create the PR
-    const result = await prManager.createPR({
-      title: prTitle,
-      body: prBody,
-      base: 'main', // TODO: [ship] Make this configurable
-      labels: branchInfo.type ? [branchInfo.type] : undefined,
-    });
-
-    // Show result
-    console.log();
-    console.log(prManager.formatPRResult(result, branch));
   }
 }

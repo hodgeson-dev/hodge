@@ -32,6 +32,15 @@ This project follows the Hodge development philosophy:
 - ESLint rules enforced
 - Prettier formatting
 
+## CLI Architecture Standards
+**⚠️ CRITICAL**: All Hodge CLI commands MUST be non-interactive.
+- Commands are called by Claude Code slash commands, never directly by developers
+- There is no possibility of user interaction when called from slash commands
+- NO prompts, confirmations, or user input of any kind
+- All parameters must come from command arguments or environment variables
+- If a decision is needed, the command should make a sensible default choice
+- Use exit codes and structured output to communicate state
+
 ## Testing Requirements
 
 | Phase | Required | Time Limit |
