@@ -25,6 +25,7 @@ import { autoSave } from '../lib/auto-save.js';
 import { contextManager } from '../lib/context-manager.js';
 import { FeaturePopulator } from '../lib/feature-populator.js';
 import { PMHooks } from '../lib/pm/pm-hooks.js';
+import type { LearningResult } from '../lib/pattern-learner.js';
 
 const execAsync = promisify(exec);
 
@@ -527,10 +528,11 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}
 
     // Learn patterns from shipped code
     console.log(chalk.cyan.bold('\n🧠 Learning from shipped code...'));
+    let learningResult: LearningResult | null = null;
     try {
       const { PatternLearner } = await import('../lib/pattern-learner.js');
       const learner = new PatternLearner();
-      const learningResult = await learner.analyzeShippedCode(feature);
+      learningResult = await learner.analyzeShippedCode(feature);
 
       console.log(chalk.green(`   ✓ Analyzed ${learningResult.statistics.filesAnalyzed} files`));
       console.log(chalk.green(`   ✓ Found ${learningResult.statistics.patternsFound} patterns`));
@@ -564,6 +566,10 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}
         console.error('Pattern learning error:', error);
       }
     }
+
+    // Generate lessons learned draft
+    console.log(chalk.cyan.bold('\n📝 Capturing lessons learned...'));
+    await this.generateLessonsDraft(feature, shipChecks, learningResult, commitMessage);
 
     // Update PM issue to Done
     if (pmTool && issueId) {
@@ -932,6 +938,110 @@ ${!gitStatus.remote ? 'ℹ️ **Info**: No upstream branch exists - will create 
       console.log(chalk.gray('\n✓ Cleaned up review files'));
 
       // PR creation removed - users can create PRs manually through their preferred tool
+    }
+  }
+
+  /**
+   * Generate lessons learned draft from objective data
+   * This creates a draft file with metrics, changes, and patterns
+   * The AI can later enhance this with insights and reflections
+   */
+  private async generateLessonsDraft(
+    feature: string,
+    shipChecks: { tests: boolean; coverage: boolean; docs: boolean; changelog: boolean },
+    learningResult: LearningResult | null,
+    commitMessage: string
+  ): Promise<void> {
+    try {
+      // Create ship directory if it doesn't exist
+      const shipDir = path.join('.hodge', 'features', feature, 'ship');
+      await fs.mkdir(shipDir, { recursive: true });
+
+      // Get git diff statistics (use staged files to avoid HEAD~1 issues)
+      const { stdout: gitStats } = await execAsync('git diff --stat --cached || git diff --stat');
+      const { stdout: gitDiff } = await execAsync(
+        'git diff --cached --name-status || git status --short'
+      );
+
+      // Parse changed files
+      const changedFiles = gitDiff
+        .split('\n')
+        .filter((line) => line.trim())
+        .map((line) => {
+          const [status, ...pathParts] = line.split('\t');
+          return { status, path: pathParts.join('\t') };
+        });
+
+      // Calculate metrics
+      const metrics = {
+        filesChanged: changedFiles.length,
+        filesAdded: changedFiles.filter((f) => f.status === 'A').length,
+        filesModified: changedFiles.filter((f) => f.status === 'M').length,
+        filesDeleted: changedFiles.filter((f) => f.status === 'D').length,
+        patternsFound: learningResult?.statistics.patternsFound || 0,
+        testsPassed: shipChecks.tests || false,
+        shipDate: new Date().toISOString().split('T')[0],
+      };
+
+      // Generate draft content
+      const draftContent = `# Lessons Learned: ${feature}
+
+## Ship Date
+${metrics.shipDate}
+
+## Objective Metrics
+- **Files Changed**: ${metrics.filesChanged} (${metrics.filesAdded} added, ${metrics.filesModified} modified, ${metrics.filesDeleted} deleted)
+- **Patterns Identified**: ${metrics.patternsFound}
+- **Tests Status**: ${metrics.testsPassed ? 'All passed ✅' : 'Some failures ⚠️'}
+
+## What Changed
+${commitMessage.split('\n')[0]}
+
+### Files Modified
+${changedFiles
+  .slice(0, 10)
+  .map((f) => `- ${f.status === 'A' ? '➕' : f.status === 'D' ? '➖' : '📝'} ${f.path}`)
+  .join('\n')}
+${changedFiles.length > 10 ? `\n... and ${changedFiles.length - 10} more files` : ''}
+
+## Technical Changes
+${gitStats.split('\n').slice(1, 6).join('\n')}
+
+## Patterns Applied
+${
+  learningResult?.patterns
+    .slice(0, 3)
+    .map((p) => `- ${p.name} (${p.metadata.confidence}% confidence)`)
+    .join('\n') || '- No specific patterns identified'
+}
+
+## Draft Status
+This is an objective draft created by the CLI. For meaningful insights and reflections, use the /ship slash command to enhance this with AI analysis.
+
+---
+*Draft generated automatically by hodge ship command*`;
+
+      // Write draft file
+      const draftPath = path.join(shipDir, 'lessons-draft.md');
+      await fs.writeFile(draftPath, draftContent);
+
+      // Check if draft has meaningful content (more than just boilerplate)
+      const hasSignificantChanges = metrics.filesChanged > 0 || metrics.patternsFound > 0;
+
+      if (!hasSignificantChanges) {
+        // Remove draft if it has no meaningful content
+        await fs.unlink(draftPath);
+        console.log(chalk.gray('   ℹ️ No significant changes to capture in lessons'));
+      } else {
+        console.log(chalk.green(`   ✓ Lessons draft created at ${draftPath}`));
+        console.log(chalk.gray('   💡 Enhance with AI insights using /ship slash command'));
+      }
+    } catch (error) {
+      // Non-blocking - don't fail ship if lessons generation fails
+      console.log(chalk.yellow('   ⚠️ Could not generate lessons draft (non-blocking)'));
+      if (process.env.DEBUG) {
+        console.error(error);
+      }
     }
   }
 }

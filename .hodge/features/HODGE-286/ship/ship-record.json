@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-286",
+  "timestamp": "2025-09-22T14:43:00.825Z",
+  "issueId": "HODGE-286",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "feat: implement automatic lessons learned generation during ship (HODGE-286)\n\n## What Changed\n- Added `generateLessonsDraft()` method to ship.ts with 98 new lines\n- Imported `LearningResult` type for proper TypeScript typing\n- Integrated lessons generation into ship workflow after pattern learning\n- Created smoke tests for lessons generation (69 lines)\n- Added automatic cleanup for drafts with minimal changes\n\n## Why This Change\nThe ship command's step 5 instructed to capture lessons learned, but no\nimplementation existed. Since HODGE-003, no lessons files were being created\ndespite shipping 280+ features. This creates objective drafts with metrics\nand git statistics that AI can later enhance with insights.\n\n## Impact\n- Automatic lessons draft creation for every shipped feature\n- Objective metrics captured: files changed, patterns found, test status\n- No empty files left behind - cleanup when changes are minimal\n- Non-blocking implementation - ship continues even if lessons generation fails\n- Improved knowledge retention across features\n\n## Technical Details\n- Lessons generated after pattern learning (ship.ts:571)\n- Draft includes git statistics, commit message, and metrics\n- Checks for significant changes before creating file\n- Error handling ensures ship process continues regardless\n\nCloses HODGE-286"
+}
