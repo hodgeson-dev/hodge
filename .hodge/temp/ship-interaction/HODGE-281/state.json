@@ -1,0 +1,168 @@
+{
+  "command": "ship",
+  "status": "pending",
+  "timestamp": "2025-09-22T05:13:28.991Z",
+  "environment": "Claude Code",
+  "data": {
+    "analysis": {
+      "files": [
+        {
+          "path": ".hodge/.session",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/HODGE.md",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/context.json",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/decisions.md",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/features/HODGE-281/HODGE.md",
+          "status": "added",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/features/HODGE-281/decision.md",
+          "status": "added",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/features/HODGE-281/explore/context.json",
+          "status": "added",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/features/HODGE-281/explore/exploration.md",
+          "status": "added",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/features/HODGE-281/explore/test-intentions.md",
+          "status": "added",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/features/HODGE-281/harden/context.json",
+          "status": "added",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/features/HODGE-281/harden/harden-report.md",
+          "status": "added",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/features/HODGE-281/harden/validation-results.json",
+          "status": "added",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/features/HODGE-281/issue-id.txt",
+          "status": "added",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/features/HODGE-281/ship/release-notes.md",
+          "status": "added",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/features/HODGE-281/ship/ship-record.json",
+          "status": "added",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/id-counter.json",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/id-mappings.json",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/patterns/learned-patterns.md",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/project_management.md",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": ".hodge/standards.md",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "src/commands/ship.ts",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "src/commands/status.smoke.test.ts",
+          "status": "added",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "src/commands/status.ts",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "src/lib/claude-commands.ts",
+          "status": "modified",
+          "insertions": 0,
+          "deletions": 0
+        }
+      ],
+      "type": "docs",
+      "scope": "general",
+      "breaking": false
+    },
+    "suggested": "docs: HODGE-281\n\n- Implementation complete\n- Tests passing\n- Documentation updated\n- Closes HODGE-281",
+    "issueId": "HODGE-281",
+    "workLogPath": ".hodge/features/HODGE-281/work-log.md"
+  },
+  "history": [
+    {
+      "timestamp": "2025-09-22T05:13:28.991Z",
+      "type": "init"
+    }
+  ]
+}

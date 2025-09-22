@@ -1,0 +1,87 @@
+{
+  "mode": "explore",
+  "feature": "HODGE-282",
+  "localID": "HODGE-282",
+  "externalID": null,
+  "timestamp": "2025-09-22T05:15:34.287Z",
+  "intent": {
+    "type": "enhancement",
+    "keywords": [
+      "ship",
+      "workflow",
+      "streamline",
+      "state",
+      "commit message"
+    ],
+    "suggestedPatterns": [
+      "state-management",
+      "progressive-enhancement",
+      "file-protocol"
+    ],
+    "relatedCommands": [
+      "ship",
+      "status",
+      "context"
+    ]
+  },
+  "standards": "suggested",
+  "validation": "optional",
+  "pmIssue": "HODGE-282",
+  "pmTool": null,
+  "approaches": [
+    {
+      "name": "Smart State Detection",
+      "description": "Ship command automatically detects and uses pre-approved messages from state files",
+      "relevance": 90,
+      "pros": [
+        "Uses existing InteractionStateManager infrastructure",
+        "No command line complexity",
+        "Maintains separation of concerns",
+        "Works with rich, multi-line messages",
+        "Follows Progressive Enhancement pattern"
+      ],
+      "cons": [
+        "Requires ship command modifications",
+        "State file management complexity"
+      ],
+      "recommended": true
+    },
+    {
+      "name": "Direct Message Passing",
+      "description": "Pass approved commit message directly to ship command via flag or environment",
+      "relevance": 85,
+      "pros": [
+        "Simple implementation - add --message flag",
+        "No state file complexity",
+        "Works immediately without waiting",
+        "Clear and explicit flow"
+      ],
+      "cons": [
+        "Requires escaping complex messages",
+        "Command line length limitations",
+        "Less elegant than state-based approach"
+      ]
+    },
+    {
+      "name": "Unified Workflow Command",
+      "description": "Create single command that handles entire ship workflow end-to-end",
+      "relevance": 75,
+      "pros": [
+        "One command for entire workflow",
+        "Complete control over UX",
+        "No state synchronization issues"
+      ],
+      "cons": [
+        "Duplicates existing functionality",
+        "More code to maintain",
+        "Breaks separation between slash and CLI commands"
+      ]
+    }
+  ],
+  "relatedFeatures": [
+    "HODGE-281",
+    "HODGE-242",
+    "HODGE-229"
+  ],
+  "suggestedPatterns": []
+}

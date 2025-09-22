@@ -435,40 +435,20 @@ export class ShipCommand {
         // Clean up interaction files after use
         await interactionManager.cleanup();
       } else {
-        // Interactive terminals (Warp, Aider, standard terminal)
-        const { getPrompts } = await import('../lib/prompts.js');
-        const prompts = getPrompts();
-
-        const interactionData: ShipInteractionData = {
-          analysis: gitAnalysis || {
-            files: [],
-            type: 'ship',
-            scope: feature,
-            breaking: false,
-          },
-          suggested: gitAnalysis
-            ? `${gitAnalysis.type}${gitAnalysis.scope !== 'general' ? `(${gitAnalysis.scope})` : ''}: ${feature}\n\n` +
-              `- Implementation complete\n` +
-              `- Tests passing\n` +
-              `- Documentation updated` +
-              (issueId ? `\n- Closes ${issueId}` : '')
-            : `ship: ${feature}${issueId ? ` (closes ${issueId})` : ''}\n\n` +
-              `- Implementation complete\n` +
-              `- Tests passing\n` +
-              `- Documentation updated` +
-              (issueId ? `\n- Closes ${issueId}` : ''),
-          issueId: issueId ?? undefined,
-        };
-
-        try {
-          commitMessage = await prompts.promptShipCommit(interactionData);
-        } catch (error) {
-          if (error instanceof Error && error.message === 'Ship cancelled by user') {
-            console.log(chalk.yellow('\n⚠️  Ship cancelled'));
-            return;
-          }
-          throw error;
-        }
+        // No interactive prompts allowed - all hodge commands are non-interactive
+        // Use a default message as fallback
+        commitMessage = gitAnalysis
+          ? `${gitAnalysis.type}${gitAnalysis.scope !== 'general' ? `(${gitAnalysis.scope})` : ''}: ${feature}\n\n` +
+            `- Implementation complete\n` +
+            `- Tests passing\n` +
+            `- Documentation updated` +
+            (issueId ? `\n- Closes ${issueId}` : '')
+          : `ship: ${feature}${issueId ? ` (closes ${issueId})` : ''}\n\n` +
+            `- Implementation complete\n` +
+            `- Tests passing\n` +
+            `- Documentation updated` +
+            (issueId ? `\n- Closes ${issueId}` : '');
+        console.log(chalk.yellow('⚠️  Using default commit message (non-interactive mode)'));
       }
     }
 
@@ -709,45 +689,17 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}
         return;
       }
 
-      // Otherwise, require confirmation
+      // No interactive prompts allowed - all hodge commands are non-interactive
+      // For protected branches, create a review file for the slash command to handle
       const env = getCurrentEnvironment();
-      if (env.capabilities.prompts && !env.type.includes('claude')) {
-        const { getPrompts } = await import('../lib/prompts.js');
-        const prompts = getPrompts();
-
-        try {
-          const shouldPush = await prompts.promptProtectedBranchPush(branch);
-          if (!shouldPush) {
-            console.log(chalk.yellow('\n⚠️  Push cancelled'));
-            return;
-          }
-          // User confirmed push to protected branch
-          console.log(chalk.yellow('\n⚠️  Proceeding with push to protected branch'));
-        } catch (error) {
-          // Check if user wants to create a feature branch
-          if (error instanceof Error && error.message.startsWith('CREATE_BRANCH:')) {
-            const newBranch = error.message.split(':')[1];
-            console.log(chalk.cyan(`\nCreating and switching to branch: ${newBranch}`));
-
-            try {
-              await execAsync(`git checkout -b ${newBranch}`);
-              console.log(chalk.green(`   ✓ Switched to new branch: ${newBranch}`));
-
-              // Update branch for push
-              branch = newBranch;
-              branchInfo.isProtected = false;
-              branchInfo.type = 'feature';
-            } catch (createError) {
-              console.log(chalk.red(`   ✗ Failed to create branch: ${String(createError)}`));
-              return;
-            }
-          } else {
-            throw error;
-          }
-        }
-      } else if (env.type === 'claude-code') {
+      if (env.type === 'claude-code') {
         // For Claude Code, we'll create a markdown file for review
         await this.createPushReviewFile(branch, feature, gitStatus, branchInfo, options);
+        return;
+      } else {
+        // For other environments, skip push to protected branch
+        console.log(chalk.yellow('\n⚠️  Skipping push to protected branch'));
+        console.log(chalk.gray('   Protected branches require manual push'));
         return;
       }
     }

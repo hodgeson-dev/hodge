@@ -1,10 +1,9 @@
 {
   "v": 1,
-  "ts": 1758505871629,
-  "feature": "HODGE-281",
+  "ts": 1758518134290,
+  "feature": "HODGE-282",
   "mode": "explore",
   "recentCommands": [
-    "hodge explore HODGE-272",
     "hodge explore HODGE-273",
     "hodge explore HODGE-274",
     "hodge explore HODGE-275",
@@ -13,9 +12,10 @@
     "hodge explore HODGE-278",
     "hodge explore HODGE-279",
     "hodge explore HODGE-280",
-    "hodge explore HODGE-281"
+    "hodge explore HODGE-281",
+    "hodge explore HODGE-282"
   ],
   "recentDecisions": [],
-  "summary": "Explored HODGE-281 with 1 approaches",
+  "summary": "Explored HODGE-282 with 1 approaches",
   "nextAction": "Review exploration and decide with 'hodge decide'"
 }

@@ -26,6 +26,25 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-22 - Smart State Detection with complete removal of ship interactivity - Ship command will check for pre-approved messages in state
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-282
+
+**Decision**:
+Smart State Detection with complete removal of ship interactivity - Ship command will check for pre-approved messages in state.json and ALL interactive prompts will be removed (lines 439-471, 714-747) since hodge commands are only called by slash commands
+
+**Rationale**:
+Recorded via `hodge decide` command at 10:30:38 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-22 - Immediate Complete Fix for Non-Interactive CLI Commands - Remove ALL interactive prompts and status file updates, ensure explore/build/harden/ship/context properly update HODGE
 
 **Status**: Accepted

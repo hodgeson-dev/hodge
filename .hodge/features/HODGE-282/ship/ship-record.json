@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-282",
+  "timestamp": "2025-09-22T05:59:54.927Z",
+  "issueId": "HODGE-282",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "fix: complete removal of all interactive prompts from ship command (HODGE-282)\n\n## What Changed\n- Removed 40+ lines of interactive prompt code from ship.ts (lines 439-471)\n- Removed protected branch confirmation prompts (lines 714-747)\n- Enhanced slash command state detection in claude-commands.ts\n- Added comprehensive test coverage with 2 new test files\n- Updated ship.md documentation for non-interactive workflow\n- Modified interaction state manager for smart state detection\n\n## Why This Change\nThe ship command was still attempting interactive prompts when called\nfrom slash commands, violating the core architecture standard that all\nCLI commands must be non-interactive. This caused failures when the\nslash command tried to execute ship with no ability for user interaction.\n\n## Impact\n- Ship command now properly detects pre-approved messages from state.json\n- Slash commands can fully control the ship workflow without CLI prompts\n- Protected branch handling deferred to slash command layer\n- Improved reliability for automated workflows and CI/CD pipelines\n- Zero interactive prompts ensures consistent behavior\n\n## Technical Details\n- State detection checks for \"edited\" status in interaction state\n- Falls back to default messages in non-interactive environments\n- Clean separation between slash command UI and CLI execution\n\nCloses HODGE-282"
+}

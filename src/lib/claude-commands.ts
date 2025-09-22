@@ -1380,8 +1380,10 @@ Your choice [a/r/e/c]:
 **If (a) Approve:**
 Save the message to the interaction state and proceed with shipping:
 \`\`\`bash
-# Save the approved message to ui.md for hodge ship to use
+# Save the approved message to both ui.md AND state.json for hodge ship to use
 mkdir -p .hodge/temp/ship-interaction/{{feature}}
+
+# Save to ui.md for display
 cat > .hodge/temp/ship-interaction/{{feature}}/ui.md << 'EOF'
 # Ship Commit - {{feature}}
 
@@ -1392,7 +1394,29 @@ cat > .hodge/temp/ship-interaction/{{feature}}/ui.md << 'EOF'
 \`\`\`
 EOF
 
-# Run ship with the message
+# Save to state.json with "edited" status so ship command uses it
+cat > .hodge/temp/ship-interaction/{{feature}}/state.json << 'EOF'
+{
+  "command": "ship",
+  "feature": "{{feature}}",
+  "status": "edited",
+  "timestamp": "{{current_iso_timestamp}}",
+  "environment": "Claude Code",
+  "data": {
+    "edited": "[The approved commit message]",
+    "suggested": "[Original suggested message if available]"
+  },
+  "history": [
+    {
+      "timestamp": "{{current_iso_timestamp}}",
+      "type": "edit",
+      "data": "User approved message via slash command"
+    }
+  ]
+}
+EOF
+
+# Run ship with the message (it will detect and use the edited state)
 hodge ship "{{feature}}"
 \`\`\`
 
@@ -1408,7 +1432,45 @@ Ask the user to provide their edited version:
 Please provide your edited commit message:
 (Paste the complete message below)
 \`\`\`
-Then save their edited version and proceed with shipping.
+Then save their edited version to state files:
+\`\`\`bash
+# Save the edited message to both ui.md AND state.json
+mkdir -p .hodge/temp/ship-interaction/{{feature}}
+
+cat > .hodge/temp/ship-interaction/{{feature}}/ui.md << 'EOF'
+# Ship Commit - {{feature}}
+
+## Edited Commit Message
+
+\`\`\`
+[User's edited commit message]
+\`\`\`
+EOF
+
+cat > .hodge/temp/ship-interaction/{{feature}}/state.json << 'EOF'
+{
+  "command": "ship",
+  "feature": "{{feature}}",
+  "status": "edited",
+  "timestamp": "{{current_iso_timestamp}}",
+  "environment": "Claude Code",
+  "data": {
+    "edited": "[User's edited commit message]",
+    "suggested": "[Original suggested message]"
+  },
+  "history": [
+    {
+      "timestamp": "{{current_iso_timestamp}}",
+      "type": "edit",
+      "data": "User provided custom message via slash command"
+    }
+  ]
+}
+EOF
+
+# Run ship with the edited message
+hodge ship "{{feature}}"
+\`\`\`
 
 **If (c) Cancel:**
 \`\`\`bash

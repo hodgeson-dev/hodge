@@ -3,24 +3,23 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: HODGE-280
-**Mode**: harden
-**PM Issue**: HODGE-280
-**Last Updated**: 2025-09-22T01:48:05.763Z
+**Feature**: general
+**Mode**: explore
+**Last Updated**: 2025-09-22T05:57:06.550Z
 ## Current Session
-**Resumed**: 21 minutes ago
-**Progress**: Explored HODGE-280 with 1 approaches
-**Working on**: HODGE-280 (explore mode)
+**Resumed**: 41 minutes ago
+**Progress**: Explored HODGE-282 with 1 approaches
+**Working on**: HODGE-282 (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-280. Explored HODGE-280 with 1 approaches
+You were helping with HODGE-282. Explored HODGE-282 with 1 approaches
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
+- **2025-09-22**: Smart State Detection with complete removal of ship interactivity - Ship command will check for pre-approved messages in state
+- **2025-09-22**: Immediate Complete Fix for Non-Interactive CLI Commands - Remove ALL interactive prompts and status file updates, ensure explore/build/harden/ship/context properly update HODGE
 - **2025-09-22**: Implement Hybrid Progressive Enhancement for ship commit messages - Phase 1: Smart templates that analyze git diff, Phase 2: State persistence for edits, Phase 3: Interactive approval workflow
 - **2025-09-21**: 1
 - **2025-09-21**: Pre-Commit All Updates with rollback on failure - Move all file updates (autoSave, HODGE
-- **2025-09-21**: Implement Hybrid Progressive Enhancement for test isolation - fix critical bugs immediately (session-manager
-- **2025-09-21**: Implement Hybrid Progressive Enhancement for save/load optimization with clear AI/CLI separation - slash commands handle user interaction, context presentation, and intelligent orchestration (what AI does best), while CLI commands handle file operations, git integration, and data processing (what code does best)
 
 ## Active Standards
 
@@ -40,6 +39,14 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - TypeScript with strict mode
 - ESLint rules enforced
 - Prettier formatting
+
+### CLI Architecture Standards
+- Commands are called by Claude Code slash commands, never directly by developers
+- There is no possibility of user interaction when called from slash commands
+- NO prompts, confirmations, or user input of any kind
+- All parameters must come from command arguments or environment variables
+- If a decision is needed, the command should make a sensible default choice
+- Use exit codes and structured output to communicate state
 
 ### Testing Requirements
 - Test what users see, not how it works
@@ -94,19 +101,11 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - Full test coverage required
 - Performance benchmarks met
 
-## Working Files
-
-- `.hodge/features/HODGE-280/explore/context.json`
-- `.hodge/features/HODGE-280/explore/exploration.md`
-- `.hodge/features/HODGE-280/explore/test-intentions.md`
-- `.hodge/features/HODGE-280/build/build-plan.md`
-- `.hodge/features/HODGE-280/build/context.json`
-
 ## Next Steps
 
-1. Fix all linting issues
-2. Ensure 100% test coverage
-3. Ship with `hodge ship HODGE-280`
+1. Review exploration approaches
+2. Make decision with `hodge decide`
+3. Start building with `hodge build general`
 
 
 ---
