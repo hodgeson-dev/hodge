@@ -27,11 +27,28 @@ When `/decide` is invoked, follow this process:
    ```
    Consider how principles might guide the decision.
 
-2. **Gather pending decisions from**:
-   - Code comments (TODO, FIXME, QUESTION)
-   - Previous exploration notes
-   - Uncommitted changes
+2. **Gather pending decisions using Decision Categories Framework**:
+
+   **PRIMARY SOURCE - Current Exploration**:
+   ```bash
+   # Check for decisions documented during exploration
+   cat .hodge/features/{{current_feature}}/explore/exploration.md | grep -A 5 "Decisions Needed"
+   ```
+
+   **SECONDARY SOURCES - Always check these categories**:
+   - **Implementation Approach**: Which approach from exploration to use?
+   - **Scope Decisions**: What's in/out of scope for this feature?
+   - **Technical Choices**: Libraries, patterns, architecture decisions
+   - **Naming Conventions**: Feature names, function names, file structure
+   - **Testing Strategy**: What and how to test?
+   - **TODO Resolution**: Which TODOs to address now vs later?
+
+   **TERTIARY SOURCES**:
+   - Code comments (TODO, FIXME, QUESTION) - `grep -r "TODO\|FIXME" src/`
+   - Uncommitted changes - `git status --short`
    - Open questions in conversation
+
+   **IMPORTANT**: Try to find at least 2-3 decisions. If fewer exist, that's okay, but always check all categories.
 
 3. **Present each decision with Principle Alignment**:
    ```
@@ -43,22 +60,30 @@ When `/decide` is invoked, follow this process:
    **Principle Consideration**:
    [Note if decision aligns with or conflicts with any principles]
 
-   Options:
-   a) {{option_1}}
-      Pros: {{pros}}
-      Cons: {{cons}}
-      Alignment: [Aligns with "Progressive Enhancement" principle]
+   **Options:**
 
-   b) {{option_2}}
-      Pros: {{pros}}
-      Cons: {{cons}}
-      Alignment: [May conflict with "Behavior-Focused Testing"]
+   **a) {{option_1}}** (Recommended)
+      - Pros: {{pros}}
+      - Cons: {{cons}}
+      - Alignment: [Aligns with "Progressive Enhancement" principle]
 
-   c) Skip for now
-   d) Need more exploration
+   **b) {{option_2}}**
+      - Pros: {{pros}}
+      - Cons: {{cons}}
+      - Alignment: [May conflict with "Behavior-Focused Testing"]
+
+   **c) {{option_3}}** (if applicable)
+      - Pros: {{pros}}
+      - Cons: {{cons}}
+      - Alignment: [Describe alignment]
+
+   **d) Skip for now**
+   **e) Need more exploration**
 
    Your choice:
    ```
+
+   **REQUIREMENT**: Always mark one option as "(Recommended)" based on your analysis.
 
 4. **For each decision made**:
    ```bash

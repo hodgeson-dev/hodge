@@ -26,6 +26,82 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-22 - Each decision presented in /decide must have one clearly marked recommended option to guide user choice
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-284
+
+**Decision**:
+Each decision presented in /decide must have one clearly marked recommended option to guide user choice
+
+**Rationale**:
+Recorded via `hodge decide` command at 5:58:51 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-22 - Minimal fix for /decide command - Update decide
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-284
+
+**Decision**:
+Minimal fix for /decide command - Update decide.md template only, with potential exploration.md tracking of decisions needed from current exploration
+
+**Rationale**:
+Recorded via `hodge decide` command at 5:52:44 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-22 - Add protected branch patterns configuration to
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-284
+
+**Decision**:
+Add protected branch patterns configuration to .hodge/config.json - Make protected branch patterns configurable through centralized config file for consistency with other settings and version control
+
+**Rationale**:
+Recorded via `hodge decide` command at 11:39:19 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-22 - Implement Decision Categories Framework for /decide command - Define specific decision categories (Implementation Approach, Scope, Technical Choices, Naming, Testing Strategy, TODO Resolution) that should always be checked to ensure comprehensive decision coverage
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-284
+
+**Decision**:
+Implement Decision Categories Framework for /decide command - Define specific decision categories (Implementation Approach, Scope, Technical Choices, Naming, Testing Strategy, TODO Resolution) that should always be checked to ensure comprehensive decision coverage
+
+**Rationale**:
+Recorded via `hodge decide` command at 11:36:33 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-22 - Implement Enhanced Header Metadata for standards enforcement clarity - Add enforcement metadata to section headers in standards
 
 **Status**: Accepted

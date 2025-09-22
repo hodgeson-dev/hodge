@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-284",
+  "timestamp": "2025-09-22T13:08:52.551Z",
+  "issueId": "HODGE-284",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "fix: restore multiple decision gathering in /decide command (HODGE-284)\n\n## What Changed\n- Enhanced decide.md with Decision Categories Framework (6 categories)\n- Added requirement for \"(Recommended)\" option in each decision\n- Updated explore.md to require \"Decisions Needed\" documentation\n- Added 6 smoke tests validating template changes\n- Restructured decision gathering to check exploration first, then categories\n\n## Why This Change\nThe /decide command was only presenting one decision instead of gathering\nmultiple decisions from the exploration phase and codebase. Users expected\n2-3 decisions to be presented for comprehensive decision-making. This fix\nensures the decide command systematically checks all decision categories.\n\n## Impact\n- /decide now presents 2-3 decisions consistently\n- Each decision shows a recommended option for clarity\n- Better integration between explore and decide phases\n- Improved decision coverage across 6 key categories\n\n## Technical Details\n- Primary source: exploration.md \"Decisions Needed\" section\n- Secondary sources: 6 decision categories always checked\n- All changes are template-only (markdown files)\n- Tests verify framework presence and requirements\n\nCloses HODGE-284"
+}

@@ -69,6 +69,16 @@ Remember: "Freedom to explore" - Standards are suggestions only in this phase.
    - Consider integration with existing stack
 5. Update test intentions with discoveries
 6. Document your recommendation
+7. **IMPORTANT: Document Decisions Needed**
+   Add a section to exploration.md titled "## Decisions Needed" that lists:
+   - Implementation approach decision (which approach to use)
+   - Scope decisions (what's in/out of scope)
+   - Technical choices (libraries, patterns, architecture)
+   - Naming decisions (if any naming conventions need deciding)
+   - Testing strategy (how to test this feature)
+   - TODO resolutions (which existing TODOs this might address)
+
+   These decisions will be presented by `/decide` for resolution.
 
 ## Exploration Guidelines
 - Standards are **suggested** but not enforced
