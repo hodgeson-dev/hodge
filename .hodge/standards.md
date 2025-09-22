@@ -4,7 +4,20 @@
 All standards below are CRITICAL and MUST be followed.
 Non-compliance will block shipping. Standards are automatically enforced by Hodge workflow commands.
 
+## Quick Reference: Enforcement by Phase
+
+| Standard Category | Explore | Build | Harden | Ship |
+|------------------|---------|--------|---------|------|
+| **Core Standards** | Optional | Suggested | Required | Mandatory |
+| **CLI Architecture** | Mandatory | Mandatory | Mandatory | Mandatory |
+| **Testing** | None | 1+ smoke test | Integration | Full suite |
+| **Type Safety** | Any allowed | Basic | Strict | Strict |
+| **Code Quality** | Optional | Should pass | Must pass | Blocking |
+| **Performance** | Optional | Monitor | Measure | Enforce |
+| **Documentation** | Optional | Comments | API docs | Complete |
+
 ## The Hodge Way
+**Enforcement: Progressive (see table above)**
 
 This project follows the Hodge development philosophy:
 > "Freedom to explore, discipline to ship"
@@ -28,11 +41,14 @@ This project follows the Hodge development philosophy:
    - **Ship**: Production ready, full coverage
 
 ## Core Standards
+**Enforcement: Build(suggested) → Harden(required) → Ship(mandatory)**
+
 - TypeScript with strict mode
 - ESLint rules enforced
 - Prettier formatting
 
 ## CLI Architecture Standards
+**Enforcement: ALL PHASES (mandatory)**
 **⚠️ CRITICAL**: All Hodge CLI commands MUST be non-interactive.
 - Commands are called by Claude Code slash commands, never directly by developers
 - There is no possibility of user interaction when called from slash commands
@@ -42,6 +58,7 @@ This project follows the Hodge development philosophy:
 - Use exit codes and structured output to communicate state
 
 ## Testing Requirements
+**Enforcement: Progressive per phase (see table below)**
 
 | Phase | Required | Time Limit |
 |-------|----------|------------|
@@ -50,12 +67,14 @@ This project follows the Hodge development philosophy:
 | **Ship** | All tests pass | <30s total |
 
 ### Testing Philosophy
+**Enforcement: Build(encouraged) → Harden(expected) → Ship(required)**
 - Test what users see, not how it works
 - Focus on behavior and contracts
 - Prefer integration tests over unit tests
 - Use real dependencies when possible
 
 ### Test Isolation Requirement
+**Enforcement: ALL PHASES (mandatory)**
 **⚠️ CRITICAL**: Tests must NEVER modify the Hodge project's own `.hodge` directory.
 - All tests must use temporary directories (`os.tmpdir()`) for file operations
 - Use mocks or stubs instead of modifying actual project state
@@ -64,6 +83,7 @@ This project follows the Hodge development philosophy:
 - Violation of this rule can lead to data loss and unpredictable test behavior
 
 ## Code Comments and TODOs
+**Enforcement: Build(suggested) → Harden(expected) → Ship(mandatory)**
 - **TODO Convention**: Always use `// TODO:` comments for incomplete work
   - Format: `// TODO: [phase] description`
   - Examples:
@@ -77,12 +97,14 @@ This project follows the Hodge development philosophy:
 - **Review TODOs**: Check all TODOs before shipping
 
 ## Code Quality Gates
+**Enforcement: Build(monitor) → Harden(warnings) → Ship(blocking)**
 - No ESLint errors
 - No TypeScript errors
 - Test coverage >80% for shipped code
 - Documentation for public APIs
 
 ## Performance Standards
+**Enforcement: Build(monitor) → Harden(measure) → Ship(enforce)**
 - CLI commands respond within 500ms
 - Build completes within 30s
 - Tests complete within 30s

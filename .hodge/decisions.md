@@ -26,6 +26,25 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-22 - Implement Enhanced Header Metadata for standards enforcement clarity - Add enforcement metadata to section headers in standards
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-283
+
+**Decision**:
+Implement Enhanced Header Metadata for standards enforcement clarity - Add enforcement metadata to section headers in standards.md showing progression (e.g., Build(suggested) → Harden(required) → Ship(mandatory)) to provide clear AI guidance while maintaining readability and backward compatibility
+
+**Rationale**:
+Recorded via `hodge decide` command at 11:07:22 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-22 - Smart State Detection with complete removal of ship interactivity - Ship command will check for pre-approved messages in state
 
 **Status**: Accepted

@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-283",
+  "timestamp": "2025-09-22T06:24:47.174Z",
+  "issueId": "HODGE-283",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "docs: add enforcement metadata headers for standards clarity (HODGE-283)\n\n## What Changed\n- Enhanced .hodge/standards.md with enforcement metadata headers for each section\n- Added Quick Reference table showing enforcement by phase (Explore/Build/Harden/Ship)\n- Created Standards Enforcement Guide in .hodge/principles.md (25 lines added)\n- Updated standards-enforcement.smoke.test.ts with comprehensive validation tests\n- Modified 10 files with 181 insertions and 34 deletions\n\n## Why This Change\nAI assistants needed clearer guidance on when standards apply during each\ndevelopment phase. The previous \"THESE STANDARDS ARE MANDATORY\" declaration\nwas ambiguous - it wasn't clear which standards were suggestions in explore\nmode versus blocking requirements in ship mode.\n\n## Impact\n- AI assistants can now precisely identify enforcement levels per phase\n- Progressive enforcement is explicit: Build(suggested) → Harden(required) → Ship(mandatory)\n- Backward compatible - no breaking changes to existing workflow\n- Improved developer experience with at-a-glance enforcement table\n- Enhanced test coverage validates enforcement metadata is parseable\n\n## Technical Details\n- Section headers use format: **Enforcement: Build(suggested) → Harden(required) → Ship(mandatory)**\n- Critical standards marked with: **Enforcement: ALL PHASES (mandatory)**\n- Added 7 new smoke tests to verify metadata presence and parseability\n- Standards Enforcement Guide explains notation for both humans and AI\n\nCloses HODGE-283"
+}

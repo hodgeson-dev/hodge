@@ -1,0 +1,49 @@
+{
+  "mode": "explore",
+  "feature": "HODGE-283",
+  "localID": "HODGE-283",
+  "externalID": null,
+  "timestamp": "2025-09-22T06:01:46.825Z",
+  "intent": {
+    "type": "general",
+    "keywords": [
+      "HODGE-283"
+    ],
+    "suggestedPatterns": [
+      "service",
+      "utility",
+      "factory"
+    ],
+    "relatedCommands": [
+      "execute",
+      "process",
+      "handle"
+    ]
+  },
+  "standards": "suggested",
+  "validation": "optional",
+  "pmIssue": "HODGE-283",
+  "pmTool": null,
+  "approaches": [
+    {
+      "name": "Standard Implementation",
+      "description": "Implement HODGE-283 following existing project patterns",
+      "relevance": 70,
+      "pros": [
+        "Consistent with codebase",
+        "Uses proven patterns",
+        "Easy for team to understand"
+      ],
+      "cons": [
+        "May not be optimal for specific use case",
+        "Could miss optimization opportunities"
+      ]
+    }
+  ],
+  "relatedFeatures": [
+    "hodge-branding",
+    "HODGE-002",
+    "HODGE-001"
+  ],
+  "suggestedPatterns": []
+}

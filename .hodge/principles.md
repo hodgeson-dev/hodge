@@ -8,6 +8,31 @@ These principles guide how we build software using the Hodge framework.
 
 Software development is a journey from uncertainty to confidence. Hodge provides a structured path that respects both creative exploration and production discipline.
 
+## Standards Enforcement Guide
+
+### Understanding Enforcement Notation
+
+Standards in `.hodge/standards.md` use enforcement metadata headers to indicate when they apply:
+
+- **`Build(suggested)`** - Nice to have, helps maintain consistency
+- **`Harden(required)`** - Should be followed, warnings if not met
+- **`Ship(mandatory)`** - Must be followed, blocks shipping if violated
+- **`ALL PHASES (mandatory)`** - Critical standards that always apply
+
+Examples:
+- `**Enforcement: Build(suggested) → Harden(required) → Ship(mandatory)**` - Progressive
+- `**Enforcement: ALL PHASES (mandatory)**` - Always required
+- `**Enforcement: Ship(mandatory)**` - Only enforced when shipping
+
+### AI Interpretation
+
+When working in each phase, AI assistants should:
+
+1. **Explore Phase**: Ignore most standards, focus on exploration
+2. **Build Phase**: Consider standards marked as `Build(suggested)` or stronger
+3. **Harden Phase**: Enforce standards marked as `Harden(required)` or stronger
+4. **Ship Phase**: Block on any `Ship(mandatory)` violations
+
 ## The Five Principles
 
 ### 1. Progressive Enhancement 📈
