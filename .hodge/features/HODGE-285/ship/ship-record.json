@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-285",
+  "timestamp": "2025-09-22T13:48:39.050Z",
+  "issueId": "HODGE-285",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "fix: separate AI and CLI concerns in explore command (HODGE-285)\n\n## What Changed\n- Removed `generateApproaches` and `generateImplementationHints` methods from explore.ts (-192 lines)\n- Updated explore.md slash command with AI approach generation instructions (+46 lines)\n- Modified exploration template to use AI placeholders instead of CLI-generated content\n- Added 5 smoke tests verifying approach generation removal\n- Fixed TypeScript errors with unused parameters\n- Updated session summaries to not reference approach counts\n\n## Why This Change\nThe CLI was generating implementation approaches instead of letting the AI handle\nthis responsibility. This violated the separation of concerns between the CLI\n(which should only create file structure) and the AI (which should generate all\nintelligent content including approaches and recommendations).\n\n## Impact\n- Users now receive 2-3 AI-generated approaches instead of 1 CLI-generated approach\n- Clear boundary established between CLI and AI responsibilities\n- Improved quality of approach recommendations through AI analysis\n- No breaking changes to existing functionality\n\n## Technical Details\n- explore.ts:541: Removed approach generation logic\n- explore.ts:794-795: Fixed runtime error accessing non-existent approaches\n- explore.ts:273: Updated session summary message\n- explore.ts:659-662: Removed unused template parameter\n\nCloses HODGE-285"
+}

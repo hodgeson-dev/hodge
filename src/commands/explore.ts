@@ -270,7 +270,7 @@ export class ExploreCommand {
     await sessionManager.updateContext(featureName, 'explore');
     await sessionManager.addCommand(`hodge explore ${featureName}`);
     await sessionManager.setSummary(
-      `Explored ${featureName} with ${smartTemplate.approaches.length} approaches`
+      `Explored ${featureName} - template ready for AI approach generation`
     );
     await sessionManager.suggestNext(`Review exploration and decide with 'hodge decide'`);
 
@@ -541,81 +541,46 @@ export class ExploreCommand {
     },
     pmIssue: { id: string; title: string; url: string } | null
   ): SmartTemplate {
-    // Generate intelligent approaches
-    const approaches = this.generateApproaches(feature, intent, _existingPatterns);
+    // CLI does not generate approaches - that's the AI's job
+    const approaches: Approach[] = [];
 
     // Find patterns that match this feature type
     const suggestedPatterns = _existingPatterns
       .filter((p) => intent.suggestedPatterns.some((sp) => p.name.toLowerCase().includes(sp)))
       .map((p) => p.name);
 
-    // Generate template content
+    // Generate minimal template content - AI will fill in approaches
     const content = `# Exploration: ${feature}
 
-## Feature Analysis
-**Type**: ${intent.type}
-**Keywords**: ${intent.keywords.join(', ')}
-**Related Commands**: ${intent.relatedCommands.join(', ')}
+## Feature Overview
 ${pmIssue ? `**PM Issue**: ${pmIssue.id}` : ''}
+**Type**: ${intent.type}
+**Created**: ${new Date().toISOString()}
 
 ## Context
-- **Date**: ${new Date().toLocaleDateString()}
-- **Mode**: Explore (Enhanced with AI)
-- **Standards**: Suggested (${projectContext.hasStandards ? 'loaded' : 'not enforced'})
-- **Existing Patterns**: ${projectContext.patternCount}
+- **Standards**: ${projectContext.hasStandards ? 'Loaded (suggested only)' : 'Not enforced'}
+- **Available Patterns**: ${projectContext.patternCount}
 
-${
-  similarFeatures.length > 0
-    ? `
-## Similar Features
-${similarFeatures.map((f) => `- ${f}`).join('\n')}
-`
-    : ''
-}
+- **Similar Features**: ${similarFeatures.length > 0 ? similarFeatures.join(', ') : 'None found'}
+- **Relevant Patterns**: ${suggestedPatterns.length > 0 ? suggestedPatterns.join(', ') : 'None identified'}
 
-${
-  suggestedPatterns.length > 0
-    ? `
-## Suggested Patterns
-${suggestedPatterns.map((p) => `- ${p}`).join('\n')}
-`
-    : ''
-}
-
-## Recommended Approaches
-
-${approaches
-  .map(
-    (approach, i) => `
-### Approach ${i + 1}: ${approach.name} (${approach.relevance}% relevant)
-**Description**: ${approach.description}
-
-**Pros**:
-${approach.pros.map((p) => `- ${p}`).join('\n')}
-
-**Cons**:
-${approach.cons.map((c) => `- ${c}`).join('\n')}
-`
-  )
-  .join('\n')}
+## Implementation Approaches
+<!-- AI will generate 2-3 approaches here -->
 
 ## Recommendation
-Based on the analysis, **${approaches[0].name}** appears most suitable because:
-- Highest relevance score (${approaches[0].relevance}%)
-- Aligns with detected intent (${intent.type})
-${suggestedPatterns.length > 0 ? `- Can reuse existing patterns: ${suggestedPatterns[0]}` : ''}
+<!-- AI will provide recommendation -->
 
-## Implementation Hints
-${this.generateImplementationHints(intent, _existingPatterns)}
+## Decisions Needed
+<!-- AI will list decisions for /decide command -->
 
 ## Next Steps
-- [ ] Review the recommended approaches
-- [ ] Consider similar features for inspiration
-- [ ] Make decision with \`/decide\`
+- [ ] Review exploration findings
+- [ ] Use \`/decide\` to make implementation decisions
 - [ ] Proceed to \`/build ${feature}\`
 
 ---
-*Generated with AI-enhanced exploration (${new Date().toISOString()})*
+*Template created: ${new Date().toISOString()}*
+*AI exploration to follow*
 `;
 
     return {
@@ -626,99 +591,9 @@ ${this.generateImplementationHints(intent, _existingPatterns)}
     };
   }
 
-  /**
-   * Generate intelligent approaches
-   */
-  private generateApproaches(
-    feature: string,
-    intent: FeatureIntent,
-    _existingPatterns: Array<{ name: string; description: string; confidence: number }>
-  ): Approach[] {
-    const approaches: Approach[] = [];
+  // Removed generateApproaches method - AI handles approach generation, not CLI
 
-    // Always include a standard approach
-    approaches.push({
-      name: 'Standard Implementation',
-      description: `Implement ${feature} following existing project patterns`,
-      relevance: 70,
-      pros: ['Consistent with codebase', 'Uses proven patterns', 'Easy for team to understand'],
-      cons: ['May not be optimal for specific use case', 'Could miss optimization opportunities'],
-    });
-
-    // Add intent-specific approaches
-    if (intent.type === 'performance' || feature.includes('optim')) {
-      approaches.push({
-        name: 'Performance-First Architecture',
-        description: 'Optimize for speed with caching and parallelization',
-        relevance: 95,
-        pros: ['Maximum performance gains', 'Reduced resource usage', 'Better scalability'],
-        cons: ['Higher complexity', 'More memory usage', 'Harder to debug'],
-      });
-    }
-
-    if (intent.type === 'authentication') {
-      approaches.push({
-        name: 'Secure Token-Based Auth',
-        description: 'JWT-based authentication with refresh tokens',
-        relevance: 90,
-        pros: ['Stateless and scalable', 'Industry standard', 'Works across services'],
-        cons: ['Token management complexity', 'Need secure storage', 'Revocation challenges'],
-      });
-    }
-
-    if (intent.type === 'caching') {
-      approaches.push({
-        name: 'Multi-Layer Cache Strategy',
-        description: 'Memory cache with TTL and persistent fallback',
-        relevance: 85,
-        pros: ['Fast access times', 'Automatic invalidation', 'Resilient to failures'],
-        cons: ['Memory overhead', 'Cache coherency challenges', 'Complex invalidation logic'],
-      });
-    }
-
-    // Sort by relevance
-    return approaches.sort((a, b) => b.relevance - a.relevance);
-  }
-
-  /**
-   * Generate implementation hints
-   */
-  private generateImplementationHints(
-    intent: FeatureIntent,
-    patterns: Array<{ name: string; description: string; confidence: number }>
-  ): string {
-    const hints: string[] = [];
-
-    // Intent-specific hints
-    switch (intent.type) {
-      case 'performance':
-        hints.push('- Use Promise.all() for parallel operations');
-        hints.push('- Implement caching with TTL');
-        hints.push('- Consider lazy loading strategies');
-        break;
-      case 'authentication':
-        hints.push('- Store tokens securely (never in localStorage for sensitive data)');
-        hints.push('- Implement token refresh logic');
-        hints.push('- Add rate limiting for login attempts');
-        break;
-      case 'caching':
-        hints.push('- Define clear TTL strategies');
-        hints.push('- Implement cache invalidation hooks');
-        hints.push('- Monitor cache hit rates');
-        break;
-      default:
-        hints.push('- Follow existing code patterns');
-        hints.push('- Add comprehensive error handling');
-        hints.push('- Include unit tests');
-    }
-
-    // Add pattern-based hints
-    if (patterns.some((p) => p.name.includes('Singleton'))) {
-      hints.push('- Consider using Singleton pattern (already in codebase)');
-    }
-
-    return hints.join('\n');
-  }
+  // Removed generateImplementationHints - AI provides implementation guidance
 
   /**
    * Create exploration structure
@@ -735,7 +610,7 @@ ${this.generateImplementationHints(intent, _existingPatterns)}
     await fs.mkdir(exploreDir, { recursive: true });
 
     // Generate test intentions based on feature intent
-    const testIntentions = this.generateTestIntentions(feature, intent, template);
+    const testIntentions = this.generateTestIntentions(feature, intent);
 
     // Create all files in parallel
     await Promise.all(
@@ -781,11 +656,7 @@ ${this.generateImplementationHints(intent, _existingPatterns)}
   /**
    * Generate test intentions based on feature and intent
    */
-  private generateTestIntentions(
-    feature: string,
-    intent: FeatureIntent,
-    template: SmartTemplate
-  ): string {
+  private generateTestIntentions(feature: string, intent: FeatureIntent): string {
     const baseIntentions = [
       '- [ ] Should not crash when executed',
       '- [ ] Should complete within reasonable time (<500ms)',
@@ -856,9 +727,10 @@ ${this.generateImplementationHints(intent, _existingPatterns)}
       ],
     };
 
-    const approachIntentions = template.approaches.map(
-      (approach: Approach) => `- [ ] ${approach.name} approach should work correctly`
-    );
+    const approachIntentions = [
+      '- [ ] Selected implementation approach should work correctly',
+      '- [ ] Solution integrates well with existing codebase',
+    ];
 
     return `# Test Intentions for ${feature}
 
@@ -916,8 +788,8 @@ Add any specific test scenarios or edge cases discovered during exploration:
     console.log(chalk.green('✓ Enhanced exploration environment created\n'));
 
     console.log(chalk.bold('AI Analysis:'));
-    console.log(`  • Feature type detected: ${chalk.cyan(template.approaches[0].name)}`);
-    console.log(`  • Relevance score: ${chalk.green(template.approaches[0].relevance + '%')}`);
+    console.log(`  • Feature: ${chalk.cyan(feature)}`);
+    console.log(`  • Template ready for AI to generate approaches`);
 
     if (similarFeatures.length > 0) {
       console.log(`  • Similar features found: ${chalk.cyan(similarFeatures.length)}`);
@@ -929,9 +801,8 @@ Add any specific test scenarios or edge cases discovered during exploration:
       template.suggestedPatterns.slice(0, 3).forEach((p) => console.log(chalk.gray(`    - ${p}`)));
     }
 
-    console.log('\n' + chalk.bold('Recommended Approach:'));
-    console.log(`  ${chalk.cyan(template.approaches[0].name)}`);
-    console.log(chalk.gray(`  ${template.approaches[0].description}`));
+    console.log('\n' + chalk.bold('Exploration Structure Created:'));
+    console.log(chalk.cyan('  Template ready for AI exploration'));
 
     console.log('\n' + chalk.bold('Files created:'));
     console.log(chalk.gray(`  • .hodge/features/${feature}/explore/exploration.md`));
@@ -939,7 +810,7 @@ Add any specific test scenarios or edge cases discovered during exploration:
 
     console.log('\n' + chalk.bold('Next steps:'));
     console.log(`  1. Review the AI-generated exploration`);
-    console.log(`  2. Consider the ${template.approaches.length} suggested approaches`);
+    console.log('  2. Generate and review implementation approaches');
     console.log('  3. Use ' + chalk.cyan('`/decide`') + ' to choose an approach');
     console.log('  4. Then ' + chalk.cyan(`\`/build ${feature}\``) + ' to implement\n');
 

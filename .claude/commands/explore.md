@@ -60,15 +60,26 @@ grep -A 5 "Explore" .hodge/principles.md
 Remember: "Freedom to explore" - Standards are suggestions only in this phase.
 
 ## Your Tasks After CLI Command
-1. Review the exploration template at `.hodge/features/{{feature}}/explore/exploration.md`
-2. Review test intentions at `.hodge/features/{{feature}}/explore/test-intentions.md`
-3. Generate 2-3 different implementation approaches
-4. For each approach:
-   - Create a quick prototype or code sketch
-   - Note pros/cons
-   - Consider integration with existing stack
-5. Update test intentions with discoveries
-6. Document your recommendation
+
+### CRITICAL: Generate Implementation Approaches
+The CLI has created a minimal exploration template. You MUST now:
+
+1. **Read the template** at `.hodge/features/{{feature}}/explore/exploration.md`
+2. **Generate 2-3 implementation approaches** by updating the file:
+   - Replace `<!-- AI will generate 2-3 approaches here -->` with actual approaches
+   - Each approach should have:
+     - Name and description
+     - Pros (3-4 points)
+     - Cons (2-3 points)
+     - When to use this approach
+3. **Provide a recommendation**:
+   - Replace `<!-- AI will provide recommendation -->`
+   - Explain which approach is best and why
+4. **Document decisions needed**:
+   - Replace `<!-- AI will list decisions for /decide command -->`
+   - List 2-4 key decisions that need to be made
+5. **Update test intentions** if needed
+6. **Consider patterns and similar features** mentioned in the template
 7. **IMPORTANT: Document Decisions Needed**
    Add a section to exploration.md titled "## Decisions Needed" that lists:
    - Implementation approach decision (which approach to use)
@@ -86,6 +97,23 @@ Remember: "Freedom to explore" - Standards are suggestions only in this phase.
 - Focus on rapid prototyping and idea validation
 - Be creative and explore alternatives
 - **No tests required** - only test intentions (what should it do?)
+
+## Example Approach Format
+```markdown
+### Approach 1: [Descriptive Name]
+**Description**: Brief explanation of this approach
+
+**Pros**:
+- Clear benefit 1
+- Clear benefit 2
+- Clear benefit 3
+
+**Cons**:
+- Potential drawback 1
+- Potential drawback 2
+
+**When to use**: This approach is ideal when...
+```
 
 ## Next Steps Menu
 After exploration is complete, suggest:
