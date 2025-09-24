@@ -168,7 +168,7 @@ export class BuildCommand {
       ]);
 
       // Update PM tracking
-      await this.pmHooks.onPhaseStart(feature, 'build');
+      await this.pmHooks.onBuild(feature);
 
       // Display PM integration if available
       const pmTool = process.env.HODGE_PM_TOOL;

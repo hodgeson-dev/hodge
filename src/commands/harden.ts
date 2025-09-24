@@ -77,7 +77,7 @@ export class HardenCommand {
       console.log(chalk.gray(`Feature: ${feature}\n`));
 
       // Update PM tracking - mark as hardening at START of phase
-      await this.pmHooks.onPhaseStart(feature, 'harden');
+      await this.pmHooks.onHarden(feature);
 
       // Display AI context
       this.displayAIContext(feature);

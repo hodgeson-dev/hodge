@@ -6,6 +6,32 @@ This file tracks all Hodge features and their implementation status. Features ar
 ## Active Features
 
 
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-09-23
+- **Updated**: 2025-09-23
+- **Description**: pm-adapter-hooks
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-287
+- **Status**: Building
+- **Priority**: TBD
+- **Created**: 2025-09-22
+- **Updated**: 2025-09-22
+- **Description**: context-compaction-resilience
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+
 - **Status**: Shipped
 - **Priority**: TBD
 - **Created**: 2025-09-22
@@ -2133,12 +2159,72 @@ This file tracks all Hodge features and their implementation status. Features ar
 
 ## Completed Features
 
+### HODGE-288
+- **Completed**: 2025-09-24
+
+
+
+### test-feature
+- **Completed**: 2025-09-24
+
+
+
+
+- **Completed**: 2025-09-23
+
+
+
+
+- **Completed**: 2025-09-23
+
+
+
+
+- **Completed**: 2025-09-23
+
+
+
+
+- **Completed**: 2025-09-23
+
+
+
+
+- **Completed**: 2025-09-23
+
+
+
+
+- **Completed**: 2025-09-23
+
+
+
+
+- **Completed**: 2025-09-23
+
+
+
+
+- **Completed**: 2025-09-23
+
+
+
+
+- **Completed**: 2025-09-23
+
+
+
+
+- **Completed**: 2025-09-23
+
+
+
 ### HODGE-286
 - **Completed**: 2025-09-22
 
 
 
-### test-feature
+
 - **Completed**: 2025-09-22
 
 
@@ -2829,7 +2915,7 @@ This file tracks all Hodge features and their implementation status. Features ar
 
 
 ### HODGE-004: ID Management
-- **Status**: Shipped
+- **Status**: shipped
 - **Completed**: 2025-01-16
 - **Description**: Manage feature IDs across local (HODGE-xxx) and external PM tools
 - **Implementation**:

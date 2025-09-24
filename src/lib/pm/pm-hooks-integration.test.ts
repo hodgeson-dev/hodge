@@ -65,7 +65,7 @@ describe('PM Hooks Integration', () => {
 
     // These methods should not throw even without configuration
     await expect(pmHooks.onExplore('test-feature', 'Test feature')).resolves.not.toThrow();
-    await expect(pmHooks.onPhaseStart('test-feature', 'build')).resolves.not.toThrow();
+    await expect(pmHooks.onBuild('test-feature')).resolves.not.toThrow();
     await expect(pmHooks.onShip('test-feature')).resolves.not.toThrow();
 
     // Restore original configuration

@@ -67,7 +67,7 @@ describe('LocalPMAdapter', () => {
 
     const content = await fs.readFile(pmPath, 'utf-8');
     expect(content).toContain('TEST-002');
-    expect(content).toContain('Building');
+    expect(content).toContain('building');
   });
 
   smokeTest('should mark feature complete in project plan', async () => {
@@ -147,6 +147,6 @@ describe('LocalPMAdapter', () => {
 
     expect(completedIndex).toBeGreaterThan(0);
     expect(featureIndex).toBeGreaterThan(completedIndex);
-    expect(content).toContain('- **Status**: Shipped');
+    expect(content).toContain('- **Status**: shipped');
   });
 });

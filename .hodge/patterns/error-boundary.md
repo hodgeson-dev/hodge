@@ -1,48 +1,43 @@
 # Error Boundary
 
 **Category**: error-handling
-**Frequency**: Used 5 times
-**Confidence**: 100%
+**Frequency**: Used 3 times
+**Confidence**: 60%
 
 ## Description
 Consistent error handling with logging
 
 ## Examples
 
-### src/commands/load.ts
+### src/commands/build.ts
 ```typescript
 try {
-      // Handle list option
-      if (options.list) {
-        await this.listSaves();
-        return;
+      // Validate inputs (redundant but keeping for safety)
+      if (!feature || typeof feature !== 'string') {
+        throw new Error('Feature name is required and must be a string');
+      }
+```
+
+
+### src/commands/harden.ts
+```typescript
+try {
+      // Validate inputs
+      if (!feature || typeof feature !== 'string') {
+        throw new Error('Feature name is required and must be a string');
       }
 
-      // Handle recent option or find most recent
-      let saveName = name;
-      
+      console.log(chalk.magenta('
 ```
 
 
-### src/commands/save.ts
+### src/commands/init.ts
 ```typescript
 try {
-      // Generate save name if not provided
-      const saveName = name || (await this.generateSaveName());
-
-      // Determine save type based on options
-      const saveOptions: SaveOptions = 
-```
-
-
-### src/commands/ship.ts
-```typescript
-try {
-        const results = JSON.parse(await fs.readFile(validationFile, 'utf-8')) as Record<
-          string,
-          { passed: boolean }
-        >;
-        validationPassed = Object.values(resu
+      this.detector = new ProjectDetector(rootPath);
+      this.generator = new StructureGenerator(rootPath);
+    } catch (error) {
+      if (error instanceof ValidationError || error instanceof
 ```
 
 
@@ -52,5 +47,5 @@ try {
 - 
 
 ---
-*First seen: 2025-09-21T23:36:22.895Z*
-*Last used: 2025-09-21T23:36:22.903Z*
+*First seen: 2025-09-24T01:23:36.312Z*
+*Last used: 2025-09-24T01:23:36.314Z*

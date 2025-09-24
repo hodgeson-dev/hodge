@@ -26,6 +26,101 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-23 - Use pure adapter approach for PM integration - remove scripts directory and implement all PM logic in TypeScript adapters for type safety and consistency
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-288
+
+**Decision**:
+Use pure adapter approach for PM integration - remove scripts directory and implement all PM logic in TypeScript adapters for type safety and consistency
+
+**Rationale**:
+Recorded via `hodge decide` command at 11:45:20 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-23 - Prioritize GitHub Issues as next PM tool after Linear - maximum developer reach and GitHub integration
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-288
+
+**Decision**:
+Prioritize GitHub Issues as next PM tool after Linear - maximum developer reach and GitHub integration
+
+**Rationale**:
+Recorded via `hodge decide` command at 11:31:53 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-23 - Use simple status mapping in hodge
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-288
+
+**Decision**:
+Use simple status mapping in hodge.json for PM workflow configuration - clear and easy to understand
+
+**Rationale**:
+Recorded via `hodge decide` command at 11:30:52 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-23 - Handle PM API failures with silent failure and logging - commands never blocked by PM issues
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-288
+
+**Decision**:
+Handle PM API failures with silent failure and logging - commands never blocked by PM issues
+
+**Rationale**:
+Recorded via `hodge decide` command at 11:29:44 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-23 - Implement PM hooks for critical workflow commands only (explore, build, harden, ship) - focused effort on main workflow
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-288
+
+**Decision**:
+Implement PM hooks for critical workflow commands only (explore, build, harden, ship) - focused effort on main workflow
+
+**Rationale**:
+Recorded via `hodge decide` command at 11:25:40 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-22 - Implement state persistence for critical workflow commands first: /explore, /build, /harden, /ship - focused effort on highest impact commands
 
 **Status**: Accepted

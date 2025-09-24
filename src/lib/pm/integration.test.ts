@@ -44,7 +44,7 @@ describe('PM Integration Tests', () => {
     const content = await fs.readFile(pmPath, 'utf-8');
     expect(content).toContain('TEST-FEATURE');
     expect(content).toContain('Test feature for integration');
-    expect(content).toContain('Status**: Exploring');
+    expect(content).toContain('Status**: exploring');
   });
 
   integrationTest('should update status through workflow phases', async () => {
@@ -55,7 +55,7 @@ describe('PM Integration Tests', () => {
     expect(content).toContain('WORKFLOW-TEST');
 
     // Move to build
-    await pmHooks.onPhaseStart('WORKFLOW-TEST', 'build');
+    await pmHooks.onBuild('WORKFLOW-TEST');
     content = await fs.readFile(pmPath, 'utf-8');
 
     // Check if marked as in-progress in project plan (if exists in plan)
@@ -64,7 +64,7 @@ describe('PM Integration Tests', () => {
     }
 
     // Move to harden
-    await pmHooks.onPhaseStart('WORKFLOW-TEST', 'harden');
+    await pmHooks.onHarden('WORKFLOW-TEST');
     content = await fs.readFile(pmPath, 'utf-8');
     expect(content).toContain('WORKFLOW-TEST');
 
@@ -183,8 +183,8 @@ describe('PM Integration Tests', () => {
     await pmHooks.onExplore(feature, 'Testing history tracking');
 
     // Update through phases
-    await pmHooks.onPhaseStart(feature, 'build');
-    await pmHooks.onPhaseStart(feature, 'harden');
+    await pmHooks.onBuild(feature);
+    await pmHooks.onHarden(feature);
     await pmHooks.onShip(feature);
 
     const content = await fs.readFile(pmPath, 'utf-8');
@@ -200,10 +200,10 @@ describe('PM Integration Tests', () => {
     expect(featureIndex).toBeGreaterThan(completedIndex);
 
     // Should have proper status
-    expect(content).toContain('Status**: Shipped');
+    expect(content).toContain('Status**: shipped');
 
     // Check for completion indicator - either in status or in content
-    const hasCompleted = content.includes('Completed**:') || content.includes('Status**: Shipped');
+    const hasCompleted = content.includes('Completed**:') || content.includes('Status**: shipped');
     expect(hasCompleted).toBe(true);
   });
 });

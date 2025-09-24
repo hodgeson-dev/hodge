@@ -918,8 +918,7 @@ ${
     console.log(`   ${chalk.dim('├── standards.md')}    ${chalk.gray('# Development standards')}`);
     console.log(`   ${chalk.dim('├── decisions.md')}    ${chalk.gray('# Architecture decisions')}`);
     console.log(`   ${chalk.dim('├── patterns/')}       ${chalk.gray('# Extracted patterns')}`);
-    console.log(`   ${chalk.dim('├── features/')}       ${chalk.gray('# Feature development')}`);
-    console.log(`   ${chalk.dim('└── pm-scripts/')}     ${chalk.gray('# PM integration scripts')}`);
+    console.log(`   ${chalk.dim('└── features/')}       ${chalk.gray('# Feature development')}`);
 
     // Add Claude Code detection message
     if (projectInfo.detectedTools.hasClaudeCode) {
@@ -939,20 +938,15 @@ ${
     // Add PM-specific suggestions
     if (projectInfo.pmTool) {
       console.log(chalk.blue(`\n🔧 PM Integration (${projectInfo.pmTool}):`));
-
-      // Show the actual scripts that were installed
-      const pmScriptExamples = this.getPMScriptExamples(projectInfo.pmTool);
-      pmScriptExamples.forEach(({ script, description }) => {
-        console.log(`   ${chalk.white(script)}  ${chalk.gray(`# ${description}`)}`);
-      });
-
-      // Indicate more scripts are available
-      console.log(`   ${chalk.gray('...and more! See all scripts: ls .hodge/pm-scripts/')}`);
+      console.log(`   ${chalk.green('✓')} Automatic status updates on workflow progression`);
+      console.log(`   ${chalk.green('✓')} Local tracking in .hodge/project_management.md`);
+      console.log(`   ${chalk.dim('Configure in hodge.json for custom workflow mappings')}`);
     } else {
       console.log(chalk.blue('\n🔧 PM Integration:'));
       console.log(
         `   ${chalk.gray('No PM tool configured - set up environment variables and run init again')}`
       );
+      console.log(`   ${chalk.gray('Supported: Linear, GitHub Issues (coming soon)')}`);
     }
 
     // Add pattern learning status if it was executed
@@ -986,79 +980,6 @@ ${
     );
 
     console.log(); // Empty line for spacing
-  }
-
-  /**
-   * Gets example PM scripts to show based on the PM tool
-   * @param pmTool - The PM tool being used
-   * @returns Array of script examples with descriptions
-   */
-  private getPMScriptExamples(pmTool: string): Array<{ script: string; description: string }> {
-    const baseScripts = [
-      { script: 'node .hodge/pm-scripts/pm-status.js', description: 'Check PM integration status' },
-    ];
-
-    switch (pmTool) {
-      case 'linear':
-        return [
-          ...baseScripts,
-          {
-            script: 'node .hodge/pm-scripts/create-issue.js "Title" "Description"',
-            description: 'Create Linear issue',
-          },
-          {
-            script: 'node .hodge/pm-scripts/update-issue.js <issue-id> <status>',
-            description: 'Update issue status',
-          },
-        ];
-      case 'github':
-        return [
-          ...baseScripts,
-          {
-            script: 'node .hodge/pm-scripts/create-issue.js "Title" "Body"',
-            description: 'Create GitHub issue',
-          },
-          {
-            script: 'node .hodge/pm-scripts/create-milestone.js "Title"',
-            description: 'Create milestone',
-          },
-        ];
-      case 'jira':
-        return [
-          ...baseScripts,
-          {
-            script: 'node .hodge/pm-scripts/create-issue.js "Summary"',
-            description: 'Create Jira issue',
-          },
-          {
-            script: 'node .hodge/pm-scripts/create-epic.js "Epic Name"',
-            description: 'Create epic',
-          },
-        ];
-      case 'trello':
-        return [
-          ...baseScripts,
-          {
-            script: 'node .hodge/pm-scripts/create-card.js "Card Name"',
-            description: 'Create Trello card',
-          },
-          {
-            script: 'node .hodge/pm-scripts/move-card.js <card-id> <list-id>',
-            description: 'Move card',
-          },
-        ];
-      case 'asana':
-        return [
-          ...baseScripts,
-          {
-            script: 'node .hodge/pm-scripts/create-task.js "Task Name"',
-            description: 'Create Asana task',
-          },
-          { script: 'node .hodge/pm-scripts/update-task.js <task-id>', description: 'Update task' },
-        ];
-      default:
-        return baseScripts;
-    }
   }
 
   /**
@@ -1115,8 +1036,12 @@ ${
       console.log(
         chalk.gray(`   ✓ Documentation: ${chalk.white('.hodge/integrations/claude/README.md')}`)
       );
-      console.log(chalk.gray(`   ✓ Slash commands: ${chalk.white('.claude/commands/*.md')} (9 commands)`));
-      console.log(chalk.gray(`   Try: ${chalk.white('/explore <feature>')} in Claude Code to start`));
+      console.log(
+        chalk.gray(`   ✓ Slash commands: ${chalk.white('.claude/commands/*.md')} (9 commands)`)
+      );
+      console.log(
+        chalk.gray(`   Try: ${chalk.white('/explore <feature>')} in Claude Code to start`)
+      );
     } catch (error) {
       spinner.fail('Failed to install Claude integration');
       InitLogger.error('Claude integration installation failed', error as Error);

@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-288",
+  "timestamp": "2025-09-24T01:23:36.278Z",
+  "issueId": "HODGE-288",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "feat: replace PM scripts with TypeScript adapter pattern (HODGE-288)\n\n## What Changed\n- Replaced 8 JavaScript PM scripts (455 lines) with TypeScript PMHooks class\n- Enhanced PMHooks with configuration loading from hodge.json\n- Added silent failure pattern for external PM updates (never blocks workflow)\n- Implemented operation serialization to prevent race conditions\n- Fixed status format inconsistency (capitalized → lowercase)\n- Added 5 new integration tests for PM hooks functionality\n- Removed deprecated getPMScriptExamples from init command\n- Updated all workflow commands (explore, build, harden) to use new hooks\n\n## Why This Change\nThe script-based PM integration was fragile and hard to maintain. Scripts\nrequired external dependencies and failed loudly, blocking workflow. The new\nadapter pattern provides better type safety, testability, and resilience.\n\n## Impact\n- PM updates now fail silently with optional debug logging\n- Concurrent feature updates handled safely with serialization\n- Configuration-driven status mappings via hodge.json\n- Better test coverage (27 PM tests all passing)\n- Reduced codebase by ~250 lines while adding functionality\n- Prepared for future PM tool adapters (Linear, GitHub, Jira)\n\n## Technical Details\n- PMHooks loads config from .hodge/config.json (pm-hooks.ts:44)\n- LocalPMAdapter handles file operations with queue (local-pm-adapter.ts:31)\n- Silent failure prevents workflow interruption (pm-hooks.ts:141)\n- Status format standardized to lowercase throughout\n\nCloses HODGE-288"
+}

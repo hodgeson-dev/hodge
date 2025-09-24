@@ -137,7 +137,7 @@ export class ExploreCommand {
         // Found existing feature
         featureName = featureID.localID;
         // Update PM tracking - mark as exploring at START of phase (fire-and-forget for performance)
-        this.pmHooks.onPhaseStart(featureID.localID, 'explore').catch(() => {
+        this.pmHooks.onExplore(featureID.localID).catch(() => {
           // Silently handle PM update failures
         });
         if (featureID.externalID) {

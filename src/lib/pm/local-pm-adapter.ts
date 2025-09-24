@@ -28,9 +28,37 @@ import chalk from 'chalk';
  */
 export class LocalPMAdapter {
   private pmPath: string;
+  private operationQueue: Promise<void> = Promise.resolve();
 
   constructor(basePath?: string) {
     this.pmPath = path.join(basePath || '.', '.hodge', 'project_management.md');
+  }
+
+  /**
+   * Serialize file operations to prevent race conditions
+   */
+  private async serializeOperation<T>(operation: () => Promise<T>): Promise<T> {
+    const previousOperation = this.operationQueue;
+    let currentOperation: Promise<T>;
+
+    this.operationQueue = this.operationQueue
+      .then(async () => {
+        currentOperation = operation();
+        try {
+          await currentOperation;
+        } catch {
+          // Allow the operation to complete even if it throws
+        }
+      })
+      .catch(() => {
+        // Ignore errors to prevent queue from breaking
+      });
+
+    await previousOperation.catch(() => {
+      // Ignore errors from previous operations
+    });
+
+    return currentOperation!;
   }
 
   /**
@@ -54,68 +82,72 @@ export class LocalPMAdapter {
     feature: string,
     status: 'exploring' | 'building' | 'hardening' | 'shipped'
   ): Promise<void> {
-    // Ensure file exists first
-    await this.init();
+    return this.serializeOperation(async () => {
+      // Ensure file exists first
+      await this.init();
 
-    const content = await fs.readFile(this.pmPath, 'utf-8');
-    let updated = content;
+      const content = await fs.readFile(this.pmPath, 'utf-8');
+      let updated = content;
 
-    // Update in project plan phases
-    if (status === 'shipped') {
-      // Mark as complete in phases
-      const phasePattern = new RegExp(`(\\[ \\])\\s+(${feature}(?::|\\s))`, 'g');
-      updated = updated.replace(phasePattern, '[x] $2');
+      // Update in project plan phases
+      if (status === 'shipped') {
+        // Mark as complete in phases
+        const phasePattern = new RegExp(`(\\[ \\])\\s+(${feature}(?::|\\s))`, 'g');
+        updated = updated.replace(phasePattern, '[x] $2');
 
-      // Clear any in-progress markers
-      const inProgressPattern = new RegExp(`(\\[~\\])\\s+(${feature}(?::|\\s))`, 'g');
-      updated = updated.replace(inProgressPattern, '[x] $2');
-    } else if (status === 'building' || status === 'hardening') {
-      // Mark as in progress in phases
-      const phasePattern = new RegExp(`(\\[ \\])\\s+(${feature}(?::|\\s))`, 'g');
-      updated = updated.replace(phasePattern, '[~] $2');
-    }
+        // Clear any in-progress markers
+        const inProgressPattern = new RegExp(`(\\[~\\])\\s+(${feature}(?::|\\s))`, 'g');
+        updated = updated.replace(inProgressPattern, '[x] $2');
+      } else if (status === 'building' || status === 'hardening') {
+        // Mark as in progress in phases
+        const phasePattern = new RegExp(`(\\[ \\])\\s+(${feature}(?::|\\s))`, 'g');
+        updated = updated.replace(phasePattern, '[~] $2');
+      }
 
-    // Update in Active Features section
-    const statusMap = {
-      exploring: 'Exploring',
-      building: 'Building',
-      hardening: 'Hardening',
-      shipped: 'Shipped',
-    };
+      // Update in Active Features section
+      const statusMap = {
+        exploring: 'exploring',
+        building: 'building',
+        hardening: 'hardening',
+        shipped: 'shipped',
+      };
 
-    const featureRegex = new RegExp(`(### ${feature}.*?\\n- \\*\\*Status\\*\\*:) [^\\n]+`, 's');
-    if (featureRegex.test(updated)) {
-      updated = updated.replace(featureRegex, `$1 ${statusMap[status]}`);
-    }
+      const featureRegex = new RegExp(`(### ${feature}.*?\\n- \\*\\*Status\\*\\*:) [^\\n]+`, 's');
+      if (featureRegex.test(updated)) {
+        updated = updated.replace(featureRegex, `$1 ${statusMap[status]}`);
+      }
 
-    // Move to completed if shipped
-    if (status === 'shipped') {
-      updated = this.moveToCompleted(updated, feature);
-    }
+      // Move to completed if shipped
+      if (status === 'shipped') {
+        updated = this.moveToCompleted(updated, feature);
+      }
 
-    await fs.writeFile(this.pmPath, updated, 'utf-8');
-    console.log(chalk.green(`✓ Updated ${feature} status to: ${status}`));
+      await fs.writeFile(this.pmPath, updated, 'utf-8');
+      console.log(chalk.green(`✓ Updated ${feature} status to: ${status}`));
+    });
   }
 
   /**
    * Add a new feature to tracking
    */
   async addFeature(feature: string, description: string, phase?: string): Promise<void> {
-    // Ensure file exists first
-    await this.init();
+    return this.serializeOperation(async () => {
+      // Ensure file exists first
+      await this.init();
 
-    const content = await fs.readFile(this.pmPath, 'utf-8');
+      // Read fresh content each time to handle concurrent updates
+      const content = await fs.readFile(this.pmPath, 'utf-8');
 
-    // Check if already exists
-    if (content.includes(`### ${feature}`)) {
-      console.log(chalk.yellow(`⚠️  Feature ${feature} already exists`));
-      return;
-    }
+      // Check if already exists
+      if (content.includes(`### ${feature}`)) {
+        console.log(chalk.yellow(`⚠️  Feature ${feature} already exists`));
+        return;
+      }
 
-    const date = new Date().toISOString().split('T')[0];
-    const entry = `
+      const date = new Date().toISOString().split('T')[0];
+      const entry = `
 ### ${feature}
-- **Status**: Exploring
+- **Status**: exploring
 - **Priority**: TBD
 - **Created**: ${date}
 - **Updated**: ${date}
@@ -127,12 +159,28 @@ export class LocalPMAdapter {
   - Make architectural decisions
 `;
 
-    // Insert into Active Features
-    const activeFeaturesRegex = /## Active Features\n/;
-    const updated = content.replace(activeFeaturesRegex, `## Active Features\n${entry}\n`);
+      // Find the Active Features section and append to it
+      const activeFeaturesIndex = content.indexOf('## Active Features\n');
+      if (activeFeaturesIndex === -1) {
+        throw new Error('Active Features section not found in project_management.md');
+      }
 
-    await fs.writeFile(this.pmPath, updated, 'utf-8');
-    console.log(chalk.green(`✓ Added ${feature} to project management tracking`));
+      // Find the next section after Active Features
+      const afterActiveFeatures = content.substring(
+        activeFeaturesIndex + '## Active Features\n'.length
+      );
+      const nextSectionMatch = afterActiveFeatures.match(/^## /m);
+      const nextSectionIndex = nextSectionMatch
+        ? activeFeaturesIndex + '## Active Features\n'.length + nextSectionMatch.index!
+        : content.length;
+
+      // Insert the new feature entry before the next section
+      const updated =
+        content.substring(0, nextSectionIndex) + entry + '\n' + content.substring(nextSectionIndex);
+
+      await fs.writeFile(this.pmPath, updated, 'utf-8');
+      console.log(chalk.green(`✓ Added ${feature} to project management tracking`));
+    });
   }
 
   /**
@@ -154,7 +202,7 @@ export class LocalPMAdapter {
     const date = new Date().toISOString().split('T')[0];
     const completedEntry =
       featureEntry
-        .replace(/- \*\*Status\*\*: .*/, `- **Status**: Shipped`)
+        .replace(/- \*\*Status\*\*: .*/, `- **Status**: shipped`)
         .replace(/- \*\*Updated\*\*: .*/, `- **Updated**: ${date}`) +
       '\n- **Completed**: ' +
       date +
