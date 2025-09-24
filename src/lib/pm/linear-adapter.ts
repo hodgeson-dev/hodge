@@ -226,4 +226,34 @@ export class LinearAdapter extends BasePMAdapter {
     const results = await this.searchIssues(feature);
     return results.find((issue) => issue.title.toLowerCase().includes(feature.toLowerCase()));
   }
+
+  /**
+   * Add a comment to a Linear issue
+   * @param issueId - Linear issue ID
+   * @param body - Comment body in markdown format
+   */
+  async addComment(issueId: string, body: string): Promise<void> {
+    if (!issueId || typeof issueId !== 'string') {
+      throw new Error('Invalid issue ID provided');
+    }
+
+    if (!body || typeof body !== 'string') {
+      throw new Error('Comment body is required');
+    }
+
+    try {
+      const result = await this.client.createComment({
+        issueId,
+        body,
+      });
+
+      // Check if comment was created successfully
+      const comment = await result.comment;
+      if (!comment) {
+        throw new Error('Failed to create comment');
+      }
+    } catch (error) {
+      throw new Error(`Failed to add comment to Linear issue ${issueId}: ${String(error)}`);
+    }
+  }
 }

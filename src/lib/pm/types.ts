@@ -2,7 +2,7 @@
  * PM Tool Integration Types
  */
 
-export type PMTool = 'linear' | 'github' | 'jira' | 'trello' | 'asana' | 'custom';
+export type PMTool = 'local' | 'linear' | 'github' | 'jira' | 'trello' | 'asana' | 'custom';
 export type StateType = 'unstarted' | 'started' | 'completed' | 'canceled' | 'unknown';
 export type HodgeMode = 'explore' | 'build' | 'harden' | 'ship';
 
@@ -56,4 +56,18 @@ export interface PMAdapterOptions {
   config: PMConfig;
   overrides?: PMOverrides;
   cacheTimeout?: number;
+}
+
+export interface ShipContext {
+  feature: string;
+  commitHash?: string;
+  commitMessage?: string;
+  branch?: string;
+  filesChanged?: number;
+  linesAdded?: number;
+  linesRemoved?: number;
+  testsResults?: { passed: number; total: number };
+  patterns?: string[];
+  coverage?: number;
+  hodgeVersion?: string;
 }

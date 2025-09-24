@@ -1,8 +1,8 @@
 # Error Boundary
 
 **Category**: error-handling
-**Frequency**: Used 3 times
-**Confidence**: 60%
+**Frequency**: Used 4 times
+**Confidence**: 80%
 
 ## Description
 Consistent error handling with logging
@@ -47,5 +47,5 @@ try {
 - 
 
 ---
-*First seen: 2025-09-24T01:23:36.312Z*
-*Last used: 2025-09-24T01:23:36.314Z*
+*First seen: 2025-09-24T15:06:23.188Z*
+*Last used: 2025-09-24T15:06:23.193Z*

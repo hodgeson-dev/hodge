@@ -2,14 +2,14 @@
 
 ## Statistics
 - Total patterns detected: 4
-- High confidence patterns: 1
+- High confidence patterns: 3
 - Most frequent category: performance
 
 ## Patterns by Category
 
 
 ### Error-handling
-- **Error Boundary** (3x, 60% confidence)
+- **Error Boundary** (4x, 80% confidence)
 
 
 ### Performance
@@ -18,12 +18,13 @@
 
 
 ### Security
-- **Input Validation** (2x, 40% confidence)
+- **Input Validation** (5x, 100% confidence)
 
 
 ## Recommendations
 - Consider using Async Parallel Operations pattern (used 6 times)
-- Consider using Error Boundary pattern (used 3 times)
+- Consider using Input Validation pattern (used 5 times)
+- Consider using Error Boundary pattern (used 4 times)
 
 ---
-*Generated: 2025-09-24T01:23:36.320Z*
+*Generated: 2025-09-24T15:06:23.197Z*

@@ -26,6 +26,120 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-24 - Implement core unification only in this feature - focused scope for faster delivery, defer advanced features like caching optimization to future work
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-045
+
+**Decision**:
+Implement core unification only in this feature - focused scope for faster delivery, defer advanced features like caching optimization to future work
+
+**Rationale**:
+Recorded via `hodge decide` command at 10:05:22 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-24 - Preserve LocalPMAdapter special behaviors through constructor-based handling - maintains always-on guarantee while allowing unified architecture
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-045
+
+**Decision**:
+Preserve LocalPMAdapter special behaviors through constructor-based handling - maintains always-on guarantee while allowing unified architecture
+
+**Rationale**:
+Recorded via `hodge decide` command at 10:05:16 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-24 - LocalPMAdapter should extend BasePMAdapter for unified architecture - provides code reuse, better testability, and consistent interfaces while preserving special behaviors
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-045
+
+**Decision**:
+LocalPMAdapter should extend BasePMAdapter for unified architecture - provides code reuse, better testability, and consistent interfaces while preserving special behaviors
+
+**Rationale**:
+Recorded via `hodge decide` command at 10:05:11 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-24 - Smart issue ID mapping with fallback strategy: try exact match first, then title search, maintain mapping cache in
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-045
+
+**Decision**:
+Smart issue ID mapping with fallback strategy: try exact match first, then title search, maintain mapping cache in .hodge/pm-mappings.json
+
+**Rationale**:
+Recorded via `hodge decide` command at 7:03:18 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-24 - Configurable PM comment verbosity with three levels: minimal (status only), essential (commit, files, tests), and rich (full metrics, patterns, coverage)
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-045
+
+**Decision**:
+Configurable PM comment verbosity with three levels: minimal (status only), essential (commit, files, tests), and rich (full metrics, patterns, coverage)
+
+**Rationale**:
+Recorded via `hodge decide` command at 7:01:54 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-24 - Implement both GitHub and Linear PM integrations - GitHub for OSS projects, Linear for enterprise teams
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-045
+
+**Decision**:
+Implement both GitHub and Linear PM integrations - GitHub for OSS projects, Linear for enterprise teams
+
+**Rationale**:
+Recorded via `hodge decide` command at 6:59:07 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-23 - Use pure adapter approach for PM integration - remove scripts directory and implement all PM logic in TypeScript adapters for type safety and consistency
 
 **Status**: Accepted

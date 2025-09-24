@@ -3,23 +3,24 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: general
+**Feature**: HODGE-045
 **Mode**: explore
-**Last Updated**: 2025-09-22T05:57:06.550Z
+**PM Issue**: HODGE-045
+**Last Updated**: 2025-09-24T02:04:45.429Z
 ## Current Session
-**Resumed**: 41 minutes ago
-**Progress**: Explored HODGE-282 with 1 approaches
-**Working on**: HODGE-282 (explore mode)
+**Resumed**: 19 hours ago
+**Progress**: Explored HODGE-288 - template ready for AI approach generation
+**Working on**: HODGE-288 (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-282. Explored HODGE-282 with 1 approaches
+You were helping with HODGE-288. Explored HODGE-288 - template ready for AI approach generation
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
-- **2025-09-22**: Smart State Detection with complete removal of ship interactivity - Ship command will check for pre-approved messages in state
-- **2025-09-22**: Immediate Complete Fix for Non-Interactive CLI Commands - Remove ALL interactive prompts and status file updates, ensure explore/build/harden/ship/context properly update HODGE
-- **2025-09-22**: Implement Hybrid Progressive Enhancement for ship commit messages - Phase 1: Smart templates that analyze git diff, Phase 2: State persistence for edits, Phase 3: Interactive approval workflow
-- **2025-09-21**: 1
-- **2025-09-21**: Pre-Commit All Updates with rollback on failure - Move all file updates (autoSave, HODGE
+- **2025-09-24**: Smart issue ID mapping with fallback strategy: try exact match first, then title search, maintain mapping cache in
+- **2025-09-24**: Configurable PM comment verbosity with three levels: minimal (status only), essential (commit, files, tests), and rich (full metrics, patterns, coverage)
+- **2025-09-24**: Implement both GitHub and Linear PM integrations - GitHub for OSS projects, Linear for enterprise teams
+- **2025-09-23**: Use pure adapter approach for PM integration - remove scripts directory and implement all PM logic in TypeScript adapters for type safety and consistency
+- **2025-09-23**: Prioritize GitHub Issues as next PM tool after Linear - maximum developer reach and GitHub integration
 
 ## Active Standards
 
@@ -101,11 +102,17 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - Full test coverage required
 - Performance benchmarks met
 
+## Working Files
+
+- `.hodge/features/HODGE-045/explore/context.json`
+- `.hodge/features/HODGE-045/explore/exploration.md`
+- `.hodge/features/HODGE-045/explore/test-intentions.md`
+
 ## Next Steps
 
 1. Review exploration approaches
 2. Make decision with `hodge decide`
-3. Start building with `hodge build general`
+3. Start building with `hodge build HODGE-045`
 
 
 ---

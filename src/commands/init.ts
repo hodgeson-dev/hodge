@@ -338,6 +338,7 @@ export class InitCommand {
         },
       },
       custom: {},
+      local: {}, // Local PM doesn't need any env vars
     };
 
     const template = templates[pmTool];
@@ -844,6 +845,7 @@ ${
       trello: ['TRELLO_API_KEY', 'TRELLO_TOKEN'],
       asana: ['ASANA_TOKEN'],
       custom: [], // Custom integrations define their own requirements
+      local: [], // Local PM doesn't require any environment variables
     };
 
     const required = requirements[pmTool];

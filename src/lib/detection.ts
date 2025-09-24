@@ -60,7 +60,7 @@ export type ProjectType = 'node' | 'python' | 'unknown';
 /**
  * Supported project management tools
  */
-export type PMTool = 'linear' | 'github' | 'jira' | 'trello' | 'asana' | 'custom' | null;
+export type PMTool = 'local' | 'linear' | 'github' | 'jira' | 'trello' | 'asana' | 'custom' | null;
 
 /**
  * Development tools detected in the project

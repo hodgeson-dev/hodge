@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-045",
+  "timestamp": "2025-09-24T15:06:23.151Z",
+  "issueId": "HODGE-045",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "feat: complete PM auto-update with unified adapter architecture (HODGE-045)\n\n## What Changed\n- Added GitHub Issues adapter with full comment support (github-adapter.ts)\n- Fixed Linear SDK to use createComment method for rich updates\n- Unified LocalPMAdapter with BasePMAdapter interface (+201 lines)\n- Added ShipContext for rich PM updates with configurable verbosity\n- Created comprehensive test suite (5 new test files, 7 integration tests)\n- Extended PMTool type to include 'local' option\n- Fixed test isolation violations - removed TEST-* directories\n- Enhanced PM hooks with rich comment generation (+230 lines)\n\n## Why This Change\nThe PM auto-update system needed to support multiple project management tools\nwith rich context updates. Previously, LocalPMAdapter was isolated from the\nunified architecture, and Linear comments weren't working. This change creates\na consistent interface across all PM adapters while preserving special behaviors.\n\n## Impact\n- PM tools now receive rich updates with commit details, test results, and metrics\n- LocalPMAdapter can be used as drop-in replacement through BasePMAdapter\n- All adapters support configurable verbosity (minimal, essential, rich)\n- Improved test isolation prevents workspace pollution\n- GitHub and Linear users get automatic issue updates with ship context\n\n## Technical Details\n- LocalPMAdapter extends BasePMAdapter while preserving init() and special methods\n- Serialized file operations prevent race conditions\n- Constructor-based initialization ensures always-on behavior\n- Test coverage includes smoke and integration tests for all adapters\n\nCloses HODGE-045"
+}

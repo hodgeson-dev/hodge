@@ -1,8 +1,8 @@
 # Input Validation
 
 **Category**: security
-**Frequency**: Used 3 times
-**Confidence**: 60%
+**Frequency**: Used 5 times
+**Confidence**: 100%
 
 ## Description
 Input validation before processing
@@ -23,10 +23,10 @@ if (!resolvedFeature) {
 ```
 
 
-### src/commands/ship.ts
+### src/lib/pm/linear-adapter.ts
 ```typescript
-if (!resolvedFeature) {
-      throw new Error
+if (!state) {
+        throw new Error
 ```
 
 
@@ -36,5 +36,5 @@ if (!resolvedFeature) {
 - 
 
 ---
-*First seen: 2025-09-20T18:24:17.023Z*
-*Last used: 2025-09-20T18:24:17.030Z*
+*First seen: 2025-09-24T15:06:23.188Z*
+*Last used: 2025-09-24T15:06:23.195Z*

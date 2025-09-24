@@ -1,6 +1,8 @@
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import chalk from 'chalk';
+import { BasePMAdapter } from './base-adapter.js';
+import { PMIssue, PMState, StateType } from './types.js';
 
 // Reserved for future use when we implement full project plan parsing
 // interface ProjectPlan {
@@ -25,13 +27,25 @@ import chalk from 'chalk';
 /**
  * Local PM adapter for managing project_management.md
  * Maintains project plan, dependencies, and feature tracking
+ *
+ * Extends BasePMAdapter to provide unified interface while preserving
+ * special always-on behavior and local file management.
  */
-export class LocalPMAdapter {
+export class LocalPMAdapter extends BasePMAdapter {
   private pmPath: string;
   private operationQueue: Promise<void> = Promise.resolve();
+  private basePath: string;
 
   constructor(basePath?: string) {
-    this.pmPath = path.join(basePath || '.', '.hodge', 'project_management.md');
+    // Special configuration for local adapter
+    super({
+      config: {
+        tool: 'local',
+        baseUrl: basePath || '.',
+      },
+    });
+    this.basePath = basePath || '.';
+    this.pmPath = path.join(this.basePath, '.hodge', 'project_management.md');
   }
 
   /**
@@ -145,13 +159,14 @@ export class LocalPMAdapter {
       }
 
       const date = new Date().toISOString().split('T')[0];
+      const fullDescription = phase && phase !== 'TBD' ? `${description} (${phase})` : description;
       const entry = `
 ### ${feature}
 - **Status**: exploring
 - **Priority**: TBD
 - **Created**: ${date}
 - **Updated**: ${date}
-- **Description**: ${description}
+- **Description**: ${fullDescription}
 - **Phase**: ${phase || 'TBD'}
 - **Next Steps**:
   - Complete exploration
@@ -188,14 +203,25 @@ export class LocalPMAdapter {
    */
   private moveToCompleted(content: string, feature: string): string {
     // Extract feature entry
-    const featureRegex = new RegExp(`(### ${feature}[\\s\\S]*?)(?=###|##|$)`, 'm');
+    const featureRegex = new RegExp(`(### ${feature}[\\s\\S]*?)\\n##`, 'm');
     const match = content.match(featureRegex);
 
-    if (!match) return content;
+    if (!match) {
+      // Try fallback pattern for end of file
+      const endPattern = new RegExp(`(### ${feature}[\\s\\S]*)$`, 'm');
+      const endMatch = content.match(endPattern);
+      if (endMatch) {
+        return this.moveToCompletedWithMatch(content, feature, endMatch[1].trim());
+      }
+      return content;
+    }
 
-    const featureEntry = match[1].trim();
+    return this.moveToCompletedWithMatch(content, feature, match[1].trim());
+  }
 
+  private moveToCompletedWithMatch(content: string, feature: string, featureEntry: string): string {
     // Remove from Active Features
+    const featureRegex = new RegExp(`### ${feature}[\\s\\S]*?(?=\\n##|$)`, 'm');
     let updated = content.replace(featureRegex, '');
 
     // Update status and add completion date
@@ -339,5 +365,176 @@ HODGE-004 (ID Management)
       await this.updateFeatureStatus(update.feature, status);
     }
     await this.updatePhaseProgress();
+  }
+
+  // ===== BasePMAdapter Abstract Method Implementations =====
+  // These methods map file-based operations to the issue-based interface
+
+  /**
+   * Fetch available states for local tracking
+   * Returns the Hodge workflow states
+   */
+  async fetchStates(_projectId?: string): Promise<PMState[]> {
+    // Return Hodge workflow states - async for interface compatibility
+    await Promise.resolve(); // Satisfy linter for async method
+    return [
+      { id: 'exploring', name: 'Exploring', type: 'unstarted' as StateType },
+      { id: 'building', name: 'Building', type: 'started' as StateType },
+      { id: 'hardening', name: 'Hardening', type: 'started' as StateType },
+      { id: 'shipped', name: 'Shipped', type: 'completed' as StateType },
+    ];
+  }
+
+  /**
+   * Get a specific feature as an issue
+   * Maps local feature to PMIssue interface
+   */
+  async getIssue(issueId: string): Promise<PMIssue> {
+    // Ensure file exists
+    await this.init();
+    const content = await fs.readFile(this.pmPath, 'utf-8');
+
+    // Look for the feature section in both Active Features and Completed Features
+    const featurePattern = new RegExp(`### ${issueId}[\\s\\S]*?(?=###|##|$)`, 'g');
+    const featureMatches = Array.from(content.matchAll(featurePattern));
+    const featureMatch = featureMatches.length > 0 ? featureMatches[0] : null;
+
+    if (!featureMatch) {
+      throw new Error(`Feature ${issueId} not found`);
+    }
+
+    const featureContent = featureMatch[0];
+    let title = issueId;
+    let description = '';
+    let status: 'exploring' | 'building' | 'hardening' | 'shipped' = 'exploring';
+
+    // Extract description from the feature section
+    const descriptionMatch = featureContent.match(/- \*\*Description\*\*: (.+)/);
+    if (descriptionMatch) {
+      title = descriptionMatch[1].trim();
+      description = descriptionMatch[1].trim();
+    }
+
+    // Extract status from the feature section
+    const statusMatch = featureContent.match(/- \*\*Status\*\*: (\w+)/);
+    if (statusMatch) {
+      const foundStatus = statusMatch[1];
+      if (['exploring', 'building', 'hardening', 'shipped'].includes(foundStatus)) {
+        status = foundStatus as 'exploring' | 'building' | 'hardening' | 'shipped';
+      }
+    }
+
+    return {
+      id: issueId,
+      title: title,
+      description: description,
+      state: this.mapStatusToState(status),
+      url: `file://${this.pmPath}#${issueId}`,
+    };
+  }
+
+  /**
+   * Update feature state through issue interface
+   * Maps to internal updateFeatureStatus
+   */
+  async updateIssueState(issueId: string, stateId: string): Promise<void> {
+    const validStatuses = ['exploring', 'building', 'hardening', 'shipped'];
+    const status = validStatuses.includes(stateId)
+      ? (stateId as 'exploring' | 'building' | 'hardening' | 'shipped')
+      : 'exploring';
+
+    await this.updateFeatureStatus(issueId, status);
+  }
+
+  /**
+   * Search for features in project_management.md
+   * Returns features matching the query
+   */
+  async searchIssues(query: string): Promise<PMIssue[]> {
+    // Ensure file exists
+    await this.init();
+    const content = await fs.readFile(this.pmPath, 'utf-8');
+    const features = this.searchFeatures(content, query);
+
+    return features.map((feature) => ({
+      id: feature.id,
+      title: feature.description,
+      description: feature.description,
+      state: this.mapStatusToState(feature.status),
+      url: `file://${this.pmPath}#${feature.id}`,
+    }));
+  }
+
+  /**
+   * Create a new feature through issue interface
+   * Maps to internal addFeature
+   */
+  async createIssue(title: string, description?: string): Promise<PMIssue> {
+    await this.addFeature(title, description || title);
+    return this.getIssue(title);
+  }
+
+  // ===== Helper Methods for Abstract Implementation =====
+
+  /**
+   * Search for features matching a query
+   */
+  private searchFeatures(
+    content: string,
+    query: string
+  ): Array<{
+    id: string;
+    description: string;
+    status: 'exploring' | 'building' | 'hardening' | 'shipped';
+  }> {
+    const features: Array<{
+      id: string;
+      description: string;
+      status: 'exploring' | 'building' | 'hardening' | 'shipped';
+    }> = [];
+    const queryLower = query.toLowerCase();
+
+    // Find all feature sections
+    const featureMatches = content.matchAll(/### ([A-Z]+-\d+)[\s\S]*?(?=###|##|$)/g);
+
+    for (const match of featureMatches) {
+      const featureId = match[1];
+      const featureContent = match[0];
+
+      // Check if the feature content contains the query
+      if (featureContent.toLowerCase().includes(queryLower)) {
+        // Extract description
+        const descriptionMatch = featureContent.match(/- \*\*Description\*\*: (.+)/);
+        const description = descriptionMatch ? descriptionMatch[1].trim() : featureId;
+
+        // Extract status
+        const statusMatch = featureContent.match(/- \*\*Status\*\*: (\w+)/);
+        let status: 'exploring' | 'building' | 'hardening' | 'shipped' = 'exploring';
+        if (
+          statusMatch &&
+          ['exploring', 'building', 'hardening', 'shipped'].includes(statusMatch[1])
+        ) {
+          status = statusMatch[1] as 'exploring' | 'building' | 'hardening' | 'shipped';
+        }
+
+        features.push({ id: featureId, description, status });
+      }
+    }
+
+    return features;
+  }
+
+  /**
+   * Map local status to PMState
+   */
+  private mapStatusToState(status: 'exploring' | 'building' | 'hardening' | 'shipped'): PMState {
+    const stateMap: Record<string, PMState> = {
+      exploring: { id: 'exploring', name: 'Exploring', type: 'unstarted' as StateType },
+      building: { id: 'building', name: 'Building', type: 'started' as StateType },
+      hardening: { id: 'hardening', name: 'Hardening', type: 'started' as StateType },
+      shipped: { id: 'shipped', name: 'Shipped', type: 'completed' as StateType },
+    };
+
+    return stateMap[status] || stateMap.exploring;
   }
 }
