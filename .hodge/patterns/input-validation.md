@@ -1,25 +1,24 @@
 # Input Validation
 
 **Category**: security
-**Frequency**: Used 5 times
-**Confidence**: 100%
+**Frequency**: Used 4 times
+**Confidence**: 80%
 
 ## Description
 Input validation before processing
 
 ## Examples
 
-### src/commands/build.ts
+### src/lib/config-manager.ts
 ```typescript
-if (!resolvedFeature) {
-      throw new Error
-```
+if (!this.configLoaded) {
+      await this.loadUserConfig();
+      await this.loadGeneratedConfig();
+      this.configLoaded = true;
+    }
 
-
-### src/commands/harden.ts
-```typescript
-if (!resolvedFeature) {
-      throw new Error
+    // Merge all config sources with proper priority
+    ret
 ```
 
 
@@ -30,11 +29,21 @@ if (!state) {
 ```
 
 
+### src/lib/pm/local-pm-adapter.ts
+```typescript
+if (!match) {
+      // Try fallback pattern for end of file
+      const endPattern = new RegExp(`(### ${feature}[\\s\\S]*)$`, 'm');
+      const endMatch = content.match(endPattern);
+      if (endMatch
+```
+
+
 ## When to Use
 - 
 - When handling user input
 - 
 
 ---
-*First seen: 2025-09-24T15:06:23.188Z*
-*Last used: 2025-09-24T15:06:23.195Z*
+*First seen: 2025-09-27T12:27:38.931Z*
+*Last used: 2025-09-27T12:27:38.935Z*

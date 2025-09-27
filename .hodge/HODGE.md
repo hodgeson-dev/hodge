@@ -3,12 +3,11 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: HODGE-045
+**Feature**: general
 **Mode**: explore
-**PM Issue**: HODGE-045
-**Last Updated**: 2025-09-24T02:04:45.429Z
+**Last Updated**: 2025-09-24T17:04:27.959Z
 ## Current Session
-**Resumed**: 19 hours ago
+**Resumed**: 34 hours ago
 **Progress**: Explored HODGE-288 - template ready for AI approach generation
 **Working on**: HODGE-288 (explore mode)
 ## AI Context Restoration
@@ -16,11 +15,11 @@ You were helping with HODGE-288. Explored HODGE-288 - template ready for AI appr
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
+- **2025-09-24**: Implement core unification only in this feature - focused scope for faster delivery, defer advanced features like caching optimization to future work
+- **2025-09-24**: Preserve LocalPMAdapter special behaviors through constructor-based handling - maintains always-on guarantee while allowing unified architecture
+- **2025-09-24**: LocalPMAdapter should extend BasePMAdapter for unified architecture - provides code reuse, better testability, and consistent interfaces while preserving special behaviors
 - **2025-09-24**: Smart issue ID mapping with fallback strategy: try exact match first, then title search, maintain mapping cache in
 - **2025-09-24**: Configurable PM comment verbosity with three levels: minimal (status only), essential (commit, files, tests), and rich (full metrics, patterns, coverage)
-- **2025-09-24**: Implement both GitHub and Linear PM integrations - GitHub for OSS projects, Linear for enterprise teams
-- **2025-09-23**: Use pure adapter approach for PM integration - remove scripts directory and implement all PM logic in TypeScript adapters for type safety and consistency
-- **2025-09-23**: Prioritize GitHub Issues as next PM tool after Linear - maximum developer reach and GitHub integration
 
 ## Active Standards
 
@@ -102,17 +101,11 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - Full test coverage required
 - Performance benchmarks met
 
-## Working Files
-
-- `.hodge/features/HODGE-045/explore/context.json`
-- `.hodge/features/HODGE-045/explore/exploration.md`
-- `.hodge/features/HODGE-045/explore/test-intentions.md`
-
 ## Next Steps
 
 1. Review exploration approaches
 2. Make decision with `hodge decide`
-3. Start building with `hodge build HODGE-045`
+3. Start building with `hodge build general`
 
 
 ---

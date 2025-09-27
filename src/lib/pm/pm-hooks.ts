@@ -1,18 +1,9 @@
 import chalk from 'chalk';
 import { LocalPMAdapter } from './local-pm-adapter.js';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { getConfigManager } from '../config-manager.js';
 import { ShipContext } from './types.js';
 
 type WorkflowPhase = 'explore' | 'build' | 'harden' | 'ship';
-
-interface PMConfig {
-  tool?: string;
-  statusMap?: Record<WorkflowPhase, string>;
-  apiKey?: string;
-  teamId?: string;
-  verbosity?: 'minimal' | 'essential' | 'rich';
-}
 
 /**
  * PM integration hooks with configuration support and better error handling
@@ -23,7 +14,7 @@ interface PMConfig {
  */
 export class PMHooks {
   private localAdapter: LocalPMAdapter;
-  private config: PMConfig = {};
+  private configManager = getConfigManager();
   private shipContext?: ShipContext;
 
   constructor(basePath?: string) {
@@ -37,40 +28,11 @@ export class PMHooks {
     // Always initialize local adapter
     await this.localAdapter.init();
 
-    // Try to load PM configuration
-    await this.loadConfiguration();
-  }
+    // Load configuration through ConfigManager
+    await this.configManager.load();
 
-  /**
-   * Load PM configuration from hodge.json
-   */
-  private async loadConfiguration(): Promise<void> {
-    try {
-      const configPath = path.join('.hodge', 'config.json');
-      const configContent = await fs.readFile(configPath, 'utf-8');
-      const config = JSON.parse(configContent) as {
-        pm?: {
-          tool?: string;
-          statusMap?: Record<WorkflowPhase, string>;
-          verbosity?: 'minimal' | 'essential' | 'rich';
-        };
-      };
-
-      if (config.pm?.tool) {
-        this.config = {
-          tool: config.pm.tool,
-          statusMap: config.pm.statusMap ?? this.getDefaultStatusMap(),
-          apiKey: process.env[this.getApiKeyEnvVar(config.pm.tool)],
-          teamId: process.env[this.getTeamIdEnvVar(config.pm.tool)],
-          verbosity: config.pm.verbosity ?? 'essential',
-        };
-      }
-    } catch (error) {
-      // Silent failure - PM is optional
-      if (process.env.DEBUG) {
-        console.log(chalk.gray(`PM config not loaded: ${String(error)}`));
-      }
-    }
+    // Try migration if needed
+    await this.configManager.migrateConfig();
   }
 
   /**
@@ -125,37 +87,42 @@ export class PMHooks {
    * Implements silent failure decision - never blocks commands
    */
   private updateExternalPMSilently(feature: string, phase: WorkflowPhase): void {
-    // Skip if no PM tool configured
-    if (!this.config.tool || !this.config.apiKey) {
-      return;
-    }
-
     // Run async update in background - don't await
     void (async () => {
       try {
+        // Get PM configuration
+        const pmTool = await this.configManager.getPMTool();
+        const apiKey = this.configManager.getPMApiKey(pmTool);
+
+        // Skip if no PM tool configured
+        if (!pmTool || !apiKey || pmTool === 'local') {
+          return;
+        }
+
         // Log attempt if in debug mode
-        if (process.env.DEBUG) {
-          console.log(chalk.blue(`📋 Updating ${this.config.tool} issue: ${feature}`));
+        const isDebug = await this.configManager.isDebugMode();
+        if (isDebug) {
+          console.log(chalk.blue(`📋 Updating ${pmTool} issue: ${feature}`));
         }
 
         // Get status from configuration or defaults
-        const status = this.config.statusMap?.[phase] ?? this.getDefaultStatusMap()[phase];
+        const pmConfig = await this.configManager.getPMConfig();
+        const status = pmConfig?.statusMap?.[phase] ?? this.getDefaultStatusMap()[phase];
 
         // Call the appropriate adapter
-        if (this.config.tool) {
-          await this.callPMAdapter(this.config.tool, feature, status);
-        }
+        await this.callPMAdapter(pmTool, feature, status);
 
         // Silent success - only log in debug mode
-        if (process.env.DEBUG) {
+        const debugMode = await this.configManager.isDebugMode();
+        if (debugMode) {
           console.log(chalk.green(`   ✓ Updated to status: ${status}`));
         }
       } catch (error) {
         // Silent failure with optional logging
-        if (process.env.DEBUG || process.env.HODGE_PM_DEBUG) {
-          console.log(
-            chalk.gray(`   ℹ️ Could not update ${String(this.config.tool)} issue (non-blocking)`)
-          );
+        const debugMode = await this.configManager.isDebugMode();
+        const pmTool = await this.configManager.getPMTool();
+        if (debugMode || process.env.HODGE_PM_DEBUG) {
+          console.log(chalk.gray(`   ℹ️ Could not update ${String(pmTool)} issue (non-blocking)`));
           if (process.env.HODGE_PM_DEBUG) {
             console.log(chalk.gray(`   Error: ${String(error)}`));
           }
@@ -177,14 +144,16 @@ export class PMHooks {
         break;
 
       case 'linear': {
-        if (!this.config.apiKey || !this.config.teamId) {
+        const apiKey = this.configManager.getPMApiKey('linear');
+        const teamId = this.configManager.getPMTeamId();
+        if (!apiKey || !teamId) {
           throw new Error('Linear API key and team ID are required');
         }
         const { LinearAdapter } = await import('./linear-adapter.js');
         const adapter = new LinearAdapter({
           config: {
-            apiKey: this.config.apiKey,
-            teamId: this.config.teamId,
+            apiKey,
+            teamId,
             tool: 'linear',
           },
         });
@@ -199,9 +168,10 @@ export class PMHooks {
 
           // Add rich comment if ship context is available
           if (this.shipContext && status === 'Done') {
-            const comment = this.generateRichComment(this.shipContext);
+            const comment = await this.generateRichComment(this.shipContext);
             await adapter.addComment(issue.id, comment);
-            if (process.env.DEBUG) {
+            const isDebug = await this.configManager.isDebugMode();
+            if (isDebug) {
               console.log(chalk.gray('   Added rich comment to Linear issue'));
             }
           }
@@ -210,13 +180,14 @@ export class PMHooks {
       }
 
       case 'github': {
-        if (!this.config.apiKey) {
+        const apiKey = this.configManager.getPMApiKey('github');
+        if (!apiKey) {
           throw new Error('GitHub token is required');
         }
         const { GitHubAdapter } = await import('./github-adapter.js');
         const githubAdapter = new GitHubAdapter({
           config: {
-            apiKey: this.config.apiKey,
+            apiKey,
             tool: 'github',
           },
         });
@@ -230,7 +201,7 @@ export class PMHooks {
 
           // Add rich comment if ship context is available
           if (this.shipContext && (status === 'Done' || status === 'shipped')) {
-            const comment = this.generateRichComment(this.shipContext);
+            const comment = await this.generateRichComment(this.shipContext);
             await githubAdapter.addComment(githubIssue.id, comment);
           }
         }
@@ -278,38 +249,11 @@ export class PMHooks {
   }
 
   /**
-   * Get environment variable name for API key
-   */
-  private getApiKeyEnvVar(tool?: string): string {
-    const keyMap: Record<string, string> = {
-      linear: 'LINEAR_API_KEY',
-      github: 'GITHUB_TOKEN',
-      jira: 'JIRA_API_TOKEN',
-      asana: 'ASANA_ACCESS_TOKEN',
-      trello: 'TRELLO_API_KEY',
-    };
-    return tool ? (keyMap[tool.toLowerCase()] ?? '') : '';
-  }
-
-  /**
-   * Get environment variable name for team/org ID
-   */
-  private getTeamIdEnvVar(tool?: string): string {
-    const keyMap: Record<string, string> = {
-      linear: 'LINEAR_TEAM_ID',
-      github: 'GITHUB_ORG',
-      jira: 'JIRA_PROJECT_KEY',
-      asana: 'ASANA_WORKSPACE_ID',
-      trello: 'TRELLO_BOARD_ID',
-    };
-    return tool ? (keyMap[tool.toLowerCase()] ?? '') : '';
-  }
-
-  /**
    * Generate rich comment based on verbosity level
    */
-  private generateRichComment(context: ShipContext): string {
-    const verbosity = this.config.verbosity ?? 'essential';
+  private async generateRichComment(context: ShipContext): Promise<string> {
+    const pmConfig = await this.configManager.getPMConfig();
+    const verbosity = pmConfig?.verbosity ?? 'essential';
 
     if (verbosity === 'minimal') {
       return `✅ Feature ${context.feature} has been shipped${context.commitHash ? ` in ${context.commitHash.substring(0, 7)}` : ''}.`;

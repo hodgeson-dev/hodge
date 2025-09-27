@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-289",
+  "timestamp": "2025-09-27T12:27:38.765Z",
+  "issueId": "HODGE-289",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "feat: implement layered configuration management (HODGE-289)\n\n## What Changed\n- Created ConfigManager class with layered config approach (507 lines)\n- Added hodge.json for user configuration (team settings, PM config)\n- Added hodge.json.example showing configuration structure\n- Separated secrets (env vars) from config settings\n- Cleaned up .env.example removing 15+ unused variables\n- Updated PMHooks to use ConfigManager instead of direct file reads\n- Added secret validation to prevent accidental API key commits\n- Created automatic migration from old .hodge/config.json format\n- Added 17 comprehensive tests (10 smoke, 7 integration)\n- Fixed TypeScript strict mode compliance\n\n## Why This Change\nConfiguration was scattered between .hodge/config.json and environment variables\nwith no clear separation between secrets, user preferences, and generated metadata.\nThis created confusion about what should be committed and what could be configured.\nTeams couldn't share configuration without exposing secrets.\n\n## Impact\n- Clear config layers: env vars (secrets) > hodge.json (team) > .hodge/config.json (metadata) > defaults\n- Safe to commit hodge.json without leaking secrets\n- Automatic migration for existing projects preserves settings\n- Reduced environment variables from 20+ to just API keys\n- Better team collaboration with shareable configuration\n- Improved developer experience with intuitive config structure\n\n## Technical Details\n- ConfigManager implements singleton pattern (config-manager.ts:495)\n- Secret validation prevents API keys in config (config-manager.ts:383)\n- Backward compatibility via pmTool field (config-manager.ts:236)\n- Test isolation using temp directories (integration.test.ts:13)\n- Migration runs automatically on first load (pm-hooks.ts:35)\n\nCloses HODGE-289"
+}
