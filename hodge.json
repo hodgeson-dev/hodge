@@ -1,6 +1,39 @@
 {
   "version": "1.0.0",
   "pm": {
-    "tool": "github"
-  }
+    "tool": "linear",
+    "statusMap": {
+      "explore": "To Do",
+      "build": "In Progress",
+      "harden": "In Review",
+      "ship": "Done"
+    },
+    "verbosity": "essential"
+  },
+  "ship": {
+    "autoPush": false,
+    "push": {
+      "strategy": "safe",
+      "createPR": "prompt",
+      "protectedBranches": ["main", "master", "develop", "staging", "production"],
+      "remoteName": "origin"
+    }
+  },
+  "features": {
+    "autoSave": true,
+    "debugMode": false
+  },
+  "commitTypes": [
+    "feat",
+    "fix",
+    "docs",
+    "style",
+    "refactor",
+    "test",
+    "chore",
+    "perf",
+    "ci",
+    "build",
+    "revert"
+  ]
 }

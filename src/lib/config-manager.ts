@@ -55,7 +55,6 @@ export interface HodgeConfig {
 export interface GeneratedConfig {
   projectName?: string;
   projectType?: string;
-  pmTool?: string; // Backward compatibility
   detectedTools?: Record<string, unknown>;
   createdAt?: string;
   version?: string;
@@ -74,7 +73,7 @@ export class ConfigManager {
   constructor(basePath?: string) {
     const base = basePath || process.cwd();
     this.userConfigPath = path.join(base, 'hodge.json');
-    this.generatedConfigPath = path.join(base, '.hodge', 'config.json');
+    this.generatedConfigPath = path.join(base, '.hodge', 'project-meta.json');
   }
 
   /**
@@ -220,16 +219,7 @@ export class ConfigManager {
     }
 
     const config = await this.load();
-    if (config.pm?.tool) {
-      return config.pm.tool;
-    }
-
-    // Check backward compatibility in generated config
-    if (this.generatedConfig?.pmTool) {
-      return this.generatedConfig.pmTool;
-    }
-
-    return undefined;
+    return config.pm?.tool;
   }
 
   /**
@@ -316,60 +306,6 @@ export class ConfigManager {
   }
 
   /**
-   * Migrate configuration from old format to new format
-   */
-  async migrateConfig(): Promise<boolean> {
-    try {
-      // Check if migration is needed
-      const hasOldConfig = existsSync(this.generatedConfigPath);
-      const hasNewConfig = existsSync(this.userConfigPath);
-
-      if (!hasOldConfig || hasNewConfig) {
-        return false; // No migration needed
-      }
-
-      // Read old config
-      const oldContent = await fs.readFile(this.generatedConfigPath, 'utf-8');
-      const oldConfig = JSON.parse(oldContent) as GeneratedConfig;
-
-      // Create new user config from migratable settings
-      const newUserConfig: HodgeConfig = {
-        version: '1.0.0',
-      };
-
-      // Migrate PM settings
-      if (oldConfig.pmTool) {
-        newUserConfig.pm = {
-          tool: oldConfig.pmTool as PMConfig['tool'],
-        };
-      }
-
-      // Save new user config
-      await this.save(newUserConfig);
-
-      // Update generated config to only have metadata
-      const newGeneratedConfig: GeneratedConfig = {
-        projectName: oldConfig.projectName,
-        projectType: oldConfig.projectType,
-        detectedTools: oldConfig.detectedTools,
-        createdAt: oldConfig.createdAt,
-        version: oldConfig.version,
-        pmTool: oldConfig.pmTool, // Keep for backward compatibility
-      };
-
-      await this.updateGeneratedConfig(newGeneratedConfig);
-
-      console.log(chalk.green('✓ Migrated configuration to hodge.json'));
-      return true;
-    } catch (error) {
-      if (process.env.DEBUG) {
-        console.log(chalk.yellow('Could not migrate config:', String(error)));
-      }
-      return false;
-    }
-  }
-
-  /**
    * Validate that configuration contains no secrets
    */
   private validateNoSecrets(config: unknown): void {
@@ -415,6 +351,12 @@ export class ConfigManager {
       version: '1.0.0',
       pm: {
         tool: 'local',
+        statusMap: {
+          explore: 'To Do',
+          build: 'In Progress',
+          harden: 'In Review',
+          ship: 'Done',
+        },
         verbosity: 'essential',
       },
       ship: {

@@ -1,0 +1,14 @@
+{
+  "feature": "metadata-clarity",
+  "timestamp": "2025-09-27T14:26:08.933Z",
+  "issueId": null,
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "refactor: separate project metadata from user configuration (metadata-clarity)\n\n## What Changed\n- Renamed .hodge/config.json to .hodge/project-meta.json for semantic clarity\n- Enhanced hodge.json with comprehensive default configuration (PM status mapping, ship settings, commit types)\n- Removed pmTool from metadata file (now exclusively in hodge.json)\n- Added explanatory headers to project-meta.json: \"This file contains auto-detected project metadata. DO NOT EDIT\"\n- Removed unnecessary ConfigManager.migrateConfig() method (no production deployments to migrate)\n- Updated 15 files including tests, structure generator, and config manager\n- Added 3 new smoke test suites (15 tests total) for configuration behavior\n- Fixed PM status mapping to use configuration defaults instead of hardcoded values\n\n## Why This Change\nThe previous naming (.hodge/config.json) was misleading - users thought it was configuration they should edit, when it actually contained auto-detected metadata. This separation makes the architecture clearer:\n- .env: Secrets and environment variables\n- hodge.json: User-editable configuration with visible defaults\n- .hodge/project-meta.json: Auto-detected metadata (DO NOT EDIT)\n\n## Impact\n- ✨ Users can now discover and customize PM status mappings in hodge.json\n- 📝 Clearer file naming prevents user confusion about what to edit\n- 🎯 All configuration defaults are now visible and customizable\n- 🧹 Removed unnecessary migration code, simplifying the codebase\n- ✅ Improved test coverage with dedicated smoke tests for each configuration aspect\n\n## Technical Details\n- ConfigManager now loads from project-meta.json for metadata (config-manager.ts:58)\n- StructureGenerator creates both files with clear separation (structure-generator.ts:245, 278)\n- PM hooks use configuration for status mapping instead of hardcoded values (pm-hooks.ts:107)\n- All tests updated to expect the new file structure"
+}

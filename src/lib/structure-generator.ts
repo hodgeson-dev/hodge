@@ -101,8 +101,6 @@ export interface HodgeConfig {
   projectName: string;
   /** The detected project type */
   projectType: string;
-  /** The detected PM tool */
-  pmTool: string | null;
   /** All detected development tools */
   detectedTools: {
     packageManager: string | null;
@@ -200,6 +198,7 @@ export class StructureGenerator {
 
       // Generate all configuration files
       await this.generateConfig(projectInfo, hodgePath);
+      await this.generateUserConfig(projectInfo); // Create hodge.json if PM tool selected
       await this.generateStandards(projectInfo, hodgePath);
       // Standards now includes decisions, patterns, and principles via installHodgeWay
       await this.generatePMScripts(projectInfo, hodgePath);
@@ -237,27 +236,96 @@ export class StructureGenerator {
   }
 
   /**
-   * Generates the config.json file with project information
+   * Generates the project-meta.json file with automatically detected project information
+   * This is NOT user configuration - it's metadata detected by Hodge
    * @param projectInfo - The detected project information
    * @param hodgePath - The .hodge directory path
-   * @throws {StructureGenerationError} If config generation fails
+   * @throws {StructureGenerationError} If metadata generation fails
    */
   private async generateConfig(projectInfo: ProjectInfo, hodgePath: string): Promise<void> {
     try {
-      const config: HodgeConfig = {
+      const metadata: HodgeConfig = {
         projectName: projectInfo.name,
         projectType: projectInfo.type,
-        pmTool: projectInfo.pmTool,
         detectedTools: projectInfo.detectedTools,
         createdAt: new Date().toISOString(),
         version: '0.1.0',
       };
 
-      const configPath = path.join(hodgePath, 'config.json');
-      await fs.writeJson(configPath, config, { spaces: 2 });
+      const metadataPath = path.join(hodgePath, 'project-meta.json');
+
+      // Add a header comment to explain this file
+      const content = JSON.stringify(metadata, null, 2);
+      const withHeader = `{
+  "_comment": "This file contains auto-detected project metadata. DO NOT EDIT. User configuration goes in hodge.json",
+  "_generated": "${new Date().toISOString()}",
+${content.slice(1)}`; // Remove opening brace since we added it with comment
+
+      await fs.writeFile(metadataPath, withHeader, 'utf-8');
     } catch (error) {
       throw new StructureGenerationError(
-        `Failed to generate config.json: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Failed to generate project-meta.json: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        error as Error
+      );
+    }
+  }
+
+  /**
+   * Generates the hodge.json user configuration file with all defaults visible
+   * @param projectInfo - The detected project information
+   * @throws {StructureGenerationError} If config generation fails
+   */
+  private async generateUserConfig(projectInfo: ProjectInfo): Promise<void> {
+    try {
+      // Always create hodge.json with comprehensive defaults
+      const userConfig = {
+        version: '1.0.0',
+        pm: {
+          tool: projectInfo.pmTool || 'local',
+          // Status mapping is always visible so users know they can customize it
+          statusMap: {
+            explore: 'To Do',
+            build: 'In Progress',
+            harden: 'In Review',
+            ship: 'Done',
+          },
+          // Verbosity for PM comments
+          verbosity: 'essential', // minimal | essential | rich
+        },
+        ship: {
+          autoPush: false,
+          push: {
+            strategy: 'safe', // safe | force | interactive
+            createPR: 'prompt', // always | never | prompt
+            protectedBranches: ['main', 'master', 'develop', 'staging', 'production'],
+            remoteName: 'origin',
+          },
+        },
+        features: {
+          autoSave: true,
+          debugMode: false,
+        },
+        // Common commit types for conventional commits
+        commitTypes: [
+          'feat',
+          'fix',
+          'docs',
+          'style',
+          'refactor',
+          'test',
+          'chore',
+          'perf',
+          'ci',
+          'build',
+          'revert',
+        ],
+      };
+
+      const configPath = path.join(this.rootPath, 'hodge.json');
+      await fs.writeJson(configPath, userConfig, { spaces: 2 });
+    } catch (error) {
+      throw new StructureGenerationError(
+        `Failed to generate hodge.json: ${error instanceof Error ? error.message : 'Unknown error'}`,
         error as Error
       );
     }

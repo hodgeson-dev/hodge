@@ -1,29 +1,77 @@
+// Hodge Configuration Example
+// Copy this to hodge.json and customize for your team
+// All settings shown here with their default values
 {
   "version": "1.0.0",
+
+  // Project Management Integration
   "pm": {
-    "tool": "linear",
+    // Tool selection: "linear" | "github" | "jira" | "local"
+    // Can be overridden with HODGE_PM_TOOL environment variable
+    "tool": "local",
+
+    // Map Hodge phases to your PM tool's statuses
+    // These are the defaults - customize to match your workflow
     "statusMap": {
-      "explore": "To Do",
-      "build": "In Progress",
-      "harden": "In Review",
-      "ship": "Done"
+      "explore": "To Do",        // When starting exploration
+      "build": "In Progress",    // When actively building
+      "harden": "In Review",     // When hardening/testing
+      "ship": "Done"            // When shipped to production
     },
+
+    // Comment verbosity when updating PM issues
+    // "minimal" - Just status update
+    // "essential" - Status + key metrics (default)
+    // "rich" - Full details including coverage, patterns, etc.
     "verbosity": "essential"
   },
+
+  // Ship Command Configuration
   "ship": {
+    // Automatically push after ship
     "autoPush": false,
+
+    // Push configuration
     "push": {
+      // Push strategy: "safe" | "force" | "interactive"
       "strategy": "safe",
+
+      // When to create PR: "always" | "never" | "prompt"
       "createPR": "prompt",
-      "protectedBranches": ["main", "master", "develop"],
+
+      // Branches that require PR (no direct push)
+      "protectedBranches": ["main", "master", "develop", "staging", "production"],
+
+      // Remote name to push to
       "remoteName": "origin"
     }
   },
+
+  // Feature Flags
   "features": {
+    // Auto-save on each command
     "autoSave": true,
+
+    // Enable debug logging
     "debugMode": false
   },
-  "commitTypes": ["feat", "fix", "docs", "style", "refactor", "test", "chore"],
+
+  // Conventional commit types available for commit messages
+  "commitTypes": [
+    "feat",     // New feature
+    "fix",      // Bug fix
+    "docs",     // Documentation only
+    "style",    // Formatting, missing semi colons, etc
+    "refactor", // Code change that neither fixes a bug nor adds a feature
+    "test",     // Adding missing tests
+    "chore",    // Maintain
+    "perf",     // Performance improvement
+    "ci",       // CI configuration
+    "build",    // Build system
+    "revert"    // Revert a previous commit
+  ],
+
+  // Standards enforcement (future)
   "standards": {
     "enforceInHarden": true,
     "customRules": []

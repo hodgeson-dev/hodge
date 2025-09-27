@@ -101,41 +101,6 @@ describe('ConfigManager Integration Tests', () => {
     expect(pmToolFromConfig).toBe('github'); // User config wins
   });
 
-  integrationTest('should migrate old config to new format', async () => {
-    // Create old-style config
-    await fs.mkdir(path.join(tempDir, '.hodge'), { recursive: true });
-    await fs.writeFile(
-      path.join(tempDir, '.hodge', 'config.json'),
-      JSON.stringify(
-        {
-          projectName: 'legacy-project',
-          projectType: 'node',
-          pmTool: 'linear',
-          detectedTools: { npm: true },
-          createdAt: '2024-01-01',
-        },
-        null,
-        2
-      )
-    );
-
-    const configManager = createConfigManager(tempDir);
-    const migrated = await configManager.migrateConfig();
-
-    expect(migrated).toBe(true);
-
-    // Check new user config was created
-    const hodgeJsonPath = path.join(tempDir, 'hodge.json');
-    const userConfig = JSON.parse(await fs.readFile(hodgeJsonPath, 'utf-8'));
-    expect(userConfig.pm?.tool).toBe('linear');
-
-    // Check generated config still has metadata
-    const generatedPath = path.join(tempDir, '.hodge', 'config.json');
-    const generatedConfig = JSON.parse(await fs.readFile(generatedPath, 'utf-8'));
-    expect(generatedConfig.projectName).toBe('legacy-project');
-    expect(generatedConfig.pmTool).toBe('linear'); // Kept for backward compat
-  });
-
   integrationTest('should integrate with PM configuration', async () => {
     const configManager = createConfigManager(tempDir);
 

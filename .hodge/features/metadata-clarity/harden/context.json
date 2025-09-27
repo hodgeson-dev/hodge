@@ -1,0 +1,9 @@
+{
+  "mode": "harden",
+  "feature": "metadata-clarity",
+  "timestamp": "2025-09-27T13:52:05.405Z",
+  "standards": "enforced",
+  "validation": "required",
+  "pmIssue": null,
+  "pmTool": "linear"
+}

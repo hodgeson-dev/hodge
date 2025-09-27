@@ -30,9 +30,6 @@ export class PMHooks {
 
     // Load configuration through ConfigManager
     await this.configManager.load();
-
-    // Try migration if needed
-    await this.configManager.migrateConfig();
   }
 
   /**
@@ -105,9 +102,14 @@ export class PMHooks {
           console.log(chalk.blue(`📋 Updating ${pmTool} issue: ${feature}`));
         }
 
-        // Get status from configuration or defaults
+        // Get status from configuration (includes defaults)
         const pmConfig = await this.configManager.getPMConfig();
-        const status = pmConfig?.statusMap?.[phase] ?? this.getDefaultStatusMap()[phase];
+        const status = pmConfig?.statusMap?.[phase];
+
+        if (!status) {
+          console.error(`No status mapping found for phase: ${phase}`);
+          return;
+        }
 
         // Call the appropriate adapter
         await this.callPMAdapter(pmTool, feature, status);
@@ -234,18 +236,6 @@ export class PMHooks {
 
     const targetType = typeMap[hodgeStatus] || 'started';
     return linearStates.find((s) => s.type === targetType) || linearStates[0];
-  }
-
-  /**
-   * Get default status mappings
-   */
-  private getDefaultStatusMap(): Record<WorkflowPhase, string> {
-    return {
-      explore: 'To Do',
-      build: 'In Progress',
-      harden: 'In Review',
-      ship: 'Done',
-    };
   }
 
   /**

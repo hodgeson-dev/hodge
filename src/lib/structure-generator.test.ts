@@ -111,15 +111,24 @@ describe('StructureGenerator', () => {
       expect(mockFs.ensureDir).toHaveBeenCalledWith(expect.stringContaining('.hodge'));
       expect(mockFs.ensureDir).toHaveBeenCalledWith(expect.stringContaining('features'));
 
-      // Verify config.json is created
+      // Verify both hodge.json and project-meta.json are created
+      // hodge.json should be created with user configuration (using writeJson)
       expect(mockFs.writeJson).toHaveBeenCalledWith(
-        expect.stringContaining('config.json'),
+        expect.stringContaining('hodge.json'),
         expect.objectContaining({
-          projectName: 'test-project',
-          projectType: 'node',
-          pmTool: 'github',
+          version: '1.0.0',
+          pm: expect.objectContaining({
+            tool: 'github',
+          }),
         }),
         { spaces: 2 }
+      );
+
+      // project-meta.json should be created with metadata (using writeFile for header comment)
+      expect(mockFs.writeFile).toHaveBeenCalledWith(
+        expect.stringContaining('project-meta.json'),
+        expect.stringContaining('"projectName": "test-project"'),
+        'utf-8'
       );
 
       // Verify installHodgeWay is called to install template files
@@ -197,21 +206,31 @@ describe('StructureGenerator', () => {
       mockFs.writeFile.mockResolvedValue(undefined);
     });
 
-    it('should generate valid config.json', async () => {
+    it('should generate valid project-meta.json', async () => {
       await generator.generateStructure(mockProjectInfo);
 
-      expect(mockFs.writeJson).toHaveBeenCalledWith(
-        expect.stringContaining('config.json'),
-        expect.objectContaining({
-          projectName: 'test-project',
-          projectType: 'node',
-          pmTool: 'github',
-          detectedTools: mockProjectInfo.detectedTools,
-          createdAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T/),
-          version: '0.1.0',
-        }),
-        { spaces: 2 }
+      // hodge.json created with writeJson, project-meta.json with writeFile
+      expect(mockFs.writeJson).toHaveBeenCalledTimes(1); // Only hodge.json
+      expect(mockFs.writeFile).toHaveBeenCalled(); // For project-meta.json
+
+      // Verify project-meta.json content (using writeFile)
+      expect(mockFs.writeFile).toHaveBeenCalledWith(
+        expect.stringContaining('project-meta.json'),
+        expect.stringContaining('"projectName": "test-project"'),
+        'utf-8'
       );
+
+      // Verify it contains the expected metadata
+      const writeFileCall = mockFs.writeFile.mock.calls.find((call: any) =>
+        call[0].includes('project-meta.json')
+      );
+      expect(writeFileCall).toBeDefined();
+      if (writeFileCall) {
+        const content = writeFileCall[1];
+        expect(content).toContain('"projectType": "node"');
+        expect(content).toContain('"_comment"');
+        expect(content).toContain('auto-detected project metadata');
+      }
     });
 
     it('should handle config writing errors', async () => {

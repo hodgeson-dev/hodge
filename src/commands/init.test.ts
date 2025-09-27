@@ -93,12 +93,17 @@ describe('InitCommand Integration Tests', () => {
 
       // Verify structure creation
       expect(mockFs.ensureDir).toHaveBeenCalledWith(expect.stringContaining('.hodge'));
+      // Both hodge.json and project-meta.json should be created
+      // project-meta.json uses writeFile (for header comment)
+      expect(mockFs.writeFile).toHaveBeenCalledWith(
+        expect.stringContaining('project-meta.json'),
+        expect.stringContaining('"projectName": "test-project"'),
+        'utf-8'
+      );
+      // hodge.json uses writeJson
       expect(mockFs.writeJson).toHaveBeenCalledWith(
-        expect.stringContaining('config.json'),
-        expect.objectContaining({
-          projectName: 'test-project',
-          projectType: 'node',
-        }),
+        expect.stringContaining('hodge.json'),
+        expect.anything(),
         { spaces: 2 }
       );
 
@@ -118,11 +123,15 @@ describe('InitCommand Integration Tests', () => {
 
       await initCommand.execute({ force: true });
 
+      // Both files should be created for Python project too
+      expect(mockFs.writeFile).toHaveBeenCalledWith(
+        expect.stringContaining('project-meta.json'),
+        expect.stringContaining('"projectType": "python"'),
+        'utf-8'
+      );
       expect(mockFs.writeJson).toHaveBeenCalledWith(
-        expect.stringContaining('config.json'),
-        expect.objectContaining({
-          projectType: 'python',
-        }),
+        expect.stringContaining('hodge.json'),
+        expect.anything(),
         { spaces: 2 }
       );
     });
@@ -132,11 +141,15 @@ describe('InitCommand Integration Tests', () => {
 
       await initCommand.execute({ force: true });
 
+      // Both files should be created for unknown project too
+      expect(mockFs.writeFile).toHaveBeenCalledWith(
+        expect.stringContaining('project-meta.json'),
+        expect.stringContaining('"projectType": "unknown"'),
+        'utf-8'
+      );
       expect(mockFs.writeJson).toHaveBeenCalledWith(
-        expect.stringContaining('config.json'),
-        expect.objectContaining({
-          projectType: 'unknown',
-        }),
+        expect.stringContaining('hodge.json'),
+        expect.anything(),
         { spaces: 2 }
       );
     });
