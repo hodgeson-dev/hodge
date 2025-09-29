@@ -3,24 +3,23 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: HODGE-295
+**Feature**: general
 **Mode**: explore
-**PM Issue**: HODGE-295
-**Last Updated**: 2025-09-29T00:59:15.102Z
+**Last Updated**: 2025-09-29T17:04:42.592Z
 ## Current Session
-**Resumed**: 5 minutes ago
-**Progress**: Explored HODGE-295 - template ready for AI approach generation
-**Working on**: HODGE-295 (explore mode)
+**Resumed**: 12 hours ago
+**Progress**: Explored HODGE-296 - template ready for AI approach generation
+**Working on**: HODGE-296 (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-295. Explored HODGE-295 - template ready for AI approach generation
+You were helping with HODGE-296. Explored HODGE-296 - template ready for AI approach generation
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
-- **2025-09-27**: Console output only for init command - preserves user feedback for interactive initialization while keeping other commands silent for Claude Code execution
-- **2025-09-27**: Default log level set to INFO - captures command flow and important events without excessive noise, configurable via LOG_LEVEL environment variable
-- **2025-09-27**: JSON log format with pino-pretty tool for development - provides structured data for production debugging with human-readable output for local development
-- **2025-09-27**: Hybrid log rotation strategy with both size (10MB) and time (daily) limits - ensures predictable disk usage while maintaining temporal organization
-- **2025-09-27**: Use Pino high-performance logger for persistent logging - 10-20x faster than Winston, minimal overhead, production-proven with child logger support
+- **2025-09-29**: Create epic for authentication
+- **2025-09-29**: Create epic for authentication
+- **2025-09-29**: Create epic for authentication
+- **2025-09-29**: Create epic for authentication
+- **2025-09-29**: Create epic for authentication
 
 ## Active Standards
 
@@ -102,17 +101,11 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - Full test coverage required
 - Performance benchmarks met
 
-## Working Files
-
-- `.hodge/features/HODGE-295/explore/context.json`
-- `.hodge/features/HODGE-295/explore/exploration.md`
-- `.hodge/features/HODGE-295/explore/test-intentions.md`
-
 ## Next Steps
 
 1. Review exploration approaches
 2. Make decision with `hodge decide`
-3. Start building with `hodge build HODGE-295`
+3. Start building with `hodge build general`
 
 
 ---

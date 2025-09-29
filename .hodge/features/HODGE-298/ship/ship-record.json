@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-298",
+  "timestamp": "2025-09-29T20:23:48.643Z",
+  "issueId": "HODGE-298",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "feat: fix plan command to require approval before creating PM issues (HODGE-298)\n\n## What Changed\n- Modified `src/commands/plan.ts` (72 lines added):\n  - Added `createPm` option to PlanOptions interface\n  - Changed default behavior to NOT create PM issues (safe by default)\n  - Added `getFeatureDescription()` method to extract epic descriptions from exploration.md\n  - Updated epic title format to \"HODGE-XXX: Description\"\n  - Updated story titles to format as \"HODGE-XXX.Y: Description\"\n  - Changed to pass all decision titles to PM hook (not just plan summary)\n- Updated `.claude/commands/plan.md` (108 lines changed):\n  - Added 4-phase execution flow (generate → refine → save → create PM)\n  - Added interactive approval workflow documentation\n  - Added critical safety note: NEVER call with --create-pm without approval\n- Created `src/commands/plan.test.ts` (NEW - 245 lines):\n  - Added 5 smoke tests covering new functionality\n  - All tests use isolated temp directories\n  - Tests verify: no-crash behavior, local saving, description extraction, decision handling, lane allocation\n\n## Why This Change\nThe `/plan` command was creating PM issues immediately without user approval, \ncausing two critical problems:\n1. Users couldn't review/adjust plans before external PM tool modification\n2. Epic and story titles lacked descriptive context (just \"HODGE-297\")\n3. Only plan summary was shown in Linear, not the actual decisions made\n\nThis violated the \"user in control\" principle and made PM issues hard to understand.\n\n## Impact\n- ✅ Safe by default: No accidental PM issue creation\n- ✅ Better PM tool integration: Titles now descriptive (e.g., \"HODGE-298: Plan Command Fixes\")\n- ✅ Complete decision context: All decisions visible in Linear issues\n- ✅ Clear workflow: AI handles interaction, CLI handles execution\n- ✅ Maintains CLI Architecture Standards: No interactive prompts in CLI code\n- ✅ All tests passing (587 total, +5 new smoke tests)\n\nCloses HODGE-298\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}

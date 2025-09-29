@@ -26,6 +26,196 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-29 - Use HODGE-XXX
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-298
+
+**Decision**:
+Use HODGE-XXX.Y: Description format for story titles - provides clear parent-child relationship and explicit hierarchy at a glance
+
+**Rationale**:
+Recorded via `hodge decide` command at 12:29:38 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Breaking change: require --create-pm flag for PM issue creation - safe by default, with understanding that hodge plan is only called from /plan slash command template, never by users directly
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-298
+
+**Decision**:
+Breaking change: require --create-pm flag for PM issue creation - safe by default, with understanding that hodge plan is only called from /plan slash command template, never by users directly
+
+**Rationale**:
+Recorded via `hodge decide` command at 12:28:48 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - List decision titles only in PM issues - provides scannable overview while keeping full details in decisions
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-298
+
+**Decision**:
+List decision titles only in PM issues - provides scannable overview while keeping full details in decisions.md for reference
+
+**Rationale**:
+Recorded via `hodge decide` command at 12:22:21 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Extract epic description from exploration
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-298
+
+**Decision**:
+Extract epic description from exploration.md Problem Statement or Feature Overview - provides descriptive context in PM tool automatically
+
+**Rationale**:
+Recorded via `hodge decide` command at 12:21:42 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Interactive approval in /plan slash command - AI generates and refines plan with user, then calls 'hodge plan' CLI with --create-pm only after approval
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-298
+
+**Decision**:
+Interactive approval in /plan slash command - AI generates and refines plan with user, then calls 'hodge plan' CLI with --create-pm only after approval
+
+**Rationale**:
+Recorded via `hodge decide` command at 12:21:05 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Update both /hodge and /load commands with enhanced context loading - provides consistent experience and predictable behavior across the system
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-297
+
+**Decision**:
+Update both /hodge and /load commands with enhanced context loading - provides consistent experience and predictable behavior across the system
+
+**Rationale**:
+Recorded via `hodge decide` command at 11:49:06 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Load all
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-297
+
+**Decision**:
+Load all .md and .json files in current phase directory - supports custom files and flexible workflows while maintaining comprehensive context
+
+**Rationale**:
+Recorded via `hodge decide` command at 11:48:18 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Keep current pattern loading behavior - load only on explicit reference or user request, following AI-CONTEXT
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-297
+
+**Decision**:
+Keep current pattern loading behavior - load only on explicit reference or user request, following AI-CONTEXT.md design principles
+
+**Rationale**:
+Recorded via `hodge decide` command at 11:47:50 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Load id-mappings
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-297
+
+**Decision**:
+Load id-mappings.json only when feature has linked PM issue - provides contextual PM tracking without unnecessary overhead
+
+**Rationale**:
+Recorded via `hodge decide` command at 11:42:36 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Load recent 20 decisions instead of full 1100+ line history - balances context completeness with performance
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-297
+
+**Decision**:
+Load recent 20 decisions instead of full 1100+ line history - balances context completeness with performance
+
+**Rationale**:
+Recorded via `hodge decide` command at 11:41:34 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-29 - Create epic for authentication
 
 **Status**: Accepted

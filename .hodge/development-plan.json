@@ -1,0 +1,29 @@
+{
+  "feature": "HODGE-297",
+  "type": "epic",
+  "stories": [
+    {
+      "id": "HODGE-297.1",
+      "title": "Core implementation",
+      "effort": "medium",
+      "dependencies": [],
+      "lane": 0
+    },
+    {
+      "id": "HODGE-297.2",
+      "title": "Tests and documentation",
+      "effort": "small",
+      "dependencies": [
+        "HODGE-297.1"
+      ],
+      "lane": 0
+    }
+  ],
+  "lanes": {
+    "count": 1,
+    "assignments": {}
+  },
+  "dependencies": {},
+  "estimatedDays": 3,
+  "createdAt": "2025-09-29T18:49:46.872Z"
+}

@@ -8,6 +8,7 @@ import { getConfigManager } from '../lib/config-manager.js';
 export interface PlanOptions {
   lanes?: number;
   localOnly?: boolean;
+  createPm?: boolean; // Explicit flag to create PM issues (replaces localOnly)
   feature?: string;
 }
 
@@ -78,9 +79,13 @@ export class PlanCommand {
     // Save plan locally
     await this.savePlan(plan);
 
-    // Create PM issues if not local-only
-    if (!options.localOnly) {
+    // Create PM issues only if explicitly requested with --create-pm flag
+    if (options.createPm) {
       await this.createPMStructure(plan);
+    } else {
+      console.log(
+        chalk.yellow('\n💾 Plan saved locally. Use --create-pm to create PM issues in Linear.')
+      );
     }
 
     console.log(chalk.green(`\n✓ Plan created for ${feature}`));
@@ -325,6 +330,50 @@ export class PlanCommand {
     return Math.ceil(totalEffort / laneCount);
   }
 
+  /**
+   * Extract feature description from exploration.md for epic title
+   */
+  private async getFeatureDescription(feature: string): Promise<string> {
+    const explorationFile = path.join(
+      this.basePath,
+      '.hodge',
+      'features',
+      feature,
+      'explore',
+      'exploration.md'
+    );
+
+    if (!existsSync(explorationFile)) {
+      return 'No description available';
+    }
+
+    try {
+      const content = await fs.readFile(explorationFile, 'utf-8');
+
+      // Try to extract from "Problem Statement:" section
+      const problemMatch = content.match(/\*\*Problem Statement:\*\*\s*\n([^\n]+)/);
+      if (problemMatch && problemMatch[1]) {
+        return problemMatch[1].trim();
+      }
+
+      // Fallback: Try to extract from "Type:" line
+      const typeMatch = content.match(/\*\*Type\*\*:\s*([^\n]+)/);
+      if (typeMatch && typeMatch[1]) {
+        return typeMatch[1].trim();
+      }
+
+      // Last fallback: Use first non-header line after Feature Overview
+      const overviewMatch = content.match(/## Feature Overview[\s\S]*?\n\n([^\n#]+)/);
+      if (overviewMatch && overviewMatch[1]) {
+        return overviewMatch[1].trim();
+      }
+
+      return 'No description available';
+    } catch (error) {
+      return 'No description available';
+    }
+  }
+
   private displayPlan(plan: DevelopmentPlan): void {
     console.log('\n' + chalk.bold('📋 Development Plan'));
     console.log(chalk.bold('='.repeat(50)));
@@ -374,22 +423,29 @@ export class PlanCommand {
   }
 
   private async createPMStructure(plan: DevelopmentPlan): Promise<void> {
+    // Get feature description for epic title
+    const description = await this.getFeatureDescription(plan.feature);
+    const epicTitle = `${plan.feature}: ${description}`;
+
+    // Get all decisions for this feature
+    const decisions = await this.analyzeDecisions(plan.feature);
+
     if (plan.type === 'single') {
-      // Create single issue
-      const result = await this.pmHooks.createPMIssue(plan.feature, [], false);
+      // Create single issue with full title format
+      const result = await this.pmHooks.createPMIssue(epicTitle, decisions, false);
       if (result.created) {
         console.log(chalk.green(`✓ Created PM issue: ${result.issueId}`));
       }
     } else if (plan.stories) {
-      // Create epic with stories
+      // Create epic with stories - format story titles with ID prefix
       const subIssues = plan.stories.map((s) => ({
         id: s.id,
-        title: s.title,
+        title: `${s.id}: ${s.title}`, // HODGE-XXX.Y: Description format
       }));
 
       const result = await this.pmHooks.createPMIssue(
-        plan.feature,
-        [`Plan: ${plan.stories.length} stories across ${plan.lanes?.count || 1} lanes`],
+        epicTitle, // Use formatted epic title with description
+        decisions, // Pass all decision titles
         true,
         subIssues
       );

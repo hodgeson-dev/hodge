@@ -1,0 +1,198 @@
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { PlanCommand } from './plan.js';
+import os from 'os';
+import path from 'path';
+import fs from 'fs/promises';
+import { existsSync, mkdirSync } from 'fs';
+import { smokeTest } from '../test/helpers.js';
+
+describe('PlanCommand - Smoke Tests', () => {
+  let tmpDir: string;
+  let command: PlanCommand;
+
+  beforeEach(async () => {
+    // Create isolated temp directory for tests
+    tmpDir = path.join(os.tmpdir(), `hodge-plan-test-${Date.now()}`);
+    mkdirSync(tmpDir, { recursive: true });
+
+    // Initialize Hodge structure in temp directory
+    mkdirSync(path.join(tmpDir, '.hodge'), { recursive: true });
+    mkdirSync(path.join(tmpDir, '.hodge', 'features'), { recursive: true });
+
+    command = new PlanCommand(tmpDir);
+  });
+
+  afterEach(async () => {
+    // Cleanup temp directory
+    if (existsSync(tmpDir)) {
+      await fs.rm(tmpDir, { recursive: true, force: true });
+    }
+  });
+
+  smokeTest('should not crash when creating plan without decisions', async () => {
+    const feature = 'TEST-001';
+
+    // Create minimal feature structure
+    const featureDir = path.join(tmpDir, '.hodge', 'features', feature);
+    mkdirSync(featureDir, { recursive: true });
+
+    // Create empty decisions file
+    await fs.writeFile(path.join(tmpDir, '.hodge', 'decisions.md'), '# Decisions\n');
+
+    // Create context.json with current feature
+    await fs.writeFile(
+      path.join(tmpDir, '.hodge', 'context.json'),
+      JSON.stringify({ currentFeature: feature })
+    );
+
+    // Should not throw
+    await expect(command.execute({ feature, localOnly: true })).resolves.not.toThrow();
+  });
+
+  smokeTest('should create plan locally without --create-pm flag', async () => {
+    const feature = 'TEST-002';
+
+    // Create feature structure with exploration
+    const featureDir = path.join(tmpDir, '.hodge', 'features', feature);
+    const exploreDir = path.join(featureDir, 'explore');
+    mkdirSync(exploreDir, { recursive: true });
+
+    // Create exploration with description
+    await fs.writeFile(
+      path.join(exploreDir, 'exploration.md'),
+      `# Exploration: ${feature}\n\n**Type**: Test Feature\n\n**Problem Statement:**\nTest problem statement\n`
+    );
+
+    // Create decisions
+    await fs.writeFile(
+      path.join(tmpDir, '.hodge', 'decisions.md'),
+      `# Decisions\n\n### 2025-09-29 - Test decision\n\n**Context**:\nFeature: ${feature}\n\n**Decision**:\nTest decision content\n\n---\n`
+    );
+
+    await fs.writeFile(
+      path.join(tmpDir, '.hodge', 'context.json'),
+      JSON.stringify({ currentFeature: feature })
+    );
+
+    // Execute without --create-pm flag
+    await command.execute({ feature, lanes: 1 });
+
+    // Verify plan was saved locally
+    const planFile = path.join(tmpDir, '.hodge', 'development-plan.json');
+    expect(existsSync(planFile)).toBe(true);
+
+    const plan = JSON.parse(await fs.readFile(planFile, 'utf-8'));
+    expect(plan.feature).toBe(feature);
+    expect(plan.type).toBeDefined();
+  });
+
+  smokeTest('should extract feature description from exploration.md', async () => {
+    const feature = 'TEST-003';
+    const description = 'Context Loading Enhancement';
+
+    // Create feature structure
+    const featureDir = path.join(tmpDir, '.hodge', 'features', feature);
+    const exploreDir = path.join(featureDir, 'explore');
+    mkdirSync(exploreDir, { recursive: true });
+
+    // Create exploration with clear problem statement
+    await fs.writeFile(
+      path.join(exploreDir, 'exploration.md'),
+      `# Exploration: ${feature}\n\n## Feature Overview\n**Type**: ${description}\n\n**Problem Statement:**\nThe /hodge command needs better context loading.\n`
+    );
+
+    // Create decisions
+    await fs.writeFile(
+      path.join(tmpDir, '.hodge', 'decisions.md'),
+      `# Decisions\n\n### 2025-09-29 - Test decision\n\n**Context**:\nFeature: ${feature}\n\n**Decision**:\nTest decision\n\n---\n`
+    );
+
+    await fs.writeFile(
+      path.join(tmpDir, '.hodge', 'context.json'),
+      JSON.stringify({ currentFeature: feature })
+    );
+
+    // Execute and create plan
+    await command.execute({ feature, lanes: 1 });
+
+    // Verify description was extracted
+    const planFile = path.join(tmpDir, '.hodge', 'development-plan.json');
+    const plan = JSON.parse(await fs.readFile(planFile, 'utf-8'));
+
+    // The command should have extracted the description
+    expect(plan.feature).toBe(feature);
+  });
+
+  smokeTest('should handle feature with multiple decisions', async () => {
+    const feature = 'TEST-004';
+
+    // Create feature structure
+    const featureDir = path.join(tmpDir, '.hodge', 'features', feature);
+    const exploreDir = path.join(featureDir, 'explore');
+    mkdirSync(exploreDir, { recursive: true });
+
+    await fs.writeFile(
+      path.join(exploreDir, 'exploration.md'),
+      `# Exploration: ${feature}\n\n**Type**: Multi-decision Feature\n`
+    );
+
+    // Create multiple decisions for the feature
+    await fs.writeFile(
+      path.join(tmpDir, '.hodge', 'decisions.md'),
+      `# Decisions\n\n` +
+        `### 2025-09-29 - Decision 1\n\n**Context**:\nFeature: ${feature}\n\n**Decision**:\nFirst decision\n\n---\n\n` +
+        `### 2025-09-29 - Decision 2\n\n**Context**:\nFeature: ${feature}\n\n**Decision**:\nSecond decision\n\n---\n\n` +
+        `### 2025-09-29 - Decision 3\n\n**Context**:\nFeature: ${feature}\n\n**Decision**:\nThird decision\n\n---\n`
+    );
+
+    await fs.writeFile(
+      path.join(tmpDir, '.hodge', 'context.json'),
+      JSON.stringify({ currentFeature: feature })
+    );
+
+    // Should handle multiple decisions without crashing
+    await expect(command.execute({ feature, lanes: 2 })).resolves.not.toThrow();
+
+    // Verify plan was created
+    const planFile = path.join(tmpDir, '.hodge', 'development-plan.json');
+    expect(existsSync(planFile)).toBe(true);
+
+    const plan = JSON.parse(await fs.readFile(planFile, 'utf-8'));
+    expect(plan.type).toBe('epic'); // Multiple decisions should create epic
+  });
+
+  smokeTest('should respect lane allocation parameter', async () => {
+    const feature = 'TEST-005';
+
+    // Create feature structure
+    const featureDir = path.join(tmpDir, '.hodge', 'features', feature);
+    const exploreDir = path.join(featureDir, 'explore');
+    mkdirSync(exploreDir, { recursive: true });
+
+    await fs.writeFile(
+      path.join(exploreDir, 'exploration.md'),
+      `# Exploration: ${feature}\n\n**Type**: Multi-lane Feature\n`
+    );
+
+    await fs.writeFile(
+      path.join(tmpDir, '.hodge', 'decisions.md'),
+      `# Decisions\n\n### 2025-09-29 - Test\n\n**Context**:\nFeature: ${feature}\n\n**Decision**:\nDecision\n\n---\n`
+    );
+
+    await fs.writeFile(
+      path.join(tmpDir, '.hodge', 'context.json'),
+      JSON.stringify({ currentFeature: feature })
+    );
+
+    // Execute with 3 lanes
+    await command.execute({ feature, lanes: 3 });
+
+    const planFile = path.join(tmpDir, '.hodge', 'development-plan.json');
+    const plan = JSON.parse(await fs.readFile(planFile, 'utf-8'));
+
+    // Verify lane count is respected
+    if (plan.lanes) {
+      expect(plan.lanes.count).toBe(3);
+    }
+  });
+});

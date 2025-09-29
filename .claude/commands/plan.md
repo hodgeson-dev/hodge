@@ -3,15 +3,38 @@
 ## Purpose
 The `/plan` command transforms technical decisions into organized, executable work. It handles epic/story breakdown, dependency analysis, parallel lane allocation, and PM tool integration.
 
-## Command Execution
+**IMPORTANT**: This slash command handles ALL user interaction for plan generation, refinement, and approval. The `hodge plan` CLI command is ONLY called after user approval to save the plan and optionally create PM issues.
+
+## Command Execution Flow
+
+### Phase 1: Generate Plan (No CLI Call)
+AI analyzes decisions and generates plan structure WITHOUT calling any CLI commands yet.
+
+### Phase 2: Display and Refine (Interactive)
+Display the proposed plan to the user and allow refinement:
+- Show epic/story breakdown
+- Display dependencies
+- Show lane allocation
+- Allow user to request changes
+
+### Phase 3: Save Plan (First CLI Call)
+After user approves the plan structure:
 ```bash
-hodge plan {{feature}}
+hodge plan {{feature}} --lanes N
+# This saves plan locally but does NOT create PM issues
 ```
 
-Options:
+### Phase 4: Create PM Issues (Second CLI Call - Optional)
+Only after explicit user confirmation to create PM issues:
+```bash
+hodge plan {{feature}} --lanes N --create-pm
+# This creates epic and stories in Linear
+```
+
+## Available Options
 ```bash
 hodge plan {{feature}} --lanes 3        # Specify number of development lanes
-hodge plan {{feature}} --local-only     # Skip PM tool integration
+hodge plan {{feature}} --create-pm      # Create PM issues (after approval only!)
 ```
 
 ## Workflow Position
@@ -234,26 +257,83 @@ Even for solo developers, `/plan` provides value:
 - Progress tracking
 - Realistic time estimates
 
-## Next Steps After Planning
+## AI Workflow for /plan Slash Command
 
+### Step 1: Analyze Decisions
+Read decisions from `.hodge/decisions.md` for the feature and identify work units.
+
+### Step 2: Generate Plan Structure (AI Task)
+Create epic/story breakdown:
 ```
-### What would you like to do?
-a) Start building first story → `/build {{first_story}}`
-b) Review plan details → `cat .hodge/development-plan.json`
-c) Modify plan → `/plan {{feature}} --lanes N`
-d) View dependencies → `hodge status {{feature}}`
-e) Continue to build phase
-f) Done for now
+Epic: HODGE-XXX: [Description from exploration.md]
+
+Decisions Made:
+1. Decision title 1
+2. Decision title 2
+3. Decision title 3
+
+Stories:
+- HODGE-XXX.1: Story title 1
+- HODGE-XXX.2: Story title 2 [depends on: HODGE-XXX.1]
+
+Lane Allocation (N lanes):
+Lane 1: HODGE-XXX.1
+Lane 2: HODGE-XXX.2
+```
+
+### Step 3: Present to User
+Display the proposed plan and ask:
+```
+Review the plan above. Would you like to:
+a) Approve and save plan locally
+b) Approve and create PM issues in Linear
+c) Modify the plan (adjust stories, dependencies, etc.)
+d) Cancel
 
 Your choice:
 ```
 
+### Step 4: Execute Based on User Choice
+
+**If user chooses (a) - Save locally:**
+```bash
+hodge plan {{feature}} --lanes N
+```
+
+**If user chooses (b) - Save and create PM issues:**
+```bash
+hodge plan {{feature}} --lanes N --create-pm
+```
+
+**If user chooses (c) - Modify:**
+Allow user to specify changes, regenerate plan, then return to Step 3.
+
+**If user chooses (d) - Cancel:**
+Exit without saving or creating anything.
+
 ## Important Notes
 
-- The `/plan` command should be run AFTER `/decide`
+- **CRITICAL**: NEVER call `hodge plan` with `--create-pm` without explicit user approval
+- The `hodge plan` CLI is an internal tool, users never invoke it directly
+- All user interaction happens in this slash command template
+- PM issue creation is a destructive operation requiring explicit consent
 - Plans can be regenerated if decisions change
-- PM tool integration is optional (--local-only)
 - Lane allocation respects dependencies automatically
 - Stories can be worked on independently within constraints
+
+## Next Steps After Planning
+
+After plan is saved and/or PM issues created:
+```
+### What would you like to do?
+a) Start building first story → `/build {{first_story}}`
+b) Review plan details → `cat .hodge/development-plan.json`
+c) Regenerate plan → `/plan {{feature}} --lanes N`
+d) View in Linear → [provide Linear URL if PM issues created]
+e) Continue development
+f) Done for now
+
+Your choice:
+```
 
 Remember: `/plan` bridges the gap between decisions and implementation, turning ideas into actionable, parallel work streams.
