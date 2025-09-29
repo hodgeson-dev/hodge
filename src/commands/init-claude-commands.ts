@@ -13,7 +13,7 @@ const log = {
     if (process.env.NODE_ENV === 'development' || process.env.HODGE_DEBUG) {
       console.log(chalk.gray(`[DEBUG] ${message}`));
     }
-  }
+  },
 };
 
 export async function installClaudeSlashCommands(rootPath: string): Promise<void> {

@@ -10,12 +10,14 @@ import { vi } from 'vitest';
 /**
  * Create a mock file system with sensible defaults
  */
-export function createMockFs(options: {
-  exists?: boolean;
-  content?: string;
-  files?: string[];
-  throwOn?: string[];
-} = {}) {
+export function createMockFs(
+  options: {
+    exists?: boolean;
+    content?: string;
+    files?: string[];
+    throwOn?: string[];
+  } = {}
+) {
   const { exists = false, content = '', files = [], throwOn = [] } = options;
 
   return {
@@ -48,17 +50,19 @@ export function createMockFs(options: {
       rm: vi.fn(async (_path: string, _options?: any) => {
         if (throwOn.includes('rm')) throw new Error('Mock error');
       }),
-    }
+    },
   };
 }
 
 /**
  * Create a mock cache manager
  */
-export function createMockCache(options: {
-  hits?: Map<string, any>;
-  ttl?: number;
-} = {}) {
+export function createMockCache(
+  options: {
+    hits?: Map<string, any>;
+    ttl?: number;
+  } = {}
+) {
   const { hits = new Map() } = options;
 
   return {
@@ -86,8 +90,8 @@ export function createMockCache(options: {
       misses: 5,
       hitRate: 0.67,
       size: hits.size,
-      memoryUsage: 1024
-    }))
+      memoryUsage: 1024,
+    })),
   };
 }
 
@@ -116,25 +120,22 @@ export function createMockConsole() {
     clear: () => {
       output.length = 0;
       errors.length = 0;
-    }
+    },
   };
 }
 
 /**
  * Create a mock git interface
  */
-export function createMockGit(options: {
-  branch?: string;
-  files?: string[];
-  status?: string;
-  remote?: string;
-} = {}) {
-  const {
-    branch = 'main',
-    files = [],
-    status = 'clean',
-    remote = 'origin'
-  } = options;
+export function createMockGit(
+  options: {
+    branch?: string;
+    files?: string[];
+    status?: string;
+    remote?: string;
+  } = {}
+) {
+  const { branch = 'main', files = [], status = 'clean', remote = 'origin' } = options;
 
   return {
     branch: vi.fn(() => branch),
@@ -144,17 +145,19 @@ export function createMockGit(options: {
     commit: vi.fn(),
     push: vi.fn(),
     remote: vi.fn(() => remote),
-    log: vi.fn(() => 'commit abc123\nAuthor: Test\nDate: Today\n\nTest commit')
+    log: vi.fn(() => 'commit abc123\nAuthor: Test\nDate: Today\n\nTest commit'),
   };
 }
 
 /**
  * Create a mock PM adapter
  */
-export function createMockPM(options: {
-  issues?: Map<string, any>;
-  canConnect?: boolean;
-} = {}) {
+export function createMockPM(
+  options: {
+    issues?: Map<string, any>;
+    canConnect?: boolean;
+  } = {}
+) {
   const { issues = new Map(), canConnect = true } = options;
 
   return {
@@ -172,7 +175,7 @@ export function createMockPM(options: {
       issues.set(id, updated);
       return updated;
     }),
-    getIssues: () => issues
+    getIssues: () => issues,
   };
 }
 
@@ -192,7 +195,7 @@ export function createMockChalk() {
     dim: identity,
     bold: identity,
     underline: identity,
-    italic: identity
+    italic: identity,
   };
 }
 
@@ -206,6 +209,6 @@ export function createMockEnvironment(options: any = {}) {
     console: createMockConsole(),
     git: createMockGit(options.git),
     pm: createMockPM(options.pm),
-    chalk: createMockChalk()
+    chalk: createMockChalk(),
   };
 }

@@ -116,31 +116,27 @@ export class PatternLearner {
       category: 'architecture',
       patterns: [
         /class\s+\w+\s*{[\s\S]*?private\s+static\s+instance[\s\S]*?getInstance/,
-        /let\s+\w+Instance\s*=\s*null[\s\S]*?function\s+get\w+Instance/
+        /let\s+\w+Instance\s*=\s*null[\s\S]*?function\s+get\w+Instance/,
       ],
       minOccurrences: 2,
-      description: 'Singleton pattern for managing global instances'
+      description: 'Singleton pattern for managing global instances',
     },
     {
       name: 'Error Boundary',
       category: 'error-handling',
       patterns: [
         /try\s*{[\s\S]*?}\s*catch\s*\([^)]+\)\s*{[\s\S]*?console\.(error|warn)/,
-        /\.catch\s*\([^)]+\)\s*=>\s*{[\s\S]*?(console|logger)\.(error|warn)/
+        /\.catch\s*\([^)]+\)\s*=>\s*{[\s\S]*?(console|logger)\.(error|warn)/,
       ],
       minOccurrences: 3,
-      description: 'Consistent error handling with logging'
+      description: 'Consistent error handling with logging',
     },
     {
       name: 'Async Parallel Operations',
       category: 'performance',
-      patterns: [
-        /Promise\.all\s*\(/,
-        /await\s+Promise\.all/,
-        /Promise\.allSettled/
-      ],
+      patterns: [/Promise\.all\s*\(/, /await\s+Promise\.all/, /Promise\.allSettled/],
       minOccurrences: 2,
-      description: 'Parallel execution for better performance'
+      description: 'Parallel execution for better performance',
     },
     {
       name: 'Input Validation',
@@ -148,10 +144,10 @@ export class PatternLearner {
       patterns: [
         /if\s*\(![\w.]+\)\s*{[\s\S]*?throw\s+new\s+Error/,
         /function\s+validate\w+/,
-        /\w+\.validate\(/
+        /\w+\.validate\(/,
       ],
       minOccurrences: 3,
-      description: 'Input validation before processing'
+      description: 'Input validation before processing',
     },
     {
       name: 'Factory Pattern',
@@ -159,22 +155,18 @@ export class PatternLearner {
       patterns: [
         /function\s+create\w+\s*\([^)]*\)\s*{[\s\S]*?return\s+new/,
         /class\s+\w+Factory/,
-        /static\s+create\s*\(/
+        /static\s+create\s*\(/,
       ],
       minOccurrences: 2,
-      description: 'Factory pattern for object creation'
+      description: 'Factory pattern for object creation',
     },
     {
       name: 'Caching Strategy',
       category: 'performance',
-      patterns: [
-        /cache\.(get|set|has)\(/,
-        /new\s+Map\(\)[\s\S]*?(get|set|has)\(/,
-        /memoize/i
-      ],
+      patterns: [/cache\.(get|set|has)\(/, /new\s+Map\(\)[\s\S]*?(get|set|has)\(/, /memoize/i],
       minOccurrences: 2,
-      description: 'Caching for performance optimization'
-    }
+      description: 'Caching for performance optimization',
+    },
   ];
 
   /**
@@ -219,8 +211,8 @@ export class PatternLearner {
         filesAnalyzed,
         patternsFound: this.patterns.size,
         standardsDetected: this.standards.size,
-        confidence
-      }
+        confidence,
+      },
     };
 
     // Save patterns for future use
@@ -247,7 +239,7 @@ export class PatternLearner {
       files.push(...gitFiles);
     } catch {
       // Fallback: analyze files in src directory
-      files.push(...await this.findSourceFiles('src'));
+      files.push(...(await this.findSourceFiles('src')));
     }
 
     return files;
@@ -267,7 +259,7 @@ export class PatternLearner {
       const fullPath = path.join(dir, entry.name);
 
       if (entry.isDirectory() && !entry.name.startsWith('.')) {
-        files.push(...await this.findSourceFiles(fullPath));
+        files.push(...(await this.findSourceFiles(fullPath)));
       } else if (entry.isFile() && (entry.name.endsWith('.ts') || entry.name.endsWith('.js'))) {
         if (!entry.name.includes('.test.') && !entry.name.includes('.spec.')) {
           files.push(fullPath);
@@ -306,12 +298,7 @@ export class PatternLearner {
   /**
    * Record a found pattern
    */
-  private recordPattern(
-    rule: PatternRule,
-    file: string,
-    match: string,
-    feature: string
-  ): void {
+  private recordPattern(rule: PatternRule, file: string, match: string, feature: string): void {
     const patternId = this.generatePatternId(rule.name);
 
     if (!this.patterns.has(patternId)) {
@@ -325,8 +312,8 @@ export class PatternLearner {
         metadata: {
           firstSeen: new Date().toISOString(),
           lastUsed: new Date().toISOString(),
-          confidence: 0
-        }
+          confidence: 0,
+        },
       });
     }
 
@@ -340,7 +327,7 @@ export class PatternLearner {
         file,
         lines: this.extractLineNumbers(match),
         context: match.substring(0, 200),
-        feature
+        feature,
       });
     }
 
@@ -357,32 +344,32 @@ export class PatternLearner {
         name: 'TypeScript Strict Mode',
         rule: 'Use TypeScript with strict mode enabled',
         pattern: /^\/\*\* @type|interface\s+\w+|type\s+\w+\s*=/m,
-        level: 'strict' as const
+        level: 'strict' as const,
       },
       {
         name: 'Error Handling',
         rule: 'All promises must have error handling',
         pattern: /\.catch\(|try\s*{[\s\S]*?catch/,
-        level: 'strict' as const
+        level: 'strict' as const,
       },
       {
         name: 'Input Validation',
         rule: 'Validate all external inputs',
         pattern: /if\s*\(!\w+\)\s*{[\s\S]*?throw/,
-        level: 'recommended' as const
+        level: 'recommended' as const,
       },
       {
         name: 'JSDoc Comments',
         rule: 'Document public APIs with JSDoc',
         pattern: /\/\*\*[\s\S]*?\*\/\s*(export\s+)?(class|function|interface)/,
-        level: 'recommended' as const
+        level: 'recommended' as const,
       },
       {
         name: 'Async/Await',
         rule: 'Prefer async/await over callbacks',
         pattern: /async\s+(function|\w+\s*=>|\w+\s*\()/,
-        level: 'recommended' as const
-      }
+        level: 'recommended' as const,
+      },
     ];
 
     for (const std of standards) {
@@ -405,7 +392,7 @@ export class PatternLearner {
         rule: standard.rule,
         level: standard.level,
         examples: [],
-        violations: 0
+        violations: 0,
       });
     }
 
@@ -426,8 +413,8 @@ export class PatternLearner {
           name: `Use ${pattern.name}`,
           rule: pattern.description,
           level: pattern.frequency >= 5 ? 'strict' : 'recommended',
-          examples: pattern.examples.map(e => e.file),
-          violations: 0
+          examples: pattern.examples.map((e) => e.file),
+          violations: 0,
         });
       }
     }
@@ -441,7 +428,7 @@ export class PatternLearner {
 
     // Recommend frequently used patterns
     const frequentPatterns = Array.from(this.patterns.values())
-      .filter(p => p.frequency >= 3)
+      .filter((p) => p.frequency >= 3)
       .sort((a, b) => b.frequency - a.frequency);
 
     for (const pattern of frequentPatterns.slice(0, 3)) {
@@ -483,7 +470,7 @@ export class PatternLearner {
       this.patterns.size > 3 ? 20 : 0,
       this.standards.size > 0 ? 20 : 0,
       this.standards.size > 3 ? 20 : 0,
-      Array.from(this.patterns.values()).some(p => p.frequency >= 3) ? 20 : 0
+      Array.from(this.patterns.values()).some((p) => p.frequency >= 3) ? 20 : 0,
     ];
 
     return factors.reduce((sum, val) => sum + val, 0);
@@ -500,19 +487,13 @@ export class PatternLearner {
         const filename = `${pattern.name.toLowerCase().replace(/\s+/g, '-')}.md`;
         const content = this.generatePatternMarkdown(pattern);
 
-        await fs.writeFile(
-          path.join(this.patternsDir, filename),
-          content
-        );
+        await fs.writeFile(path.join(this.patternsDir, filename), content);
       }
     }
 
     // Save summary
     const summary = this.generatePatternSummary(patterns);
-    await fs.writeFile(
-      path.join(this.patternsDir, 'learned-patterns.md'),
-      summary
-    );
+    await fs.writeFile(path.join(this.patternsDir, 'learned-patterns.md'), summary);
   }
 
   /**
@@ -529,12 +510,16 @@ export class PatternLearner {
 ${pattern.description}
 
 ## Examples
-${pattern.examples.map(ex => `
+${pattern.examples
+  .map(
+    (ex) => `
 ### ${ex.file}
 \`\`\`typescript
 ${ex.context}
 \`\`\`
-`).join('\n')}
+`
+  )
+  .join('\n')}
 
 ## When to Use
 - ${pattern.category === 'performance' ? 'When optimizing for speed' : ''}
@@ -551,28 +536,37 @@ ${ex.context}
    * Generate summary of all patterns
    */
   private generatePatternSummary(patterns: CodePattern[]): string {
-    const byCategory = patterns.reduce((acc, p) => {
-      if (!acc[p.category]) acc[p.category] = [];
-      acc[p.category].push(p);
-      return acc;
-    }, {} as Record<string, CodePattern[]>);
+    const byCategory = patterns.reduce(
+      (acc, p) => {
+        if (!acc[p.category]) acc[p.category] = [];
+        acc[p.category].push(p);
+        return acc;
+      },
+      {} as Record<string, CodePattern[]>
+    );
 
     return `# Learned Patterns Summary
 
 ## Statistics
 - Total patterns detected: ${patterns.length}
-- High confidence patterns: ${patterns.filter(p => p.metadata.confidence >= 80).length}
+- High confidence patterns: ${patterns.filter((p) => p.metadata.confidence >= 80).length}
 - Most frequent category: ${Object.entries(byCategory).sort((a, b) => b[1].length - a[1].length)[0]?.[0]}
 
 ## Patterns by Category
 
-${Object.entries(byCategory).map(([category, pats]) => `
+${Object.entries(byCategory)
+  .map(
+    ([category, pats]) => `
 ### ${category.charAt(0).toUpperCase() + category.slice(1)}
-${pats.map(p => `- **${p.name}** (${p.frequency}x, ${p.metadata.confidence}% confidence)`).join('\n')}
-`).join('\n')}
+${pats.map((p) => `- **${p.name}** (${p.frequency}x, ${p.metadata.confidence}% confidence)`).join('\n')}
+`
+  )
+  .join('\n')}
 
 ## Recommendations
-${this.generateRecommendations().map(r => `- ${r}`).join('\n')}
+${this.generateRecommendations()
+  .map((r) => `- ${r}`)
+  .join('\n')}
 
 ---
 *Generated: ${new Date().toISOString()}*
@@ -625,8 +619,8 @@ ${this.generateRecommendations().map(r => `- ${r}`).join('\n')}
             metadata: {
               firstSeen: new Date().toISOString(),
               lastUsed: new Date().toISOString(),
-              confidence: 80
-            }
+              confidence: 80,
+            },
           });
         }
       }

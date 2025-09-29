@@ -54,25 +54,29 @@ async function runPerformanceTest() {
   }
 
   // Calculate averages
-  const originalAvg = results
-    .filter(r => r.label === 'Original')
-    .reduce((sum, r) => sum + r.time, 0) / testFeatures.length;
+  const originalAvg =
+    results.filter((r) => r.label === 'Original').reduce((sum, r) => sum + r.time, 0) /
+    testFeatures.length;
 
-  const coldAvg = results
-    .filter(r => r.label === 'Optimized (cold)')
-    .reduce((sum, r) => sum + r.time, 0) / testFeatures.length;
+  const coldAvg =
+    results.filter((r) => r.label === 'Optimized (cold)').reduce((sum, r) => sum + r.time, 0) /
+    testFeatures.length;
 
-  const warmAvg = results
-    .filter(r => r.label === 'Optimized (warm)')
-    .reduce((sum, r) => sum + r.time, 0) / testFeatures.length;
+  const warmAvg =
+    results.filter((r) => r.label === 'Optimized (warm)').reduce((sum, r) => sum + r.time, 0) /
+    testFeatures.length;
 
   // Display results
   console.log(chalk.bold.green('\n═══ Performance Results ═══\n'));
 
   console.log(chalk.bold('Average Execution Time:'));
   console.log(`  Original:          ${chalk.red(originalAvg.toFixed(0) + 'ms')}`);
-  console.log(`  Optimized (cold):  ${chalk.yellow(coldAvg.toFixed(0) + 'ms')} (${chalk.green(((1 - coldAvg/originalAvg) * 100).toFixed(1) + '% faster')})`);
-  console.log(`  Optimized (warm):  ${chalk.green(warmAvg.toFixed(0) + 'ms')} (${chalk.green(((1 - warmAvg/originalAvg) * 100).toFixed(1) + '% faster')})`);
+  console.log(
+    `  Optimized (cold):  ${chalk.yellow(coldAvg.toFixed(0) + 'ms')} (${chalk.green(((1 - coldAvg / originalAvg) * 100).toFixed(1) + '% faster')})`
+  );
+  console.log(
+    `  Optimized (warm):  ${chalk.green(warmAvg.toFixed(0) + 'ms')} (${chalk.green(((1 - warmAvg / originalAvg) * 100).toFixed(1) + '% faster')})`
+  );
 
   // Cache statistics
   const stats = cacheManager.getStats();
@@ -88,10 +92,10 @@ async function runPerformanceTest() {
   const improvements = [
     { name: 'File System Calls', reduction: '75%', method: 'Caching' },
     { name: 'Execution Time', reduction: '70-85%', method: 'Parallelization + Cache' },
-    { name: 'Memory Overhead', increase: '<10MB', method: 'Smart TTL management' }
+    { name: 'Memory Overhead', increase: '<10MB', method: 'Smart TTL management' },
   ];
 
-  improvements.forEach(imp => {
+  improvements.forEach((imp) => {
     console.log(`  ${imp.name}: ${chalk.green(imp.reduction)} via ${chalk.gray(imp.method)}`);
   });
 

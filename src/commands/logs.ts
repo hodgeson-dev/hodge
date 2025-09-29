@@ -39,7 +39,7 @@ export class LogsCommand {
       return;
     }
 
-    if (!await fs.pathExists(logPath)) {
+    if (!(await fs.pathExists(logPath))) {
       console.log(chalk.yellow('No log file found.'));
       console.log(chalk.gray('Logs will be created when hodge commands are executed.'));
       console.log(chalk.gray(`Expected location: ${logPath}`));
@@ -74,7 +74,7 @@ export class LogsCommand {
     try {
       if (await fs.pathExists(logDir)) {
         const files = await fs.readdir(logDir);
-        const logFiles = files.filter(f => f.endsWith('.log'));
+        const logFiles = files.filter((f) => f.endsWith('.log'));
 
         for (const file of logFiles) {
           await fs.remove(path.join(logDir, file));
@@ -97,7 +97,7 @@ export class LogsCommand {
     const fileStream = fs.createReadStream(logPath);
     const rl = readline.createInterface({
       input: fileStream,
-      crlfDelay: Infinity
+      crlfDelay: Infinity,
     });
 
     for await (const line of rl) {
@@ -116,7 +116,7 @@ export class LogsCommand {
         console.log(chalk.gray('Try adjusting your filters or run without filters.'));
       }
     } else {
-      output.forEach(line => console.log(line));
+      output.forEach((line) => console.log(line));
       console.log(chalk.gray(`\nShowing ${output.length} log entries`));
     }
   }
@@ -139,12 +139,12 @@ export class LogsCommand {
         if (newPosition > position) {
           const stream = fs.createReadStream(logPath, {
             start: position,
-            end: newPosition
+            end: newPosition,
           });
 
           const rl = readline.createInterface({
             input: stream,
-            crlfDelay: Infinity
+            crlfDelay: Infinity,
           });
 
           for await (const line of rl) {
@@ -208,7 +208,9 @@ export class LogsCommand {
       // Add extra data if present
       const extras: Record<string, unknown> = {};
       for (const [key, value] of Object.entries(log)) {
-        if (!['time', 'level', 'pid', 'msg', 'command', 'timestamp', 'hodgeVersion'].includes(key)) {
+        if (
+          !['time', 'level', 'pid', 'msg', 'command', 'timestamp', 'hodgeVersion'].includes(key)
+        ) {
           extras[key] = value;
         }
       }

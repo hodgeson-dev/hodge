@@ -91,7 +91,7 @@ h) Done for now
 Enter your choice (a-h):
 \`\`\`
 
-Remember: The CLI handles all file management and PM integration. Focus on implementing quality code that follows project conventions.`
+Remember: The CLI handles all file management and PM integration. Focus on implementing quality code that follows project conventions.`,
     },
     {
       name: 'decide',
@@ -364,7 +364,7 @@ f) Done for now
 Enter your choice (a-f):
 \`\`\`
 
-Remember: The CLI handles decision recording and PM updates. Focus on making thoughtful technical choices and organizing work into manageable features.`
+Remember: The CLI handles decision recording and PM updates. Focus on making thoughtful technical choices and organizing work into manageable features.`,
     },
     {
       name: 'explore',
@@ -501,7 +501,7 @@ Or type your next request.
 Note: \`/build\` will use the recommended approach. Use \`/decide\` to choose a different approach.
 \`\`\`
 
-Remember: The CLI handles all the file creation and PM integration. Focus on generating creative solutions and documenting approaches.`
+Remember: The CLI handles all the file creation and PM integration. Focus on generating creative solutions and documenting approaches.`,
     },
     {
       name: 'harden',
@@ -692,7 +692,7 @@ Enter your choice (a-h):
 
 Remember: The pre-check helps YOU catch issues early and understand the codebase better. The CLI validates, but YOUR review provides context and understanding.
 
-ARGUMENTS: {{feature}}`
+ARGUMENTS: {{feature}}`,
     },
     {
       name: 'hodge',
@@ -907,7 +907,7 @@ The \`/hodge\` command coordinates with the Hodge CLI to:
 
 **This command has finished loading context. No actions have been taken.**
 
-What would you like to do next?`
+What would you like to do next?`,
     },
     {
       name: 'load',
@@ -1021,7 +1021,7 @@ Both \`/load\` and \`/hodge\` commands currently use the same loading mechanism:
 - Both provide session restoration
 - Optimized loading exists in code but awaits CLI integration
 
-Remember: Loading replaces current session context but preserves it in auto-save first.`
+Remember: Loading replaces current session context but preserves it in auto-save first.`,
     },
     {
       name: 'review',
@@ -1129,7 +1129,7 @@ For each feature in \`.hodge/features/\`:
 - Save session: \`/save\`
 \`\`\`
 
-Remember: Review is about providing clarity on where you are, what's been decided, what needs deciding, and what you haven't thought about yet.`
+Remember: Review is about providing clarity on where you are, what's been decided, what needs deciding, and what you haven't thought about yet.`,
     },
     {
       name: 'save',
@@ -1340,7 +1340,7 @@ hodge save --clean-auto --older-than 7d
 - Ensure git status is clean
 
 ---
-*Remember: Saves are for context, not backups. Use git for version control.*`
+*Remember: Saves are for context, not backups. Use git for version control.*`,
     },
     {
       name: 'ship',
@@ -1593,7 +1593,7 @@ After successful shipping:
 ## Troubleshooting
 - **Tests failing?** Fix them first with \`/build {{feature}}\`
 - **Not hardened?** Run \`/harden {{feature}}\` first
-- **Need to skip tests?** Add \`--skip-tests\` (not recommended)`
+- **Need to skip tests?** Add \`--skip-tests\` (not recommended)`,
     },
     {
       name: 'status',
@@ -1684,7 +1684,7 @@ f) Done for now
 Enter your choice (a-f):
 \`\`\`
 
-Remember: The CLI tracks all feature progress automatically. Use status to stay oriented and make informed decisions about what to work on next.`
-    }
+Remember: The CLI tracks all feature progress automatically. Use status to stay oriented and make informed decisions about what to work on next.`,
+    },
   ];
 }

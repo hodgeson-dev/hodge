@@ -170,7 +170,7 @@ export class CacheManager {
       this.cache.set(key, {
         data,
         timestamp: Date.now(),
-        hash
+        hash,
       });
 
       return data;
@@ -264,9 +264,7 @@ export class CacheManager {
       return;
     }
 
-    const regex = typeof pattern === 'string'
-      ? new RegExp(pattern.replace(/\*/g, '.*'))
-      : pattern;
+    const regex = typeof pattern === 'string' ? new RegExp(pattern.replace(/\*/g, '.*')) : pattern;
 
     for (const key of this.cache.keys()) {
       if (regex.test(key)) {
@@ -307,7 +305,7 @@ export class CacheManager {
       hits: this.hits,
       misses: this.misses,
       hitRate,
-      memoryUsage
+      memoryUsage,
     };
   }
 
@@ -374,7 +372,7 @@ export class FeatureStateCache {
       build: `${basePath}/build`,
       harden: `${basePath}/harden`,
       validation: `${basePath}/harden/validation-results.json`,
-      issueId: `${basePath}/issue-id.txt`
+      issueId: `${basePath}/issue-id.txt`,
     };
 
     // Check all paths in parallel
@@ -386,17 +384,14 @@ export class FeatureStateCache {
         ? this.cache.loadJSON<Record<string, { passed: boolean }>>(paths.validation)
         : Promise.resolve(null),
       existence.get(paths.issueId)
-        ? this.cache.getOrLoad(
-            `file:${paths.issueId}`,
-            async () => (await fs.readFile(paths.issueId, 'utf-8')).trim()
+        ? this.cache.getOrLoad(`file:${paths.issueId}`, async () =>
+            (await fs.readFile(paths.issueId, 'utf-8')).trim()
           )
-        : Promise.resolve(null)
+        : Promise.resolve(null),
     ]);
 
     // Calculate production readiness
-    const isProductionReady = validation
-      ? Object.values(validation).every(r => r.passed)
-      : false;
+    const isProductionReady = validation ? Object.values(validation).every((r) => r.passed) : false;
 
     return {
       hasExploration: existence.get(paths.explore) ?? false,
@@ -406,7 +401,7 @@ export class FeatureStateCache {
       isProductionReady,
       issueId,
       validation,
-      ...(process.env.HODGE_PM_TOOL ? { pmTool: process.env.HODGE_PM_TOOL } : {})
+      ...(process.env.HODGE_PM_TOOL ? { pmTool: process.env.HODGE_PM_TOOL } : {}),
     };
   }
 

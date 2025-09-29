@@ -82,9 +82,9 @@ export class InteractionStateManager<T = unknown> {
       history: [
         {
           timestamp: new Date().toISOString(),
-          type: 'init'
-        }
-      ]
+          type: 'init',
+        },
+      ],
     };
 
     await this.save(state);
@@ -127,7 +127,7 @@ export class InteractionStateManager<T = unknown> {
     state.history.push({
       timestamp: new Date().toISOString(),
       type: 'choice',
-      data: choice
+      data: choice,
     });
 
     await this.save(state);
@@ -147,7 +147,7 @@ export class InteractionStateManager<T = unknown> {
     state.history.push({
       timestamp: new Date().toISOString(),
       type: 'edit',
-      data: edited
+      data: edited,
     });
 
     await this.save(state);
@@ -163,7 +163,7 @@ export class InteractionStateManager<T = unknown> {
     state.status = 'confirmed';
     state.history.push({
       timestamp: new Date().toISOString(),
-      type: 'confirm'
+      type: 'confirm',
     });
 
     await this.save(state);
@@ -179,7 +179,7 @@ export class InteractionStateManager<T = unknown> {
     state.status = 'cancelled';
     state.history.push({
       timestamp: new Date().toISOString(),
-      type: 'cancel'
+      type: 'cancel',
     });
 
     await this.save(state);
@@ -240,7 +240,10 @@ export class InteractionStateManager<T = unknown> {
  */
 export function formatFileChanges(files: ShipInteractionData['analysis']['files']): string {
   return files
-    .map(f => `${f.status === 'added' ? 'A' : f.status === 'modified' ? 'M' : 'D'} ${f.path} (+${f.insertions}, -${f.deletions})`)
+    .map(
+      (f) =>
+        `${f.status === 'added' ? 'A' : f.status === 'modified' ? 'M' : 'D'} ${f.path} (+${f.insertions}, -${f.deletions})`
+    )
     .join('\n');
 }
 
@@ -256,7 +259,7 @@ export function detectCommitType(files: Array<{ path: string }>): string {
     style: /\.(css|scss|less)$/,
     refactor: /refactor/i,
     fix: /fix|bug|patch/i,
-    chore: /package\.json|config|build/
+    chore: /package\.json|config|build/,
   };
 
   // Count matches for each type
@@ -282,12 +285,12 @@ export function detectScope(files: Array<{ path: string }>): string {
   // Find common directory
   if (files.length === 0) return 'general';
 
-  const paths = files.map(f => f.path.split('/'));
+  const paths = files.map((f) => f.path.split('/'));
   const commonParts: string[] = [];
 
   for (let i = 0; i < paths[0].length; i++) {
     const part = paths[0][i];
-    if (paths.every(p => p[i] === part)) {
+    if (paths.every((p) => p[i] === part)) {
       commonParts.push(part);
     } else {
       break;

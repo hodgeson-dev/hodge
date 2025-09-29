@@ -61,11 +61,15 @@ export async function getGitStatus(): Promise<GitStatus> {
   let behind = 0;
 
   try {
-    const { stdout: upstreamOut } = await execAsync(`git rev-parse --abbrev-ref ${branch}@{upstream} 2>/dev/null`);
+    const { stdout: upstreamOut } = await execAsync(
+      `git rev-parse --abbrev-ref ${branch}@{upstream} 2>/dev/null`
+    );
     remote = upstreamOut.trim();
 
     // Get ahead/behind counts
-    const { stdout: revListOut } = await execAsync(`git rev-list --left-right --count ${branch}...${remote} 2>/dev/null`);
+    const { stdout: revListOut } = await execAsync(
+      `git rev-list --left-right --count ${branch}...${remote} 2>/dev/null`
+    );
     const [aheadStr, behindStr] = revListOut.trim().split('\t');
     ahead = parseInt(aheadStr, 10) || 0;
     behind = parseInt(behindStr, 10) || 0;
@@ -80,7 +84,7 @@ export async function getGitStatus(): Promise<GitStatus> {
     ahead,
     behind,
     hasUncommitted,
-    hasUntracked
+    hasUntracked,
   };
 }
 
@@ -109,10 +113,10 @@ export function analyzeBranch(branchName: string): BranchInfo {
   // Extract issue ID if present
   // TODO: Make issue patterns configurable
   const issuePatterns = [
-    /(?:LIN|HOD)-\d+/i,  // Linear
-    /[A-Z]{2,}-\d+/,     // Jira
-    /#\d+/,              // GitHub
-    /PSILO-\d+/          // Custom example
+    /(?:LIN|HOD)-\d+/i, // Linear
+    /[A-Z]{2,}-\d+/, // Jira
+    /#\d+/, // GitHub
+    /PSILO-\d+/, // Custom example
   ];
 
   let issueId: string | undefined;
@@ -128,7 +132,7 @@ export function analyzeBranch(branchName: string): BranchInfo {
     name: branchName,
     isProtected,
     type,
-    issueId
+    issueId,
   };
 }
 
@@ -150,7 +154,7 @@ export async function gitPush(options: {
   setUpstream?: boolean;
   dryRun?: boolean;
 }): Promise<PushResult> {
-  const branch = options.branch || await getCurrentBranch();
+  const branch = options.branch || (await getCurrentBranch());
   const remote = options.remote || 'origin';
 
   // Build push command
@@ -178,7 +182,7 @@ export async function gitPush(options: {
       success: true,
       branch,
       remote,
-      message: output.trim()
+      message: output.trim(),
     };
   } catch (error) {
     return {
@@ -186,7 +190,7 @@ export async function gitPush(options: {
       branch,
       remote,
       error: error as Error,
-      message: (error as Error).message
+      message: (error as Error).message,
     };
   }
 }

@@ -13,10 +13,10 @@
     // Map Hodge phases to your PM tool's statuses
     // These are the defaults - customize to match your workflow
     "statusMap": {
-      "explore": "To Do",        // When starting exploration
-      "build": "In Progress",    // When actively building
-      "harden": "In Review",     // When hardening/testing
-      "ship": "Done"            // When shipped to production
+      "explore": "To Do", // When starting exploration
+      "build": "In Progress", // When actively building
+      "harden": "In Review", // When hardening/testing
+      "ship": "Done" // When shipped to production
     },
 
     // Comment verbosity when updating PM issues
@@ -58,17 +58,17 @@
 
   // Conventional commit types available for commit messages
   "commitTypes": [
-    "feat",     // New feature
-    "fix",      // Bug fix
-    "docs",     // Documentation only
-    "style",    // Formatting, missing semi colons, etc
+    "feat", // New feature
+    "fix", // Bug fix
+    "docs", // Documentation only
+    "style", // Formatting, missing semi colons, etc
     "refactor", // Code change that neither fixes a bug nor adds a feature
-    "test",     // Adding missing tests
-    "chore",    // Maintain
-    "perf",     // Performance improvement
-    "ci",       // CI configuration
-    "build",    // Build system
-    "revert"    // Revert a previous commit
+    "test", // Adding missing tests
+    "chore", // Maintain
+    "perf", // Performance improvement
+    "ci", // CI configuration
+    "build", // Build system
+    "revert" // Revert a previous commit
   ],
 
   // Standards enforcement (future)

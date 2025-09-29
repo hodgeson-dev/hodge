@@ -17,11 +17,14 @@ const execAsync = promisify(exec);
 /**
  * Run a command and capture output
  */
-export async function runCommand(cmd: string, options: {
-  cwd?: string;
-  env?: Record<string, string>;
-  timeout?: number;
-} = {}) {
+export async function runCommand(
+  cmd: string,
+  options: {
+    cwd?: string;
+    env?: Record<string, string>;
+    timeout?: number;
+  } = {}
+) {
   const { cwd = process.cwd(), env = process.env, timeout = 10000 } = options;
 
   try {
@@ -29,7 +32,7 @@ export async function runCommand(cmd: string, options: {
       cwd,
       env: env as any,
       timeout,
-      encoding: 'utf8'
+      encoding: 'utf8',
     });
 
     return {
@@ -37,7 +40,7 @@ export async function runCommand(cmd: string, options: {
       exitCode: 0,
       output: result.stdout,
       error: result.stderr,
-      combined: result.stdout + result.stderr
+      combined: result.stdout + result.stderr,
     };
   } catch (error: any) {
     return {
@@ -45,7 +48,7 @@ export async function runCommand(cmd: string, options: {
       exitCode: error.code || 1,
       output: error.stdout || '',
       error: error.stderr || error.message,
-      combined: (error.stdout || '') + (error.stderr || error.message)
+      combined: (error.stdout || '') + (error.stderr || error.message),
     };
   }
 }
@@ -98,8 +101,8 @@ export class TestWorkspace {
       scripts: {
         test: 'echo "test"',
         lint: 'echo "lint"',
-        build: 'echo "build"'
-      }
+        build: 'echo "build"',
+      },
     });
 
     return this;
@@ -181,7 +184,7 @@ export async function captureOutput(fn: () => Promise<void>) {
   return {
     output: output.join('\n'),
     errors: errors.join('\n'),
-    all: [...output, ...errors].join('\n')
+    all: [...output, ...errors].join('\n'),
   };
 }
 
@@ -201,7 +204,7 @@ export async function waitFor(
 
   while (Date.now() - start < timeout) {
     if (await condition()) return true;
-    await new Promise(resolve => setTimeout(resolve, interval));
+    await new Promise((resolve) => setTimeout(resolve, interval));
   }
 
   throw new Error(`Timeout: ${message}`);

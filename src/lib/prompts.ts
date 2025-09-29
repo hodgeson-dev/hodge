@@ -16,10 +16,8 @@ export class InteractivePrompts {
     // Show file changes
     if (data.analysis.files.length > 0) {
       console.log(chalk.gray('Changed files:'));
-      data.analysis.files.forEach(f => {
-        const statusIcon = f.status === 'added' ? '✚' :
-                          f.status === 'deleted' ? '✖' :
-                          '✎';
+      data.analysis.files.forEach((f) => {
+        const statusIcon = f.status === 'added' ? '✚' : f.status === 'deleted' ? '✖' : '✎';
         console.log(chalk.gray(`  ${statusIcon} ${f.path} (+${f.insertions}, -${f.deletions})`));
       });
       console.log();
@@ -42,9 +40,9 @@ export class InteractivePrompts {
           { name: 'Use suggested message', value: 'use' },
           { name: 'Edit message interactively', value: 'edit' },
           { name: 'Enter custom message', value: 'custom' },
-          { name: 'Cancel ship', value: 'cancel' }
-        ]
-      }
+          { name: 'Cancel ship', value: 'cancel' },
+        ],
+      },
     ]);
 
     if (action === 'cancel') {
@@ -61,8 +59,8 @@ export class InteractivePrompts {
           type: 'input',
           name: 'message',
           message: 'Enter commit message:',
-          validate: (input: string) => input.trim().length > 0 || 'Message cannot be empty'
-        }
+          validate: (input: string) => input.trim().length > 0 || 'Message cannot be empty',
+        },
       ]);
       return message;
     }
@@ -85,10 +83,10 @@ export class InteractivePrompts {
             { name: 'perf - Performance improvements', value: 'perf' },
             { name: 'ci - CI/CD changes', value: 'ci' },
             { name: 'build - Build system changes', value: 'build' },
-            { name: 'revert - Revert previous commit', value: 'revert' }
+            { name: 'revert - Revert previous commit', value: 'revert' },
           ],
-          default: data.analysis.type
-        }
+          default: data.analysis.type,
+        },
       ]);
 
       const { scope } = await inquirer.prompt<{ scope: string }>([
@@ -96,8 +94,8 @@ export class InteractivePrompts {
           type: 'input',
           name: 'scope',
           message: 'Enter scope (optional):',
-          default: data.analysis.scope !== 'general' ? data.analysis.scope : ''
-        }
+          default: data.analysis.scope !== 'general' ? data.analysis.scope : '',
+        },
       ]);
 
       const { breaking } = await inquirer.prompt<{ breaking: boolean }>([
@@ -105,8 +103,8 @@ export class InteractivePrompts {
           type: 'confirm',
           name: 'breaking',
           message: 'Is this a breaking change?',
-          default: false
-        }
+          default: false,
+        },
       ]);
 
       const { subject } = await inquirer.prompt<{ subject: string }>([
@@ -118,8 +116,8 @@ export class InteractivePrompts {
             if (input.trim().length === 0) return 'Subject cannot be empty';
             if (input.length > 50) return 'Subject should be 50 characters or less';
             return true;
-          }
-        }
+          },
+        },
       ]);
 
       const { body } = await inquirer.prompt<{ body: string }>([
@@ -127,8 +125,8 @@ export class InteractivePrompts {
           type: 'editor',
           name: 'body',
           message: 'Enter commit body (detailed description):',
-          default: `- Implementation complete\n- Tests passing\n- Documentation updated${data.issueId ? `\n- Closes ${data.issueId}` : ''}`
-        }
+          default: `- Implementation complete\n- Tests passing\n- Documentation updated${data.issueId ? `\n- Closes ${data.issueId}` : ''}`,
+        },
       ]);
 
       // Construct conventional commit message
@@ -142,8 +140,8 @@ export class InteractivePrompts {
           {
             type: 'input',
             name: 'breakingDescription',
-            message: 'Describe the breaking change:'
-          }
+            message: 'Describe the breaking change:',
+          },
         ]);
         if (breakingDescription) {
           message += `\n\nBREAKING CHANGE: ${breakingDescription}`;
@@ -172,8 +170,8 @@ export class InteractivePrompts {
         type: 'confirm',
         name: 'confirm',
         message: 'Start exploring this feature?',
-        default: true
-      }
+        default: true,
+      },
     ]);
 
     return confirm;
@@ -197,11 +195,9 @@ export class InteractivePrompts {
       {
         type: 'confirm',
         name: 'confirm',
-        message: hasExploration ?
-          'Proceed to build phase?' :
-          'Start build without exploration?',
-        default: hasExploration
-      }
+        message: hasExploration ? 'Proceed to build phase?' : 'Start build without exploration?',
+        default: hasExploration,
+      },
     ]);
 
     return confirm;
@@ -225,15 +221,15 @@ export class InteractivePrompts {
         choices: [
           { name: 'Run tests', value: 'tests', checked: true },
           { name: 'Run linting', value: 'lint', checked: true },
-          { name: 'Run type checking', value: 'typecheck', checked: true }
-        ]
-      }
+          { name: 'Run type checking', value: 'typecheck', checked: true },
+        ],
+      },
     ]);
 
     return {
       skipTests: !checks.includes('tests'),
       skipLint: !checks.includes('lint'),
-      skipTypecheck: !checks.includes('typecheck')
+      skipTypecheck: !checks.includes('typecheck'),
     };
   }
 
@@ -254,10 +250,10 @@ export class InteractivePrompts {
         choices: [
           { name: 'Create and push to feature branch instead', value: 'feature' },
           { name: 'Push to protected branch anyway', value: 'push' },
-          { name: 'Cancel push', value: 'cancel' }
+          { name: 'Cancel push', value: 'cancel' },
         ],
-        default: 'feature'
-      }
+        default: 'feature',
+      },
     ]);
 
     if (action === 'cancel') {
@@ -275,8 +271,8 @@ export class InteractivePrompts {
             if (!input.trim()) return 'Branch name cannot be empty';
             if (input === branch) return 'Cannot be the same as current branch';
             return true;
-          }
-        }
+          },
+        },
       ]);
 
       console.log(chalk.cyan(`\nCreating branch: ${branchName}`));
@@ -290,8 +286,8 @@ export class InteractivePrompts {
         type: 'confirm',
         name: 'confirm',
         message: chalk.red(`Are you SURE you want to push to ${branch}?`),
-        default: false
-      }
+        default: false,
+      },
     ]);
 
     return confirm;
@@ -325,7 +321,7 @@ export class InteractivePrompts {
 
     console.log(chalk.bold('\n📋 Pre-Push Check\n'));
     console.log(chalk.yellow('Issues detected:'));
-    issues.forEach(issue => console.log(chalk.yellow(`  • ${issue}`)));
+    issues.forEach((issue) => console.log(chalk.yellow(`  • ${issue}`)));
     console.log();
 
     const choices: Array<{ name: string; value: string }> = [];
@@ -347,8 +343,8 @@ export class InteractivePrompts {
         type: 'list',
         name: 'action',
         message: 'How would you like to proceed?',
-        choices
-      }
+        choices,
+      },
     ]);
 
     if (action === 'cancel') {
@@ -358,7 +354,7 @@ export class InteractivePrompts {
     return {
       proceed: true,
       pullFirst: action.startsWith('pull'),
-      stashChanges: action === 'stash'
+      stashChanges: action === 'stash',
     };
   }
 
@@ -381,18 +377,18 @@ export class InteractivePrompts {
         type: 'input',
         name: 'title',
         message: 'Decision title:',
-        validate: (input: string) => input.trim().length > 0 || 'Title cannot be empty'
+        validate: (input: string) => input.trim().length > 0 || 'Title cannot be empty',
       },
       {
         type: 'editor',
         name: 'rationale',
-        message: 'Explain the rationale:'
+        message: 'Explain the rationale:',
       },
       {
         type: 'editor',
         name: 'alternatives',
-        message: 'What alternatives were considered? (optional):'
-      }
+        message: 'What alternatives were considered? (optional):',
+      },
     ]);
 
     return answers;

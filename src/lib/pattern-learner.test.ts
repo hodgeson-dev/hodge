@@ -79,20 +79,20 @@ describe('PatternLearner', () => {
       expect(result.patterns.length).toBeGreaterThan(0);
 
       // Should detect Singleton pattern
-      const singletonPattern = result.patterns.find(p => p.name === 'Singleton Pattern');
+      const singletonPattern = result.patterns.find((p) => p.name === 'Singleton Pattern');
       expect(singletonPattern).toBeDefined();
       expect(singletonPattern?.frequency).toBeGreaterThan(0);
 
       // Should detect async parallel operations
-      const parallelPattern = result.patterns.find(p => p.name === 'Async Parallel Operations');
+      const parallelPattern = result.patterns.find((p) => p.name === 'Async Parallel Operations');
       expect(parallelPattern).toBeDefined();
 
       // Should detect error handling
-      const errorPattern = result.patterns.find(p => p.name === 'Error Boundary');
+      const errorPattern = result.patterns.find((p) => p.name === 'Error Boundary');
       expect(errorPattern).toBeDefined();
 
       // Should detect input validation
-      const validationPattern = result.patterns.find(p => p.name === 'Input Validation');
+      const validationPattern = result.patterns.find((p) => p.name === 'Input Validation');
       expect(validationPattern).toBeDefined();
 
       // Should save patterns
@@ -173,7 +173,7 @@ describe('PatternLearner', () => {
 
       const result = await learner.analyzeShippedCode('singleton-feature');
 
-      const singleton = result.patterns.find(p => p.name === 'Singleton Pattern');
+      const singleton = result.patterns.find((p) => p.name === 'Singleton Pattern');
       expect(singleton).toBeDefined();
       expect(singleton?.category).toBe('architecture');
     });
@@ -210,7 +210,7 @@ describe('PatternLearner', () => {
 
       const result = await learner.analyzeShippedCode('error-feature');
 
-      const errorPattern = result.patterns.find(p => p.name === 'Error Boundary');
+      const errorPattern = result.patterns.find((p) => p.name === 'Error Boundary');
       expect(errorPattern).toBeDefined();
       expect(errorPattern?.category).toBe('error-handling');
     });
@@ -253,11 +253,11 @@ describe('PatternLearner', () => {
 
       const result = await learner.analyzeShippedCode('performance-feature');
 
-      const parallelPattern = result.patterns.find(p => p.name === 'Async Parallel Operations');
+      const parallelPattern = result.patterns.find((p) => p.name === 'Async Parallel Operations');
       expect(parallelPattern).toBeDefined();
       expect(parallelPattern?.category).toBe('performance');
 
-      const cachePattern = result.patterns.find(p => p.name === 'Caching Strategy');
+      const cachePattern = result.patterns.find((p) => p.name === 'Caching Strategy');
       expect(cachePattern).toBeDefined();
       expect(cachePattern?.category).toBe('performance');
     });
@@ -292,7 +292,7 @@ describe('PatternLearner', () => {
 
       const result = await learner.analyzeShippedCode('typed-feature');
 
-      const tsStandard = result.standards.find(s => s.name === 'TypeScript Strict Mode');
+      const tsStandard = result.standards.find((s) => s.name === 'TypeScript Strict Mode');
       expect(tsStandard).toBeDefined();
       expect(tsStandard?.level).toBe('strict');
     });
@@ -335,7 +335,7 @@ describe('PatternLearner', () => {
 
       const result = await learner.analyzeShippedCode('documented-feature');
 
-      const jsdocStandard = result.standards.find(s => s.name === 'JSDoc Comments');
+      const jsdocStandard = result.standards.find((s) => s.name === 'JSDoc Comments');
       expect(jsdocStandard).toBeDefined();
       expect(jsdocStandard?.level).toBe('recommended');
     });
@@ -373,9 +373,7 @@ describe('PatternLearner', () => {
       expect(result.recommendations.length).toBeGreaterThan(0);
 
       // Should recommend using frequently used patterns
-      const singletonRec = result.recommendations.find(r =>
-        r.includes('Singleton Pattern')
-      );
+      const singletonRec = result.recommendations.find((r) => r.includes('Singleton Pattern'));
       expect(singletonRec).toBeDefined();
     });
 
@@ -405,7 +403,7 @@ describe('PatternLearner', () => {
       const result = await learner.analyzeShippedCode('basic-feature');
 
       // Should recommend implementing error handling
-      const errorRec = result.recommendations.find(r =>
+      const errorRec = result.recommendations.find((r) =>
         r.toLowerCase().includes('error handling')
       );
       expect(errorRec).toBeDefined();
@@ -420,7 +418,9 @@ describe('PatternLearner', () => {
       const mockMkdir = vi.mocked(fs.promises.mkdir);
 
       // Multiple files to increase pattern frequency
-      mockExecSync.mockReturnValue('src/file1.ts\nsrc/file2.ts\nsrc/file3.ts\nsrc/file4.ts\n' as any);
+      mockExecSync.mockReturnValue(
+        'src/file1.ts\nsrc/file2.ts\nsrc/file3.ts\nsrc/file4.ts\n' as any
+      );
 
       const codeWithPatterns = `
         class Service {
@@ -470,7 +470,11 @@ describe('PatternLearner', () => {
       const mockReadFile = vi.mocked(fs.promises.readFile);
 
       mockExistsSync.mockReturnValue(true);
-      mockReaddir.mockResolvedValue(['singleton-pattern.md', 'factory-pattern.md', 'learned-patterns.md'] as any);
+      mockReaddir.mockResolvedValue([
+        'singleton-pattern.md',
+        'factory-pattern.md',
+        'learned-patterns.md',
+      ] as any);
 
       const patternContent = `# Singleton Pattern
 

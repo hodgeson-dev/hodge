@@ -134,7 +134,10 @@ export class ExploreCommand {
           console.log(
             chalk.green(`✓ Created new feature ${featureID.localID} linked to ${feature}`)
           );
-          this.logger.info('Created linked feature', { localID: featureID.localID, externalID: feature });
+          this.logger.info('Created linked feature', {
+            localID: featureID.localID,
+            externalID: feature,
+          });
           // Update PM tracking - mark as exploring at START of phase (fire-and-forget for performance)
           this.pmHooks.onExplore(featureID.localID, feature).catch(() => {
             // Silently handle PM update failures
@@ -148,7 +151,10 @@ export class ExploreCommand {
           // Silently handle PM update failures
         });
         if (featureID.externalID) {
-          this.logger.info('Using existing feature with external ID', { localID: featureID.localID, externalID: featureID.externalID });
+          this.logger.info('Using existing feature with external ID', {
+            localID: featureID.localID,
+            externalID: featureID.externalID,
+          });
           console.log(
             chalk.blue(`ℹ️  Using existing feature ${featureID.localID} (${featureID.externalID})`)
           );

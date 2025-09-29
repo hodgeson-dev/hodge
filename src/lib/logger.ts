@@ -46,36 +46,42 @@ const errorDestination = pino.destination({
 });
 
 // Create the base logger
-export const logger = pino({
-  level: process.env.LOG_LEVEL ?? 'info',
-  timestamp: pino.stdTimeFunctions.isoTime,
-  formatters: {
-    level: (label: string) => ({ level: label }),
-    bindings: (bindings: Record<string, unknown>) => ({
-      pid: bindings.pid as number,
-      // Remove hostname for privacy
-    })
+export const logger = pino(
+  {
+    level: process.env.LOG_LEVEL ?? 'info',
+    timestamp: pino.stdTimeFunctions.isoTime,
+    formatters: {
+      level: (label: string) => ({ level: label }),
+      bindings: (bindings: Record<string, unknown>) => ({
+        pid: bindings.pid as number,
+        // Remove hostname for privacy
+      }),
+    },
+    base: {
+      // Base context for all logs
+      hodgeVersion: process.env.npm_package_version,
+    },
   },
-  base: {
-    // Base context for all logs
-    hodgeVersion: process.env.npm_package_version,
-  }
-}, logDestination);
+  logDestination
+);
 
 // Also create error-only logger
-export const errorLogger = pino({
-  level: 'error',
-  timestamp: pino.stdTimeFunctions.isoTime,
-  formatters: {
-    level: (label: string) => ({ level: label }),
-    bindings: (bindings: Record<string, unknown>) => ({
-      pid: bindings.pid as number,
-    })
+export const errorLogger = pino(
+  {
+    level: 'error',
+    timestamp: pino.stdTimeFunctions.isoTime,
+    formatters: {
+      level: (label: string) => ({ level: label }),
+      bindings: (bindings: Record<string, unknown>) => ({
+        pid: bindings.pid as number,
+      }),
+    },
+    base: {
+      hodgeVersion: process.env.npm_package_version,
+    },
   },
-  base: {
-    hodgeVersion: process.env.npm_package_version,
-  }
-}, errorDestination);
+  errorDestination
+);
 
 /**
  * Create a child logger for a specific command
@@ -84,7 +90,7 @@ export const errorLogger = pino({
 export function createCommandLogger(command: string): pino.Logger {
   return logger.child({
     command,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 }
 
@@ -109,9 +115,7 @@ export class LogRotator {
 
   private async getLogFiles(): Promise<string[]> {
     const files = await fs.readdir(logDir);
-    return files
-      .filter(f => f.endsWith('.log'))
-      .map(f => path.join(logDir, f));
+    return files.filter((f) => f.endsWith('.log')).map((f) => path.join(logDir, f));
   }
 
   private async checkAndRotate(filePath: string): Promise<void> {
@@ -149,7 +153,7 @@ export class LogRotator {
       logger.info('Log rotated', {
         original: filePath,
         rotated: rotatedPath,
-        reason
+        reason,
       });
     } catch (error) {
       logger.error('Failed to rotate log', { filePath, error });
@@ -158,13 +162,13 @@ export class LogRotator {
 
   private async cleanOldFiles(): Promise<void> {
     const files = await this.getLogFiles();
-    const rotatedFiles = files.filter(f => f.includes('.2'));
+    const rotatedFiles = files.filter((f) => f.includes('.2'));
 
     // Sort by modification time, oldest first
     const fileStats = await Promise.all(
       rotatedFiles.map(async (file) => ({
         file,
-        mtime: (await fs.stat(file)).mtime.getTime()
+        mtime: (await fs.stat(file)).mtime.getTime(),
       }))
     );
 
@@ -172,7 +176,7 @@ export class LogRotator {
 
     // Remove old files by age
     const now = Date.now();
-    const toDelete = fileStats.filter(f => now - f.mtime > this.maxAge);
+    const toDelete = fileStats.filter((f) => now - f.mtime > this.maxAge);
 
     // Also remove if we have too many files
     const keepCount = this.maxFiles;
@@ -234,7 +238,7 @@ export default {
   },
   debug: (message: string, ...args: unknown[]) => {
     logger.debug({ args }, message);
-    if ((isInitCommand && !process.env.HODGE_SILENT) && process.env.DEBUG) {
+    if (isInitCommand && !process.env.HODGE_SILENT && process.env.DEBUG) {
       console.debug(message, ...args);
     }
   },

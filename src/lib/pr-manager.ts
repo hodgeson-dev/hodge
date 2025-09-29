@@ -74,7 +74,7 @@ export class PRManager {
     if (!hasGH) {
       return {
         success: false,
-        error: 'GitHub CLI (gh) is not installed. Install it from https://cli.github.com'
+        error: 'GitHub CLI (gh) is not installed. Install it from https://cli.github.com',
       };
     }
 
@@ -82,7 +82,7 @@ export class PRManager {
     if (!isGitHub) {
       return {
         success: false,
-        error: 'Not a GitHub repository'
+        error: 'Not a GitHub repository',
       };
     }
 
@@ -120,12 +120,12 @@ export class PRManager {
       return {
         success: true,
         url: urlMatch?.[0],
-        number: numberMatch ? parseInt(numberMatch[1], 10) : undefined
+        number: numberMatch ? parseInt(numberMatch[1], 10) : undefined,
       };
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : String(error)
+        error: error instanceof Error ? error.message : String(error),
       };
     }
   }
@@ -160,7 +160,7 @@ export class PRManager {
           title: pr.title,
           state: pr.state,
           base: pr.baseRefName,
-          head: pr.headRefName
+          head: pr.headRefName,
         };
       }
     } catch {
@@ -208,7 +208,7 @@ export class PRManager {
     // Changes section
     if (options.commits && options.commits.length > 0) {
       sections.push('\n## Changes');
-      options.commits.forEach(commit => {
+      options.commits.forEach((commit) => {
         sections.push(`- ${commit}`);
       });
     }
@@ -249,7 +249,7 @@ export class PRManager {
       const body = this.generatePRBody({
         feature,
         branch,
-        description: `Part ${i + 1} of ${branches.length} in stack\n\nDepends on: ${i > 0 ? branches[i - 1] : 'main'}`
+        description: `Part ${i + 1} of ${branches.length} in stack\n\nDepends on: ${i > 0 ? branches[i - 1] : 'main'}`,
       });
 
       const result = await this.createPR({
@@ -258,7 +258,7 @@ export class PRManager {
         base: baseBranch,
         head: branch,
         draft: !isLast, // All but the last PR are drafts
-        labels: ['stacked-pr']
+        labels: ['stacked-pr'],
       });
 
       results.push(result);

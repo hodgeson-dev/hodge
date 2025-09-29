@@ -14,10 +14,10 @@ vi.mock('fs', () => ({
   promises: {
     readFile: vi.fn(),
     readdir: vi.fn(),
-    access: vi.fn()
+    access: vi.fn(),
   },
   readFile: vi.fn(),
-  access: vi.fn()
+  access: vi.fn(),
 }));
 
 describe('CacheManager', () => {
@@ -71,16 +71,14 @@ describe('CacheManager', () => {
     });
 
     it('should respect TTL expiration', async () => {
-      const loader = vi.fn()
-        .mockResolvedValueOnce('data-1')
-        .mockResolvedValueOnce('data-2');
+      const loader = vi.fn().mockResolvedValueOnce('data-1').mockResolvedValueOnce('data-2');
 
       // First call
       const result1 = await cacheManager.getOrLoad('test-key', loader, { ttl: 50 });
       expect(result1).toBe('data-1');
 
       // Wait for TTL to expire
-      await new Promise(resolve => setTimeout(resolve, 60));
+      await new Promise((resolve) => setTimeout(resolve, 60));
 
       // Second call after TTL
       const result2 = await cacheManager.getOrLoad('test-key', loader, { ttl: 50 });
@@ -94,13 +92,16 @@ describe('CacheManager', () => {
     });
 
     it('should throw error for non-function loader', async () => {
-      await expect(cacheManager.getOrLoad('key', 'not-a-function' as any)).rejects.toThrow('Loader must be a function');
+      await expect(cacheManager.getOrLoad('key', 'not-a-function' as any)).rejects.toThrow(
+        'Loader must be a function'
+      );
     });
 
     it('should propagate loader errors with context', async () => {
       const loader = vi.fn().mockRejectedValue(new Error('Load failed'));
-      await expect(cacheManager.getOrLoad('test-key', loader))
-        .rejects.toThrow('Failed to load data for key "test-key": Load failed');
+      await expect(cacheManager.getOrLoad('test-key', loader)).rejects.toThrow(
+        'Failed to load data for key "test-key": Load failed'
+      );
     });
   });
 
@@ -143,9 +144,7 @@ describe('CacheManager', () => {
   describe('checkExistence', () => {
     it('should check multiple paths in parallel', async () => {
       const mockAccess = vi.mocked(fsPromises.access);
-      mockAccess
-        .mockResolvedValueOnce(undefined)
-        .mockRejectedValueOnce(new Error('Not found'));
+      mockAccess.mockResolvedValueOnce(undefined).mockRejectedValueOnce(new Error('Not found'));
 
       const paths = ['/exists.txt', '/missing.txt'];
       const results = await cacheManager.checkExistence(paths);
