@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-291",
+  "timestamp": "2025-09-29T00:30:02.188Z",
+  "issueId": "HODGE-291",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "feat: implement persistent logging infrastructure with Pino (HODGE-291)\n\n## What Changed\n- Added Pino high-performance logger (src/lib/logger.ts) with file rotation\n- Created logs command for viewing and tailing log files (src/commands/logs.ts)\n- Added smoke tests for logger functionality (src/lib/logger.smoke.test.ts)\n- Configured JSON logging with pino-pretty for development\n- Set up hybrid rotation: daily + 10MB size limits\n- Updated explore command to use new logger\n- Added 5 architecture decisions for logging approach\n\n## Why This Change\nThe codebase had 859 console.log calls across 46 files that were practically invisible\nwhen commands ran inside Claude Code slash commands. Critical debugging information\nwas lost after execution, making issues like the HODGE-291 vs persistent-logging\nnaming conflict impossible to debug without proper logs.\n\n## Impact\n- ✨ Persistent debugging capability for Claude Code executions\n- 📊 Structured JSON logs for production analysis\n- 🎯 Log levels (DEBUG, INFO, WARN, ERROR) for filtering\n- 💾 Automatic log rotation prevents disk space issues\n- 🚀 10-20x faster than Winston with minimal overhead\n- 🔍 `hodge logs` command for viewing and tailing logs\n\n## Technical Details\n- Default log level: INFO (configurable via LOG_LEVEL env)\n- Log location: .hodge/logs/hodge.log\n- Rotation: Daily + 10MB max size, keeping 7 days\n- Child loggers for command-specific context\n- Console output preserved only for init command\n\nCloses HODGE-291"
+}

@@ -1,21 +1,22 @@
 # Error Boundary
 
 **Category**: error-handling
-**Frequency**: Used 3 times
-**Confidence**: 60%
+**Frequency**: Used 4 times
+**Confidence**: 80%
 
 ## Description
 Consistent error handling with logging
 
 ## Examples
 
-### src/commands/init.ts
+### src/commands/explore.ts
 ```typescript
-try {
-      this.detector = new ProjectDetector(rootPath);
-      this.generator = new StructureGenerator(rootPath);
-    } catch (error) {
-      if (error instanceof ValidationError || error instanceof
+.catch(() => {
+          // Silently handle PM update failures
+        });
+      } else if (!featureID) {
+        // It looks like an ID but we couldn't find it
+        // Create a new feature and lin
 ```
 
 
@@ -30,14 +31,18 @@ try {
 ```
 
 
-### src/lib/detection.ts
+### src/lib/logger.ts
 ```typescript
 try {
-      const stat = fs.statSync(this.rootPath);
-      if (!stat.isDirectory()) {
-        throw new ValidationError(`Path is not a directory: ${this.rootPath}`, 'rootPath');
-      }
-    } catch (e
+    fs.ensureDirSync(projectLogDir, { mode: 0o755 });
+    return projectLogDir;
+  } catch {
+    fs.ensureDirSync(fallbackLogDir, { mode: 0o755 });
+    return fallbackLogDir;
+  }
+}
+
+const logDir 
 ```
 
 
@@ -47,5 +52,5 @@ try {
 - 
 
 ---
-*First seen: 2025-09-27T12:27:38.821Z*
-*Last used: 2025-09-27T12:27:38.932Z*
+*First seen: 2025-09-29T00:30:02.305Z*
+*Last used: 2025-09-29T00:30:02.310Z*

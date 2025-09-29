@@ -26,6 +26,101 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-27 - Console output only for init command - preserves user feedback for interactive initialization while keeping other commands silent for Claude Code execution
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-291
+
+**Decision**:
+Console output only for init command - preserves user feedback for interactive initialization while keeping other commands silent for Claude Code execution
+
+**Rationale**:
+Recorded via `hodge decide` command at 7:45:51 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-27 - Default log level set to INFO - captures command flow and important events without excessive noise, configurable via LOG_LEVEL environment variable
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-291
+
+**Decision**:
+Default log level set to INFO - captures command flow and important events without excessive noise, configurable via LOG_LEVEL environment variable
+
+**Rationale**:
+Recorded via `hodge decide` command at 7:44:50 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-27 - JSON log format with pino-pretty tool for development - provides structured data for production debugging with human-readable output for local development
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-291
+
+**Decision**:
+JSON log format with pino-pretty tool for development - provides structured data for production debugging with human-readable output for local development
+
+**Rationale**:
+Recorded via `hodge decide` command at 7:40:24 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-27 - Hybrid log rotation strategy with both size (10MB) and time (daily) limits - ensures predictable disk usage while maintaining temporal organization
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-291
+
+**Decision**:
+Hybrid log rotation strategy with both size (10MB) and time (daily) limits - ensures predictable disk usage while maintaining temporal organization
+
+**Rationale**:
+Recorded via `hodge decide` command at 7:38:56 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-27 - Use Pino high-performance logger for persistent logging - 10-20x faster than Winston, minimal overhead, production-proven with child logger support
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-291
+
+**Decision**:
+Use Pino high-performance logger for persistent logging - 10-20x faster than Winston, minimal overhead, production-proven with child logger support
+
+**Rationale**:
+Recorded via `hodge decide` command at 7:37:34 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-24 - Implement core unification only in this feature - focused scope for faster delivery, defer advanced features like caching optimization to future work
 
 **Status**: Accepted

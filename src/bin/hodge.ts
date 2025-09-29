@@ -206,6 +206,25 @@ const linkCmd = program
     await linkCommand.execute(localID, externalID);
   });
 
+// Public command for viewing logs - always visible
+program
+  .command('logs')
+  .description('View and manage Hodge logs')
+  .option('-l, --level <level>', 'Filter by log level (info, warn, error, debug)')
+  .option('-c, --command <command>', 'Filter by command name')
+  .option('-t, --tail <number>', 'Show only last n lines')
+  .option('-f, --follow', 'Follow log output (like tail -f)')
+  .option('--clear', 'Clear all log files')
+  .option('--no-pretty', 'Disable pretty printing, show raw JSON')
+  .action(async (options: { level?: string; command?: string; tail?: string; follow?: boolean; clear?: boolean; pretty?: boolean }) => {
+    const { LogsCommand } = await import('../commands/logs');
+    const logsCommand = new LogsCommand();
+    await logsCommand.execute({
+      ...options,
+      tail: options.tail ? parseInt(options.tail) : undefined
+    });
+  });
+
 // Check if --show-internal is in the args BEFORE we parse
 const showInternal = process.argv.includes('--show-internal');
 

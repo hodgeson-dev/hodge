@@ -10,6 +10,7 @@ import { existsSync } from 'fs';
 import { cacheManager, featureCache, standardsCache } from '../lib/cache-manager.js';
 import { PatternLearner } from '../lib/pattern-learner.js';
 import { IDManager, type FeatureID } from '../lib/id-manager.js';
+import { createCommandLogger } from '../lib/logger.js';
 import { sessionManager } from '../lib/session-manager.js';
 import { FeaturePopulator } from '../lib/feature-populator.js';
 import { FeatureSpecLoader } from '../lib/feature-spec-loader.js';
@@ -70,6 +71,7 @@ export class ExploreCommand {
   private patternLearner = new PatternLearner();
   private idManager: IDManager;
   private pmHooks = new PMHooks();
+  private logger = createCommandLogger('explore');
 
   constructor(idManager?: IDManager) {
     this.idManager = idManager || new IDManager();
@@ -86,6 +88,7 @@ export class ExploreCommand {
 
     if (options.verbose || process.env.DEBUG) {
       console.log(chalk.gray(`Input detection: "${feature}" → ${inputType}`));
+      this.logger.debug('Input detection', { feature, inputType });
     }
 
     if (inputType === 'topic') {
@@ -94,6 +97,7 @@ export class ExploreCommand {
       console.log(
         chalk.yellow('Topic exploration not yet implemented. Treating as feature for now.\n')
       );
+      this.logger.info('Topic exploration requested', { topic: feature });
     }
 
     // Handle ID management
@@ -110,6 +114,7 @@ export class ExploreCommand {
         featureID = await this.idManager.createFeature(feature);
         featureName = featureID.localID;
         console.log(chalk.green(`✓ Created new feature: ${featureID.localID}`));
+        this.logger.info('Created new feature', { featureID: featureID.localID, name: feature });
         // Update PM tracking - mark as exploring at START of phase (fire-and-forget for performance)
         this.pmHooks.onExplore(featureID.localID, feature).catch(() => {
           // Silently handle PM update failures
@@ -118,6 +123,7 @@ export class ExploreCommand {
         // It looks like an ID but we couldn't find it
         // Create a new feature and link it if it's an external ID
         if (feature.startsWith('HODGE-')) {
+          this.logger.error('Feature not found', { feature });
           console.log(chalk.red(`❌ Feature ${feature} not found`));
           return;
         } else {
@@ -128,6 +134,7 @@ export class ExploreCommand {
           console.log(
             chalk.green(`✓ Created new feature ${featureID.localID} linked to ${feature}`)
           );
+          this.logger.info('Created linked feature', { localID: featureID.localID, externalID: feature });
           // Update PM tracking - mark as exploring at START of phase (fire-and-forget for performance)
           this.pmHooks.onExplore(featureID.localID, feature).catch(() => {
             // Silently handle PM update failures
@@ -141,6 +148,7 @@ export class ExploreCommand {
           // Silently handle PM update failures
         });
         if (featureID.externalID) {
+          this.logger.info('Using existing feature with external ID', { localID: featureID.localID, externalID: featureID.externalID });
           console.log(
             chalk.blue(`ℹ️  Using existing feature ${featureID.localID} (${featureID.externalID})`)
           );

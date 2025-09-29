@@ -33,7 +33,9 @@
     "quality": "npm run typecheck && npm run lint && npm run test",
     "prepare": "husky",
     "prepublishOnly": "npm run build",
-    "update-pm-scripts": "npm run build && node scripts/update-pm-scripts.js"
+    "update-pm-scripts": "npm run build && node scripts/update-pm-scripts.js",
+    "logs": "tsx src/bin/hodge.ts logs",
+    "logs:follow": "tsx src/bin/hodge.ts logs --follow"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -47,6 +49,7 @@
     "inquirer": "^8.2.6",
     "js-yaml": "^4.1.0",
     "ora": "^5.4.1",
+    "pino": "^8.16.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
@@ -58,6 +61,7 @@
     "@typescript-eslint/eslint-plugin": "^6.19.0",
     "@typescript-eslint/parser": "^6.19.0",
     "@vitest/coverage-v8": "^1.2.0",
+    "pino-pretty": "^10.2.0",
     "dotenv": "^17.2.2",
     "eslint": "^8.56.0",
     "husky": "^9.1.7",

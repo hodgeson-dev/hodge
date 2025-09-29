@@ -3,23 +3,24 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: general
+**Feature**: HODGE-294
 **Mode**: explore
-**Last Updated**: 2025-09-24T17:04:27.959Z
+**PM Issue**: HODGE-294
+**Last Updated**: 2025-09-29T00:19:25.800Z
 ## Current Session
-**Resumed**: 34 hours ago
-**Progress**: Explored HODGE-288 - template ready for AI approach generation
-**Working on**: HODGE-288 (explore mode)
+**Resumed**: 30 hours ago
+**Progress**: Explored HODGE-294 - template ready for AI approach generation
+**Working on**: HODGE-294 (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-288. Explored HODGE-288 - template ready for AI approach generation
+You were helping with HODGE-294. Explored HODGE-294 - template ready for AI approach generation
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
-- **2025-09-24**: Implement core unification only in this feature - focused scope for faster delivery, defer advanced features like caching optimization to future work
-- **2025-09-24**: Preserve LocalPMAdapter special behaviors through constructor-based handling - maintains always-on guarantee while allowing unified architecture
-- **2025-09-24**: LocalPMAdapter should extend BasePMAdapter for unified architecture - provides code reuse, better testability, and consistent interfaces while preserving special behaviors
-- **2025-09-24**: Smart issue ID mapping with fallback strategy: try exact match first, then title search, maintain mapping cache in
-- **2025-09-24**: Configurable PM comment verbosity with three levels: minimal (status only), essential (commit, files, tests), and rich (full metrics, patterns, coverage)
+- **2025-09-27**: Console output only for init command - preserves user feedback for interactive initialization while keeping other commands silent for Claude Code execution
+- **2025-09-27**: Default log level set to INFO - captures command flow and important events without excessive noise, configurable via LOG_LEVEL environment variable
+- **2025-09-27**: JSON log format with pino-pretty tool for development - provides structured data for production debugging with human-readable output for local development
+- **2025-09-27**: Hybrid log rotation strategy with both size (10MB) and time (daily) limits - ensures predictable disk usage while maintaining temporal organization
+- **2025-09-27**: Use Pino high-performance logger for persistent logging - 10-20x faster than Winston, minimal overhead, production-proven with child logger support
 
 ## Active Standards
 
@@ -101,11 +102,17 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - Full test coverage required
 - Performance benchmarks met
 
+## Working Files
+
+- `.hodge/features/HODGE-294/explore/context.json`
+- `.hodge/features/HODGE-294/explore/exploration.md`
+- `.hodge/features/HODGE-294/explore/test-intentions.md`
+
 ## Next Steps
 
 1. Review exploration approaches
 2. Make decision with `hodge decide`
-3. Start building with `hodge build general`
+3. Start building with `hodge build HODGE-294`
 
 
 ---
