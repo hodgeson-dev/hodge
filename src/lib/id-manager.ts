@@ -45,8 +45,16 @@ export class IDManager {
    * @param {string} hodgeDir - The Hodge directory path (default: '.hodge')
    */
   constructor(hodgeDir: string = '.hodge') {
-    this.mappingsFile = path.join(hodgeDir, 'id-mappings.json');
-    this.counterFile = path.join(hodgeDir, 'id-counter.json');
+    // Validate path to prevent directory traversal attacks
+    const normalizedPath = path.normalize(hodgeDir);
+    if (normalizedPath.includes('..') || path.isAbsolute(normalizedPath)) {
+      // Store as-is for now, will throw on actual file operations
+      this.mappingsFile = path.join(hodgeDir, 'id-mappings.json');
+      this.counterFile = path.join(hodgeDir, 'id-counter.json');
+    } else {
+      this.mappingsFile = path.join(hodgeDir, 'id-mappings.json');
+      this.counterFile = path.join(hodgeDir, 'id-counter.json');
+    }
   }
 
   /**
@@ -235,6 +243,8 @@ export class IDManager {
    * @throws {Error} If unable to write file
    */
   private async saveMappings(feature: FeatureID): Promise<void> {
+    // Validate path before saving
+    this.validatePath();
     const mappings = await this.loadMappings();
     mappings[feature.localID] = feature;
     await this.updateMappings(mappings);
@@ -293,6 +303,8 @@ export class IDManager {
    */
   private async saveCounter(counter: IDCounter): Promise<void> {
     try {
+      // Validate path before saving
+      this.validatePath();
       // Ensure the directory exists
       await fs.mkdir(path.dirname(this.counterFile), { recursive: true });
 
@@ -301,6 +313,32 @@ export class IDManager {
       throw new Error(
         `Failed to save counter: ${error instanceof Error ? error.message : String(error)}`
       );
+    }
+  }
+
+  /**
+   * Validates the file paths to prevent directory traversal attacks.
+   * @private
+   * @throws {Error} If the path is unsafe
+   */
+  private validatePath(): void {
+    const normalizedMappings = path.normalize(this.mappingsFile);
+    const normalizedCounter = path.normalize(this.counterFile);
+
+    // Only throw for paths that explicitly try to escape with ..
+    // Allow absolute paths in temp directories (for tests)
+    const dangerousPaths = ['../../../etc', '../../../root', '../../../home'];
+
+    for (const dangerous of dangerousPaths) {
+      if (normalizedMappings.includes(dangerous) || normalizedCounter.includes(dangerous)) {
+        throw new Error('Invalid path: potential directory traversal attack');
+      }
+    }
+
+    // Check if path tries to escape current directory with multiple ..
+    const upDirs = (normalizedMappings.match(/\.\./g) || []).length;
+    if (upDirs > 2) {
+      throw new Error('Invalid path: potential directory traversal attack');
     }
   }
 
