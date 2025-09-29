@@ -2,8 +2,23 @@ import chalk from 'chalk';
 import { LocalPMAdapter } from './local-pm-adapter.js';
 import { getConfigManager } from '../config-manager.js';
 import { ShipContext } from './types.js';
+import { IDManager } from '../id-manager.js';
+import { LinearAdapter } from './linear-adapter.js';
+import { GitHubAdapter } from './github-adapter.js';
+import fs from 'fs/promises';
+import path from 'path';
+import { existsSync } from 'fs';
 
 type WorkflowPhase = 'explore' | 'build' | 'harden' | 'ship';
+
+interface QueuedOperation {
+  type: 'create_issue' | 'create_epic';
+  feature: string;
+  decisions: string[];
+  isEpic?: boolean;
+  subIssues?: Array<{ id: string; title: string }>;
+  timestamp: string;
+}
 
 /**
  * PM integration hooks with configuration support and better error handling
@@ -16,9 +31,12 @@ export class PMHooks {
   private localAdapter: LocalPMAdapter;
   private configManager = getConfigManager();
   private shipContext?: ShipContext;
+  private idManager: IDManager;
+  private pmQueueFile = '.hodge/.pm-queue.json';
 
   constructor(basePath?: string) {
     this.localAdapter = new LocalPMAdapter(basePath);
+    this.idManager = new IDManager();
   }
 
   /**
@@ -306,5 +324,228 @@ export class PMHooks {
     comment += `_Updated by Hodge${context.hodgeVersion ? ` v${context.hodgeVersion}` : ''}_`;
 
     return comment;
+  }
+
+  /**
+   * Create PM issue after decide phase completes
+   * Per our decisions: issues are created after decide, not during explore
+   */
+  async createPMIssue(
+    feature: string,
+    decisions: string[],
+    isEpic: boolean = false,
+    subIssues?: Array<{ id: string; title: string }>
+  ): Promise<{ created: boolean; issueId?: string; error?: string }> {
+    try {
+      // Get PM configuration
+      const pmTool = await this.configManager.getPMTool();
+      const apiKey = this.configManager.getPMApiKey(pmTool);
+
+      // Skip if no PM tool configured
+      if (!pmTool || !apiKey || pmTool === 'local') {
+        return { created: false, error: 'No PM tool configured' };
+      }
+
+      // Check if issue already exists
+      const featureId = await this.idManager.resolveID(feature);
+      if (featureId?.externalID) {
+        return { created: false, error: 'Issue already exists', issueId: featureId.externalID };
+      }
+
+      // Create the issue based on PM tool
+      let externalId: string | undefined;
+
+      switch (pmTool) {
+        case 'linear': {
+          const linearAdapter = new LinearAdapter({
+            config: {
+              tool: 'linear' as const,
+              apiKey,
+              teamId: process.env.LINEAR_TEAM_ID || '',
+            },
+          });
+
+          // Create issue with decisions in description
+          const description = this.formatDecisionsForPM(decisions);
+          const issue = await linearAdapter.createIssue(feature, description);
+          externalId = issue.id;
+
+          // Handle sub-issues if this is an epic
+          if (isEpic && subIssues) {
+            // Create sub-issues atomically (with rollback on failure)
+            const createdSubIssues: string[] = [];
+            try {
+              for (const subIssue of subIssues) {
+                const sub = await linearAdapter.createIssue(
+                  subIssue.title,
+                  `Sub-task of ${feature}`
+                );
+                createdSubIssues.push(sub.id);
+                // Map sub-issue ID
+                await this.idManager.mapFeature(subIssue.id, sub.id, 'linear');
+              }
+            } catch (error) {
+              // Rollback: delete created sub-issues
+              for (const subId of createdSubIssues) {
+                // Linear doesn't have a delete API, so we'll close them
+                await linearAdapter.updateIssueState(subId, 'canceled');
+              }
+              // Queue for retry
+              await this.queuePMOperation({
+                type: 'create_epic',
+                feature,
+                decisions,
+                isEpic,
+                subIssues,
+                timestamp: new Date().toISOString(),
+              });
+              throw error;
+            }
+          }
+          break;
+        }
+
+        case 'github': {
+          const githubRepo = process.env.GITHUB_REPO || '';
+          const githubAdapter = new GitHubAdapter({
+            config: {
+              tool: 'github' as const,
+              apiKey,
+              projectId: githubRepo,
+            },
+          });
+
+          const description = this.formatDecisionsForPM(decisions);
+          const issue = await githubAdapter.createIssue(feature, description);
+          externalId = issue.id;
+          break;
+        }
+
+        default:
+          return { created: false, error: `PM tool ${pmTool} not supported` };
+      }
+
+      // Map the external ID
+      if (externalId) {
+        await this.idManager.mapFeature(feature, externalId, pmTool);
+        return { created: true, issueId: externalId };
+      }
+
+      return { created: false, error: 'Failed to create issue' };
+    } catch (error) {
+      // Queue for later retry
+      await this.queuePMOperation({
+        type: 'create_issue',
+        feature,
+        decisions,
+        isEpic,
+        subIssues,
+        timestamp: new Date().toISOString(),
+      });
+
+      const debugMode = await this.configManager.isDebugMode();
+      if (debugMode) {
+        console.log(chalk.yellow(`   ⚠️  Queued PM issue creation for later (${String(error)})`));
+      }
+
+      return { created: false, error: String(error) };
+    }
+  }
+
+  /**
+   * Format decisions for PM issue description
+   */
+  private formatDecisionsForPM(decisions: string[]): string {
+    if (decisions.length === 0) {
+      return 'Created via Hodge workflow';
+    }
+
+    let description = '## Decisions Made\n\n';
+    decisions.forEach((decision, index) => {
+      description += `${index + 1}. ${decision}\n`;
+    });
+    description += '\n---\n_Created by Hodge after decide phase_';
+    return description;
+  }
+
+  /**
+   * Queue PM operation for later retry
+   */
+  private async queuePMOperation(operation: QueuedOperation): Promise<void> {
+    try {
+      let queue: QueuedOperation[] = [];
+      if (existsSync(this.pmQueueFile)) {
+        const content = await fs.readFile(this.pmQueueFile, 'utf-8');
+        queue = JSON.parse(content) as QueuedOperation[];
+      }
+
+      queue.push(operation);
+
+      // Ensure directory exists
+      await fs.mkdir(path.dirname(this.pmQueueFile), { recursive: true });
+      await fs.writeFile(this.pmQueueFile, JSON.stringify(queue, null, 2));
+    } catch (error) {
+      // Silently fail - queue is best effort
+      const debugMode = await this.configManager.isDebugMode();
+      if (debugMode) {
+        console.log(chalk.gray(`   Could not queue operation: ${String(error)}`));
+      }
+    }
+  }
+
+  /**
+   * Process queued PM operations
+   */
+  async processQueue(): Promise<void> {
+    if (!existsSync(this.pmQueueFile)) {
+      return;
+    }
+
+    try {
+      const content = await fs.readFile(this.pmQueueFile, 'utf-8');
+      const queue = JSON.parse(content) as QueuedOperation[];
+
+      if (queue.length === 0) {
+        return;
+      }
+
+      const debugMode = await this.configManager.isDebugMode();
+      if (debugMode) {
+        console.log(chalk.blue(`📋 Processing ${queue.length} queued PM operations...`));
+      }
+
+      const remaining: QueuedOperation[] = [];
+      for (const operation of queue) {
+        try {
+          if (operation.type === 'create_issue' || operation.type === 'create_epic') {
+            const result = await this.createPMIssue(
+              operation.feature,
+              operation.decisions,
+              operation.isEpic || false,
+              operation.subIssues
+            );
+            if (!result.created && result.error !== 'Issue already exists') {
+              remaining.push(operation);
+            }
+          }
+        } catch (error) {
+          remaining.push(operation);
+        }
+      }
+
+      // Update queue with remaining operations
+      if (remaining.length > 0) {
+        await fs.writeFile(this.pmQueueFile, JSON.stringify(remaining, null, 2));
+      } else {
+        // Delete queue file if empty
+        await fs.unlink(this.pmQueueFile);
+      }
+    } catch (error) {
+      // Silently fail
+      const debugMode = await this.configManager.isDebugMode();
+      if (debugMode) {
+        console.log(chalk.gray(`   Could not process queue: ${String(error)}`));
+      }
+    }
   }
 }

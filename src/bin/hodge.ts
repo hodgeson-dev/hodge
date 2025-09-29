@@ -149,6 +149,17 @@ const decideCmd = program
     await decideCommand.execute(decision, options);
   });
 
+program
+  .command('plan [feature]')
+  .description('[Internal] Plan work structure and create PM issues')
+  .option('--lanes <number>', 'Number of development lanes', parseInt)
+  .option('--local-only', 'Skip PM tool integration')
+  .action(async (feature: string | undefined, options: { lanes?: number; localOnly?: boolean }) => {
+    const { PlanCommand } = await import('../commands/plan');
+    const planCommand = new PlanCommand();
+    await planCommand.execute({ feature, ...options });
+  });
+
 const shipCmd = program
   .command('ship [feature]')
   .description('[Internal] Ship a feature (uses current context if not specified)')

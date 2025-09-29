@@ -50,6 +50,12 @@ export interface HodgeConfig {
     autoSave?: boolean;
     debugMode?: boolean;
   };
+  planning?: {
+    developmentLanes?: number;
+    laneNames?: string[];
+    autoAssignDependencies?: boolean;
+    defaultStorySize?: 'small' | 'medium' | 'large';
+  };
 }
 
 export interface GeneratedConfig {

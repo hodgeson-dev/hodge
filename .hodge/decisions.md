@@ -26,6 +26,386 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-29 - Create epic for authentication
+
+**Status**: Accepted
+
+**Context**:
+Feature: TEST-001
+
+**Decision**:
+Create epic for authentication
+
+**Rationale**:
+Recorded via `hodge decide` command at 7:49:19 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Create epic for authentication
+
+**Status**: Accepted
+
+**Context**:
+Feature: TEST-001
+
+**Decision**:
+Create epic for authentication
+
+**Rationale**:
+Recorded via `hodge decide` command at 7:48:52 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Create epic for authentication
+
+**Status**: Accepted
+
+**Context**:
+Feature: TEST-001
+
+**Decision**:
+Create epic for authentication
+
+**Rationale**:
+Recorded via `hodge decide` command at 7:48:11 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Create epic for authentication
+
+**Status**: Accepted
+
+**Context**:
+Feature: TEST-001
+
+**Decision**:
+Create epic for authentication
+
+**Rationale**:
+Recorded via `hodge decide` command at 7:48:04 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Create epic for authentication
+
+**Status**: Accepted
+
+**Context**:
+Feature: TEST-001
+
+**Decision**:
+Create epic for authentication
+
+**Rationale**:
+Recorded via `hodge decide` command at 7:45:47 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Create epic for authentication
+
+**Status**: Accepted
+
+**Context**:
+Feature: TEST-001
+
+**Decision**:
+Create epic for authentication
+
+**Rationale**:
+Recorded via `hodge decide` command at 7:45:31 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Create epic for authentication
+
+**Status**: Accepted
+
+**Context**:
+Feature: TEST-001
+
+**Decision**:
+Create epic for authentication
+
+**Rationale**:
+Recorded via `hodge decide` command at 7:26:30 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Create epic for authentication
+
+**Status**: Accepted
+
+**Context**:
+Feature: TEST-001
+
+**Decision**:
+Create epic for authentication
+
+**Rationale**:
+Recorded via `hodge decide` command at 1:11:33 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - HODGE-296 decisions complete: PM issues created after decide, with parent/child tracking and queued retry on failures
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-296
+
+**Decision**:
+HODGE-296 decisions complete: PM issues created after decide, with parent/child tracking and queued retry on failures
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:36:13 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Support flexible mapping when syncing existing Linear epics to adapt to various structures
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-296
+
+**Decision**:
+Support flexible mapping when syncing existing Linear epics to adapt to various structures
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:36:06 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Rollback all on partial epic creation failure then queue entire epic for retry to maintain consistency
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-296
+
+**Decision**:
+Rollback all on partial epic creation failure then queue entire epic for retry to maintain consistency
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:34:03 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Queue PM issue creation for later if service unavailable during decide phase to maintain workflow continuity
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-296
+
+**Decision**:
+Queue PM issue creation for later if service unavailable during decide phase to maintain workflow continuity
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:33:14 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Add decisions to PM issues as comments, with initial creation including all decisions from decide phase
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-296
+
+**Decision**:
+Add decisions to PM issues as comments, with initial creation including all decisions from decide phase
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:32:33 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Track parent/child relationships in enhanced id-mappings
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-296
+
+**Decision**:
+Track parent/child relationships in enhanced id-mappings.json with hierarchy structure for single source of truth
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:31:24 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Never create PM issues for undecided features - only features that complete the decide phase get PM issues
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-296
+
+**Decision**:
+Never create PM issues for undecided features - only features that complete the decide phase get PM issues
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:30:40 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Create Linear issues after decide phase completes when full context and structure are known
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-296
+
+**Decision**:
+Create Linear issues after decide phase completes when full context and structure are known
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:27:47 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Atomic epic creation must gracefully degrade for PM tools that don't support it - create what's possible and track locally
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-296
+
+**Decision**:
+Atomic epic creation must gracefully degrade for PM tools that don't support it - create what's possible and track locally
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:27:18 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Use HODGE-XXX
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-296
+
+**Decision**:
+Use HODGE-XXX.Y format for sub-issues (e.g., HODGE-300.1) to maintain clear parent-child hierarchy
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:27:11 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Create epic and all sub-issues atomically to ensure consistent state and prevent partial failures
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-296
+
+**Decision**:
+Create epic and all sub-issues atomically to ensure consistent state and prevent partial failures
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:24:48 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Determine epic vs single issue during decide phase based on actual decisions made
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-296
+
+**Decision**:
+Determine epic vs single issue during decide phase based on actual decisions made
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:24:16 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-29 - Performance threshold: 5 seconds maximum - reasonable wait time allowing thorough checks with balanced user experience
 
 **Status**: Accepted

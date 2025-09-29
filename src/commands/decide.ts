@@ -8,11 +8,17 @@ export interface DecideOptions {
 }
 
 export class DecideCommand {
+  private basePath: string;
+
+  constructor(basePath?: string) {
+    this.basePath = basePath || process.cwd();
+  }
+
   async execute(decision: string, options: DecideOptions = {}): Promise<void> {
     console.log(chalk.yellow('📝 Recording Decision'));
 
     // Ensure decisions file exists
-    const decisionsFile = path.join('.hodge', 'decisions.md');
+    const decisionsFile = path.join(this.basePath, '.hodge', 'decisions.md');
 
     if (!existsSync(path.dirname(decisionsFile))) {
       await fs.mkdir(path.dirname(decisionsFile), { recursive: true });
@@ -98,7 +104,13 @@ To be determined based on implementation.
 
     // If feature is specified, also save to feature directory
     if (options.feature) {
-      const featureDecisionFile = path.join('.hodge', 'features', options.feature, 'decision.md');
+      const featureDecisionFile = path.join(
+        this.basePath,
+        '.hodge',
+        'features',
+        options.feature,
+        'decision.md'
+      );
       if (existsSync(path.dirname(featureDecisionFile))) {
         await fs.writeFile(
           featureDecisionFile,
@@ -117,12 +129,8 @@ This decision has been recorded in the main decisions file.
       }
     }
 
-    // Update PM issue if linked
-    const pmTool = process.env.HODGE_PM_TOOL;
-    if (options.feature && pmTool) {
-      console.log(chalk.blue(`📋 Updating ${pmTool} issue: ${options.feature}`));
-      // TODO: Update PM issue with decision comment via PM adapter
-    }
+    // PM integration has moved to /plan command
+    // Decisions are now purely about recording technical choices
 
     // AI Context Update
     console.log('\n' + chalk.bold('═'.repeat(60)));

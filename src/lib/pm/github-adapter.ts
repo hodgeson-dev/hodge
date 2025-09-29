@@ -2,15 +2,38 @@
  * GitHub Issues PM Adapter Implementation
  */
 
-import { Octokit } from '@octokit/rest';
 import { BasePMAdapter } from './base-adapter.js';
 import { PMAdapterOptions, PMIssue, PMState, StateType } from './types.js';
 import { execSync } from 'child_process';
 
+// Type definitions for GitHub API responses
+interface GitHubIssue {
+  number: number;
+  title: string;
+  state?: string;
+  body?: string | null;
+  html_url: string;
+}
+
+interface GitHubApiClient {
+  issues: {
+    get: (params: unknown) => Promise<{ data: GitHubIssue }>;
+    create: (params: unknown) => Promise<{ data: GitHubIssue }>;
+    update: (params: unknown) => Promise<{ data: GitHubIssue }>;
+    createComment: (params: unknown) => Promise<void>;
+    addLabels: (params: unknown) => Promise<void>;
+  };
+  search: {
+    issuesAndPullRequests: (params: unknown) => Promise<{ data: { items: GitHubIssue[] } }>;
+  };
+}
+
 export class GitHubAdapter extends BasePMAdapter {
-  private octokit: Octokit;
+  private octokit?: GitHubApiClient;
   private owner: string;
   private repo: string;
+  private apiKey: string;
+  private octokitLoaded = false;
 
   constructor(options: PMAdapterOptions) {
     super(options);
@@ -20,12 +43,39 @@ export class GitHubAdapter extends BasePMAdapter {
       throw new Error('GitHub token is required and must be a string');
     }
 
-    this.octokit = new Octokit({ auth: options.config.apiKey });
+    this.apiKey = options.config.apiKey;
 
     // Parse owner/repo from git remote or config
     const { owner, repo } = this.parseGitHubRepo();
     this.owner = owner;
     this.repo = repo;
+  }
+
+  /**
+   * Lazy-load Octokit to avoid CommonJS/ES module warnings
+   */
+  private async ensureOctokit(): Promise<void> {
+    if (!this.octokitLoaded) {
+      try {
+        // Dynamic import to avoid loading at module level
+        const { Octokit } = await import('@octokit/rest');
+        // Cast to our interface - we know the shape matches
+        this.octokit = new Octokit({ auth: this.apiKey }) as unknown as GitHubApiClient;
+        this.octokitLoaded = true;
+      } catch (error) {
+        throw new Error(`Failed to load GitHub API client: ${String(error)}`);
+      }
+    }
+  }
+
+  /**
+   * Get the octokit client, ensuring it's loaded
+   */
+  private getOctokit(): GitHubApiClient {
+    if (!this.octokit) {
+      throw new Error('GitHub client not initialized. Call ensureOctokit() first.');
+    }
+    return this.octokit;
   }
 
   /**
@@ -44,29 +94,142 @@ export class GitHubAdapter extends BasePMAdapter {
    * Get a specific issue from GitHub
    */
   async getIssue(issueId: string): Promise<PMIssue> {
+    await this.ensureOctokit();
+
     try {
       const issueNumber = this.parseIssueNumber(issueId);
-      const { data: issue } = await this.octokit.issues.get({
+      const octokit = this.getOctokit();
+      const { data: issue } = await octokit.issues.get({
         owner: this.owner,
         repo: this.repo,
         issue_number: issueNumber,
       });
 
       return {
-        id: String(issue.number),
+        id: issue.number.toString(),
         title: issue.title,
-        description: issue.body || undefined,
         state: {
-          id: issue.state,
+          id: issue.state ?? 'open',
           name: issue.state === 'closed' ? 'Closed' : 'Open',
-          type: issue.state === 'closed' ? 'completed' : 'started',
+          type: issue.state === 'closed' ? ('completed' as StateType) : ('started' as StateType),
         },
+        description: issue.body || '',
         url: issue.html_url,
-        labels: issue.labels.map((l) => (typeof l === 'string' ? l : l.name || '')),
-        assignee: issue.assignee?.login,
       };
     } catch (error) {
-      throw new Error(`Failed to get GitHub issue ${issueId}: ${String(error)}`);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      throw new Error(`Failed to fetch issue: ${errorMessage}`);
+    }
+  }
+
+  /**
+   * Create a new issue on GitHub
+   */
+  async createIssue(title: string, description?: string, _projectId?: string): Promise<PMIssue> {
+    await this.ensureOctokit();
+    const octokit = this.getOctokit();
+
+    try {
+      const { data: issue } = await octokit.issues.create({
+        owner: this.owner,
+        repo: this.repo,
+        title,
+        body: description ?? '',
+        labels: ['hodge'],
+      });
+
+      return {
+        id: issue.number.toString(),
+        title: issue.title,
+        state: {
+          id: issue.state ?? 'open',
+          name: issue.state === 'closed' ? 'Closed' : 'Open',
+          type: issue.state === 'closed' ? ('completed' as StateType) : ('started' as StateType),
+        },
+        description: issue.body || '',
+        url: issue.html_url,
+      };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      throw new Error(`Failed to create issue: ${errorMessage}`);
+    }
+  }
+
+  /**
+   * Update an existing issue on GitHub
+   */
+  async updateIssue(
+    issueId: string,
+    updates: { title?: string; description?: string; status?: string }
+  ): Promise<PMIssue> {
+    await this.ensureOctokit();
+    const octokit = this.getOctokit();
+
+    try {
+      const issueNumber = this.parseIssueNumber(issueId);
+
+      // Update basic fields
+      if (updates.title || updates.description) {
+        await octokit.issues.update({
+          owner: this.owner,
+          repo: this.repo,
+          issue_number: issueNumber,
+          ...(updates.title && { title: updates.title }),
+          ...(updates.description && { body: updates.description }),
+        });
+      }
+
+      // Handle status change (open/close)
+      if (updates.status === 'closed' || updates.status === 'completed') {
+        await octokit.issues.update({
+          owner: this.owner,
+          repo: this.repo,
+          issue_number: issueNumber,
+          state: 'closed',
+        });
+      } else if (updates.status === 'open' || updates.status === 'started') {
+        await octokit.issues.update({
+          owner: this.owner,
+          repo: this.repo,
+          issue_number: issueNumber,
+          state: 'open',
+        });
+      }
+
+      return this.getIssue(issueId);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      throw new Error(`Failed to update issue: ${errorMessage}`);
+    }
+  }
+
+  /**
+   * Search for issues by title
+   */
+  async searchIssues(query: string): Promise<PMIssue[]> {
+    await this.ensureOctokit();
+    const octokit = this.getOctokit();
+
+    try {
+      const { data } = await octokit.search.issuesAndPullRequests({
+        q: `${query} repo:${this.owner}/${this.repo} is:issue`,
+        per_page: 10,
+      });
+
+      return data.items.map((issue) => ({
+        id: issue.number.toString(),
+        title: issue.title,
+        state: {
+          id: issue.state ?? 'open',
+          name: issue.state === 'closed' ? 'Closed' : 'Open',
+          type: issue.state === 'closed' ? ('completed' as StateType) : ('started' as StateType),
+        },
+        description: issue.body || '',
+        url: issue.html_url,
+      }));
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      throw new Error(`Failed to search issues: ${errorMessage}`);
     }
   }
 
@@ -74,87 +237,66 @@ export class GitHubAdapter extends BasePMAdapter {
    * Update issue state in GitHub
    */
   async updateIssueState(issueId: string, stateId: string): Promise<void> {
+    await this.ensureOctokit();
+    const octokit = this.getOctokit();
+
     try {
       const issueNumber = this.parseIssueNumber(issueId);
-      const state = stateId === 'closed' || stateId === 'completed' ? 'closed' : 'open';
 
-      await this.octokit.issues.update({
+      // GitHub only has open/closed states
+      if (stateId === 'closed' || stateId === 'completed') {
+        await octokit.issues.update({
+          owner: this.owner,
+          repo: this.repo,
+          issue_number: issueNumber,
+          state: 'closed',
+        });
+      } else if (stateId === 'open' || stateId === 'started') {
+        await octokit.issues.update({
+          owner: this.owner,
+          repo: this.repo,
+          issue_number: issueNumber,
+          state: 'open',
+        });
+      } else {
+        // Add label for hodge workflow state
+        const labelName = `hodge:${stateId}`;
+        await octokit.issues.addLabels({
+          owner: this.owner,
+          repo: this.repo,
+          issue_number: issueNumber,
+          labels: [labelName],
+        });
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      throw new Error(`Failed to update issue state: ${errorMessage}`);
+    }
+  }
+
+  /**
+   * Add a comment to an issue (for context updates)
+   */
+  async addComment(issueId: string, comment: string): Promise<void> {
+    await this.ensureOctokit();
+    const octokit = this.getOctokit();
+
+    try {
+      const issueNumber = this.parseIssueNumber(issueId);
+      await octokit.issues.createComment({
         owner: this.owner,
         repo: this.repo,
         issue_number: issueNumber,
-        state: state as 'open' | 'closed',
+        body: comment,
       });
-
-      // Add/update hodge workflow label
-      const workflowLabel = this.getWorkflowLabel(stateId);
-      if (workflowLabel) {
-        await this.updateLabels(issueNumber, workflowLabel);
-      }
     } catch (error) {
-      throw new Error(`Failed to update GitHub issue ${issueId}: ${String(error)}`);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      throw new Error(`Failed to add comment: ${errorMessage}`);
     }
   }
 
   /**
-   * Search for issues in GitHub
-   */
-  async searchIssues(query: string): Promise<PMIssue[]> {
-    try {
-      const searchQuery = `${query} repo:${this.owner}/${this.repo}`;
-      const { data } = await this.octokit.search.issuesAndPullRequests({
-        q: searchQuery,
-        per_page: 10,
-      });
-
-      return data.items.map((issue) => ({
-        id: String(issue.number),
-        title: issue.title,
-        description: issue.body || undefined,
-        state: {
-          id: issue.state,
-          name: issue.state === 'closed' ? 'Closed' : 'Open',
-          type: issue.state === 'closed' ? 'completed' : 'started',
-        },
-        url: issue.html_url,
-        labels: issue.labels.map((l) => (typeof l === 'string' ? l : l.name || '')) || [],
-      }));
-    } catch (error) {
-      throw new Error(`Failed to search GitHub issues: ${String(error)}`);
-    }
-  }
-
-  /**
-   * Create a new issue in GitHub
-   */
-  async createIssue(title: string, description?: string): Promise<PMIssue> {
-    try {
-      const { data: issue } = await this.octokit.issues.create({
-        owner: this.owner,
-        repo: this.repo,
-        title,
-        body: description,
-        labels: ['hodge:created'],
-      });
-
-      return {
-        id: String(issue.number),
-        title: issue.title,
-        description: issue.body || undefined,
-        state: {
-          id: 'open',
-          name: 'Open',
-          type: 'started',
-        },
-        url: issue.html_url,
-        labels: ['hodge:created'],
-      };
-    } catch (error) {
-      throw new Error(`Failed to create GitHub issue: ${String(error)}`);
-    }
-  }
-
-  /**
-   * Find issue by feature name or ID
+   * Get issue by title or ID
    */
   async findIssueByFeature(feature: string): Promise<PMIssue | undefined> {
     // First try as issue number
@@ -162,187 +304,173 @@ export class GitHubAdapter extends BasePMAdapter {
       try {
         return await this.getIssue(feature);
       } catch {
-        // Not a valid issue number
-      }
-    }
-
-    // Try extracting number from HODGE-xxx format
-    const hodgeMatch = feature.match(/HODGE-(\d+)/i);
-    if (hodgeMatch) {
-      try {
-        return await this.getIssue(hodgeMatch[1]);
-      } catch {
-        // Not a valid issue number
+        // Not an ID, continue
       }
     }
 
     // Search by title
-    const results = await this.searchIssues(`"${feature}" in:title`);
-    return results[0];
+    const results = await this.searchIssues(feature);
+    return results.find((issue) => issue.title.toLowerCase().includes(feature.toLowerCase()));
   }
 
   /**
-   * Add a comment to an issue
+   * Find issue by local ID in comments or title
    */
-  async addComment(issueId: string, body: string): Promise<void> {
+  async findIssueByLocalId(localId: string): Promise<PMIssue | null> {
+    await this.ensureOctokit();
+    const octokit = this.getOctokit();
+
     try {
-      const issueNumber = this.parseIssueNumber(issueId);
-      await this.octokit.issues.createComment({
-        owner: this.owner,
-        repo: this.repo,
-        issue_number: issueNumber,
-        body,
-      });
-    } catch (error) {
-      throw new Error(`Failed to add comment to GitHub issue ${issueId}: ${String(error)}`);
-    }
-  }
-
-  /**
-   * Update labels on an issue
-   */
-  private async updateLabels(issueNumber: number, label: string): Promise<void> {
-    try {
-      // Get current labels
-      const { data: issue } = await this.octokit.issues.get({
-        owner: this.owner,
-        repo: this.repo,
-        issue_number: issueNumber,
+      // Search for issue with local ID in title or body
+      const { data } = await octokit.search.issuesAndPullRequests({
+        q: `${localId} repo:${this.owner}/${this.repo} is:issue`,
+        per_page: 5,
       });
 
-      const currentLabels = issue.labels.map((l) => (typeof l === 'string' ? l : l.name || ''));
-
-      // Remove other hodge: labels and add new one
-      const updatedLabels = currentLabels.filter((l) => !l.startsWith('hodge:')).concat([label]);
-
-      // Ensure label exists
-      await this.ensureLabel(label);
-
-      // Update labels
-      await this.octokit.issues.setLabels({
-        owner: this.owner,
-        repo: this.repo,
-        issue_number: issueNumber,
-        labels: updatedLabels,
-      });
-    } catch (error) {
-      // Ignore label errors - they're non-critical
-      if (process.env.DEBUG) {
-        console.log(`Could not update labels: ${String(error)}`);
+      if (data.items.length > 0) {
+        const issue = data.items[0];
+        return {
+          id: issue.number.toString(),
+          title: issue.title,
+          state: {
+            id: issue.state ?? 'open',
+            name: issue.state === 'closed' ? 'Closed' : 'Open',
+            type: issue.state === 'closed' ? ('completed' as StateType) : ('started' as StateType),
+          },
+          description: issue.body || '',
+          url: issue.html_url,
+        };
       }
+
+      return null;
+    } catch (error) {
+      // Silently return null if search fails
+      return null;
     }
   }
 
   /**
-   * Ensure a label exists in the repository
+   * Create an epic with sub-issues
    */
-  private async ensureLabel(name: string): Promise<void> {
+  async createEpicWithStories(
+    epicTitle: string,
+    epicDescription: string,
+    stories: Array<{ title: string; description?: string }>
+  ): Promise<{ epic: PMIssue; stories: PMIssue[] }> {
+    await this.ensureOctokit();
+    const octokit = this.getOctokit();
+
     try {
-      await this.octokit.issues.getLabel({
+      // Create the epic (parent issue)
+      const { data: epicIssue } = await octokit.issues.create({
         owner: this.owner,
         repo: this.repo,
-        name,
+        title: epicTitle,
+        body: epicDescription,
+        labels: ['hodge', 'epic'],
       });
-    } catch {
-      // Label doesn't exist, create it
-      const color = this.getLabelColor(name);
-      await this.octokit.issues.createLabel({
+
+      const epic: PMIssue = {
+        id: epicIssue.number.toString(),
+        title: epicIssue.title,
+        state: {
+          id: epicIssue.state ?? 'open',
+          name: epicIssue.state === 'closed' ? 'Closed' : 'Open',
+          type:
+            epicIssue.state === 'closed' ? ('completed' as StateType) : ('started' as StateType),
+        },
+        description: epicIssue.body || '',
+        url: epicIssue.html_url,
+      };
+
+      // Create sub-issues with references to the epic
+      const createdStories: PMIssue[] = [];
+      for (const story of stories) {
+        const storyBody = `${story.description ?? ''}\n\n---\nParent Epic: #${epicIssue.number}`;
+        const { data: storyIssue } = await octokit.issues.create({
+          owner: this.owner,
+          repo: this.repo,
+          title: story.title,
+          body: storyBody,
+          labels: ['hodge', 'story'],
+        });
+
+        createdStories.push({
+          id: storyIssue.number.toString(),
+          title: storyIssue.title,
+          state: {
+            id: storyIssue.state ?? 'open',
+            name: storyIssue.state === 'closed' ? 'Closed' : 'Open',
+            type:
+              storyIssue.state === 'closed' ? ('completed' as StateType) : ('started' as StateType),
+          },
+          description: storyIssue.body || '',
+          url: storyIssue.html_url,
+        });
+      }
+
+      // Update epic body with links to stories
+      const storyLinks = createdStories
+        .map((story) => `- [ ] #${story.id} - ${story.title}`)
+        .join('\n');
+      const updatedBody = `${epicDescription}\n\n## Stories\n${storyLinks}`;
+
+      await octokit.issues.update({
         owner: this.owner,
         repo: this.repo,
-        name,
-        color,
-        description: `Hodge workflow state`,
+        issue_number: epicIssue.number,
+        body: updatedBody,
       });
+
+      return { epic, stories: createdStories };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      throw new Error(`Failed to create epic with stories: ${errorMessage}`);
     }
   }
 
   /**
-   * Get label color based on workflow state
-   */
-  private getLabelColor(label: string): string {
-    const colors: Record<string, string> = {
-      'hodge:exploring': '0E8A16',
-      'hodge:building': 'FBCA04',
-      'hodge:hardening': '0052CC',
-      'hodge:shipped': '5319E7',
-      'hodge:created': 'D4C5F9',
-    };
-    return colors[label] || 'CCCCCC';
-  }
-
-  /**
-   * Get workflow label for a state
-   */
-  private getWorkflowLabel(stateId: string): string | undefined {
-    const labelMap: Record<string, string> = {
-      'To Do': 'hodge:exploring',
-      'In Progress': 'hodge:building',
-      'In Review': 'hodge:hardening',
-      Done: 'hodge:shipped',
-      completed: 'hodge:shipped',
-      closed: 'hodge:shipped',
-    };
-    return labelMap[stateId];
-  }
-
-  /**
-   * Parse GitHub repository from git remote
+   * Parse GitHub owner/repo from git remote
    */
   private parseGitHubRepo(): { owner: string; repo: string } {
     try {
-      // Try to get from git remote
-      const remote = execSync('git remote get-url origin', { encoding: 'utf8' }).trim();
+      const remoteUrl = execSync('git remote get-url origin', {
+        encoding: 'utf-8',
+      }).trim();
 
-      // Match various GitHub URL formats
-      const patterns = [
-        /github\.com[:/]([^/]+)\/([^/.]+)(\.git)?$/,
-        /git@github\.com:([^/]+)\/([^/.]+)(\.git)?$/,
-        /https?:\/\/github\.com\/([^/]+)\/([^/.]+)(\.git)?$/,
-      ];
+      // Parse GitHub URL formats
+      let match;
+      if (remoteUrl.includes('github.com')) {
+        // SSH format: git@github.com:owner/repo.git
+        match = remoteUrl.match(/github\.com[:/]([^/]+)\/([^/.]+)/);
+        if (match) {
+          return { owner: match[1], repo: match[2] };
+        }
 
-      for (const pattern of patterns) {
-        const match = remote.match(pattern);
+        // HTTPS format: https://github.com/owner/repo.git
+        match = remoteUrl.match(/github\.com\/([^/]+)\/([^/.]+)/);
         if (match) {
           return { owner: match[1], repo: match[2] };
         }
       }
-
-      throw new Error('Could not parse GitHub repository from remote');
     } catch (error) {
-      // Fallback to environment variables or config
-      const owner = process.env.GITHUB_OWNER || process.env.GITHUB_ORG;
-      const repo = process.env.GITHUB_REPO;
-
-      if (owner && repo) {
-        return { owner, repo };
-      }
-
-      throw new Error(`Not a GitHub repository: ${String(error)}`);
+      // Fall through to throw error below
     }
+
+    throw new Error(
+      'Could not parse GitHub repository from git remote. Ensure you are in a git repository with a GitHub remote.'
+    );
   }
 
   /**
    * Parse issue number from various formats
    */
   private parseIssueNumber(issueId: string): number {
-    // Try direct number
-    const directNumber = parseInt(issueId, 10);
-    if (!isNaN(directNumber)) {
-      return directNumber;
+    // Handle formats: "123", "#123", "GH-123"
+    const match = issueId.match(/\d+/);
+    if (!match) {
+      throw new Error(`Invalid issue ID format: ${issueId}`);
     }
-
-    // Try HODGE-xxx format
-    const hodgeMatch = issueId.match(/HODGE-(\d+)/i);
-    if (hodgeMatch) {
-      return parseInt(hodgeMatch[1], 10);
-    }
-
-    // Try #xxx format
-    const hashMatch = issueId.match(/#(\d+)/);
-    if (hashMatch) {
-      return parseInt(hashMatch[1], 10);
-    }
-
-    throw new Error(`Invalid issue ID format: ${issueId}`);
+    return parseInt(match[0], 10);
   }
 }

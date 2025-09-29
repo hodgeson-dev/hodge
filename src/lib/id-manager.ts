@@ -6,11 +6,14 @@ import * as path from 'path';
  * @interface FeatureID
  */
 export interface FeatureID {
-  localID: string; // HODGE-001 format
+  localID: string; // HODGE-001 format or HODGE-001.1 for sub-issues
   externalID?: string; // JIRA-123, HOD-456, etc.
   pmTool?: string; // linear, jira, github, etc.
   created: Date;
   lastSynced?: Date;
+  parentID?: string; // HODGE-001 if this is a sub-issue (HODGE-001.1)
+  childIDs?: string[]; // [HODGE-001.1, HODGE-001.2] if this is an epic
+  isEpic?: boolean; // True if this feature has sub-issues
 }
 
 /**
@@ -372,6 +375,130 @@ export class IDManager {
       }
     }
 
+    await this.updateMappings(mappings);
+  }
+
+  /**
+   * Create a sub-issue ID for an epic
+   * @param {string} parentID - The parent feature ID (e.g., HODGE-001)
+   * @returns {Promise<string>} The sub-issue ID (e.g., HODGE-001.1)
+   */
+  async createSubIssueID(parentID: string): Promise<string> {
+    const mappings = await this.loadMappings();
+    const parent = mappings[parentID];
+
+    if (!parent) {
+      throw new Error(`Parent feature ${parentID} not found`);
+    }
+
+    // Initialize childIDs if not exists
+    if (!parent.childIDs) {
+      parent.childIDs = [];
+    }
+
+    // Mark parent as epic
+    parent.isEpic = true;
+
+    // Generate next sub-issue number
+    const nextSubNumber = parent.childIDs.length + 1;
+    const subIssueID = `${parentID}.${nextSubNumber}`;
+
+    // Create sub-issue entry
+    mappings[subIssueID] = {
+      localID: subIssueID,
+      parentID: parentID,
+      created: new Date(),
+    };
+
+    // Add to parent's children
+    parent.childIDs.push(subIssueID);
+
+    // Update parent in mappings
+    mappings[parentID] = parent;
+
+    await this.updateMappings(mappings);
+    return subIssueID;
+  }
+
+  /**
+   * Get all sub-issues for an epic
+   * @param {string} epicID - The epic's local ID
+   * @returns {Promise<FeatureID[]>} Array of sub-issue feature IDs
+   */
+  async getSubIssues(epicID: string): Promise<FeatureID[]> {
+    const mappings = await this.loadMappings();
+    const epic = mappings[epicID];
+
+    if (!epic || typeof epic === 'string' || !epic.childIDs) {
+      return [];
+    }
+
+    return epic.childIDs
+      .map((childID) => {
+        const child = mappings[childID];
+        return typeof child !== 'string' ? child : undefined;
+      })
+      .filter((child): child is FeatureID => child !== undefined);
+  }
+
+  /**
+   * Get the parent epic for a sub-issue
+   * @param {string} subIssueID - The sub-issue's local ID
+   * @returns {Promise<FeatureID | null>} The parent epic or null
+   */
+  async getParentEpic(subIssueID: string): Promise<FeatureID | null> {
+    const mappings = await this.loadMappings();
+    const subIssue = mappings[subIssueID];
+
+    if (!subIssue || typeof subIssue === 'string' || !subIssue.parentID) {
+      return null;
+    }
+
+    const parent = mappings[subIssue.parentID];
+    return parent && typeof parent !== 'string' ? parent : null;
+  }
+
+  /**
+   * Check if a feature is an epic (has sub-issues)
+   * @param {string} featureID - The feature's local ID
+   * @returns {Promise<boolean>} True if the feature is an epic
+   */
+  async isEpic(featureID: string): Promise<boolean> {
+    const mappings = await this.loadMappings();
+    const feature = mappings[featureID];
+    if (!feature || typeof feature === 'string') {
+      return false;
+    }
+    return feature.isEpic === true && (feature.childIDs?.length || 0) > 0;
+  }
+
+  /**
+   * Maps a feature's local ID to an external PM tool ID
+   * @param {string} localID - The local feature ID
+   * @param {string} externalID - The external PM tool ID
+   * @param {string} pmTool - The PM tool name
+   * @returns {Promise<void>}
+   */
+  async mapFeature(localID: string, externalID: string, pmTool: string): Promise<void> {
+    const mappings = await this.loadMappings();
+    let feature = mappings[localID];
+
+    if (!feature || typeof feature === 'string') {
+      // Create new feature if doesn't exist
+      feature = {
+        localID,
+        created: new Date(),
+        externalID,
+        pmTool,
+      };
+    } else {
+      // Update existing feature
+      feature.externalID = externalID;
+      feature.pmTool = pmTool;
+      feature.lastSynced = new Date();
+    }
+
+    mappings[localID] = feature;
     await this.updateMappings(mappings);
   }
 }

@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-296",
+  "timestamp": "2025-09-29T17:03:06.721Z",
+  "issueId": "HODGE-296",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "feat: separate /plan command from /decide for cleaner architecture (HODGE-296)\n\n## What Changed\n- Created new `/plan` command for work planning and PM integration (src/commands/plan.ts, 412 lines)\n- Simplified `/decide` command to focus solely on technical decisions (removed 140+ lines)\n- Added comprehensive epic/story breakdown documentation (docs/epic-story-breakdown.md)\n- Fixed GitHub adapter TypeScript strict mode compliance (510 lines refactored)\n- Enhanced PM hooks with epic creation capabilities (+247 lines)\n- Added new tests for PM integration (2 new test files)\n- Updated Claude command documentation for both /decide and /plan\n\n## Why This Change\nThe /decide command was overloaded with responsibilities, handling both technical\ndecision recording AND work planning/PM integration. This violated single responsibility\nprinciple and made the codebase harder to maintain. Separating these concerns creates\na cleaner workflow: explore → decide → plan → build.\n\n## Impact\n- ✨ Clearer separation of concerns in workflow commands\n- 📝 Better documentation embedded directly in command files\n- 🔧 Fixed CI pipeline issues with TypeScript strict mode\n- ✅ All 587 tests passing, ready for production\n- 🚀 Improved developer experience with dedicated planning command\n- 🏗️ Supports parallel development lanes and dependency analysis\n\n## Technical Details\n- GitHub adapter now uses lazy-loading to avoid CommonJS/ES module conflicts\n- Proper null checking with getOctokit() helper method\n- Epic/story breakdown supports parent-child relationships (HODGE-XXX.Y format)\n- Integration with Linear, GitHub, and local PM tools maintained\n\nCloses HODGE-296"
+}

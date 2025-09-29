@@ -22,20 +22,20 @@ if (!this.configLoaded) {
 ```
 
 
-### src/lib/pm/linear-adapter.ts
+### src/lib/id-manager.ts
 ```typescript
-if (!state) {
-        throw new Error
+if (!feature) {
+      throw new Error
 ```
 
 
-### src/lib/pm/local-pm-adapter.ts
+### src/lib/pm/github-adapter.ts
 ```typescript
-if (!match) {
-      // Try fallback pattern for end of file
-      const endPattern = new RegExp(`(### ${feature}[\\s\\S]*)$`, 'm');
-      const endMatch = content.match(endPattern);
-      if (endMatch
+if (!this.octokitLoaded) {
+      try {
+        // Dynamic import to avoid loading at module level
+        const { Octokit } = await import('@octokit/rest');
+        // Cast to our interface - we know 
 ```
 
 
@@ -45,5 +45,5 @@ if (!match) {
 - 
 
 ---
-*First seen: 2025-09-27T12:27:38.931Z*
-*Last used: 2025-09-27T12:27:38.935Z*
+*First seen: 2025-09-29T17:03:06.792Z*
+*Last used: 2025-09-29T17:03:06.793Z*
