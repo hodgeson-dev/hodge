@@ -3,16 +3,16 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: HODGE-294
+**Feature**: HODGE-295
 **Mode**: explore
-**PM Issue**: HODGE-294
-**Last Updated**: 2025-09-29T00:19:25.800Z
+**PM Issue**: HODGE-295
+**Last Updated**: 2025-09-29T00:59:15.102Z
 ## Current Session
-**Resumed**: 30 hours ago
-**Progress**: Explored HODGE-294 - template ready for AI approach generation
-**Working on**: HODGE-294 (explore mode)
+**Resumed**: 5 minutes ago
+**Progress**: Explored HODGE-295 - template ready for AI approach generation
+**Working on**: HODGE-295 (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-294. Explored HODGE-294 - template ready for AI approach generation
+You were helping with HODGE-295. Explored HODGE-295 - template ready for AI approach generation
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
@@ -104,15 +104,15 @@ Suggested next: Review exploration and decide with 'hodge decide'
 
 ## Working Files
 
-- `.hodge/features/HODGE-294/explore/context.json`
-- `.hodge/features/HODGE-294/explore/exploration.md`
-- `.hodge/features/HODGE-294/explore/test-intentions.md`
+- `.hodge/features/HODGE-295/explore/context.json`
+- `.hodge/features/HODGE-295/explore/exploration.md`
+- `.hodge/features/HODGE-295/explore/test-intentions.md`
 
 ## Next Steps
 
 1. Review exploration approaches
 2. Make decision with `hodge decide`
-3. Start building with `hodge build HODGE-294`
+3. Start building with `hodge build HODGE-295`
 
 
 ---

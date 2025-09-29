@@ -26,6 +26,139 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-29 - Performance threshold: 5 seconds maximum - reasonable wait time allowing thorough checks with balanced user experience
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-295
+
+**Decision**:
+Performance threshold: 5 seconds maximum - reasonable wait time allowing thorough checks with balanced user experience
+
+**Rationale**:
+Recorded via `hodge decide` command at 6:14:21 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Prettier scope: check all files - ensures consistent formatting across entire codebase matching CI behavior
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-295
+
+**Decision**:
+Prettier scope: check all files - ensures consistent formatting across entire codebase matching CI behavior
+
+**Rationale**:
+Recorded via `hodge decide` command at 6:14:15 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Override mechanism: respect standard --no-verify flag - familiar to developers and follows Git conventions
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-295
+
+**Decision**:
+Override mechanism: respect standard --no-verify flag - familiar to developers and follows Git conventions
+
+**Rationale**:
+Recorded via `hodge decide` command at 6:14:09 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - npm audit cache duration: 24 hours - daily freshness with good performance balance
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-295
+
+**Decision**:
+npm audit cache duration: 24 hours - daily freshness with good performance balance
+
+**Rationale**:
+Recorded via `hodge decide` command at 6:14:03 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Audit level: moderate - matching GitHub Actions for consistency between local and CI checks
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-295
+
+**Decision**:
+Audit level: moderate - matching GitHub Actions for consistency between local and CI checks
+
+**Rationale**:
+Recorded via `hodge decide` command at 6:13:58 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Protected branches for strict checks: main, develop, release/*, hotfix/* - comprehensive coverage of production-bound branches
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-295
+
+**Decision**:
+Protected branches for strict checks: main, develop, release/*, hotfix/* - comprehensive coverage of production-bound branches
+
+**Rationale**:
+Recorded via `hodge decide` command at 6:13:53 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Smart Selective Checks approach for pre-push hooks - intelligent checks based on context with caching for performance
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-295
+
+**Decision**:
+Smart Selective Checks approach for pre-push hooks - intelligent checks based on context with caching for performance
+
+**Rationale**:
+Recorded via `hodge decide` command at 6:08:59 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-27 - Console output only for init command - preserves user feedback for interactive initialization while keeping other commands silent for Claude Code execution
 
 **Status**: Accepted

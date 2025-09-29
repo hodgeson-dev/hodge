@@ -1,15 +1,15 @@
 # Learned Patterns Summary
 
 ## Statistics
-- Total patterns detected: 4
-- High confidence patterns: 2
+- Total patterns detected: 3
+- High confidence patterns: 1
 - Most frequent category: performance
 
 ## Patterns by Category
 
 
 ### Error-handling
-- **Error Boundary** (4x, 80% confidence)
+- **Error Boundary** (3x, 60% confidence)
 
 
 ### Performance
@@ -17,13 +17,9 @@
 - **Caching Strategy** (1x, 20% confidence)
 
 
-### Security
-- **Input Validation** (2x, 40% confidence)
-
-
 ## Recommendations
-- Consider using Error Boundary pattern (used 4 times)
 - Consider using Async Parallel Operations pattern (used 4 times)
+- Consider using Error Boundary pattern (used 3 times)
 
 ---
-*Generated: 2025-09-29T00:30:02.312Z*
+*Generated: 2025-09-29T01:56:40.293Z*

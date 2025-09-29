@@ -1,8 +1,8 @@
 # Error Boundary
 
 **Category**: error-handling
-**Frequency**: Used 4 times
-**Confidence**: 80%
+**Frequency**: Used 3 times
+**Confidence**: 60%
 
 ## Description
 Consistent error handling with logging
@@ -17,17 +17,6 @@ Consistent error handling with logging
       } else if (!featureID) {
         // It looks like an ID but we couldn't find it
         // Create a new feature and lin
-```
-
-
-### src/lib/config-manager.ts
-```typescript
-try {
-      const content = await fs.readFile(this.userConfigPath, 'utf-8');
-      this.userConfig = JSON.parse(content) as HodgeConfig;
-
-      // Validate no secrets in user config
-      this.validat
 ```
 
 
@@ -46,11 +35,18 @@ const logDir
 ```
 
 
+### src/lib/logger.ts
+```typescript
+.catch((error: unknown) => {
+  logger.error
+```
+
+
 ## When to Use
 - 
 - 
 - 
 
 ---
-*First seen: 2025-09-29T00:30:02.305Z*
-*Last used: 2025-09-29T00:30:02.310Z*
+*First seen: 2025-09-29T01:56:40.289Z*
+*Last used: 2025-09-29T01:56:40.292Z*
