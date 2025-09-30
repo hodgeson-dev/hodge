@@ -16,6 +16,45 @@ export function getClaudeCommands(): ClaudeCommand[] {
       name: 'build',
       content: `# Hodge Build Mode
 
+## PM Issue Check (Before Build)
+
+**IMPORTANT**: Before executing \`hodge build\`, check if this feature has a PM issue mapping.
+
+### Check for PM Issue Mapping
+\`\`\`bash
+# Read the id-mappings file to check if feature is tracked
+cat .hodge/id-mappings.json | grep "{{feature}}"
+\`\`\`
+
+### If Feature is NOT Mapped
+If the feature doesn't exist in id-mappings.json, ask the user:
+
+\`\`\`
+I notice this feature ({{feature}}) doesn't have a PM issue tracking it yet.
+
+Would you like to create a PM issue for this work?
+
+a) Yes - Create a PM issue (recommended for production features)
+b) No - Continue without PM tracking (good for quick experiments)
+
+Your choice:
+\`\`\`
+
+**If user chooses (a) - Yes**:
+Guide them to use the \`/plan\` command to create a single issue:
+\`\`\`
+Let me help you create a PM issue for tracking this work.
+
+I'll generate a minimal plan with a single issue.
+\`\`\`
+Then execute \`/plan {{feature}}\` with AI generating a single-issue plan (no epic breakdown needed).
+
+**If user chooses (b) - No, or doesn't respond**:
+Proceed with build anyway (non-blocking). This respects user agency and the "freedom to explore" principle.
+
+### If Feature IS Already Mapped
+Skip the prompt and proceed directly to build command.
+
 ## Command Execution
 Execute the portable Hodge CLI command:
 \`\`\`bash

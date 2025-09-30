@@ -5,16 +5,21 @@ This file provides AI assistants with context about the current Hodge workflow s
 ## Current Status
 **Feature**: general
 **Mode**: explore
-**Last Updated**: 2025-09-30T06:17:36.912Z
+**Last Updated**: 2025-09-30T14:21:48.737Z
 ## Current Session
-**Resumed**: 42 minutes ago
-**Progress**: Explored HODGE-305 - template ready for AI approach generation
-**Working on**: HODGE-305 (explore mode)
+**Resumed**: 15 minutes ago
+**Progress**: Explored HODGE-306 - template ready for AI approach generation
+**Working on**: HODGE-306 (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-305. Explored HODGE-305 - template ready for AI approach generation
+You were helping with HODGE-306. Explored HODGE-306 - template ready for AI approach generation
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
+- **2025-09-30**: Proceed with build anyway if user ignores PM creation prompt (non-blocking) - respects user agency, maintains 'freedom to explore' principle, never forces workflow interruption
+- **2025-09-30**: Show PM creation prompt every time /build is called without PM mapping - ensures prompt isn't missed, respects user agency to change mind, simple non-blocking logic without state tracking
+- **2025-09-30**: Reuse /plan command for single-issue creation - AI generates minimal single-issue plan when user responds affirmatively to PM creation prompt, maintaining consistent command API without new flags
+- **2025-09-30**: Check for PM issue mapping before calling 'hodge build' CLI command - AI checks id-mappings
+- **2025-09-30**: Use Template-Based Prompt Enhancement approach - add AI guidance to
 - **2025-09-30**: Update both /hodge and /load commands with enhanced context loading - provides consistent experience and predictable behavior across the system
 - **2025-09-30**: Load all
 - **2025-09-30**: Keep current pattern loading behavior - load only on explicit reference or user request, following AI-CONTEXT
@@ -30,11 +35,6 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - **2025-09-29**: Use {FEATURE}-{slug}
 - **2025-09-29**: Keep lessons-draft
 - **2025-09-29**: Few questions (3-4) for lessons enhancement - balance insight gathering with low friction
-- **2025-09-29**: Interactive AI Enhancement Flow - integrate lessons review into /ship command with AI-guided questions and skip option
-- **2025-09-29**: Use HODGE-XXX
-- **2025-09-29**: Breaking change: require --create-pm flag for PM issue creation - safe by default, with understanding that hodge plan is only called from /plan slash command template, never by users directly
-- **2025-09-29**: List decision titles only in PM issues - provides scannable overview while keeping full details in decisions
-- **2025-09-29**: Extract epic description from exploration
 
 ## Active Standards
 

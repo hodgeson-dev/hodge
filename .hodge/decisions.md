@@ -26,6 +26,101 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-30 - Proceed with build anyway if user ignores PM creation prompt (non-blocking) - respects user agency, maintains 'freedom to explore' principle, never forces workflow interruption
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-306
+
+**Decision**:
+Proceed with build anyway if user ignores PM creation prompt (non-blocking) - respects user agency, maintains 'freedom to explore' principle, never forces workflow interruption
+
+**Rationale**:
+Recorded via `hodge decide` command at 7:13:49 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-30 - Show PM creation prompt every time /build is called without PM mapping - ensures prompt isn't missed, respects user agency to change mind, simple non-blocking logic without state tracking
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-306
+
+**Decision**:
+Show PM creation prompt every time /build is called without PM mapping - ensures prompt isn't missed, respects user agency to change mind, simple non-blocking logic without state tracking
+
+**Rationale**:
+Recorded via `hodge decide` command at 7:11:04 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-30 - Reuse /plan command for single-issue creation - AI generates minimal single-issue plan when user responds affirmatively to PM creation prompt, maintaining consistent command API without new flags
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-306
+
+**Decision**:
+Reuse /plan command for single-issue creation - AI generates minimal single-issue plan when user responds affirmatively to PM creation prompt, maintaining consistent command API without new flags
+
+**Rationale**:
+Recorded via `hodge decide` command at 7:10:09 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-30 - Check for PM issue mapping before calling 'hodge build' CLI command - AI checks id-mappings
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-306
+
+**Decision**:
+Check for PM issue mapping before calling 'hodge build' CLI command - AI checks id-mappings.json early in /build template execution, allowing user to create PM issue before work starts
+
+**Rationale**:
+Recorded via `hodge decide` command at 7:09:38 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-30 - Use Template-Based Prompt Enhancement approach - add AI guidance to
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-306
+
+**Decision**:
+Use Template-Based Prompt Enhancement approach - add AI guidance to .claude/commands/build.md that instructs AI to check for PM issue mappings and offer to create one if missing, with zero code changes
+
+**Rationale**:
+Recorded via `hodge decide` command at 7:08:56 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-30 - Update both /hodge and /load commands with enhanced context loading - provides consistent experience and predictable behavior across the system
 
 **Status**: Accepted

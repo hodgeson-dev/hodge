@@ -60,7 +60,37 @@ HODGE-004 (ID Management)
   - Define test intentions
   - Make architectural decisions
 
+
+
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-09-30
+- **Updated**: 2025-09-30
+- **Description**: If the /build Claude Code slash command (.claude/commands/build.md) is executed and there is no PM issue mapped to it, ask the user if they would like to have a PM issue created for the work before proceeding. If they answer in the affirmative, then it should be as if 📋 Planning Work Structure
+No feature specified. Use: hodge plan <feature> had been called for creating a single issue plan.
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
 ## Completed Features
+
+### HODGE-306
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-09-30
+- **Updated**: 2025-09-30
+- **Description**: If the /build Claude Code slash command (.claude/commands/build.md) is executed and there is no PM issue mapped to it, ask the user if they would like to have a PM issue created for the work before proceeding. If they answer in the affirmative, then it should be as if 📋 Planning Work Structure
+No feature specified. Use: hodge plan <feature> had been called for creating a single issue plan.
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+- **Completed**: 2025-09-30
+
+
 
 ### test-feature
 - **Status**: shipped
