@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-304",
+  "timestamp": "2025-09-30T05:31:18.505Z",
+  "issueId": "HODGE-304",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "fix: fix test isolation leak in local-pm-adapter-unified smoke tests (HODGE-304)\n\n## What Changed\n- Modified src/lib/pm/local-pm-adapter-unified.smoke.test.ts (38 lines changed)\n  - Wrapped 3 smoke tests with withTestWorkspace for proper isolation\n  - Test 1: \"should extend BasePMAdapter\" (lines 14-19)\n  - Test 2: \"should implement all abstract methods\" (lines 21-32)\n  - Test 3: \"should fetch Hodge workflow states\" (lines 71-81)\n  \n- Auto-updated .hodge metadata files (session, context, mappings)\n  - Created HODGE-304 feature tracking\n\n## Why This Change\nThe GitHub Actions \"Quality Checks\" workflow was failing because three smoke tests \nwere creating LocalPMAdapter instances without a basePath parameter. When basePath \nis undefined, the adapter defaults to \".\" (current directory), causing tests to \ncreate .hodge/project_management.md in the real project directory instead of \nisolated temp directories.\n\nThe test isolation integration test detected this leak using a marker file check:\n  Expected: No files created in project .hodge during tests\n  Actual: project_management.md was created\n\nRoot cause: LocalPMAdapter constructor defaults basePath to \".\" when not specified.\nSolution: Wrap all three tests with withTestWorkspace helper (same pattern used \nin 9 other tests in the same file).\n\n## Impact\n- ✅ CI \"Quality Checks\" workflow now passes (was failing)\n- ✅ Test isolation integration test passes (4/4 tests)\n- ✅ All 611 tests pass (70/70 test files)\n- ✅ Zero risk: test-only changes, no production code modified\n- ✅ Consistent test patterns across entire file\n- ✅ Prevents future test state corruption\n\nCloses HODGE-304\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}

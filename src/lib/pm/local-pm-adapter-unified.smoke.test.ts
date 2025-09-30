@@ -12,19 +12,23 @@ import { promises as fs } from 'fs';
 
 describe('LocalPMAdapter Unified Architecture Smoke Tests', () => {
   smokeTest('should extend BasePMAdapter', async () => {
-    const adapter = new LocalPMAdapter();
-    expect(adapter).toBeInstanceOf(BasePMAdapter);
+    await withTestWorkspace('local-adapter-extends', async (workspace) => {
+      const adapter = new LocalPMAdapter(workspace.getPath());
+      expect(adapter).toBeInstanceOf(BasePMAdapter);
+    });
   });
 
   smokeTest('should implement all abstract methods', async () => {
-    const adapter = new LocalPMAdapter();
+    await withTestWorkspace('local-adapter-methods', async (workspace) => {
+      const adapter = new LocalPMAdapter(workspace.getPath());
 
-    // Check all abstract methods exist
-    expect(adapter.fetchStates).toBeDefined();
-    expect(adapter.getIssue).toBeDefined();
-    expect(adapter.updateIssueState).toBeDefined();
-    expect(adapter.searchIssues).toBeDefined();
-    expect(adapter.createIssue).toBeDefined();
+      // Check all abstract methods exist
+      expect(adapter.fetchStates).toBeDefined();
+      expect(adapter.getIssue).toBeDefined();
+      expect(adapter.updateIssueState).toBeDefined();
+      expect(adapter.searchIssues).toBeDefined();
+      expect(adapter.createIssue).toBeDefined();
+    });
   });
 
   smokeTest('should preserve special init method', async () => {
@@ -65,13 +69,15 @@ describe('LocalPMAdapter Unified Architecture Smoke Tests', () => {
   });
 
   smokeTest('should fetch Hodge workflow states', async () => {
-    const adapter = new LocalPMAdapter();
-    const states = await adapter.fetchStates();
+    await withTestWorkspace('local-adapter-states', async (workspace) => {
+      const adapter = new LocalPMAdapter(workspace.getPath());
+      const states = await adapter.fetchStates();
 
-    expect(states).toHaveLength(4);
-    expect(states.map((s) => s.id)).toEqual(['exploring', 'building', 'hardening', 'shipped']);
-    expect(states[0].type).toBe('unstarted');
-    expect(states[3].type).toBe('completed');
+      expect(states).toHaveLength(4);
+      expect(states.map((s) => s.id)).toEqual(['exploring', 'building', 'hardening', 'shipped']);
+      expect(states[0].type).toBe('unstarted');
+      expect(states[3].type).toBe('completed');
+    });
   });
 
   smokeTest('should map feature to issue through getIssue', async () => {
