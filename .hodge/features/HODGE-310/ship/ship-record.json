@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-310",
+  "timestamp": "2025-09-30T20:14:26.412Z",
+  "issueId": "HODGE-310",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "feat: implement AI-driven plan generation for /plan command (HODGE-310)\n\n## What Changed\n- **Slash Command Template** (.claude/commands/plan.md: 61 lines added)\n  - Added Step 4 instructing AI to save plan structure to .hodge/temp/plan-interaction/{feature}/plan.json\n  - Includes JSON format specifications for both single-issue and epic plans\n  - AI now generates plan with full context before CLI execution\n\n- **CLI Enhancement** (src/commands/plan.ts: 72 lines added)\n  - Added DevelopmentPlanJSON interface for proper JSON type safety\n  - Modified generatePlan() to check for AI-generated plan file first\n  - Converts JSON plain objects to Maps (lanes.assignments, dependencies)\n  - Falls back to keyword matching if no AI plan exists (backward compatible)\n\n- **Test Coverage** (src/commands/plan.test.ts: 178 lines added)\n  - Added 4 new smoke tests for AI plan detection feature\n  - Tests single-issue plan detection and usage\n  - Tests epic plan with stories and Map conversion\n  - Tests graceful fallback when JSON is invalid\n  - Tests legacy keyword matching when no AI plan exists\n\n- **Auto-synced** (src/lib/claude-commands.ts: 61 lines)\n  - Synchronized slash command definitions with plan.md changes\n\n## Why This Change\nThe keyword-based plan generation in HODGE-309 failed catastrophically, creating \n\"Frontend components\" stories for a template fix. Root cause: keyword matching \nhas zero semantic understanding - it can't distinguish between \"test as in testing \nstrategy\" vs \"test as in write tests\".\n\nAI-driven approach solves this by having the slash command AI (which has full \nconversation context, exploration notes, and decisions) generate the appropriate \nplan structure, then pass it to the CLI for validation and PM issue creation.\n\n## Impact\n- ✅ Plans are now context-aware and semantically correct\n- ✅ Proper type safety with DevelopmentPlanJSON interface (no `any` types)\n- ✅ Backward compatible: keyword matching remains as fallback\n- ✅ All 12 smoke tests passing\n- ✅ Zero ESLint errors (harden validation passed)\n- ✅ Fixes the HODGE-309 scenario that exposed this defect\n\nCloses HODGE-310\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}

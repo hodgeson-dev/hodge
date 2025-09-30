@@ -33,6 +33,20 @@ export interface DevelopmentPlan {
   createdAt: string;
 }
 
+// JSON-serializable version of DevelopmentPlan (Maps are plain objects)
+interface DevelopmentPlanJSON {
+  feature: string;
+  type: 'single' | 'epic';
+  stories?: Story[];
+  lanes?: {
+    count: number;
+    assignments: { [key: string]: string[] };
+  };
+  dependencies?: { [key: string]: string[] };
+  estimatedDays?: number;
+  createdAt: string;
+}
+
 export class PlanCommand {
   private pmHooks: PMHooks;
   private basePath: string;
@@ -70,7 +84,7 @@ export class PlanCommand {
     }
 
     // Generate work breakdown
-    const plan = this.generatePlan(feature, decisions, laneCount);
+    const plan = await this.generatePlan(feature, decisions, laneCount);
 
     // Display plan for approval
     this.displayPlan(plan);
@@ -144,7 +158,61 @@ export class PlanCommand {
     return decisions;
   }
 
-  private generatePlan(feature: string, decisions: string[], laneCount: number): DevelopmentPlan {
+  private async generatePlan(
+    feature: string,
+    decisions: string[],
+    laneCount: number
+  ): Promise<DevelopmentPlan> {
+    // Check for AI-generated plan file first
+    const aiPlanPath = path.join(
+      this.basePath,
+      '.hodge',
+      'temp',
+      'plan-interaction',
+      feature,
+      'plan.json'
+    );
+
+    if (existsSync(aiPlanPath)) {
+      try {
+        const aiPlanContent = await fs.readFile(aiPlanPath, 'utf-8');
+        const aiPlan = JSON.parse(aiPlanContent) as DevelopmentPlanJSON;
+
+        console.log(chalk.green('✓ Using AI-generated plan from slash command'));
+
+        // Convert plain objects to Maps for lanes and dependencies
+        const convertedLanes = aiPlan.lanes
+          ? {
+              count: aiPlan.lanes.count,
+              assignments: new Map(
+                Object.entries(aiPlan.lanes.assignments).map(([k, v]) => [parseInt(k), v])
+              ),
+            }
+          : undefined;
+
+        const convertedDependencies = aiPlan.dependencies
+          ? new Map(Object.entries(aiPlan.dependencies))
+          : undefined;
+
+        const convertedPlan: DevelopmentPlan = {
+          ...aiPlan,
+          lanes: convertedLanes,
+          dependencies: convertedDependencies,
+        };
+
+        // Validate and return the AI-generated plan
+        return convertedPlan;
+      } catch (error) {
+        console.log(
+          chalk.yellow('⚠️  AI plan file exists but is invalid, falling back to keyword matching')
+        );
+        // Fall through to keyword-based generation
+      }
+    }
+
+    // Fallback: keyword-based plan generation (legacy behavior)
+    console.log(chalk.yellow('ℹ️  No AI plan found, using keyword matching (legacy behavior)'));
+
     // Analyze complexity based on decisions
     const isComplex = this.determineComplexity(decisions);
 

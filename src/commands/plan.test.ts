@@ -273,3 +273,181 @@ describe('PlanCommand Template - Vertical Slice Validation', () => {
     expect(template).toContain('Suggest single issue');
   });
 });
+
+describe('PlanCommand - AI-Generated Plan Detection', () => {
+  let tmpDir: string;
+  let command: PlanCommand;
+
+  beforeEach(async () => {
+    // Create isolated temp directory for tests
+    tmpDir = path.join(os.tmpdir(), `hodge-plan-ai-test-${Date.now()}`);
+    mkdirSync(tmpDir, { recursive: true });
+
+    // Initialize Hodge structure
+    mkdirSync(path.join(tmpDir, '.hodge'), { recursive: true });
+    mkdirSync(path.join(tmpDir, '.hodge', 'features'), { recursive: true });
+
+    command = new PlanCommand(tmpDir);
+  });
+
+  afterEach(async () => {
+    // Cleanup temp directory
+    if (existsSync(tmpDir)) {
+      await fs.rm(tmpDir, { recursive: true, force: true });
+    }
+  });
+
+  smokeTest('should detect and use AI-generated plan file', async () => {
+    const feature = 'TEST-AI-001';
+
+    // Create AI-generated plan file
+    const aiPlanDir = path.join(tmpDir, '.hodge', 'temp', 'plan-interaction', feature);
+    mkdirSync(aiPlanDir, { recursive: true });
+
+    const aiPlan = {
+      feature: feature,
+      type: 'single',
+      estimatedDays: 1,
+      createdAt: new Date().toISOString(),
+    };
+
+    await fs.writeFile(path.join(aiPlanDir, 'plan.json'), JSON.stringify(aiPlan, null, 2));
+
+    // Create minimal required files
+    const featureDir = path.join(tmpDir, '.hodge', 'features', feature);
+    mkdirSync(featureDir, { recursive: true });
+
+    await fs.writeFile(
+      path.join(tmpDir, '.hodge', 'decisions.md'),
+      `# Decisions\n\n### 2025-09-30 - Test\n\n**Context**:\nFeature: ${feature}\n\n**Decision**:\nTest\n\n---\n`
+    );
+
+    // Execute plan command
+    await command.execute({ feature, lanes: 1 });
+
+    // Verify the development-plan.json was created using AI plan
+    const planFile = path.join(tmpDir, '.hodge', 'development-plan.json');
+    expect(existsSync(planFile)).toBe(true);
+
+    const savedPlan = JSON.parse(await fs.readFile(planFile, 'utf-8'));
+    expect(savedPlan.type).toBe('single'); // From AI plan
+    expect(savedPlan.estimatedDays).toBe(1);
+  });
+
+  smokeTest('should use AI-generated epic plan with stories', async () => {
+    const feature = 'TEST-AI-002';
+
+    // Create AI-generated epic plan
+    const aiPlanDir = path.join(tmpDir, '.hodge', 'temp', 'plan-interaction', feature);
+    mkdirSync(aiPlanDir, { recursive: true });
+
+    const aiPlan = {
+      feature: feature,
+      type: 'epic',
+      stories: [
+        {
+          id: `${feature}.1`,
+          title: 'Fix template check logic',
+          description: 'Update build.md grep pattern',
+          effort: 'small',
+          dependencies: [],
+          lane: 0,
+        },
+        {
+          id: `${feature}.2`,
+          title: 'Add smoke tests',
+          description: 'Test grep pattern behavior',
+          effort: 'small',
+          dependencies: [`${feature}.1`],
+          lane: 0,
+        },
+      ],
+      lanes: {
+        count: 1,
+        assignments: {
+          '0': [`${feature}.1`, `${feature}.2`],
+        },
+      },
+      dependencies: {
+        [`${feature}.2`]: [`${feature}.1`],
+      },
+      estimatedDays: 2,
+      createdAt: new Date().toISOString(),
+    };
+
+    await fs.writeFile(path.join(aiPlanDir, 'plan.json'), JSON.stringify(aiPlan, null, 2));
+
+    // Create minimal required files
+    const featureDir = path.join(tmpDir, '.hodge', 'features', feature);
+    mkdirSync(featureDir, { recursive: true });
+
+    await fs.writeFile(
+      path.join(tmpDir, '.hodge', 'decisions.md'),
+      `# Decisions\n\n### 2025-09-30 - Test\n\n**Context**:\nFeature: ${feature}\n\n**Decision**:\nTest\n\n---\n`
+    );
+
+    // Execute plan command
+    await command.execute({ feature, lanes: 1 });
+
+    // Verify the AI plan was used
+    const planFile = path.join(tmpDir, '.hodge', 'development-plan.json');
+    const savedPlan = JSON.parse(await fs.readFile(planFile, 'utf-8'));
+
+    expect(savedPlan.type).toBe('epic');
+    expect(savedPlan.stories).toHaveLength(2);
+    expect(savedPlan.stories?.[0]?.title).toBe('Fix template check logic');
+    expect(savedPlan.stories?.[1]?.title).toBe('Add smoke tests');
+  });
+
+  smokeTest('should fall back to keyword matching if AI plan file is invalid JSON', async () => {
+    const feature = 'TEST-AI-003';
+
+    // Create invalid AI plan file (malformed JSON)
+    const aiPlanDir = path.join(tmpDir, '.hodge', 'temp', 'plan-interaction', feature);
+    mkdirSync(aiPlanDir, { recursive: true });
+
+    await fs.writeFile(path.join(aiPlanDir, 'plan.json'), '{ invalid json }');
+
+    // Create minimal required files
+    const featureDir = path.join(tmpDir, '.hodge', 'features', feature);
+    mkdirSync(featureDir, { recursive: true });
+
+    await fs.writeFile(
+      path.join(tmpDir, '.hodge', 'decisions.md'),
+      `# Decisions\n\n### 2025-09-30 - Test\n\n**Context**:\nFeature: ${feature}\n\n**Decision**:\nTest\n\n---\n`
+    );
+
+    // Should not crash, should fall back to keyword matching
+    await expect(command.execute({ feature, lanes: 1 })).resolves.not.toThrow();
+
+    // Verify a plan was still created (using keyword matching)
+    const planFile = path.join(tmpDir, '.hodge', 'development-plan.json');
+    expect(existsSync(planFile)).toBe(true);
+  });
+
+  smokeTest('should use keyword matching if no AI plan file exists', async () => {
+    const feature = 'TEST-AI-004';
+
+    // NO AI plan file created - should use keyword matching
+
+    // Create minimal required files
+    const featureDir = path.join(tmpDir, '.hodge', 'features', feature);
+    mkdirSync(featureDir, { recursive: true });
+
+    await fs.writeFile(
+      path.join(tmpDir, '.hodge', 'decisions.md'),
+      `# Decisions\n\n### 2025-09-30 - Test database decision\n\n**Context**:\nFeature: ${feature}\n\n**Decision**:\nUse PostgreSQL for database\n\n---\n`
+    );
+
+    // Execute - should use keyword matching and detect "database" keyword
+    await command.execute({ feature, lanes: 1 });
+
+    // Verify plan was created using keyword matching
+    const planFile = path.join(tmpDir, '.hodge', 'development-plan.json');
+    expect(existsSync(planFile)).toBe(true);
+
+    const savedPlan = JSON.parse(await fs.readFile(planFile, 'utf-8'));
+    // Keyword matching should have created an epic because "database" keyword was found
+    expect(savedPlan.type).toBe('epic');
+  });
+});

@@ -1351,23 +1351,78 @@ d) Cancel
 Your choice:
 \`\`\`
 
-### Step 4: Execute Based on User Choice
+### Step 4: Save AI-Generated Plan Structure
+
+**IMPORTANT**: Before calling the CLI, save your generated plan structure to a file so the CLI can use it instead of keyword matching.
+
+\`\`\`bash
+# Create interaction directory
+mkdir -p .hodge/temp/plan-interaction/{{feature}}
+
+# Save the AI-generated plan structure as JSON
+cat > .hodge/temp/plan-interaction/{{feature}}/plan.json << 'EOF'
+{
+  "feature": "{{feature}}",
+  "type": "single|epic",
+  "stories": [
+    {
+      "id": "{{feature}}.1",
+      "title": "Story title",
+      "description": "What this story delivers",
+      "effort": "small|medium|large",
+      "dependencies": [],
+      "lane": 0
+    }
+  ],
+  "lanes": {
+    "count": {{N}},
+    "assignments": {
+      "0": ["{{feature}}.1"]
+    }
+  },
+  "dependencies": {
+    "{{feature}}.2": ["{{feature}}.1"]
+  },
+  "estimatedDays": {{days}},
+  "createdAt": "{{current_iso_timestamp}}"
+}
+EOF
+\`\`\`
+
+**For single-issue plans:**
+\`\`\`json
+{
+  "feature": "{{feature}}",
+  "type": "single",
+  "estimatedDays": 1,
+  "createdAt": "{{current_iso_timestamp}}"
+}
+\`\`\`
+
+**Important**: Replace all \`{{placeholders}}\` with actual values from your analysis!
+
+### Step 5: Execute Based on User Choice
 
 **If user chooses (a) - Save locally:**
 \`\`\`bash
 hodge plan {{feature}} --lanes N
 \`\`\`
+The CLI will detect and use the plan.json file you created above.
 
 **If user chooses (b) - Save and create PM issues:**
 \`\`\`bash
 hodge plan {{feature}} --lanes N --create-pm
 \`\`\`
+The CLI will detect and use the plan.json file, then create PM issues.
 
 **If user chooses (c) - Modify:**
-Allow user to specify changes, regenerate plan, then return to Step 3.
+Allow user to specify changes, regenerate plan, update plan.json file, then return to Step 3.
 
 **If user chooses (d) - Cancel:**
-Exit without saving or creating anything.
+Exit without saving or creating anything. Clean up the temp file:
+\`\`\`bash
+rm -rf .hodge/temp/plan-interaction/{{feature}}
+\`\`\`
 
 ## Important Notes
 
