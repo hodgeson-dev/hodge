@@ -94,6 +94,16 @@ async function syncCommands() {
     // Write to output file
     fs.writeFileSync(OUTPUT_FILE, tsCode, 'utf8');
 
+    // Format the generated file with Prettier
+    try {
+      const { execSync } = require('child_process');
+      execSync(`npx prettier --write ${OUTPUT_FILE}`, { stdio: 'pipe' });
+      console.log('✨ Formatted generated file with Prettier');
+    } catch (prettierError) {
+      console.warn('⚠️  Warning: Could not format with Prettier:', prettierError.message);
+      console.warn('   Generated file may not pass prettier checks');
+    }
+
     console.log(`✅ Successfully synced ${commands.length} commands to ${OUTPUT_FILE}`);
     console.log('📝 Remember to commit the updated claude-commands.ts file');
   } catch (error) {
