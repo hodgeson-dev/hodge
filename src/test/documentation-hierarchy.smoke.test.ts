@@ -47,11 +47,11 @@ describe('Documentation Hierarchy Smoke Tests', () => {
   smokeTest('slash commands should include documentation hierarchy features', async () => {
     const commandsRoot = path.join(process.cwd(), '.claude', 'commands');
 
-    // /ship should have lesson capture
+    // /ship should have lesson capture (updated with interactive flow)
     const shipContent = fs.readFileSync(path.join(commandsRoot, 'ship.md'), 'utf-8');
     expect(shipContent).toContain('Capture lessons learned');
-    expect(shipContent).toContain('Consider Global Improvements');
-    expect(shipContent).toContain('Pattern Candidate');
+    expect(shipContent).toContain('Interactive Lessons Enhancement');
+    expect(shipContent).toContain('Pattern Potential');
 
     // /explore should review lessons and patterns
     const exploreContent = fs.readFileSync(path.join(commandsRoot, 'explore.md'), 'utf-8');

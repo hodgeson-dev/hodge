@@ -26,6 +26,101 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-29 - Interactive prompt with session memory for skip mechanism - respects user choice while encouraging best practices
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-299
+
+**Decision**:
+Interactive prompt with session memory for skip mechanism - respects user choice while encouraging best practices
+
+**Rationale**:
+Recorded via `hodge decide` command at 1:41:28 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Use {FEATURE}-{slug}
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-299
+
+**Decision**:
+Use {FEATURE}-{slug}.md naming for finalized lessons (e.g., HODGE-299-lessons-workflow.md) - provides clear feature association and discoverability
+
+**Rationale**:
+Recorded via `hodge decide` command at 1:41:28 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Keep lessons-draft
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-299
+
+**Decision**:
+Keep lessons-draft.md after finalization - preserve audit trail and enable comparison
+
+**Rationale**:
+Recorded via `hodge decide` command at 1:41:28 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Few questions (3-4) for lessons enhancement - balance insight gathering with low friction
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-299
+
+**Decision**:
+Few questions (3-4) for lessons enhancement - balance insight gathering with low friction
+
+**Rationale**:
+Recorded via `hodge decide` command at 1:41:28 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-29 - Interactive AI Enhancement Flow - integrate lessons review into /ship command with AI-guided questions and skip option
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-299
+
+**Decision**:
+Interactive AI Enhancement Flow - integrate lessons review into /ship command with AI-guided questions and skip option
+
+**Rationale**:
+Recorded via `hodge decide` command at 1:41:28 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-29 - Use HODGE-XXX
 
 **Status**: Accepted

@@ -1760,37 +1760,153 @@ The ship command will:
 - ✅ Update PM tracking
 - ✅ Learn patterns from shipped code
 
-## Step 5: Capture lessons learned
-After shipping, reflect on what was learned:
+## Step 5: Capture lessons learned (Interactive AI Enhancement)
 
-### Consider Global Improvements
-- **Pattern Candidate**: Did you create reusable code that could become a pattern?
-- **Standards Update**: Should any standards be updated based on this work?
-- **Tool Enhancement**: Any workflow improvements to suggest?
+After shipping successfully, the CLI creates a \`lessons-draft.md\` with objective metrics. Now let's enhance it with your insights and AI analysis.
 
-### Document Lessons
+### Check for Lessons Draft
 \`\`\`bash
-# Create lessons learned entry
-lessons_file=".hodge/lessons/$feature-$(date +%Y%m%d).md"
-mkdir -p .hodge/lessons
-
-cat > "$lessons_file" << EOF
-# Lessons from $feature
-
-## What Worked Well
-- [Document successes]
-
-## Challenges Faced
-- [Document challenges and solutions]
-
-## Patterns Discovered
-- [Any reusable patterns identified]
-
-## Recommendations
-- [Future improvements]
-
-EOF
+draft_path=".hodge/features/$feature/ship/lessons-draft.md"
+if [ -f "$draft_path" ]; then
+  echo "📝 Lessons draft found. Let's enhance it with your insights."
+else
+  echo "ℹ️  No lessons draft found (feature had no significant changes)"
+  # Skip lessons enhancement
+fi
 \`\`\`
+
+### Interactive Lessons Enhancement
+
+**IMPORTANT**: Ask user if they want to document lessons (respect their choice):
+
+\`\`\`
+Would you like to document lessons learned from this feature? (y/n)
+\`\`\`
+
+If user says **no** or **n**:
+- Thank them and skip lessons enhancement
+- Draft remains in feature directory for later review if desired
+- Move to Post-Ship Actions
+
+If user says **yes** or **y**, proceed with enhancement questions:
+
+#### Read the Draft
+First, read the lessons draft to see what the CLI captured:
+\`\`\`bash
+cat ".hodge/features/$feature/ship/lessons-draft.md"
+\`\`\`
+
+#### Ask Enhancement Questions (3-4 questions)
+
+**Question 1: What Worked Well**
+\`\`\`
+What approach or technique worked particularly well in this implementation?
+
+(Share your thoughts, or type 'skip' to skip this question)
+\`\`\`
+
+**Question 2: What to Improve**
+\`\`\`
+If you were implementing this feature again, what would you do differently?
+
+(Share your thoughts, or type 'skip' to skip this question)
+\`\`\`
+
+**Question 3: Gotchas and Surprises**
+\`\`\`
+Were there any gotchas, surprises, or unexpected challenges?
+
+(Share your thoughts, or type 'skip' to skip this question)
+\`\`\`
+
+**Question 4: Pattern Potential** (Optional)
+\`\`\`
+Did you create reusable code that could become a pattern for others?
+
+(Share your thoughts, or type 'skip' to skip this question)
+\`\`\`
+
+### Enrich and Finalize Lesson
+
+After gathering responses, analyze and create enriched lesson:
+
+1. **Read context files**:
+   \`\`\`bash
+   # Get git diff to analyze changes
+   git diff HEAD~1 HEAD
+
+   # Review exploration decisions
+   cat ".hodge/features/$feature/explore/exploration.md"
+
+   # Check decisions made
+   grep -A 10 "Feature: $feature" .hodge/decisions.md
+   \`\`\`
+
+2. **Generate enriched lesson** combining:
+   - Objective metrics from draft (files changed, patterns, tests)
+   - User insights from questions above
+   - AI analysis of git diff and decisions
+   - Lessons structure similar to \`HODGE-003-feature-extraction.md\`
+
+3. **Create finalized lesson**:
+   \`\`\`bash
+   # Generate descriptive slug from feature title
+   slug=$(echo "$feature" | tr '[:upper:]' '[:lower:]' | sed 's/hodge-//' | sed 's/[^a-z0-9]/-/g')
+
+   # Create lessons directory if needed
+   mkdir -p .hodge/lessons
+
+   # Write enriched lesson with descriptive filename
+   lessons_file=".hodge/lessons/\${feature}-\${slug}.md"
+
+   cat > "$lessons_file" << EOF
+# Lessons Learned: $feature
+
+## Feature: [Feature Title]
+
+### The Problem
+[Describe the problem this feature solved]
+
+### Approach Taken
+[Summarize the implementation approach chosen]
+
+### Key Learnings
+
+#### 1. [Learning Title]
+**Discovery**: [What was discovered]
+
+**Solution**: [How it was addressed]
+
+[User insights from questions]
+
+### Code Examples
+[Include relevant code patterns if applicable]
+
+### Impact
+[Describe the impact and benefits]
+
+### Related Decisions
+[List related decisions from decisions.md]
+
+---
+_Documented: $(date +%Y-%m-%d)_
+EOF
+
+   echo "✅ Lessons documented at: $lessons_file"
+   \`\`\`
+
+4. **Preserve draft** (per HODGE-299 decision):
+   - Keep \`lessons-draft.md\` in feature directory as audit trail
+   - Do NOT delete it after finalization
+
+### Example Enriched Lesson Structure
+
+See \`.hodge/lessons/HODGE-003-feature-extraction.md\` for example of rich lesson format with:
+- Problem statement and context
+- Approach evolution (what worked, what didn't)
+- Key learnings with code examples
+- Impact assessment
+- Related decisions
 
 ## Post-Ship Actions
 After successful shipping:
