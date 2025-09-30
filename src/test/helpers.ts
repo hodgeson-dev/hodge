@@ -34,8 +34,12 @@ export function smokeTest(name: string, fn: () => void | Promise<void>): void {
 /**
  * Create an integration test
  */
-export function integrationTest(name: string, fn: () => void | Promise<void>): void {
-  return it(testCategory(TestCategory.INTEGRATION, name), fn);
+export function integrationTest(
+  name: string,
+  fn: () => void | Promise<void>,
+  timeout?: number
+): void {
+  return it(testCategory(TestCategory.INTEGRATION, name), fn, timeout);
 }
 
 /**

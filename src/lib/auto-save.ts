@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import { existsSync } from 'fs';
 import { readFile, writeFile, mkdir, copyFile } from 'fs/promises';
 import path from 'path';
-import { saveManager } from './save-manager.js';
+import { SaveManager } from './save-manager.js';
 
 /**
  * Auto-save utility for preserving context when switching features
@@ -13,6 +13,7 @@ export class AutoSave {
   private contextPath: string;
   private savesPath: string;
   private enabled: boolean;
+  private saveManager: SaveManager;
   private lastSaveTime: Map<string, number> = new Map();
   private FULL_SAVE_INTERVAL = 30 * 60 * 1000; // Full save every 30 minutes
 
@@ -20,7 +21,15 @@ export class AutoSave {
     this.basePath = basePath;
     this.contextPath = path.join(basePath, '.hodge', 'context.json');
     this.savesPath = path.join(basePath, '.hodge', 'saves');
-    this.enabled = true;
+    // Create SaveManager with the same basePath so saves go to the right location
+    this.saveManager = new SaveManager(basePath);
+    // Disable auto-save during tests to prevent test isolation violations
+    // Check multiple test environment indicators (Vitest, Jest, NODE_ENV)
+    const isTest =
+      process.env.NODE_ENV === 'test' ||
+      process.env.VITEST !== undefined ||
+      process.env.VITEST_WORKER_ID !== undefined;
+    this.enabled = !isTest;
   }
 
   /**
@@ -29,6 +38,7 @@ export class AutoSave {
    * @returns true if auto-save occurred, false otherwise
    */
   async checkAndSave(newFeature: string): Promise<boolean> {
+    // Check if auto-save is enabled
     if (!this.enabled) {
       return false;
     }
@@ -89,8 +99,8 @@ export class AutoSave {
       const timeSinceLastSave = Date.now() - lastSave;
       const saveType = timeSinceLastSave > this.FULL_SAVE_INTERVAL ? 'full' : 'incremental';
 
-      // Use the new SaveManager for optimized saves
-      await saveManager.save(saveName, {
+      // Use this instance's SaveManager (respects basePath for test isolation)
+      await this.saveManager.save(saveName, {
         type: saveType,
         minimal: saveType === 'incremental', // Incremental saves are minimal
         includeGenerated: false, // Never include generated files in auto-saves
@@ -221,5 +231,6 @@ export class AutoSave {
   }
 }
 
-// Export singleton instance
+// Export singleton instance for project-level auto-save
+// Automatically disabled in test environments (see constructor)
 export const autoSave = new AutoSave();

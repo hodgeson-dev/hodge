@@ -18,6 +18,8 @@ describe('AutoSave', () => {
 
     // Create a new AutoSave instance with test directory
     autoSave = new AutoSave(testDir);
+    // Re-enable for testing (disabled by default in VITEST environment)
+    autoSave.setEnabled(true);
   });
 
   afterEach(() => {

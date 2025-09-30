@@ -26,8 +26,10 @@ export interface HodgeMDContext {
  * Provides context about current Hodge workflow state to any AI assistant
  */
 export class HodgeMDGenerator {
-  constructor() {
-    // Future: Could use StructureGenerator for template generation
+  private basePath: string;
+
+  constructor(basePath?: string) {
+    this.basePath = basePath ?? process.cwd();
   }
 
   /**
@@ -71,7 +73,7 @@ export class HodgeMDGenerator {
 
   private async getCurrentMode(feature: string): Promise<string> {
     // Check feature directory for current mode
-    const featurePath = path.join('.hodge', 'features', feature);
+    const featurePath = path.join(this.basePath, '.hodge', 'features', feature);
 
     try {
       // Check for mode indicators in order
@@ -106,7 +108,7 @@ export class HodgeMDGenerator {
   private async getRecentDecisions(
     feature: string
   ): Promise<Array<{ date: string; decision: string }>> {
-    const decisionsPath = path.join('.hodge', 'decisions.md');
+    const decisionsPath = path.join(this.basePath, '.hodge', 'decisions.md');
     const decisions: Array<{ date: string; decision: string }> = [];
 
     try {
@@ -140,7 +142,7 @@ export class HodgeMDGenerator {
   }
 
   private async getActiveStandards(): Promise<Array<{ category: string; rules: string[] }>> {
-    const standardsPath = path.join('.hodge', 'standards.md');
+    const standardsPath = path.join(this.basePath, '.hodge', 'standards.md');
 
     try {
       const content = await fs.readFile(standardsPath, 'utf-8');
@@ -183,7 +185,7 @@ export class HodgeMDGenerator {
   }
 
   private async getCommandHistory(): Promise<string[]> {
-    const historyPath = path.join('.hodge', 'command-history.json');
+    const historyPath = path.join(this.basePath, '.hodge', 'command-history.json');
 
     try {
       const content = await fs.readFile(historyPath, 'utf-8');
@@ -195,7 +197,7 @@ export class HodgeMDGenerator {
   }
 
   private async getWorkingFiles(feature: string): Promise<string[]> {
-    const featurePath = path.join('.hodge', 'features', feature);
+    const featurePath = path.join(this.basePath, '.hodge', 'features', feature);
     const files: string[] = [];
 
     try {
@@ -265,7 +267,7 @@ export class HodgeMDGenerator {
   }
 
   private async getPMIssue(feature: string): Promise<string | undefined> {
-    const issueIdPath = path.join('.hodge', 'features', feature, 'issue-id.txt');
+    const issueIdPath = path.join(this.basePath, '.hodge', 'features', feature, 'issue-id.txt');
 
     try {
       const issueId = await fs.readFile(issueIdPath, 'utf-8');
@@ -278,7 +280,7 @@ export class HodgeMDGenerator {
   private async getCorePrinciples(): Promise<
     Array<{ title: string; description: string }> | undefined
   > {
-    const principlesPath = path.join('.hodge', 'principles.md');
+    const principlesPath = path.join(this.basePath, '.hodge', 'principles.md');
 
     try {
       const content = await fs.readFile(principlesPath, 'utf-8');
@@ -482,11 +484,11 @@ export class HodgeMDGenerator {
   /**
    * Save generated HODGE.md to file system
    * @param feature - The feature to generate context for
-   * @param outputPath - Optional custom output path (defaults to .hodge/HODGE.md)
+   * @param outputPath - Optional custom output path (defaults to {basePath}/.hodge/HODGE.md)
    */
   async saveToFile(feature: string, outputPath?: string): Promise<void> {
     const markdown = await this.generate(feature);
-    const filePath = outputPath ?? path.join('.hodge', 'HODGE.md');
+    const filePath = outputPath ?? path.join(this.basePath, '.hodge', 'HODGE.md');
 
     await fs.writeFile(filePath, markdown, 'utf-8');
   }

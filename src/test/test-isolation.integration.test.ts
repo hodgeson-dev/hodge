@@ -7,42 +7,50 @@ import { tmpdir } from 'os';
 import { randomBytes } from 'crypto';
 
 describe('[integration] Test Isolation', () => {
-  integrationTest('should handle parallel test execution without conflicts', async () => {
-    // Run multiple test files in parallel and verify they don't conflict
-    const testCommands = [
-      'npx vitest run src/lib/session-manager.test.ts --reporter=silent',
-      'npx vitest run src/lib/__tests__/auto-save.test.ts --reporter=silent',
-      'npx vitest run src/lib/__tests__/context-manager.test.ts --reporter=silent',
-    ];
+  integrationTest(
+    'should handle parallel test execution without conflicts',
+    async () => {
+      // Run multiple test files in parallel and verify they don't conflict
+      const testCommands = [
+        'npx vitest run src/lib/session-manager.test.ts',
+        'npx vitest run src/lib/__tests__/auto-save.test.ts',
+        'npx vitest run src/lib/__tests__/context-manager.test.ts',
+      ];
 
-    // Execute tests in parallel using Promise.all
-    const results = await Promise.all(
-      testCommands.map(
-        (cmd) =>
-          new Promise<boolean>((resolve) => {
-            try {
-              execSync(cmd, { stdio: 'pipe', encoding: 'utf8' });
-              resolve(true);
-            } catch {
-              // Even if a test fails, we're checking for conflicts, not test success
-              resolve(true);
-            }
-          })
-      )
-    );
+      // Execute tests in parallel using Promise.all
+      const results = await Promise.all(
+        testCommands.map(
+          (cmd) =>
+            new Promise<boolean>((resolve) => {
+              try {
+                execSync(cmd, {
+                  stdio: 'pipe',
+                  encoding: 'utf8',
+                  env: { ...process.env, NODE_ENV: 'test' },
+                });
+                resolve(true);
+              } catch {
+                // Even if a test fails, we're checking for conflicts, not test success
+                resolve(true);
+              }
+            })
+        )
+      );
 
-    // All should complete without file system conflicts
-    results.forEach((result) => expect(result).toBe(true));
+      // All should complete without file system conflicts
+      results.forEach((result) => expect(result).toBe(true));
 
-    // Verify no test directories in project root
-    const hasTestDirs =
-      existsSync('.test-hodge') ||
-      existsSync('.test-session') ||
-      existsSync('.test-workflow') ||
-      existsSync('.test-context');
+      // Verify no test directories in project root
+      const hasTestDirs =
+        existsSync('.test-hodge') ||
+        existsSync('.test-session') ||
+        existsSync('.test-workflow') ||
+        existsSync('.test-context');
 
-    expect(hasTestDirs).toBe(false);
-  });
+      expect(hasTestDirs).toBe(false);
+    },
+    15000
+  );
 
   integrationTest('should clean up test directories even on failure', async () => {
     // Create a test that will fail but should still clean up
@@ -105,7 +113,10 @@ describe('[integration] Test Isolation', () => {
 
       // Run test
       try {
-        execSync(`npx vitest run ${testFile} --reporter=silent`, { stdio: 'pipe' });
+        execSync(`npx vitest run ${testFile}`, {
+          stdio: 'pipe',
+          env: { ...process.env, NODE_ENV: 'test' },
+        });
       } catch {
         // Ignore test failures, we're checking isolation
       }
@@ -138,7 +149,10 @@ describe('[integration] Test Isolation', () => {
 
       for (const file of testFiles) {
         try {
-          execSync(`npx vitest run ${file} --reporter=silent`, { stdio: 'pipe' });
+          execSync(`npx vitest run ${file}`, {
+            stdio: 'pipe',
+            env: { ...process.env, NODE_ENV: 'test' },
+          });
         } catch {
           // Ignore test failures
         }

@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import * as fs from 'fs/promises';
+import * as path from 'path';
 import { HodgeMDGenerator } from './hodge-md-generator.js';
 
 vi.mock('fs/promises');
@@ -84,7 +85,7 @@ describe('HodgeMDGenerator', () => {
       await generator.saveToFile('test-feature');
 
       expect(fs.writeFile).toHaveBeenCalledWith(
-        '.hodge/HODGE.md',
+        path.join(process.cwd(), '.hodge', 'HODGE.md'),
         expect.stringContaining('# HODGE.md'),
         'utf-8'
       );

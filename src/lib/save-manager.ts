@@ -19,8 +19,20 @@ import chalk from 'chalk';
 const execAsync = promisify(exec);
 
 export class SaveManager {
+  private basePathOverride?: string;
+
+  constructor(basePath?: string) {
+    this.basePathOverride = basePath;
+  }
+
+  private get basePath(): string {
+    // Use override if provided, otherwise use current working directory
+    // This allows tests to mock process.cwd() and have it work correctly
+    return this.basePathOverride ?? process.cwd();
+  }
+
   private get saveDir(): string {
-    return path.join(process.cwd(), '.hodge', 'saves');
+    return path.join(this.basePath, '.hodge', 'saves');
   }
 
   /**
@@ -145,9 +157,9 @@ export class SaveManager {
   private async saveEssentials(savePath: string, manifest: SaveManifest): Promise<void> {
     // Save only critical working files that aren't in git
     const essentials = [
-      path.join(process.cwd(), '.hodge', 'context.json'),
-      path.join(process.cwd(), '.hodge', '.session'),
-      manifest.references.workLog ? path.join(process.cwd(), manifest.references.workLog) : '',
+      path.join(this.basePath, '.hodge', 'context.json'),
+      path.join(this.basePath, '.hodge', '.session'),
+      manifest.references.workLog ? path.join(this.basePath, manifest.references.workLog) : '',
     ].filter(Boolean);
 
     for (const file of essentials) {
@@ -268,7 +280,7 @@ export class SaveManager {
     lastAction: string;
   }> {
     try {
-      const contextPath = path.join(process.cwd(), '.hodge', 'context.json');
+      const contextPath = path.join(this.basePath, '.hodge', 'context.json');
       const contextContent = await fs.readFile(contextPath, 'utf-8');
       const contextData = JSON.parse(contextContent) as {
         feature?: string;
@@ -291,7 +303,7 @@ export class SaveManager {
 
   private async getModifiedFiles(): Promise<string[]> {
     try {
-      const { stdout } = await execAsync('git diff --name-only HEAD', { cwd: process.cwd() });
+      const { stdout } = await execAsync('git diff --name-only HEAD', { cwd: this.basePath });
       return stdout.split('\n').filter(Boolean);
     } catch {
       return [];
@@ -301,7 +313,7 @@ export class SaveManager {
   private async getGitDiff(base?: string): Promise<string> {
     try {
       const cmd = base ? `git diff ${base}..HEAD` : 'git diff HEAD';
-      const { stdout } = await execAsync(cmd, { cwd: process.cwd() });
+      const { stdout } = await execAsync(cmd, { cwd: this.basePath });
       return stdout;
     } catch {
       return '';
@@ -311,7 +323,7 @@ export class SaveManager {
   private async getRecentDecisions(): Promise<string[]> {
     // Get last 5 decisions from decisions.md
     try {
-      const decisionsPath = path.join(process.cwd(), '.hodge', 'decisions.md');
+      const decisionsPath = path.join(this.basePath, '.hodge', 'decisions.md');
       const decisions = await fs.readFile(decisionsPath, 'utf-8');
       const matches = decisions.match(/### \d{4}-\d{2}-\d{2} - (.+)/g) || [];
       return matches.slice(-5).map((m) => m.replace(/### \d{4}-\d{2}-\d{2} - /, ''));
@@ -325,7 +337,7 @@ export class SaveManager {
     // Instead, check for recent test results file or return unknown
     try {
       // Check if we have a recent test results file (future enhancement)
-      const testResultsPath = path.join(process.cwd(), '.hodge', 'test-results.json');
+      const testResultsPath = path.join(this.basePath, '.hodge', 'test-results.json');
       await fs.access(testResultsPath);
       const stats = await fs.stat(testResultsPath);
 
@@ -354,7 +366,7 @@ export class SaveManager {
 
   private async getLastCommit(): Promise<string> {
     try {
-      const { stdout } = await execAsync('git rev-parse HEAD', { cwd: process.cwd() });
+      const { stdout } = await execAsync('git rev-parse HEAD', { cwd: this.basePath });
       return stdout.trim();
     } catch {
       return '';
@@ -363,7 +375,7 @@ export class SaveManager {
 
   private async getSessionStartTime(): Promise<string> {
     try {
-      const sessionPath = path.join(process.cwd(), '.hodge', '.session');
+      const sessionPath = path.join(this.basePath, '.hodge', '.session');
       const sessionContent = await fs.readFile(sessionPath, 'utf-8');
       const session = JSON.parse(sessionContent) as { startTime?: string };
       return session.startTime || new Date().toISOString();

@@ -131,7 +131,10 @@ smokeTest(
 
 smokeTest('PlanCommand should generate epic structure from decisions', async () => {
   const { PlanCommand } = await import('../src/commands/plan');
-  const testDir = path.join(tmpdir(), `hodge-test-${Date.now()}`);
+  const testDir = path.join(
+    tmpdir(),
+    `hodge-test-${Date.now()}-${Math.random().toString(36).substring(7)}`
+  );
   const planCommand = new PlanCommand(testDir);
 
   // Create mock decisions file
@@ -155,7 +158,10 @@ smokeTest('PlanCommand should generate epic structure from decisions', async () 
 });
 
 smokeTest('DecideCommand should record decisions without PM integration', async () => {
-  const testDir = path.join(tmpdir(), `hodge-test-${Date.now()}`);
+  const testDir = path.join(
+    tmpdir(),
+    `hodge-test-${Date.now()}-${Math.random().toString(36).substring(7)}`
+  );
   const decideCommand = new DecideCommand(testDir);
 
   const hodgeDir = path.join(testDir, '.hodge');

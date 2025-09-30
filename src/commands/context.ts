@@ -31,11 +31,12 @@ interface SavedContext {
  * 5. Update both /hodge and /load commands consistently
  */
 export class ContextCommand {
-  private hodgeMDGenerator = new HodgeMDGenerator();
+  private hodgeMDGenerator: HodgeMDGenerator;
   private basePath: string;
 
   constructor(basePath?: string) {
     this.basePath = basePath || process.cwd();
+    this.hodgeMDGenerator = new HodgeMDGenerator(this.basePath);
   }
 
   async execute(options: ContextOptions = {}): Promise<void> {
