@@ -5,16 +5,19 @@ import { HardenCommand } from '../../commands/harden.js';
 import { ShipCommand } from '../../commands/ship.js';
 import { smokeTest } from '../../test/helpers.js';
 import { PMHooks } from './pm-hooks.js';
+import { withTestWorkspace } from '../../test/runners.js';
 
 describe('PM Hooks Integration', () => {
   // These are smoke tests that verify PM hooks are properly integrated
   // They do NOT modify any directories or make actual PM calls
 
-  smokeTest('PMHooks class should initialize without errors', () => {
-    expect(() => {
-      const pmHooks = new PMHooks();
-      expect(pmHooks).toBeDefined();
-    }).not.toThrow();
+  smokeTest('PMHooks class should initialize without errors', async () => {
+    await withTestWorkspace('pm-hooks-integration-init', async (workspace) => {
+      expect(() => {
+        const pmHooks = new PMHooks(workspace.getPath());
+        expect(pmHooks).toBeDefined();
+      }).not.toThrow();
+    });
   });
 
   smokeTest('explore command should have PM hooks integrated', () => {
@@ -54,22 +57,24 @@ describe('PM Hooks Integration', () => {
   });
 
   smokeTest('PM hooks should handle missing configuration gracefully', async () => {
-    // Remove any PM configuration
-    const originalPMTool = process.env.HODGE_PM_TOOL;
-    const originalLinearKey = process.env.LINEAR_API_KEY;
+    await withTestWorkspace('pm-hooks-integration-config', async (workspace) => {
+      // Remove any PM configuration
+      const originalPMTool = process.env.HODGE_PM_TOOL;
+      const originalLinearKey = process.env.LINEAR_API_KEY;
 
-    delete process.env.HODGE_PM_TOOL;
-    delete process.env.LINEAR_API_KEY;
+      delete process.env.HODGE_PM_TOOL;
+      delete process.env.LINEAR_API_KEY;
 
-    const pmHooks = new PMHooks();
+      const pmHooks = new PMHooks(workspace.getPath());
 
-    // These methods should not throw even without configuration
-    await expect(pmHooks.onExplore('test-feature', 'Test feature')).resolves.not.toThrow();
-    await expect(pmHooks.onBuild('test-feature')).resolves.not.toThrow();
-    await expect(pmHooks.onShip('test-feature')).resolves.not.toThrow();
+      // These methods should not throw even without configuration
+      await expect(pmHooks.onExplore('test-feature', 'Test feature')).resolves.not.toThrow();
+      await expect(pmHooks.onBuild('test-feature')).resolves.not.toThrow();
+      await expect(pmHooks.onShip('test-feature')).resolves.not.toThrow();
 
-    // Restore original configuration
-    if (originalPMTool) process.env.HODGE_PM_TOOL = originalPMTool;
-    if (originalLinearKey) process.env.LINEAR_API_KEY = originalLinearKey;
+      // Restore original configuration
+      if (originalPMTool) process.env.HODGE_PM_TOOL = originalPMTool;
+      if (originalLinearKey) process.env.LINEAR_API_KEY = originalLinearKey;
+    });
   });
 });

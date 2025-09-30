@@ -5,6 +5,10 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    // Vitest 3.x: Use forks pool for better test isolation
+    pool: 'forks',
+    // Isolate file system state between test files
+    isolate: true,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],

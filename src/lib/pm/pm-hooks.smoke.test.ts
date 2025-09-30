@@ -11,9 +11,11 @@ import { promises as fs } from 'fs';
 
 describe('PM Hooks Smoke Tests', () => {
   smokeTest('should create PMHooks instance without crashing', async () => {
-    await expect(async () => {
-      new PMHooks();
-    }).not.toThrow();
+    await withTestWorkspace('pm-hooks-instance', async (workspace) => {
+      await expect(async () => {
+        new PMHooks(workspace.getPath());
+      }).not.toThrow();
+    });
   });
 
   smokeTest('should initialize without configuration', async () => {

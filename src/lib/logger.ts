@@ -15,6 +15,12 @@ const isInitCommand = process.argv.includes('init');
 
 // Get log directory - use project-specific location
 function getLogDir(): string {
+  // Allow tests to override log directory
+  if (process.env.HODGE_LOG_DIR) {
+    fs.ensureDirSync(process.env.HODGE_LOG_DIR, { mode: 0o755 });
+    return process.env.HODGE_LOG_DIR;
+  }
+
   const projectLogDir = path.join(process.cwd(), '.hodge', 'logs');
   const fallbackLogDir = path.join(os.homedir(), '.hodge', 'logs');
 
@@ -28,19 +34,23 @@ function getLogDir(): string {
   }
 }
 
-const logDir = getLogDir();
+// Detect if we're running in Vitest (test environment)
+const isTest = process.env.VITEST === 'true' || process.env.NODE_ENV === 'test';
+
+const logDir = isTest ? os.tmpdir() : getLogDir();
 
 // Use synchronous file destination for better CLI performance
 // This ensures logs are written before process exits
+// In test mode, use temp directory to avoid polluting project .hodge
 const logDestination = pino.destination({
-  dest: path.join(logDir, 'hodge.log'),
+  dest: path.join(logDir, isTest ? `hodge-test-${process.pid}.log` : 'hodge.log'),
   sync: true, // Synchronous writes for CLI tools
   mkdir: true,
 });
 
 // Create error log destination
 const errorDestination = pino.destination({
-  dest: path.join(logDir, 'error.log'),
+  dest: path.join(logDir, isTest ? `error-test-${process.pid}.log` : 'error.log'),
   sync: true,
   mkdir: true,
 });
