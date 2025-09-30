@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-301",
+  "timestamp": "2025-09-30T04:17:00.468Z",
+  "issueId": "HODGE-301",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "feat: add vertical slice validation guidance to /plan command (HODGE-301)\n\n## What Changed\n- Enhanced .claude/commands/plan.md (145 lines added):\n  - Added \"Vertical Slice Requirement\" section with definition\n  - Defined moderate vertical slice criteria (stakeholder value + independently testable)\n  - Added good vs bad story examples (horizontal vs vertical slicing)\n  - Created 4-step vertical slice decision tree for AI validation\n  - Updated AI workflow with validation steps and warning mechanisms\n  - Enhanced Important Notes with vertical slice requirements\n\n- Added src/commands/plan.test.ts (45 lines):\n  - Added 2 new smoke tests for template validation\n  - Test verifies vertical slice guidance exists in template\n  - Test verifies Important Notes section updated correctly\n\n- Auto-updated src/lib/claude-commands.ts (169 lines):\n  - Synced slash command definitions with plan.md changes\n\n- Updated .hodge/decisions.md (114 lines):\n  - Recorded 6 decisions for HODGE-301 implementation approach\n\n## Why This Change\nThe /plan command was creating epics and stories without enforcing that each \nstory is a vertical slice - a complete, testable, shippable unit of value. \nThis led to horizontal slicing (e.g., \"Backend API\" + \"Frontend UI\") where \nstories couldn't be independently tested or shipped.\n\nThis change adds comprehensive AI guidance through template documentation to \nensure stories provide complete value to stakeholders. Uses an AI-driven \napproach (template guidance) rather than programmatic validation, following \nthe decision to trust AI to apply principles over enforcing rules.\n\n## Impact\n- ✅ AI will now guide users to create proper vertical slices\n- ✅ Clear examples show good vs bad story breakdowns\n- ✅ Decision tree helps AI validate stories during plan generation\n- ✅ Fallback to single issue when vertical slicing isn't feasible\n- ✅ Educational approach improves future plan quality\n- ✅ No breaking changes (pure template enhancement)\n- ✅ All 207 tests passing (205 existing + 2 new)\n\nCloses HODGE-301\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}

@@ -26,6 +26,120 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-30 - Extensive template documentation - Add vertical slice criteria, good/bad examples, and decision trees to
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-301
+
+**Decision**:
+Extensive template documentation - Add vertical slice criteria, good/bad examples, and decision trees to .claude/commands/plan.md
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:06:26 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-30 - AI validation during plan generation only with mandatory user approval - AI warns during plan generation, but ALL plans require explicit user approval before hodge plan CLI is called (this is already enforced by /plan command architecture)
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-301
+
+**Decision**:
+AI validation during plan generation only with mandatory user approval - AI warns during plan generation, but ALL plans require explicit user approval before hodge plan CLI is called (this is already enforced by /plan command architecture)
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:06:26 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-30 - Auto-convert to single issue when vertical slicing fails - System automatically suggests single issue when stories cannot meet vertical slice criteria
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-301
+
+**Decision**:
+Auto-convert to single issue when vertical slicing fails - System automatically suggests single issue when stories cannot meet vertical slice criteria
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:06:26 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-30 - Moderate vertical slice criteria - Stories must provide value to stakeholder AND be independently testable
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-301
+
+**Decision**:
+Moderate vertical slice criteria - Stories must provide value to stakeholder AND be independently testable
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:06:26 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-30 - Warn only validation strictness - Provide informational warnings about potential horizontal slicing without blocking plan generation
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-301
+
+**Decision**:
+Warn only validation strictness - Provide informational warnings about potential horizontal slicing without blocking plan generation
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:06:26 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-30 - AI-Driven Design Only - Enhance the /plan command template to explicitly guide AI through vertical slice design, with clear criteria and examples
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-301
+
+**Decision**:
+AI-Driven Design Only - Enhance the /plan command template to explicitly guide AI through vertical slice design, with clear criteria and examples
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:06:25 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-29 - Interactive prompt with session memory for skip mechanism - respects user choice while encouraging best practices
 
 **Status**: Accepted

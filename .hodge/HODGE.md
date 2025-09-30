@@ -5,21 +5,21 @@ This file provides AI assistants with context about the current Hodge workflow s
 ## Current Status
 **Feature**: general
 **Mode**: explore
-**Last Updated**: 2025-09-29T17:04:42.592Z
+**Last Updated**: 2025-09-30T03:54:33.922Z
 ## Current Session
-**Resumed**: 12 hours ago
-**Progress**: Explored HODGE-296 - template ready for AI approach generation
-**Working on**: HODGE-296 (explore mode)
+**Resumed**: 18 minutes ago
+**Progress**: Explored HODGE-300 - template ready for AI approach generation
+**Working on**: HODGE-300 (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-296. Explored HODGE-296 - template ready for AI approach generation
+You were helping with HODGE-300. Explored HODGE-300 - template ready for AI approach generation
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
-- **2025-09-29**: Create epic for authentication
-- **2025-09-29**: Create epic for authentication
-- **2025-09-29**: Create epic for authentication
-- **2025-09-29**: Create epic for authentication
-- **2025-09-29**: Create epic for authentication
+- **2025-09-29**: Interactive prompt with session memory for skip mechanism - respects user choice while encouraging best practices
+- **2025-09-29**: Use {FEATURE}-{slug}
+- **2025-09-29**: Keep lessons-draft
+- **2025-09-29**: Few questions (3-4) for lessons enhancement - balance insight gathering with low friction
+- **2025-09-29**: Interactive AI Enhancement Flow - integrate lessons review into /ship command with AI-guided questions and skip option
 
 ## Active Standards
 

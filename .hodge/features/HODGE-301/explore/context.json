@@ -1,0 +1,34 @@
+{
+  "mode": "explore",
+  "feature": "HODGE-301",
+  "localID": "HODGE-301",
+  "externalID": null,
+  "timestamp": "2025-09-30T03:54:59.137Z",
+  "intent": {
+    "type": "general",
+    "keywords": [
+      "HODGE-301"
+    ],
+    "suggestedPatterns": [
+      "service",
+      "utility",
+      "factory"
+    ],
+    "relatedCommands": [
+      "execute",
+      "process",
+      "handle"
+    ]
+  },
+  "standards": "suggested",
+  "validation": "optional",
+  "pmIssue": "HODGE-301",
+  "pmTool": null,
+  "approaches": [],
+  "relatedFeatures": [
+    "hodge-branding",
+    "HODGE-001",
+    "HODGE-002"
+  ],
+  "suggestedPatterns": []
+}

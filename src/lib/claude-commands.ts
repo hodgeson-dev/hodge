@@ -987,12 +987,96 @@ The AI analyzes decisions to determine if the feature needs:
 - **Single Story**: Simple implementation (1-3 days)
 - **Epic with Stories**: Complex feature requiring breakdown
 
-### Step 2: Story Generation
-For epics, the AI identifies stories based on:
-- Technical areas mentioned in decisions
-- Natural work boundaries
-- Testing requirements
-- Dependencies between components
+### Step 2: Story Generation (Vertical Slice Requirement)
+
+**CRITICAL REQUIREMENT**: All stories MUST be vertical slices - complete, testable, shippable units of value.
+
+#### What is a Vertical Slice?
+A vertical slice is a story that:
+1. **Provides complete value** to a stakeholder (user, admin, developer, tester, etc.)
+2. **Is independently testable** - can be verified without other stories
+3. **Is shippable** - could go to production on its own (even if behind a feature flag)
+
+#### Vertical Slice Criteria (Moderate Standard)
+Each story must satisfy BOTH criteria:
+- ✅ **Stakeholder Value**: Clearly benefits someone (not just "backend work" or "setup")
+- ✅ **Independently Testable**: Has verification criteria that don't depend on other incomplete stories
+
+#### Good vs Bad Story Examples
+
+**❌ BAD: Horizontal Slicing (Layer-Based)**
+\`\`\`
+Epic: User Authentication
+- Story 1: Backend API endpoints
+- Story 2: Frontend UI components
+- Story 3: Database schema
+- Story 4: Integration tests
+
+Problem: No story provides complete value alone. Can't test/ship backend without frontend.
+\`\`\`
+
+**✅ GOOD: Vertical Slicing (Value-Based)**
+\`\`\`
+Epic: User Authentication
+- Story 1: Login with email/password (backend + frontend + tests + DB)
+  Value: Users can log in, testable end-to-end, shippable
+- Story 2: Password reset flow (backend + frontend + tests + email)
+  Value: Users can reset passwords, independently testable, shippable
+- Story 3: OAuth social login (backend + frontend + tests + provider integration)
+  Value: Users can log in with Google, independently testable, shippable
+
+Each story is a complete, working feature slice.
+\`\`\`
+
+**❌ BAD: Incomplete Value**
+\`\`\`
+- Story 1: Set up authentication configuration
+- Story 2: Add user database tables
+- Story 3: Create login API skeleton
+
+Problem: None provide value to any stakeholder. Just setup/infrastructure.
+\`\`\`
+
+**✅ GOOD: Complete Value**
+\`\`\`
+- Story 1: Basic login authentication (includes setup, DB, API, UI - all needed for login to work)
+  Value: Users can log in - complete feature
+
+Each story delivers working functionality.
+\`\`\`
+
+#### Vertical Slice Decision Tree
+
+When generating stories, ask:
+
+1. **Can this story be tested independently?**
+   - No → Merge with dependent stories to create complete slice
+   - Yes → Continue to question 2
+
+2. **Does this story provide value to a stakeholder?**
+   - No → This might be infrastructure - include it as part of a value-delivering story
+   - Yes → Continue to question 3
+
+3. **Could this story ship to production (even behind a feature flag)?**
+   - No → Missing something (UI? Backend? Tests?) - expand to include all needed pieces
+   - Yes → This is a valid vertical slice ✅
+
+4. **Are all stories in the epic vertical slices?**
+   - No → Revise the breakdown
+   - Yes → Continue to dependencies
+
+**If vertical slicing is not feasible:**
+- ⚠️ Warn the user that stories may not meet vertical slice criteria
+- 💡 Suggest creating a single issue instead of epic/stories
+- ✅ Allow user to override with explanation if they have good reason
+
+#### Story Generation Guidelines
+For epics, identify stories based on:
+- **Value-based boundaries** (not technical layers)
+- Complete user workflows or features
+- Natural work boundaries that deliver value
+- Testing requirements (each story must be testable)
+- Dependencies between components (minimize them)
 
 ### Step 3: Dependency Analysis
 \`\`\`
@@ -1158,6 +1242,25 @@ Even for solo developers, \`/plan\` provides value:
 Read decisions from \`.hodge/decisions.md\` for the feature and identify work units.
 
 ### Step 2: Generate Plan Structure (AI Task)
+
+**Before creating stories, validate vertical slice requirements:**
+
+1. **Check each proposed story against vertical slice criteria:**
+   - Does it provide complete value to a stakeholder?
+   - Is it independently testable?
+   - Could it ship to production (even behind a feature flag)?
+
+2. **If stories are horizontal slices (e.g., "Backend" + "Frontend"):**
+   - ⚠️ **WARN the user** that stories may not meet vertical slice criteria
+   - 💡 **SUGGEST** combining them into value-based slices OR creating a single issue
+   - Example: "⚠️ Warning: Stories 'Backend API' and 'Frontend UI' appear to be horizontal slices. Consider combining into 'Login Feature (backend + frontend + tests)' for complete value."
+
+3. **If vertical slicing is not feasible:**
+   - 💡 **RECOMMEND** creating a single issue instead of epic/stories
+   - Example: "💡 Recommendation: This feature may be better as a single issue since it's difficult to split into independently valuable stories."
+
+4. **Generate the plan with validated stories:**
+
 Create epic/story breakdown:
 \`\`\`
 Epic: HODGE-XXX: [Description from exploration.md]
@@ -1167,13 +1270,34 @@ Decisions Made:
 2. Decision title 2
 3. Decision title 3
 
-Stories:
-- HODGE-XXX.1: Story title 1
-- HODGE-XXX.2: Story title 2 [depends on: HODGE-XXX.1]
+Stories (Vertical Slices):
+- HODGE-XXX.1: Story title 1 (complete feature with backend + frontend + tests)
+  ✅ Value: [Who benefits and how]
+  ✅ Testable: [How to verify independently]
+- HODGE-XXX.2: Story title 2 (complete feature slice) [depends on: HODGE-XXX.1]
+  ✅ Value: [Who benefits and how]
+  ✅ Testable: [How to verify independently]
+
+Vertical Slice Validation:
+✅ All stories provide complete stakeholder value
+✅ All stories are independently testable
+✅ All stories are shippable
 
 Lane Allocation (N lanes):
 Lane 1: HODGE-XXX.1
 Lane 2: HODGE-XXX.2
+\`\`\`
+
+**If warnings were issued:**
+\`\`\`
+⚠️ Vertical Slice Warnings:
+- Story X may not provide complete value (missing frontend/backend/tests)
+- Consider revising breakdown or creating single issue
+
+Would you like to:
+a) Revise the plan to use vertical slices
+b) Create as single issue instead
+c) Proceed anyway (explain why this breakdown is correct)
 \`\`\`
 
 ### Step 3: Present to User
@@ -1209,12 +1333,15 @@ Exit without saving or creating anything.
 ## Important Notes
 
 - **CRITICAL**: NEVER call \`hodge plan\` with \`--create-pm\` without explicit user approval
+- **CRITICAL**: All stories MUST be vertical slices (complete value + independently testable + shippable)
 - The \`hodge plan\` CLI is an internal tool, users never invoke it directly
 - All user interaction happens in this slash command template
 - PM issue creation is a destructive operation requiring explicit consent
 - Plans can be regenerated if decisions change
 - Lane allocation respects dependencies automatically
 - Stories can be worked on independently within constraints
+- **Warn users** if stories appear to be horizontal slices (layer-based)
+- **Suggest single issue** when vertical slicing is not feasible
 
 ## Next Steps After Planning
 

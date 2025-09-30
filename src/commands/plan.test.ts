@@ -228,3 +228,48 @@ describe('PlanCommand - Smoke Tests', () => {
     expect(existsSync(planFile)).toBe(true);
   });
 });
+
+describe('PlanCommand Template - Vertical Slice Validation', () => {
+  smokeTest('plan.md template includes vertical slice guidance', async () => {
+    // Read the plan.md slash command template
+    const templatePath = path.join(process.cwd(), '.claude', 'commands', 'plan.md');
+    const template = await fs.readFile(templatePath, 'utf-8');
+
+    // Verify critical vertical slice content is present
+    expect(template).toContain('Vertical Slice Requirement');
+    expect(template).toContain('What is a Vertical Slice?');
+    expect(template).toContain('Provides complete value');
+    expect(template).toContain('independently testable');
+    expect(template).toContain('shippable');
+
+    // Verify criteria section exists
+    expect(template).toContain('Vertical Slice Criteria');
+    expect(template).toContain('Stakeholder Value');
+    expect(template).toContain('Independently Testable');
+
+    // Verify examples are present
+    expect(template).toContain('Good vs Bad Story Examples');
+    expect(template).toContain('BAD: Horizontal Slicing');
+    expect(template).toContain('GOOD: Vertical Slicing');
+
+    // Verify decision tree exists
+    expect(template).toContain('Vertical Slice Decision Tree');
+    expect(template).toContain('Can this story be tested independently?');
+    expect(template).toContain('Does this story provide value to a stakeholder?');
+
+    // Verify validation in AI workflow
+    expect(template).toContain('validate vertical slice requirements');
+    expect(template).toContain('WARN the user');
+    expect(template).toContain('single issue instead');
+  });
+
+  smokeTest('plan.md template has updated Important Notes', async () => {
+    const templatePath = path.join(process.cwd(), '.claude', 'commands', 'plan.md');
+    const template = await fs.readFile(templatePath, 'utf-8');
+
+    // Verify Important Notes section includes vertical slice requirement
+    expect(template).toContain('All stories MUST be vertical slices');
+    expect(template).toContain('Warn users');
+    expect(template).toContain('Suggest single issue');
+  });
+});
