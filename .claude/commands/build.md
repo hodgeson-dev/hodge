@@ -6,8 +6,8 @@
 
 ### Check for PM Issue Mapping
 ```bash
-# Read the id-mappings file to check if feature is tracked
-cat .hodge/id-mappings.json | grep "{{feature}}"
+# Read the id-mappings file to check if feature has externalID (actual PM issue created)
+cat .hodge/id-mappings.json | grep -A 2 "\"{{feature}}\"" | grep "externalID"
 ```
 
 ### If Feature is NOT Mapped

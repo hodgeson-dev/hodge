@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-309",
+  "timestamp": "2025-09-30T19:47:34.234Z",
+  "issueId": "HODGE-309",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "fix: correct PM issue check false positive for entries without externalID (HODGE-309)\n\n## What Changed\n- **Template Fix** (.claude/commands/build.md: 2 lines modified)\n  - Updated PM check grep pattern from simple feature search to externalID verification\n  - Changed: `grep \"{{feature}}\"` → `grep -A 2 \"\\\"{{feature}}\\\"\" | grep \"externalID\"`\n  - Updated comment to clarify the check verifies actual PM issue creation\n  \n- **Test Coverage** (src/lib/claude-commands.smoke.test.ts: 93 lines added)\n  - Added 3 new smoke tests for PM mapping check behavior\n  - Test 1: Verifies detection of entries WITH externalID (mapped)\n  - Test 2: Verifies detection of entries WITHOUT externalID (unmapped)\n  - Test 3: Verifies handling of dotted feature IDs (HODGE-XXX.Y format)\n  - All tests use isolated temp directories (test isolation compliance)\n  \n- **Pattern Documentation** (.hodge/patterns/pm-mapping-check.md: NEW)\n  - Created reusable pattern for checking PM issue mapping\n  - Documents the problem, solution, and usage examples\n  - Provides guidance for future slash command templates\n\n- **Auto-synced** (src/lib/claude-commands.ts: 2 lines)\n  - Synchronized slash command definitions with build.md changes\n\n## Why This Change\nHODGE-306 introduced a PM issue check in the /build command, but it had a defect.\nThe check used `grep \"{{feature}}\"` which returned true for ANY entry in \nid-mappings.json, even entries without an `externalID` field. This caused false \npositives where features were incorrectly identified as \"having a PM issue\" when\nthey only had a local ID entry.\n\nThe enhanced grep pattern now specifically checks for the presence of an \n`externalID` field, which is only present when a PM issue has actually been \ncreated in Linear.\n\n## Impact\n- ✅ /build command now correctly identifies unmapped features\n- ✅ Users will be prompted to create PM issues only when truly needed\n- ✅ Prevents confusion from false \"already mapped\" reports\n- ✅ Maintains non-blocking workflow (respects \"freedom to explore\")\n- ✅ Establishes reusable pattern for other slash commands\n- ✅ Zero production code changes (template-only fix)\n- ✅ All 14 smoke tests passing (3 new + 11 existing)\n\nCloses HODGE-309\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}

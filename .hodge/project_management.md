@@ -100,7 +100,35 @@ No feature specified. Use: hodge plan <feature> had been called for creating a s
   - Define test intentions
   - Make architectural decisions
 
+
+
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-09-30
+- **Updated**: 2025-09-30
+- **Description**: The work done for HODGE-306 has a defect. The "Check for PM Issue Mapping" is falsely reporting that a PM issue has already been created. The check needs to look for a value in the externalID property, as shown in this example:\n\n  "HODGE-297.1": {\n    "localID": "HODGE-297.1",\n    "created": "2025-09-29T18:49:50.922Z",\n    "externalID": "136191a8-5027-41d6-acea-4ee179a4bbaf",\n    "pmTool": "linear"\n  }
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
 ## Completed Features
+
+### HODGE-309
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-09-30
+- **Updated**: 2025-09-30
+- **Description**: The work done for HODGE-306 has a defect. The "Check for PM Issue Mapping" is falsely reporting that a PM issue has already been created. The check needs to look for a value in the externalID property, as shown in this example:\n\n  "HODGE-297.1": {\n    "localID": "HODGE-297.1",\n    "created": "2025-09-29T18:49:50.922Z",\n    "externalID": "136191a8-5027-41d6-acea-4ee179a4bbaf",\n    "pmTool": "linear"\n  }
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+- **Completed**: 2025-09-30
+
+
 
 ### HODGE-307
 - **Status**: shipped

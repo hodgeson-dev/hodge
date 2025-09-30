@@ -26,6 +26,82 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-30 - Skip backward compatibility audit - only build
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-309
+
+**Decision**:
+Skip backward compatibility audit - only build.md uses this pattern (confirmed via grep), pattern documentation will prevent future issues, focus on shipping the fix
+
+**Rationale**:
+Recorded via `hodge decide` command at 12:35:25 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-30 - Document PM mapping check pattern in
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-309
+
+**Decision**:
+Document PM mapping check pattern in .hodge/patterns/ - create reusable pattern for checking externalID presence, helps future AI assistants and other slash commands maintain consistency
+
+**Rationale**:
+Recorded via `hodge decide` command at 12:34:38 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-30 - Add smoke test for bash command logic to verify grep pattern correctly identifies externalID presence/absence - tests command syntax in isolation, provides regression protection for template changes
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-309
+
+**Decision**:
+Add smoke test for bash command logic to verify grep pattern correctly identifies externalID presence/absence - tests command syntax in isolation, provides regression protection for template changes
+
+**Rationale**:
+Recorded via `hodge decide` command at 12:34:03 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-30 - Use enhanced grep pattern for PM check: grep -A 2 "{{feature}}" | grep externalID - maintains template-only approach from HODGE-306, one-line fix in build
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-309
+
+**Decision**:
+Use enhanced grep pattern for PM check: grep -A 2 "{{feature}}" | grep externalID - maintains template-only approach from HODGE-306, one-line fix in build.md
+
+**Rationale**:
+Recorded via `hodge decide` command at 12:30:57 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-30 - Move test file now during build phase to establish correct pattern immediately and prevent proliferation
 
 **Status**: Accepted
