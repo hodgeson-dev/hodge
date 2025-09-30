@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-300",
+  "timestamp": "2025-09-30T03:52:28.033Z",
+  "issueId": "HODGE-300",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "fix: wire --create-pm flag to CLI parser in hodge plan command (HODGE-300)\n\n## What Changed\n- Modified src/bin/hodge.ts (4 lines):\n  - Added `--create-pm` option to Commander.js parser\n  - Removed `--local-only` option (wasn't functional)\n  - Updated TypeScript type signature for action handler\n  \n- Modified src/commands/plan.ts (2 lines):\n  - Removed `localOnly` from PlanOptions interface\n  - Cleaned up interface comment\n  \n- Modified src/commands/plan.test.ts (36 lines added, 2 changed):\n  - Updated existing test to remove `localOnly` usage\n  - Added new smoke test \"should accept --create-pm flag without crashing\"\n  - New test verifies flag is accepted and PM creation is attempted gracefully\n  \n- Auto-updated src/lib/claude-commands.ts (24 lines):\n  - Synced command documentation formatting\n\n## Why This Change\nThe `--create-pm` flag existed in the PlanCommand code but wasn't registered\nin the CLI parser, making it impossible to create PM issues through the\ncommand line. This broke the `/plan` slash command workflow which relies on\nexplicit user approval before creating PM issues in Linear.\n\nThe fix follows \"safe by default\" principle: without the flag, plans are\nsaved locally only. With `--create-pm`, PM issues are created in Linear.\n\n## Impact\n- ✅ `/plan` slash command now works correctly\n- ✅ Users can create PM issues with explicit `--create-pm` flag\n- ✅ Safe default behavior (local-only save without flag)\n- ✅ All 598 tests passing, including 6 plan command smoke tests\n- ✅ No breaking changes (old `--local-only` flag wasn't working anyway)\n\nCloses HODGE-300\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}

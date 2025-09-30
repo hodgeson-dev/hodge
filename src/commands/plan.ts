@@ -7,8 +7,7 @@ import { getConfigManager } from '../lib/config-manager.js';
 
 export interface PlanOptions {
   lanes?: number;
-  localOnly?: boolean;
-  createPm?: boolean; // Explicit flag to create PM issues (replaces localOnly)
+  createPm?: boolean; // Explicit flag to create PM issues
   feature?: string;
 }
 

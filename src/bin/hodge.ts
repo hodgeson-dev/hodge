@@ -153,8 +153,8 @@ program
   .command('plan [feature]')
   .description('[Internal] Plan work structure and create PM issues')
   .option('--lanes <number>', 'Number of development lanes', parseInt)
-  .option('--local-only', 'Skip PM tool integration')
-  .action(async (feature: string | undefined, options: { lanes?: number; localOnly?: boolean }) => {
+  .option('--create-pm', 'Create PM issues in Linear after saving plan')
+  .action(async (feature: string | undefined, options: { lanes?: number; createPm?: boolean }) => {
     const { PlanCommand } = await import('../commands/plan');
     const planCommand = new PlanCommand();
     await planCommand.execute({ feature, ...options });

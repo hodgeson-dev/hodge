@@ -1,0 +1,18 @@
+{
+  "tests": {
+    "passed": true,
+    "output": "All 598 tests passed"
+  },
+  "lint": {
+    "passed": true,
+    "output": "Linting passed with 249 warnings (pre-existing)"
+  },
+  "typecheck": {
+    "passed": true,
+    "output": "Type check passed"
+  },
+  "build": {
+    "passed": true,
+    "output": "Build succeeded"
+  }
+}

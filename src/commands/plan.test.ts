@@ -45,8 +45,8 @@ describe('PlanCommand - Smoke Tests', () => {
       JSON.stringify({ currentFeature: feature })
     );
 
-    // Should not throw
-    await expect(command.execute({ feature, localOnly: true })).resolves.not.toThrow();
+    // Should not throw (no createPm flag means local-only save)
+    await expect(command.execute({ feature })).resolves.not.toThrow();
   });
 
   smokeTest('should create plan locally without --create-pm flag', async () => {
@@ -194,5 +194,37 @@ describe('PlanCommand - Smoke Tests', () => {
     if (plan.lanes) {
       expect(plan.lanes.count).toBe(3);
     }
+  });
+
+  smokeTest('should accept --create-pm flag without crashing', async () => {
+    const feature = 'TEST-006';
+
+    // Create feature structure
+    const featureDir = path.join(tmpDir, '.hodge', 'features', feature);
+    const exploreDir = path.join(featureDir, 'explore');
+    mkdirSync(exploreDir, { recursive: true });
+
+    await fs.writeFile(
+      path.join(exploreDir, 'exploration.md'),
+      `# Exploration: ${feature}\n\n**Type**: Test Feature\n\n**Problem Statement:**\nTest PM creation\n`
+    );
+
+    await fs.writeFile(
+      path.join(tmpDir, '.hodge', 'decisions.md'),
+      `# Decisions\n\n### 2025-09-29 - Test decision\n\n**Context**:\nFeature: ${feature}\n\n**Decision**:\nTest decision for PM creation\n\n---\n`
+    );
+
+    await fs.writeFile(
+      path.join(tmpDir, '.hodge', 'context.json'),
+      JSON.stringify({ currentFeature: feature })
+    );
+
+    // Execute with --create-pm flag (will try to create PM issues)
+    // This should not crash even if PM creation fails (graceful failure)
+    await expect(command.execute({ feature, createPm: true })).resolves.not.toThrow();
+
+    // Verify plan was still saved locally
+    const planFile = path.join(tmpDir, '.hodge', 'development-plan.json');
+    expect(existsSync(planFile)).toBe(true);
   });
 });
