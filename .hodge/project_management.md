@@ -75,8 +75,8 @@ No feature specified. Use: hodge plan <feature> had been called for creating a s
   - Make architectural decisions
 
 
-### HODGE-307
-- **Status**: hardening
+
+- **Status**: shipped
 - **Priority**: TBD
 - **Created**: 2025-09-30
 - **Updated**: 2025-09-30
@@ -101,6 +101,34 @@ No feature specified. Use: hodge plan <feature> had been called for creating a s
   - Make architectural decisions
 
 ## Completed Features
+
+### HODGE-307
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-09-30
+- **Updated**: 2025-09-30
+- **Description**: Why do I have the build.smoke.test.ts test file in .claude/commands? Should it be someplace else? How did it get there?
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-09-30
+- **Updated**: 2025-09-30
+- **Description**: Fix Test Isolation Failures - tests not properly isolated when run in full suite
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+- **Completed**: 2025-09-30
+
+
 
 ### HODGE-308
 - **Status**: shipped

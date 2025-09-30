@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-307",
+  "timestamp": "2025-09-30T19:18:21.848Z",
+  "issueId": "HODGE-307",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "refactor: move build.smoke.test.ts to standard test location (HODGE-307)\n\n## What Changed\n- **Test Organization** (2 files modified, 57 lines net change)\n  - Deleted `.claude/commands/build.smoke.test.ts` (45 lines removed)\n  - Moved to `src/lib/claude-commands.smoke.test.ts` (12 lines modified)\n  - Updated 5 import paths from `join(__dirname, 'build.md')` to `join(__dirname, '../../.claude/commands/build.md')`\n  - Removed buildTemplatePath constant optimization in favor of inline path resolution\n\n## Why This Change\nThe build.smoke.test.ts file was created in `.claude/commands/` during HODGE-306,\nbut this violated the project's established test organization pattern. All 23 other\nsmoke tests in the codebase are located in `src/` or `test/` directories, following\na clear separation of concerns: `.claude/commands/` is for AI assistant documentation,\nwhile `src/lib/` is for code and tests.\n\nThis refactoring establishes the correct pattern before it can proliferate to other\ncommand template tests.\n\n## Impact\n- ✅ Consistent test organization across entire codebase (24/24 smoke tests now in standard locations)\n- ✅ Better test discoverability for contributors\n- ✅ Proper separation: AI docs in `.claude/`, tests in `src/`\n- ✅ Zero vitest config changes needed (already discovers tests in `src/`)\n- ✅ All 5 smoke tests passing (3ms execution)\n- ✅ Establishes pattern for future command template tests\n\nCloses HODGE-307\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}

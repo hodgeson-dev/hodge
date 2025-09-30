@@ -26,6 +26,82 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-30 - Move test file now during build phase to establish correct pattern immediately and prevent proliferation
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-307
+
+**Decision**:
+Move test file now during build phase to establish correct pattern immediately and prevent proliferation
+
+**Rationale**:
+Recorded via `hodge decide` command at 12:09:26 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-30 - Defer testing other command templates to future work - focus HODGE-307 on migrating existing build
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-307
+
+**Decision**:
+Defer testing other command templates to future work - focus HODGE-307 on migrating existing build.smoke.test.ts only to establish pattern
+
+**Rationale**:
+Recorded via `hodge decide` command at 12:08:47 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-30 - Name the test file claude-commands
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-307
+
+**Decision**:
+Name the test file claude-commands.smoke.test.ts to match existing claude-commands.ts sync script and allow future expansion for other command template tests
+
+**Rationale**:
+Recorded via `hodge decide` command at 12:08:12 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-30 - Move build
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-307
+
+**Decision**:
+Move build.smoke.test.ts to src/lib/claude-commands.smoke.test.ts for consistency with existing 23 smoke tests
+
+**Rationale**:
+Recorded via `hodge decide` command at 12:07:12 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-30 - Proceed with build anyway if user ignores PM creation prompt (non-blocking) - respects user agency, maintains 'freedom to explore' principle, never forces workflow interruption
 
 **Status**: Accepted
