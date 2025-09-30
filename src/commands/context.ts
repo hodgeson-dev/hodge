@@ -22,9 +22,21 @@ interface SavedContext {
 /**
  * Context command for managing Hodge sessions
  * Handles loading project context, discovering saves, and restoring sessions
+ *
+ * Implements HODGE-297 decisions:
+ * 1. Load recent 20 decisions (not full 1100+ line history)
+ * 2. Load id-mappings.json only when feature has linked PM issue
+ * 3. Keep pattern loading on-demand (no change)
+ * 4. Load all .md and .json files in current phase directory
+ * 5. Update both /hodge and /load commands consistently
  */
 export class ContextCommand {
   private hodgeMDGenerator = new HodgeMDGenerator();
+  private basePath: string;
+
+  constructor(basePath?: string) {
+    this.basePath = basePath || process.cwd();
+  }
 
   async execute(options: ContextOptions = {}): Promise<void> {
     try {
@@ -338,6 +350,120 @@ export class ContextCommand {
       }
     } catch {
       return 'recently';
+    }
+  }
+
+  /**
+   * HODGE-297: Load recent N decisions instead of full file
+   * Decision 1: Load recent 20 decisions (not full 1100+ line history)
+   */
+  async loadRecentDecisions(limit: number = 20): Promise<string> {
+    const decisionsPath = path.join(this.basePath, '.hodge', 'decisions.md');
+
+    try {
+      const content = await fs.readFile(decisionsPath, 'utf-8');
+      const lines = content.split('\n');
+
+      // Find decision headers (### YYYY-MM-DD - Title)
+      const decisionIndices: number[] = [];
+      lines.forEach((line, index) => {
+        if (line.match(/^###\s+\d{4}-\d{2}-\d{2}\s+-\s+/)) {
+          decisionIndices.push(index);
+        }
+      });
+
+      if (decisionIndices.length === 0) {
+        return content; // No decisions found, return full file
+      }
+
+      // Take first N decision indices (most recent at top)
+      const limitedIndices = decisionIndices.slice(0, limit);
+      const lastDecisionIndex = limitedIndices[limitedIndices.length - 1];
+
+      // Find end of last decision (next decision or end of file)
+      let endIndex = lines.length;
+      for (let i = lastDecisionIndex + 1; i < lines.length; i++) {
+        if (lines[i].match(/^###\s+\d{4}-\d{2}-\d{2}\s+-\s+/)) {
+          endIndex = i;
+          break;
+        }
+      }
+
+      // Extract header section (before first decision)
+      const headerEndIndex = decisionIndices[0];
+      const header = lines.slice(0, headerEndIndex).join('\n');
+
+      // Extract recent decisions
+      const recentDecisions = lines.slice(decisionIndices[0], endIndex).join('\n');
+
+      // Add truncation note if limited
+      const truncationNote =
+        decisionIndices.length > limit
+          ? `\n\n---\n*Showing ${limit} most recent decisions of ${decisionIndices.length} total*\n`
+          : '';
+
+      return `${header}\n${recentDecisions}${truncationNote}`;
+    } catch {
+      return '';
+    }
+  }
+
+  /**
+   * HODGE-297: Check if feature has linked PM issue
+   * Decision 2: Load id-mappings.json only when feature has PM issue
+   */
+  async hasLinkedPMIssue(feature: string): Promise<boolean> {
+    const issueIdPath = path.join(this.basePath, '.hodge', 'features', feature, 'issue-id.txt');
+    return this.fileExists(issueIdPath);
+  }
+
+  /**
+   * HODGE-297: Detect current phase for feature
+   * Decision 4: Load all .md and .json files in current phase directory
+   */
+  async detectPhase(feature: string): Promise<'explore' | 'build' | 'harden' | 'ship' | null> {
+    const featurePath = path.join(this.basePath, '.hodge', 'features', feature);
+
+    // Check in reverse order (most advanced phase first)
+    const phases: Array<'ship' | 'harden' | 'build' | 'explore'> = [
+      'ship',
+      'harden',
+      'build',
+      'explore',
+    ];
+
+    for (const phase of phases) {
+      if (await this.fileExists(path.join(featurePath, phase))) {
+        return phase;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * HODGE-297: Load all .md and .json files from phase directory
+   * Decision 4: Load all .md and .json files in current phase directory
+   */
+  async loadPhaseFiles(feature: string, phase: string): Promise<string[]> {
+    const phasePath = path.join(this.basePath, '.hodge', 'features', feature, phase);
+
+    if (!(await this.fileExists(phasePath))) {
+      return [];
+    }
+
+    try {
+      const entries = await fs.readdir(phasePath, { withFileTypes: true });
+
+      return entries
+        .filter((entry) => entry.isFile())
+        .filter((entry) => {
+          const ext = path.extname(entry.name);
+          return ext === '.md' || ext === '.json';
+        })
+        .map((entry) => entry.name);
+    } catch {
+      return [];
     }
   }
 }

@@ -5,21 +5,36 @@ This file provides AI assistants with context about the current Hodge workflow s
 ## Current Status
 **Feature**: general
 **Mode**: explore
-**Last Updated**: 2025-09-30T03:54:33.922Z
+**Last Updated**: 2025-09-30T04:51:27.621Z
 ## Current Session
-**Resumed**: 18 minutes ago
-**Progress**: Explored HODGE-300 - template ready for AI approach generation
-**Working on**: HODGE-300 (explore mode)
+**Resumed**: 56 minutes ago
+**Progress**: Explored HODGE-301 - template ready for AI approach generation
+**Working on**: HODGE-301 (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-300. Explored HODGE-300 - template ready for AI approach generation
+You were helping with HODGE-301. Explored HODGE-301 - template ready for AI approach generation
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
+- **2025-09-30**: Update both /hodge and /load commands with enhanced context loading - provides consistent experience and predictable behavior across the system
+- **2025-09-30**: Load all
+- **2025-09-30**: Keep current pattern loading behavior - load only on explicit reference or user request, following AI-CONTEXT
+- **2025-09-30**: Load id-mappings
+- **2025-09-30**: Load recent 20 decisions instead of full 1100+ line history - balances context completeness with performance
+- **2025-09-30**: Extensive template documentation - Add vertical slice criteria, good/bad examples, and decision trees to
+- **2025-09-30**: AI validation during plan generation only with mandatory user approval - AI warns during plan generation, but ALL plans require explicit user approval before hodge plan CLI is called (this is already enforced by /plan command architecture)
+- **2025-09-30**: Auto-convert to single issue when vertical slicing fails - System automatically suggests single issue when stories cannot meet vertical slice criteria
+- **2025-09-30**: Moderate vertical slice criteria - Stories must provide value to stakeholder AND be independently testable
+- **2025-09-30**: Warn only validation strictness - Provide informational warnings about potential horizontal slicing without blocking plan generation
+- **2025-09-30**: AI-Driven Design Only - Enhance the /plan command template to explicitly guide AI through vertical slice design, with clear criteria and examples
 - **2025-09-29**: Interactive prompt with session memory for skip mechanism - respects user choice while encouraging best practices
 - **2025-09-29**: Use {FEATURE}-{slug}
 - **2025-09-29**: Keep lessons-draft
 - **2025-09-29**: Few questions (3-4) for lessons enhancement - balance insight gathering with low friction
 - **2025-09-29**: Interactive AI Enhancement Flow - integrate lessons review into /ship command with AI-guided questions and skip option
+- **2025-09-29**: Use HODGE-XXX
+- **2025-09-29**: Breaking change: require --create-pm flag for PM issue creation - safe by default, with understanding that hodge plan is only called from /plan slash command template, never by users directly
+- **2025-09-29**: List decision titles only in PM issues - provides scannable overview while keeping full details in decisions
+- **2025-09-29**: Extract epic description from exploration
 
 ## Active Standards
 

@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-297",
+  "timestamp": "2025-09-30T04:51:33.583Z",
+  "issueId": "HODGE-297",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "feat: implement enhanced context loading for /hodge and /load commands (HODGE-297)\n\n## What Changed\n- Enhanced src/commands/context.ts (126 lines added):\n  - Added basePath constructor parameter for testability\n  - Implemented loadRecentDecisions() to load recent 20 decisions (not full 1100+ lines)\n  - Implemented hasLinkedPMIssue() for conditional PM tracking\n  - Implemented detectPhase() for phase-aware file loading\n  - Implemented loadPhaseFiles() to load all .md and .json files from current phase directory\n\n- Modified src/lib/hodge-md-generator.ts (1 line changed):\n  - Updated getRecentDecisions() to return 20 decisions instead of 5\n\n- Created src/commands/context.smoke.test.ts (NEW - 138 lines):\n  - Added 5 smoke tests covering new context loading functionality\n  - All tests use isolated temporary directories (no .hodge modifications)\n  - Tests verify: recent decisions loading, phase detection, PM issue checking, phase file discovery\n\n- Updated .hodge/decisions.md (95 lines added):\n  - Recorded 5 implementation decisions for HODGE-297\n\n- Auto-updated src/lib/claude-commands.ts (24 lines):\n  - Synced command documentation formatting\n\n## Why This Change\nThe /hodge and /load commands were loading minimal context, causing AI assistants \nto miss important project files. The full decisions.md file (1100+ lines) was too \nlarge, and there was no way to conditionally load PM tracking or discover phase-specific \nfiles.\n\nThis implements smart selective context loading based on 5 architectural decisions:\n1. Load recent 20 decisions for better performance\n2. Conditional PM tracking (only when feature has linked issue)\n3. Phase-aware file discovery (loads all .md and .json from current phase)\n4. Maintains on-demand pattern loading\n5. Consistent behavior across /hodge and /load commands\n\n## Impact\n- ✅ Better AI context: Loads principles.md, AI-CONTEXT.md, and phase files\n- ✅ Performance: 20 recent decisions instead of 1100+ line history\n- ✅ Smart loading: PM tracking only when relevant\n- ✅ Flexible: Discovers custom files users create in phase directories\n- ✅ Testable: basePath parameter enables isolated testing\n- ✅ All 5 smoke tests passing\n- ✅ No regressions: All 207 existing tests still passing\n- ✅ Production ready: Passed harden validation\n\nCloses HODGE-297"
+}

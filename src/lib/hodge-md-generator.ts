@@ -131,8 +131,8 @@ export class HodgeMDGenerator {
         d.decision.toLowerCase().includes(feature.toLowerCase())
       );
 
-      // Return feature decisions if found, otherwise return last 5
-      const result = featureDecisions.length > 0 ? featureDecisions : decisions.slice(0, 5);
+      // Return feature decisions if found, otherwise return recent 20 (HODGE-297 decision)
+      const result = featureDecisions.length > 0 ? featureDecisions : decisions.slice(0, 20);
       return result;
     } catch {
       return [];

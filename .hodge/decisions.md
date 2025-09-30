@@ -26,6 +26,101 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-09-30 - Update both /hodge and /load commands with enhanced context loading - provides consistent experience and predictable behavior across the system
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-297
+
+**Decision**:
+Update both /hodge and /load commands with enhanced context loading - provides consistent experience and predictable behavior across the system
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:30:09 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-30 - Load all
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-297
+
+**Decision**:
+Load all .md and .json files in current phase directory - supports custom files and flexible workflows while maintaining comprehensive context
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:29:43 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-30 - Keep current pattern loading behavior - load only on explicit reference or user request, following AI-CONTEXT
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-297
+
+**Decision**:
+Keep current pattern loading behavior - load only on explicit reference or user request, following AI-CONTEXT.md design principles
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:29:15 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-30 - Load id-mappings
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-297
+
+**Decision**:
+Load id-mappings.json only when feature has linked PM issue - provides contextual PM tracking without unnecessary overhead
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:28:40 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-09-30 - Load recent 20 decisions instead of full 1100+ line history - balances context completeness with performance
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-297
+
+**Decision**:
+Load recent 20 decisions instead of full 1100+ line history - balances context completeness with performance
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:27:53 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-30 - Extensive template documentation - Add vertical slice criteria, good/bad examples, and decision trees to
 
 **Status**: Accepted
