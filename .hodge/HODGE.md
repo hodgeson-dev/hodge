@@ -3,11 +3,12 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: general
-**Mode**: explore
-**Last Updated**: 2025-10-01T02:07:18.258Z
+**Feature**: HODGE-312
+**Mode**: shipped
+**PM Issue**: HODGE-312
+**Last Updated**: 2025-10-01T05:06:28.906Z
 ## Current Session
-**Resumed**: 39 minutes ago
+**Resumed**: 3 hours ago
 **Progress**: Explored HODGE-312 - template ready for AI approach generation
 **Working on**: HODGE-312 (explore mode)
 ## AI Context Restoration
@@ -15,6 +16,11 @@ You were helping with HODGE-312. Explored HODGE-312 - template ready for AI appr
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
+- **2025-10-01**: No backward compatibility concerns - This is a bug fix not a feature change, no evidence of dependencies on incorrect behavior, proceed with fix directly
+- **2025-10-01**: Update /hodge template with clarification - Add note in
+- **2025-10-01**: Skip --project flag for now - Don't add hodge context --project flag in this fix, keeps scope minimal and focused on bug fix, can add later if users request it
+- **2025-10-01**: No staleness check for sessions - Always use session feature for mode detection regardless of age, keeps implementation simple, user can manually start new work if needed
+- **2025-10-01**: Use session feature for mode detection - Load session first in loadDefaultContext(), use session
 - **2025-10-01**: Write feature decisions to feature-specific decision
 - **2025-10-01**: Add 'Shipped' as separate progress line (6th checkbox) - provides clear progression through all stages: Exploration → Decision → Build → Harden → Production Ready → Shipped
 - **2025-10-01**: Use ship-record
@@ -30,11 +36,6 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - **2025-09-30**: Add smoke test for bash command logic to verify grep pattern correctly identifies externalID presence/absence - tests command syntax in isolation, provides regression protection for template changes
 - **2025-09-30**: Use enhanced grep pattern for PM check: grep -A 2 "{{feature}}" | grep externalID - maintains template-only approach from HODGE-306, one-line fix in build
 - **2025-09-30**: Move test file now during build phase to establish correct pattern immediately and prevent proliferation
-- **2025-09-30**: Defer testing other command templates to future work - focus HODGE-307 on migrating existing build
-- **2025-09-30**: Name the test file claude-commands
-- **2025-09-30**: Move build
-- **2025-09-30**: Proceed with build anyway if user ignores PM creation prompt (non-blocking) - respects user agency, maintains 'freedom to explore' principle, never forces workflow interruption
-- **2025-09-30**: Show PM creation prompt every time /build is called without PM mapping - ensures prompt isn't missed, respects user agency to change mind, simple non-blocking logic without state tracking
 
 ## Active Standards
 
@@ -116,11 +117,19 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - Full test coverage required
 - Performance benchmarks met
 
+## Working Files
+
+- `.hodge/features/HODGE-312/explore/context.json`
+- `.hodge/features/HODGE-312/explore/exploration.md`
+- `.hodge/features/HODGE-312/explore/test-intentions.md`
+- `.hodge/features/HODGE-312/build/build-plan.md`
+- `.hodge/features/HODGE-312/build/context.json`
+- `.hodge/features/HODGE-312/ship/release-notes.md`
+- `.hodge/features/HODGE-312/ship/ship-record.json`
+
 ## Next Steps
 
-1. Review exploration approaches
-2. Make decision with `hodge decide`
-3. Start building with `hodge build general`
+1. Feature completed. Start new work with `hodge explore <feature>`
 
 
 ---

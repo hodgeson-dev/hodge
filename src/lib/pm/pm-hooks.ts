@@ -366,7 +366,7 @@ export class PMHooks {
           });
 
           // Create issue with decisions in description
-          const description = this.formatDecisionsForPM(decisions);
+          const description = await this.formatDecisionsForPM(feature, decisions);
           const issue = await linearAdapter.createIssue(feature, description);
           externalId = issue.id;
 
@@ -415,7 +415,7 @@ export class PMHooks {
             },
           });
 
-          const description = this.formatDecisionsForPM(decisions);
+          const description = await this.formatDecisionsForPM(feature, decisions);
           const issue = await githubAdapter.createIssue(feature, description);
           externalId = issue.id;
           break;
@@ -454,18 +454,72 @@ export class PMHooks {
 
   /**
    * Format decisions for PM issue description
+   * Includes problem statement from exploration.md before decisions list
    */
-  private formatDecisionsForPM(decisions: string[]): string {
-    if (decisions.length === 0) {
-      return 'Created via Hodge workflow';
+  private async formatDecisionsForPM(feature: string, decisions: string[]): Promise<string> {
+    let description = '';
+
+    // Extract problem statement from exploration.md
+    const problemStatement = await this.extractProblemStatement(feature);
+    if (problemStatement) {
+      description += `${problemStatement}\n\n`;
     }
 
-    let description = '## Decisions Made\n\n';
+    // Add decisions list
+    if (decisions.length === 0) {
+      if (!problemStatement) {
+        return 'Created via Hodge workflow';
+      }
+      description += '\n---\n_Created by Hodge_';
+      return description;
+    }
+
+    description += '## Decisions Made\n\n';
     decisions.forEach((decision, index) => {
       description += `${index + 1}. ${decision}\n`;
     });
     description += '\n---\n_Created by Hodge after decide phase_';
     return description;
+  }
+
+  /**
+   * Extract problem statement from exploration.md for PM issue description
+   */
+  private async extractProblemStatement(feature: string): Promise<string | null> {
+    const explorationFile = path.join(
+      this.localAdapter['basePath'] || process.cwd(),
+      '.hodge',
+      'features',
+      feature,
+      'explore',
+      'exploration.md'
+    );
+
+    if (!existsSync(explorationFile)) {
+      return null;
+    }
+
+    try {
+      const content = await fs.readFile(explorationFile, 'utf-8');
+
+      // Try to extract from ## Problem Statement heading
+      const headingMatch = content.match(/## Problem Statement\s*\n([^\n]+(?:\n(?!##)[^\n]+)*)/);
+      if (headingMatch && headingMatch[1]) {
+        return headingMatch[1].trim();
+      }
+
+      // Try to extract from **Problem Statement:** inline format
+      const inlineMatch = content.match(
+        /\*\*Problem Statement:\*\*\s*\n([^\n]+(?:\n(?!\*\*)[^\n]+)*)/
+      );
+      if (inlineMatch && inlineMatch[1]) {
+        return inlineMatch[1].trim();
+      }
+
+      return null;
+    } catch (error) {
+      return null;
+    }
   }
 
   /**

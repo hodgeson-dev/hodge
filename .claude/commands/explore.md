@@ -65,22 +65,27 @@ Remember: "Freedom to explore" - Standards are suggestions only in this phase.
 The CLI has created a minimal exploration template. You MUST now:
 
 1. **Read the template** at `.hodge/features/{{feature}}/explore/exploration.md`
-2. **Generate 2-3 implementation approaches** by updating the file:
+2. **Generate a concise title** for the feature:
+   - Add a `**Title**: <short description>` field at the top of exploration.md
+   - Keep it under 100 characters
+   - Make it descriptive and specific (e.g., "Fix PM issue description extraction from exploration.md")
+   - This title will be used for PM issue creation
+3. **Generate 2-3 implementation approaches** by updating the file:
    - Replace `<!-- AI will generate 2-3 approaches here -->` with actual approaches
    - Each approach should have:
      - Name and description
      - Pros (3-4 points)
      - Cons (2-3 points)
      - When to use this approach
-3. **Provide a recommendation**:
+4. **Provide a recommendation**:
    - Replace `<!-- AI will provide recommendation -->`
    - Explain which approach is best and why
-4. **Document decisions needed**:
+5. **Document decisions needed**:
    - Replace `<!-- AI will list decisions for /decide command -->`
    - List 2-4 key decisions that need to be made
-5. **Update test intentions** if needed
-6. **Consider patterns and similar features** mentioned in the template
-7. **IMPORTANT: Document Decisions Needed**
+6. **Update test intentions** if needed
+7. **Consider patterns and similar features** mentioned in the template
+8. **IMPORTANT: Document Decisions Needed**
    Add a section to exploration.md titled "## Decisions Needed" that lists:
    - Implementation approach decision (which approach to use)
    - Scope decisions (what's in/out of scope)

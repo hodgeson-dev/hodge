@@ -26,6 +26,215 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-10-01 - Structure PM issue description with Problem Statement above Decisions Made - extract problem statement from exploration
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-313
+
+**Decision**:
+Structure PM issue description with Problem Statement above Decisions Made - extract problem statement from exploration.md and place before decisions list in formatDecisionsForPM() to provide context before implementation details
+
+**Rationale**:
+Recorded via `hodge decide` command at 5:44:12 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-10-01 - Make Title field required for new explorations only - /explore template must generate Title field, existing features without Title continue using fallback patterns, no validation failure just ensures AI generates it for new explorations
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-313
+
+**Decision**:
+Make Title field required for new explorations only - /explore template must generate Title field, existing features without Title continue using fallback patterns, no validation failure just ensures AI generates it for new explorations
+
+**Rationale**:
+Recorded via `hodge decide` command at 5:41:14 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-10-01 - AI-generated title field in exploration
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-313
+
+**Decision**:
+AI-generated title field in exploration.md - enhance /explore template to generate 'Title: <short description>' field, CLI extracts title first then falls back to existing patterns, truncate at 100 chars with word boundary if needed
+
+**Rationale**:
+Recorded via `hodge decide` command at 5:39:41 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-10-01 - Use 'No description available' fallback only when genuinely no content exists - no exploration
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-313
+
+**Decision**:
+Use 'No description available' fallback only when genuinely no content exists - no exploration.md AND no decisions, or all extraction patterns fail with no decisions available
+
+**Rationale**:
+Recorded via `hodge decide` command at 5:33:19 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-10-01 - Fix exploration
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-313
+
+**Decision**:
+Fix exploration.md regex patterns to match both '## Problem Statement' heading format and '**Problem Statement:**' inline format, keep decisions as distant fallback only
+
+**Rationale**:
+Recorded via `hodge decide` command at 5:32:27 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-10-01 - Smart Description Extraction approach - enhance getFeatureDescription() to extract from decisions automatically when exploration
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-313
+
+**Decision**:
+Smart Description Extraction approach - enhance getFeatureDescription() to extract from decisions automatically when exploration.md doesn't exist, maintains workflow speed and leverages decision context
+
+**Rationale**:
+Recorded via `hodge decide` command at 5:27:21 AM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-10-01 - No backward compatibility concerns - This is a bug fix not a feature change, no evidence of dependencies on incorrect behavior, proceed with fix directly
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-313
+
+**Decision**:
+No backward compatibility concerns - This is a bug fix not a feature change, no evidence of dependencies on incorrect behavior, proceed with fix directly
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:09:24 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-10-01 - Update /hodge template with clarification - Add note in
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-313
+
+**Decision**:
+Update /hodge template with clarification - Add note in .claude/commands/hodge.md explaining that /hodge shows last worked feature status, sets correct user expectations
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:08:50 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-10-01 - Skip --project flag for now - Don't add hodge context --project flag in this fix, keeps scope minimal and focused on bug fix, can add later if users request it
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-313
+
+**Decision**:
+Skip --project flag for now - Don't add hodge context --project flag in this fix, keeps scope minimal and focused on bug fix, can add later if users request it
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:08:05 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-10-01 - No staleness check for sessions - Always use session feature for mode detection regardless of age, keeps implementation simple, user can manually start new work if needed
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-313
+
+**Decision**:
+No staleness check for sessions - Always use session feature for mode detection regardless of age, keeps implementation simple, user can manually start new work if needed
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:07:34 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-10-01 - Use session feature for mode detection - Load session first in loadDefaultContext(), use session
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-313
+
+**Decision**:
+Use session feature for mode detection - Load session first in loadDefaultContext(), use session?.feature || 'general' for HodgeMDGenerator.saveToFile() instead of hardcoded 'general', fixes mode detection mismatch
+
+**Rationale**:
+Recorded via `hodge decide` command at 9:06:56 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-10-01 - Write feature decisions to feature-specific decision
 
 **Status**: Accepted

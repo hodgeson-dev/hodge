@@ -410,35 +410,100 @@ export class PlanCommand {
       'exploration.md'
     );
 
-    if (!existsSync(explorationFile)) {
-      return 'No description available';
+    // Try exploration.md first
+    if (existsSync(explorationFile)) {
+      try {
+        const content = await fs.readFile(explorationFile, 'utf-8');
+
+        // Priority 1: Extract from Title field (AI-generated)
+        const titleMatch = content.match(/\*\*Title\*\*:\s*([^\n]+)/);
+        if (titleMatch && titleMatch[1]) {
+          return this.truncateDescription(titleMatch[1].trim());
+        }
+
+        // Priority 2: Extract from ## Problem Statement heading
+        const headingMatch = content.match(/## Problem Statement\s*\n([^\n]+)/);
+        if (headingMatch && headingMatch[1]) {
+          return this.truncateDescription(headingMatch[1].trim());
+        }
+
+        // Priority 3: Extract from **Problem Statement:** inline format
+        const inlineMatch = content.match(/\*\*Problem Statement:\*\*\s*\n([^\n]+)/);
+        if (inlineMatch && inlineMatch[1]) {
+          return this.truncateDescription(inlineMatch[1].trim());
+        }
+
+        // Priority 4: Try to extract from "Type:" line
+        const typeMatch = content.match(/\*\*Type\*\*:\s*([^\n]+)/);
+        if (typeMatch && typeMatch[1]) {
+          return this.truncateDescription(typeMatch[1].trim());
+        }
+
+        // Priority 5: Use first non-header line after Feature Overview
+        const overviewMatch = content.match(/## Feature Overview[\s\S]*?\n\n([^\n#]+)/);
+        if (overviewMatch && overviewMatch[1]) {
+          return this.truncateDescription(overviewMatch[1].trim());
+        }
+      } catch (error) {
+        // Fall through to decision extraction
+      }
     }
 
-    try {
-      const content = await fs.readFile(explorationFile, 'utf-8');
-
-      // Try to extract from "Problem Statement:" section
-      const problemMatch = content.match(/\*\*Problem Statement:\*\*\s*\n([^\n]+)/);
-      if (problemMatch && problemMatch[1]) {
-        return problemMatch[1].trim();
+    // Fallback: Try to extract from decisions
+    const decisions = await this.analyzeDecisions(feature);
+    if (decisions.length > 0) {
+      // Strategy 1: Look for implementation approach decision
+      const approachDecision = decisions.find(
+        (d) =>
+          d.toLowerCase().includes('implement') ||
+          d.toLowerCase().includes('approach') ||
+          d.toLowerCase().includes('use')
+      );
+      if (approachDecision) {
+        return this.truncateDescription(this.cleanDecisionText(approachDecision));
       }
 
-      // Fallback: Try to extract from "Type:" line
-      const typeMatch = content.match(/\*\*Type\*\*:\s*([^\n]+)/);
-      if (typeMatch && typeMatch[1]) {
-        return typeMatch[1].trim();
+      // Strategy 2: Use first substantial decision
+      const substantialDecision = decisions.find((d) => d.length > 30);
+      if (substantialDecision) {
+        return this.truncateDescription(this.cleanDecisionText(substantialDecision));
       }
 
-      // Last fallback: Use first non-header line after Feature Overview
-      const overviewMatch = content.match(/## Feature Overview[\s\S]*?\n\n([^\n#]+)/);
-      if (overviewMatch && overviewMatch[1]) {
-        return overviewMatch[1].trim();
-      }
-
-      return 'No description available';
-    } catch (error) {
-      return 'No description available';
+      // Strategy 3: Synthesize from decision count
+      return `Implementing ${decisions.length} technical decisions`;
     }
+
+    return 'No description available';
+  }
+
+  /**
+   * Clean decision text by removing phase markers and extra formatting
+   */
+  private cleanDecisionText(decision: string): string {
+    return decision
+      .replace(/\[.*?\]/g, '') // Remove phase markers like [harden]
+      .split('-')[0] // Take first part before dash
+      .trim();
+  }
+
+  /**
+   * Truncate description at 100 chars with word boundary
+   */
+  private truncateDescription(text: string): string {
+    if (text.length <= 100) {
+      return text;
+    }
+
+    // Find last space before 100 chars
+    const truncated = text.substring(0, 100);
+    const lastSpace = truncated.lastIndexOf(' ');
+
+    if (lastSpace > 0) {
+      return truncated.substring(0, lastSpace) + '...';
+    }
+
+    // No space found, just truncate at 100
+    return truncated + '...';
   }
 
   private displayPlan(plan: DevelopmentPlan): void {
