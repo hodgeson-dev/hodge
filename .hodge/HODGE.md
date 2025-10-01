@@ -5,16 +5,22 @@ This file provides AI assistants with context about the current Hodge workflow s
 ## Current Status
 **Feature**: general
 **Mode**: explore
-**Last Updated**: 2025-10-01T01:15:11.106Z
+**Last Updated**: 2025-10-01T02:07:18.258Z
 ## Current Session
-**Resumed**: 9 minutes ago
-**Progress**: Explored HODGE-311 - template ready for AI approach generation
-**Working on**: HODGE-311 (explore mode)
+**Resumed**: 39 minutes ago
+**Progress**: Explored HODGE-312 - template ready for AI approach generation
+**Working on**: HODGE-312 (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-311. Explored HODGE-311 - template ready for AI approach generation
+You were helping with HODGE-312. Explored HODGE-312 - template ready for AI approach generation
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
+- **2025-10-01**: Write feature decisions to feature-specific decision
+- **2025-10-01**: Add 'Shipped' as separate progress line (6th checkbox) - provides clear progression through all stages: Exploration → Decision → Build → Harden → Production Ready → Shipped
+- **2025-10-01**: Use ship-record
+- **2025-10-01**: Check feature root for decision
+- **2025-10-01**: Use 'shipped' as mode name for completed features - matches existing phase terminology and natural past tense of ship phase
+- **2025-10-01**: Apply HODGE-311 logic to status command - port the exact same shipped-detection logic from hodge-md-generator
 - **2025-10-01**: Use ship/ship-record
 - **2025-10-01**: Keep shipped features visible in HODGE
 - **2025-10-01**: Next steps for shipped features: 'Feature completed
@@ -29,12 +35,6 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - **2025-09-30**: Move build
 - **2025-09-30**: Proceed with build anyway if user ignores PM creation prompt (non-blocking) - respects user agency, maintains 'freedom to explore' principle, never forces workflow interruption
 - **2025-09-30**: Show PM creation prompt every time /build is called without PM mapping - ensures prompt isn't missed, respects user agency to change mind, simple non-blocking logic without state tracking
-- **2025-09-30**: Reuse /plan command for single-issue creation - AI generates minimal single-issue plan when user responds affirmatively to PM creation prompt, maintaining consistent command API without new flags
-- **2025-09-30**: Check for PM issue mapping before calling 'hodge build' CLI command - AI checks id-mappings
-- **2025-09-30**: Use Template-Based Prompt Enhancement approach - add AI guidance to
-- **2025-09-30**: Update both /hodge and /load commands with enhanced context loading - provides consistent experience and predictable behavior across the system
-- **2025-09-30**: Load all
-- **2025-09-30**: Keep current pattern loading behavior - load only on explicit reference or user request, following AI-CONTEXT
 
 ## Active Standards
 

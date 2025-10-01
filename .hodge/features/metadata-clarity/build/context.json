@@ -1,0 +1,9 @@
+{
+  "mode": "build",
+  "feature": "metadata-clarity",
+  "timestamp": "2025-09-27T13:12:09.136Z",
+  "standards": "recommended",
+  "validation": "suggested",
+  "pmIssue": null,
+  "pmTool": "linear"
+}
