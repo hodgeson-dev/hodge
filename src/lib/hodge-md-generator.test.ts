@@ -187,4 +187,46 @@ describe('HodgeMDGenerator', () => {
       ).resolves.toBeUndefined();
     });
   });
+
+  describe('shipped mode detection', () => {
+    it('should return "shipped" when ship-record.json exists', async () => {
+      vi.mocked(fs.access).mockImplementation(async (path) => {
+        if (path.toString().includes('ship/ship-record.json')) {
+          return; // ship-record.json exists
+        }
+        if (path.toString().includes('/ship')) {
+          return; // ship directory exists
+        }
+        throw new Error('File not found');
+      });
+
+      vi.mocked(fs.readFile).mockResolvedValue('');
+      vi.mocked(fs.readdir).mockResolvedValue([] as any);
+
+      const result = await generator.generate('shipped-feature');
+
+      expect(result).toContain('**Mode**: shipped');
+      expect(result).toContain('Feature completed');
+    });
+
+    it('should return "ship" when ship directory exists but no ship-record.json', async () => {
+      vi.mocked(fs.access).mockImplementation(async (path) => {
+        if (path.toString().includes('ship/ship-record.json')) {
+          throw new Error('File not found'); // No ship-record.json
+        }
+        if (path.toString().includes('/ship')) {
+          return; // ship directory exists
+        }
+        throw new Error('File not found');
+      });
+
+      vi.mocked(fs.readFile).mockResolvedValue('');
+      vi.mocked(fs.readdir).mockResolvedValue([] as any);
+
+      const result = await generator.generate('shipping-feature');
+
+      expect(result).toContain('**Mode**: ship');
+      expect(result).not.toContain('Feature completed');
+    });
+  });
 });

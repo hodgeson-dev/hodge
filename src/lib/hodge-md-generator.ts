@@ -77,6 +77,12 @@ export class HodgeMDGenerator {
 
     try {
       // Check for mode indicators in order
+      // First check if feature has been shipped (has ship-record.json)
+      const shipRecordPath = path.join(featurePath, 'ship', 'ship-record.json');
+      if (await this.fileExists(shipRecordPath)) {
+        return 'shipped';
+      }
+
       if (await this.fileExists(path.join(featurePath, 'ship'))) {
         return 'ship';
       }
@@ -258,6 +264,9 @@ export class HodgeMDGenerator {
         break;
       case 'ship':
         steps.push('Commit changes', 'Create pull request', 'Update documentation');
+        break;
+      case 'shipped':
+        steps.push('Feature completed. Start new work with `hodge explore <feature>`');
         break;
       default:
         steps.push('Start exploring with `hodge explore ' + feature + '`');

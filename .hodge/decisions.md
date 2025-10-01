@@ -26,6 +26,82 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-10-01 - Use ship/ship-record
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-311
+
+**Decision**:
+Use ship/ship-record.json file presence as completion marker - reliably created by hodge ship command, contains ship metadata, no external dependencies required
+
+**Rationale**:
+Recorded via `hodge decide` command at 6:12:37 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-10-01 - Keep shipped features visible in HODGE
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-311
+
+**Decision**:
+Keep shipped features visible in HODGE.md with 'shipped' status - defer filtering logic to future issue, maintains minimal scope for HODGE-311 while preserving feature history
+
+**Rationale**:
+Recorded via `hodge decide` command at 6:11:28 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-10-01 - Next steps for shipped features: 'Feature completed
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-311
+
+**Decision**:
+Next steps for shipped features: 'Feature completed. Start new work with hodge explore <feature>' - provides clear completion message and guides users to appropriate next action
+
+**Rationale**:
+Recorded via `hodge decide` command at 6:10:25 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-10-01 - Use 'shipped' as mode name for completed features - matches existing phase terminology and natural past tense of ship phase
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-311
+
+**Decision**:
+Use 'shipped' as mode name for completed features - matches existing phase terminology and natural past tense of ship phase
+
+**Rationale**:
+Recorded via `hodge decide` command at 6:09:41 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-09-30 - Skip backward compatibility audit - only build
 
 **Status**: Accepted

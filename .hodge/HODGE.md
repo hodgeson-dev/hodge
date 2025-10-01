@@ -3,19 +3,30 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: HODGE-307
-**Mode**: harden
-**PM Issue**: HODGE-307
-**Last Updated**: 2025-09-30T19:05:16.034Z
+**Feature**: general
+**Mode**: explore
+**Last Updated**: 2025-10-01T01:15:11.106Z
 ## Current Session
-**Resumed**: 3 hours ago
-**Progress**: Explored HODGE-308 - template ready for AI approach generation
-**Working on**: HODGE-308 (explore mode)
+**Resumed**: 9 minutes ago
+**Progress**: Explored HODGE-311 - template ready for AI approach generation
+**Working on**: HODGE-311 (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-308. Explored HODGE-308 - template ready for AI approach generation
+You were helping with HODGE-311. Explored HODGE-311 - template ready for AI approach generation
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
+- **2025-10-01**: Use ship/ship-record
+- **2025-10-01**: Keep shipped features visible in HODGE
+- **2025-10-01**: Next steps for shipped features: 'Feature completed
+- **2025-10-01**: Use 'shipped' as mode name for completed features - matches existing phase terminology and natural past tense of ship phase
+- **2025-09-30**: Skip backward compatibility audit - only build
+- **2025-09-30**: Document PM mapping check pattern in
+- **2025-09-30**: Add smoke test for bash command logic to verify grep pattern correctly identifies externalID presence/absence - tests command syntax in isolation, provides regression protection for template changes
+- **2025-09-30**: Use enhanced grep pattern for PM check: grep -A 2 "{{feature}}" | grep externalID - maintains template-only approach from HODGE-306, one-line fix in build
+- **2025-09-30**: Move test file now during build phase to establish correct pattern immediately and prevent proliferation
+- **2025-09-30**: Defer testing other command templates to future work - focus HODGE-307 on migrating existing build
+- **2025-09-30**: Name the test file claude-commands
+- **2025-09-30**: Move build
 - **2025-09-30**: Proceed with build anyway if user ignores PM creation prompt (non-blocking) - respects user agency, maintains 'freedom to explore' principle, never forces workflow interruption
 - **2025-09-30**: Show PM creation prompt every time /build is called without PM mapping - ensures prompt isn't missed, respects user agency to change mind, simple non-blocking logic without state tracking
 - **2025-09-30**: Reuse /plan command for single-issue creation - AI generates minimal single-issue plan when user responds affirmatively to PM creation prompt, maintaining consistent command API without new flags
@@ -24,18 +35,6 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - **2025-09-30**: Update both /hodge and /load commands with enhanced context loading - provides consistent experience and predictable behavior across the system
 - **2025-09-30**: Load all
 - **2025-09-30**: Keep current pattern loading behavior - load only on explicit reference or user request, following AI-CONTEXT
-- **2025-09-30**: Load id-mappings
-- **2025-09-30**: Load recent 20 decisions instead of full 1100+ line history - balances context completeness with performance
-- **2025-09-30**: Extensive template documentation - Add vertical slice criteria, good/bad examples, and decision trees to
-- **2025-09-30**: AI validation during plan generation only with mandatory user approval - AI warns during plan generation, but ALL plans require explicit user approval before hodge plan CLI is called (this is already enforced by /plan command architecture)
-- **2025-09-30**: Auto-convert to single issue when vertical slicing fails - System automatically suggests single issue when stories cannot meet vertical slice criteria
-- **2025-09-30**: Moderate vertical slice criteria - Stories must provide value to stakeholder AND be independently testable
-- **2025-09-30**: Warn only validation strictness - Provide informational warnings about potential horizontal slicing without blocking plan generation
-- **2025-09-30**: AI-Driven Design Only - Enhance the /plan command template to explicitly guide AI through vertical slice design, with clear criteria and examples
-- **2025-09-29**: Interactive prompt with session memory for skip mechanism - respects user choice while encouraging best practices
-- **2025-09-29**: Use {FEATURE}-{slug}
-- **2025-09-29**: Keep lessons-draft
-- **2025-09-29**: Few questions (3-4) for lessons enhancement - balance insight gathering with low friction
 
 ## Active Standards
 
@@ -117,19 +116,11 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - Full test coverage required
 - Performance benchmarks met
 
-## Working Files
-
-- `.hodge/features/HODGE-307/explore/context.json`
-- `.hodge/features/HODGE-307/explore/exploration.md`
-- `.hodge/features/HODGE-307/explore/test-intentions.md`
-- `.hodge/features/HODGE-307/build/build-plan.md`
-- `.hodge/features/HODGE-307/build/context.json`
-
 ## Next Steps
 
-1. Fix all linting issues
-2. Ensure 100% test coverage
-3. Ship with `hodge ship HODGE-307`
+1. Review exploration approaches
+2. Make decision with `hodge decide`
+3. Start building with `hodge build general`
 
 
 ---

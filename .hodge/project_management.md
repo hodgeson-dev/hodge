@@ -126,7 +126,35 @@ No feature specified. Use: hodge plan <feature> had been called for creating a s
   - Define test intentions
   - Make architectural decisions
 
+
+
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-01
+- **Updated**: 2025-10-01
+- **Description**: HODGE.md shows incorrect status for shipped features
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
 ## Completed Features
+
+### HODGE-311
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-01
+- **Updated**: 2025-10-01
+- **Description**: HODGE.md shows incorrect status for shipped features
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+- **Completed**: 2025-10-01
+
+
 
 ### HODGE-310
 - **Status**: shipped

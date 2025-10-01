@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-311",
+  "timestamp": "2025-10-01T01:21:31.996Z",
+  "issueId": "HODGE-311",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "fix: detect shipped features correctly in HODGE.md status (HODGE-311)\n\n## What Changed\n- **Core Detection Logic** (src/lib/hodge-md-generator.ts: 9 lines added)\n  - Added ship-record.json check in getCurrentMode() before ship directory check\n  - Returns \"shipped\" status when ship-record.json exists\n  - Added \"shipped\" case to getNextSteps() switch statement\n  - Next steps message: \"Feature completed. Start new work with `hodge explore <feature>`\"\n\n- **Test Coverage** (src/lib/hodge-md-generator.test.ts: 42 lines added)\n  - Added 2 smoke tests for shipped mode detection\n  - Test 1: Verifies \"shipped\" status when ship-record.json exists\n  - Test 2: Verifies \"ship\" status when ship directory exists but no ship-record.json\n  - Both tests use mocked filesystem for fast execution\n\n- **Project Metadata** (7 files updated)\n  - Recorded 4 implementation decisions for HODGE-311\n  - Updated id-mappings.json with HODGE-311 PM tracking\n  - Created feature tracking in .hodge/features/HODGE-311/\n\n## Why This Change\nThe /hodge command was showing HODGE-307 and HODGE-308 as \"Mode: ship\" even though \nthey had been successfully shipped hours ago (confirmed by git commits and \nship-record.json files). \n\nRoot cause: getCurrentMode() only checked if the ship/ directory existed, without\nverifying if shipping had completed. This created confusion about which features \nwere actively being shipped vs. already completed.\n\n## Impact\n- ✅ HODGE-307 and HODGE-308 now correctly show \"Mode: shipped\"\n- ✅ Clear status differentiation: \"ship\" (in progress) vs \"shipped\" (completed)\n- ✅ Appropriate next steps for completed features\n- ✅ All 625 tests passing (2 new tests added)\n- ✅ Zero breaking changes (backward compatible)\n- ✅ Uses ship-record.json as reliable completion marker\n\nCloses HODGE-311\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}
