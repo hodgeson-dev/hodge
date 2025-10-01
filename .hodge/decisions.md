@@ -26,6 +26,120 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-10-01 - Write feature decisions to feature-specific decision
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-312
+
+**Decision**:
+Write feature decisions to feature-specific decision.md only (when --feature flag provided) - feature decisions belong in .hodge/features/{feature}/decision.md for context locality, global decisions.md reserved for project-wide architectural decisions, important feature insights promoted to global during /ship lessons analysis
+
+**Rationale**:
+Recorded via `hodge decide` command at 6:43:46 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-10-01 - Add 'Shipped' as separate progress line (6th checkbox) - provides clear progression through all stages: Exploration → Decision → Build → Harden → Production Ready → Shipped
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-312
+
+**Decision**:
+Add 'Shipped' as separate progress line (6th checkbox) - provides clear progression through all stages: Exploration → Decision → Build → Harden → Production Ready → Shipped
+
+**Rationale**:
+Recorded via `hodge decide` command at 6:33:50 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-10-01 - Use ship-record
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-312
+
+**Decision**:
+Use ship-record.json as completion marker - reliably created by hodge ship command, contains ship metadata, no external dependencies required
+
+**Rationale**:
+Recorded via `hodge decide` command at 6:32:48 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-10-01 - Check feature root for decision
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-312
+
+**Decision**:
+Check feature root for decision.md - matches current file structure where decision.md is stored at features/{feature}/decision.md, not in explore/ subdirectory
+
+**Rationale**:
+Recorded via `hodge decide` command at 6:32:11 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-10-01 - Use 'shipped' as mode name for completed features - matches existing phase terminology and natural past tense of ship phase
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-312
+
+**Decision**:
+Use 'shipped' as mode name for completed features - matches existing phase terminology and natural past tense of ship phase
+
+**Rationale**:
+Recorded via `hodge decide` command at 6:31:20 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-10-01 - Apply HODGE-311 logic to status command - port the exact same shipped-detection logic from hodge-md-generator
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-312
+
+**Decision**:
+Apply HODGE-311 logic to status command - port the exact same shipped-detection logic from hodge-md-generator.ts into status.ts for consistent detection logic, fixes both bugs in one change with proven working code
+
+**Rationale**:
+Recorded via `hodge decide` command at 6:30:20 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-10-01 - Use ship/ship-record
 
 **Status**: Accepted

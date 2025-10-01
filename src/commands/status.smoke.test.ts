@@ -57,4 +57,36 @@ describe('StatusCommand - Non-Interactive Smoke Tests', () => {
       await expect(command.execute()).resolves.not.toThrow();
     });
   });
+
+  smokeTest('should detect decision.md at feature root (not in explore/)', async () => {
+    await withTestWorkspace('status-decision-root', async (workspace) => {
+      const command = new StatusCommand();
+
+      // Create feature with decision.md at root (not in explore/ subdirectory)
+      await workspace.writeFile('.hodge/features/TEST-002/explore/context.json', '{}');
+      await workspace.writeFile('.hodge/features/TEST-002/decision.md', 'Decision content');
+
+      // Run without throwing - should detect decision at root
+      await expect(command.execute('TEST-002')).resolves.not.toThrow();
+    });
+  });
+
+  smokeTest('should detect shipped status when ship-record.json exists', async () => {
+    await withTestWorkspace('status-shipped', async (workspace) => {
+      const command = new StatusCommand();
+
+      // Create fully shipped feature with ship-record.json
+      await workspace.writeFile('.hodge/features/TEST-003/explore/context.json', '{}');
+      await workspace.writeFile('.hodge/features/TEST-003/decision.md', 'Decision');
+      await workspace.writeFile('.hodge/features/TEST-003/build/context.json', '{}');
+      await workspace.writeFile('.hodge/features/TEST-003/harden/context.json', '{}');
+      await workspace.writeFile(
+        '.hodge/features/TEST-003/ship/ship-record.json',
+        JSON.stringify({ shipped: true })
+      );
+
+      // Run without throwing - should detect shipped status
+      await expect(command.execute('TEST-003')).resolves.not.toThrow();
+    });
+  });
 });

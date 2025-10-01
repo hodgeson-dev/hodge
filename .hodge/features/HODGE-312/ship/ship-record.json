@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-312",
+  "timestamp": "2025-10-01T02:03:42.662Z",
+  "issueId": "HODGE-312",
+  "pmTool": "linear",
+  "validationPassed": false,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "fix: correct status command shipped detection and decision.md path (HODGE-312)\n\n## What Changed\n- **Status Command** (src/commands/status.ts: 14 lines modified)\n  - Fixed Bug 1: Changed decision.md detection from explore/ to feature root (line 39)\n  - Fixed Bug 2: Added shipped status detection using ship-record.json (lines 65-67)\n  - Added \"Shipped\" as 6th progress checkpoint in status display (line 85)\n  - Updated next steps logic to show appropriate message for shipped features (lines 110-115)\n\n- **Test Coverage** (src/commands/status.smoke.test.ts: 32 lines added)\n  - Added smoke test for decision.md detection at feature root (lines 61-72)\n  - Added smoke test for shipped status detection (lines 74-91)\n  - All 6 smoke tests now passing\n\n- **Project Metadata** (.hodge/: 6 files updated)\n  - Recorded 6 implementation decisions for HODGE-312\n  - Updated PM tracking in id-mappings.json\n  - Created feature tracking structure\n\n## Why This Change\nThe `hodge status` command had two critical bugs causing incorrect feature status:\n\n1. **Decision Detection Bug**: Checked for decision.md in wrong location (explore/ \n   subdirectory instead of feature root), causing all features to show \"Decision: ○\" \n   even when decisions existed.\n\n2. **Shipped Detection Missing**: No code to detect shipped features (missing \n   ship-record.json check), causing shipped features to appear as \"ready to ship\" \n   instead of \"shipped\".\n\nRoot cause: Status command predated (a) decision file location change and (b) \nship-record.json introduction. Applied same fix from HODGE-311 for consistency.\n\n## Impact\n- ✅ HODGE-311 and other shipped features now correctly show \"Shipped\" status\n- ✅ Decision checkmarks now accurate for all features\n- ✅ Next steps guidance appropriate for feature state\n- ✅ All 6 status command smoke tests passing\n- ✅ Zero breaking changes (backward compatible)\n- ✅ Consistent detection logic with hodge-md-generator.ts\n\nCloses HODGE-312\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}

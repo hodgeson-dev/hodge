@@ -35,7 +35,8 @@ export class StatusCommand {
     // Check exploration
     const exploreDir = path.join(featureDir, 'explore');
     const hasExploration = existsSync(exploreDir);
-    const hasDecision = existsSync(path.join(exploreDir, 'decision.md'));
+    // Fix Bug 1: Check decision.md at feature root, not in explore/ subdirectory
+    const hasDecision = existsSync(path.join(featureDir, 'decision.md'));
 
     // Check build
     const buildDir = path.join(featureDir, 'build');
@@ -61,6 +62,10 @@ export class StatusCommand {
       }
     }
 
+    // Fix Bug 2: Check if feature has been shipped (has ship-record.json)
+    const shipRecordPath = path.join(featureDir, 'ship', 'ship-record.json');
+    const isShipped = existsSync(shipRecordPath);
+
     // Check PM integration
     const issueIdFile = path.join(featureDir, 'issue-id.txt');
     let issueId = null;
@@ -75,8 +80,9 @@ export class StatusCommand {
     console.log('  ' + (hasBuild ? chalk.green('✓') : chalk.gray('○')) + ' Build');
     console.log('  ' + (hasHarden ? chalk.green('✓') : chalk.gray('○')) + ' Harden');
     console.log(
-      '  ' + (isProductionReady ? chalk.green('✓') : chalk.gray('○')) + ' Production Ready\n'
+      '  ' + (isProductionReady ? chalk.green('✓') : chalk.gray('○')) + ' Production Ready'
     );
+    console.log('  ' + (isShipped ? chalk.green('✓') : chalk.gray('○')) + ' Shipped\n');
 
     if (issueId) {
       console.log(chalk.bold('PM Integration:'));
@@ -101,8 +107,12 @@ export class StatusCommand {
     } else if (!isProductionReady) {
       console.log(chalk.yellow('  Fix validation issues and run:'));
       console.log(chalk.cyan(`  hodge harden ${feature}`));
+    } else if (isShipped) {
+      console.log(chalk.green('  ✓ Feature completed. Start new work with:'));
+      console.log(chalk.cyan(`  hodge explore <feature>`));
     } else {
       console.log(chalk.green('  ✓ Feature is ready to ship!'));
+      console.log(chalk.cyan(`  hodge ship ${feature}`));
     }
   }
 
