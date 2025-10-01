@@ -4,8 +4,9 @@
 Initialize or resume your Hodge development session with appropriate context.
 
 **What this command does:**
-- Loads existing context for a feature or project
+- Loads context for your **last worked feature** (from session) or project overview
 - Shows current state (exploration, decisions, build progress)
+- Displays accurate mode for the feature you were working on
 - Suggests possible next actions
 
 **What this command does NOT do:**
@@ -13,6 +14,8 @@ Initialize or resume your Hodge development session with appropriate context.
 - Does NOT run any development commands
 - Does NOT make assumptions about what you want to do next
 - Simply loads context and waits for your direction
+
+**Note:** The `/hodge` command shows status for your last worked feature based on the active session. If you have a recent session for a feature, it will show that feature's accurate mode (e.g., "shipped", "build", etc.). If no session exists, it shows general project context.
 
 ## Usage Patterns
 - `/hodge` - Load project context and offer recent saves

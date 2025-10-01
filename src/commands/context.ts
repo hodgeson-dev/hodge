@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { HodgeMDGenerator } from '../lib/hodge-md-generator.js';
+import { sessionManager } from '../lib/session-manager.js';
 
 export interface ContextOptions {
   list?: boolean;
@@ -64,8 +65,12 @@ export class ContextCommand {
     console.log(chalk.cyan('📚 Loading Hodge Context'));
     console.log();
 
-    // Generate fresh HODGE.md (use 'general' for non-feature context)
-    await this.hodgeMDGenerator.saveToFile('general');
+    // Load session first to get actual feature for accurate mode detection (HODGE-313)
+    const session = await sessionManager.load();
+    const featureToCheck = session?.feature || 'general';
+
+    // Generate fresh HODGE.md with actual feature for accurate mode detection
+    await this.hodgeMDGenerator.saveToFile(featureToCheck);
     console.log(chalk.green('✓ Generated fresh HODGE.md'));
 
     // Load and display principles if they exist
