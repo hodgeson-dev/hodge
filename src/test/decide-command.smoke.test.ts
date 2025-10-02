@@ -48,19 +48,16 @@ describe('Decide Command Template Updates (HODGE-284)', () => {
   smokeTest('explore.md should include Decisions Needed section', async () => {
     const content = fs.readFileSync(explorePath, 'utf-8');
 
-    // Check for Decisions Needed documentation
-    expect(content).toContain('Document Decisions Needed');
-    expect(content).toContain('## Decisions Needed');
-    expect(content).toContain('These decisions will be presented by `/decide`');
+    // Check for Decisions Needed documentation (HODGE-314: now in Phase 3)
+    expect(content).toContain('Decisions Needed');
+    expect(content).toContain('for /decide phase');
   });
 
   smokeTest('explore.md should list decision categories to document', async () => {
     const content = fs.readFileSync(explorePath, 'utf-8');
 
-    // Check for decision categories in explore
-    expect(content).toContain('Implementation approach decision');
-    expect(content).toContain('Scope decisions');
-    expect(content).toContain('Technical choices');
-    expect(content).toContain('Testing strategy');
+    // Check for decision-related guidance (HODGE-314: now in conversational flow)
+    expect(content).toContain('Implementation Approaches');
+    expect(content).toContain('Decisions Needed');
   });
 });

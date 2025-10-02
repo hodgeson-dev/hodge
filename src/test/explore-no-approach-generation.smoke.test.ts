@@ -50,9 +50,9 @@ describe('Explore Command - No Approach Generation (HODGE-285)', () => {
     const exploreMdPath = path.join(process.cwd(), '.claude', 'commands', 'explore.md');
     const content = fs.readFileSync(exploreMdPath, 'utf-8');
 
-    // Check for AI generation instructions
-    expect(content).toContain('CRITICAL: Generate Implementation Approaches');
-    expect(content).toContain('Generate 2-3 implementation approaches');
+    // Check for conversational exploration instructions (HODGE-314)
+    expect(content).toContain('Conversational Exploration');
+    expect(content).toContain('Implementation Approaches');
     expect(content).toContain('Example Approach Format');
   });
 });

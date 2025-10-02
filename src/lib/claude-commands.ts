@@ -336,42 +336,112 @@ grep -A 5 "Explore" .hodge/principles.md
 \`\`\`
 Remember: "Freedom to explore" - Standards are suggestions only in this phase.
 
-## Your Tasks After CLI Command
+## Conversational Exploration (REQUIRED)
 
-### CRITICAL: Generate Implementation Approaches
-The CLI has created a minimal exploration template. You MUST now:
+### Phase 1: Context Loading (REQUIRED)
+Before asking any questions, you MUST:
+
+\`\`\`bash
+# Load existing context
+cat .hodge/patterns/ | head -20      # Available patterns
+cat .hodge/lessons/ | head -20       # Past lessons
+cat .hodge/decisions.md | tail -50   # Recent decisions
+\`\`\`
+
+### Phase 2: Conversational Discovery (REQUIRED)
+
+**IMPORTANT**: Engage in natural dialogue to deeply understand the feature before documenting anything.
+
+#### Required Coverage Areas (MUST ask about ALL of these):
+1. **What & Why** (Requirements and Context)
+   - What is the feature trying to accomplish? (high-level, not implementation details)
+   - Why is this needed? (business value, user impact, technical necessity)
+   - Who benefits from this feature?
+
+2. **Gotchas & Considerations** (After understanding requirements)
+   - Are there potential technical debt concerns?
+   - What edge cases should be considered?
+   - Are there integration challenges with existing features?
+   - What testing complexity should be anticipated?
+   - Reference relevant patterns from .hodge/patterns/
+   - Reference relevant lessons from .hodge/lessons/
+   - Mention similar features if applicable
+
+3. **Test Intentions** (Behavioral expectations)
+   - What behaviors should this feature have?
+   - How can each behavior be verified independently?
+   - Propose test intentions and solicit feedback
+   - Test intentions must be finalized during conversation
+
+#### Conversation Guidelines:
+- **Natural dialogue style** (not rigid Q&A interview)
+- **Provide periodic summaries** of what you've learned to confirm understanding
+- **Present options** when user is unsure of answers to help guide thinking
+- **Ask about scope** if feature might affect other areas or relate to existing functionality
+- **Scale to complexity**: Simple features = 1-2 quick questions; Complex features = extensive discussion
+- **Conversation ends when**: Either AI feels satisfied OR user says to proceed (whichever comes first)
+
+#### Error Handling:
+- If conversation goes off track, user can provide direction or request restart
+- User maintains control - they can guide the conversation at any time
+- No complex state management needed - keep it simple
+
+### Phase 3: Conversation Synthesis & Preview (REQUIRED)
+
+After the conversation, you MUST:
+
+1. **Generate a concise title** from the \`/explore {{feature}}\` command text (under 100 characters)
+
+2. **Synthesize conversation into prose** (not Q&A format) covering:
+   - Problem Statement
+   - Conversation Summary (key points discussed)
+   - Implementation Approaches (2-3 options based on discussion)
+   - Recommendation (which approach and why)
+   - Test Intentions (finalized during conversation)
+   - Decisions Needed (for /decide phase)
+
+3. **Show preview for approval** using this format:
+   \`\`\`
+   ## Preview: exploration.md Summary
+
+   **Title**: [generated title]
+
+   **Problem Statement**: [1-2 sentences]
+
+   **Key Discussion Points**:
+   - [Point 1]
+   - [Point 2]
+   - [Point 3]
+
+   **Recommended Approach**: [approach name]
+
+   **Test Intentions**: [count] behavioral expectations defined
+
+   **Decisions Needed**: [count] decisions for /decide phase
+
+   Would you like to:
+   a) ✅ Approve and write to exploration.md
+   b) 🔄 Revise specific sections
+   c) ➕ Add more detail
+   d) ➖ Simplify certain areas
+   \`\`\`
+
+4. **Only after approval**, update \`.hodge/features/{{feature}}/explore/exploration.md\` with:
+   - Title field
+   - Problem Statement
+   - Conversation Summary (synthesized prose)
+   - Implementation Approaches section (2-3 approaches)
+   - Recommendation section
+   - Test Intentions section
+   - Decisions Needed section
+
+### Phase 4: Traditional Approach Generation (If Needed)
+
+If user skips conversation or provides complete requirements upfront, fall back to traditional approach:
 
 1. **Read the template** at \`.hodge/features/{{feature}}/explore/exploration.md\`
-2. **Generate a concise title** for the feature:
-   - Add a \`**Title**: <short description>\` field at the top of exploration.md
-   - Keep it under 100 characters
-   - Make it descriptive and specific (e.g., "Fix PM issue description extraction from exploration.md")
-   - This title will be used for PM issue creation
-3. **Generate 2-3 implementation approaches** by updating the file:
-   - Replace \`<!-- AI will generate 2-3 approaches here -->\` with actual approaches
-   - Each approach should have:
-     - Name and description
-     - Pros (3-4 points)
-     - Cons (2-3 points)
-     - When to use this approach
-4. **Provide a recommendation**:
-   - Replace \`<!-- AI will provide recommendation -->\`
-   - Explain which approach is best and why
-5. **Document decisions needed**:
-   - Replace \`<!-- AI will list decisions for /decide command -->\`
-   - List 2-4 key decisions that need to be made
-6. **Update test intentions** if needed
-7. **Consider patterns and similar features** mentioned in the template
-8. **IMPORTANT: Document Decisions Needed**
-   Add a section to exploration.md titled "## Decisions Needed" that lists:
-   - Implementation approach decision (which approach to use)
-   - Scope decisions (what's in/out of scope)
-   - Technical choices (libraries, patterns, architecture)
-   - Naming decisions (if any naming conventions need deciding)
-   - Testing strategy (how to test this feature)
-   - TODO resolutions (which existing TODOs this might address)
-
-   These decisions will be presented by \`/decide\` for resolution.
+2. **Generate title, approaches, recommendations** as before
+3. **Document decisions needed** for /decide phase
 
 ## Exploration Guidelines
 - Standards are **suggested** but not enforced
