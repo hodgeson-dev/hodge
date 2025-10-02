@@ -217,6 +217,19 @@ No feature specified. Use: hodge plan <feature> had been called for creating a s
   - Define test intentions
   - Make architectural decisions
 
+
+### HODGE-318
+- **Status**: exploring
+- **Priority**: TBD
+- **Created**: 2025-10-02
+- **Updated**: 2025-10-02
+- **Description**: fix-ci-vitest-err-require-esm-node-18
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
 ## Completed Features
 
 ### HODGE-316

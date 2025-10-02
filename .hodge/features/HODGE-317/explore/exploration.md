@@ -1,125 +1,194 @@
 # Feature Exploration: HODGE-317
 
-**Title**: Fix flaky test-isolation integration test timeouts
+**Title**: Fix hung Node processes in test-isolation integration tests
 
 ## Problem Statement
 
-Two integration tests in `src/test/test-isolation.integration.test.ts` are failing intermittently with timeout errors:
-1. "should maintain complete isolation between test runs" (line 103) - timing out at 10 seconds
-2. "should prevent test data from leaking into project" (line 137) - timing out at 5 seconds
+Two integration tests in `src/test/test-isolation.integration.test.ts` spawn vitest subprocesses via `execSync('npx vitest run ...')` to verify test isolation. When vitest hangs in these subprocesses, they become orphaned processes that must be manually killed in Activity Monitor, causing CI/local test timeouts and blocking development.
 
-These are pre-existing flaky tests unrelated to recent changes (HODGE-316). They are blocking the ship process even though all other 655 tests pass.
+**Root cause**: Tests are spawning **full vitest runs** as subprocesses to verify test isolation. When vitest hangs:
+- The subprocess never completes
+- `execSync` blocks waiting forever
+- Parent test times out after 5-10 seconds
+- Hung subprocess keeps running as zombie process
+- Accumulates orphaned Node processes that consume resources
+
+This is fundamentally an architectural issue: **spawning vitest to test vitest's test isolation** is inherently fragile.
 
 ## Conversation Summary
 
-The tests are integration tests that verify test isolation by running commands in temporary directories. The timeout issues suggest either:
-- The commands are taking longer than expected to complete
-- There's a deadlock or hanging process
-- The timeout values (5-10s) are too aggressive for integration tests
+### The Discovery Process
 
-These tests have been problematic and should be stabilized to prevent blocking future ships.
+Initial symptoms suggested flaky timeout issues, but deeper investigation revealed the true problem:
+
+1. **Not a timeout issue** - Tests aren't slow, they're **hung**
+2. **Zombie processes** - Hung vitest subprocesses become orphaned and must be manually killed
+3. **No visibility** - Can't debug what's hanging inside the subprocess
+4. **Architectural flaw** - Using `execSync('npx vitest run ...')` to verify test isolation creates dependency on vitest subprocess stability
+
+### What's Happening
+
+**Lines 103-135**: Spawns `npx vitest run src/lib/session-manager.test.ts` three times sequentially, checking .hodge/saves hasn't changed. When one vitest subprocess hangs, entire test blocks.
+
+**Lines 137-186**: Spawns four separate `npx vitest run` commands sequentially. If any subprocess hangs, test blocks and subsequent subprocesses never run.
+
+Each subprocess:
+- Starts new Node process
+- Loads vitest infrastructure
+- Runs tests
+- **May hang** during config load, test execution, or teardown
+- Leaves orphaned process if hung
+
+### Key Insights from HODGE-308
+
+The HODGE-308 lesson documented successful test isolation fixes using the basePath pattern. Those tests verify isolation **without spawning subprocesses** - they use direct filesystem assertions.
+
+**We should follow the same pattern here**: Verify test isolation through filesystem state, not subprocess execution.
+
+### Separate Issue Identified
+
+CI "Quality Checks" workflow fails with `ERR_REQUIRE_ESM` in Node 18.x before even running tests. This is a separate vitest/vite configuration issue tracked as **HODGE-318**.
 
 ## Implementation Approaches
 
-### Approach 1: Increase Timeout Values
+### Approach 1: Redesign Without Subprocess Spawning (Recommended)
 
-**Description**: Increase the timeout values for these specific integration tests to allow more time for command execution.
+**Description**: Remove all `execSync('npx vitest run ...')` calls. Instead, verify test isolation directly by checking filesystem state before/after importing and running test functions.
+
+**How it works**:
+- Import test files directly (not spawn subprocess)
+- Capture filesystem state before test
+- Run test function
+- Verify filesystem state unchanged
+- Check for leftover temp directories
+- No subprocess spawning = no hung processes
 
 **Pros**:
-- Quick fix, minimal code changes
-- Addresses immediate symptom
-- Low risk
+- Eliminates hung subprocess problem entirely
+- Faster tests (no vitest startup overhead)
+- Better debugging (can see what's happening)
+- No zombie processes
+- Follows HODGE-308 pattern
+- Can use vitest's built-in parallel test isolation
 
 **Cons**:
-- Doesn't address root cause
-- Slower test suite
-- May still flake if underlying issue persists
+- Less realistic (not testing via CLI)
+- Requires restructuring test execution
+- May miss CLI-specific isolation issues
 
-**When to use**: As a temporary measure while investigating root cause.
+**When to use**: When you need reliable, fast, debuggable test isolation verification.
 
 ---
 
-### Approach 2: Investigate and Fix Root Cause
+### Approach 2: Add Subprocess Timeout & Cleanup
 
-**Description**: Debug why these tests are timing out - check for hanging processes, slow file operations, or synchronization issues.
+**Description**: Keep subprocess spawning but add aggressive timeouts and process cleanup to prevent zombies.
+
+**How it works**:
+- Use `execFileSync` with `timeout` option (e.g., 5000ms)
+- Catch timeout errors and kill subprocess tree
+- Track spawned PIDs and ensure cleanup
+- Add retry logic for transient hangs
 
 **Pros**:
-- Fixes actual problem
-- Improves test reliability
-- Maintains fast test suite
+- Tests actual CLI execution
+- Catches CLI-specific issues
+- Minimal test restructuring
 
 **Cons**:
-- Requires investigation time
-- May uncover deeper issues
-- More complex fix
+- Doesn't fix underlying hang issue
+- Still creates zombie processes on failure
+- Harder to debug what's hanging
+- Slower tests (vitest startup overhead)
+- May still flake if cleanup fails
 
-**When to use**: For a permanent, robust solution.
+**When to use**: Only if CLI-specific test isolation is critical and subprocess hang is rare.
 
 ---
 
-### Approach 3: Refactor Tests to Use Faster Mocking
+### Approach 3: Hybrid - Direct Testing + Smoke Test
 
-**Description**: Convert integration tests to use more mocked dependencies instead of real file system operations.
+**Description**: Most tests use direct filesystem assertions (Approach 1). Add one lightweight smoke test that spawns subprocess with aggressive timeout.
+
+**How it works**:
+- 3 tests use direct filesystem verification (fast, reliable)
+- 1 test spawns subprocess with 3s timeout as CLI smoke test
+- Best of both worlds
 
 **Pros**:
-- Faster tests
-- More reliable
-- Easier to control test scenarios
+- Reliable core tests
+- Still catches CLI issues
+- Minimal zombie risk (only 1 subprocess)
+- Fast test suite
 
 **Cons**:
-- Less realistic testing
-- May miss real integration issues
-- Requires test rewrite
+- Some code duplication
+- Still has one potential hang point
+- More complex test architecture
 
-**When to use**: If tests are inherently too slow for integration testing.
+**When to use**: If you want both speed/reliability AND CLI validation.
 
 ## Recommendation
 
-**Approach 2: Investigate and Fix Root Cause** is recommended.
+**Approach 1: Redesign Without Subprocess Spawning** is strongly recommended.
 
 **Rationale**:
-- These are important integration tests for test isolation - a critical requirement
-- Flaky tests erode confidence in the test suite
-- Understanding the root cause will prevent future similar issues
-- Once fixed, tests can remain fast and reliable
+1. **Eliminates root cause** - No subprocesses = no hung processes
+2. **Proven pattern** - HODGE-308 successfully used direct filesystem assertions
+3. **Better developer experience** - No manual process killing needed
+4. **Faster tests** - No vitest startup overhead (4x spawns → 0 spawns)
+5. **More reliable CI** - No flaky subprocess hangs
+6. **Easier debugging** - Can step through test execution
 
-Investigation steps:
-1. Add debug logging to identify where tests hang
-2. Check for unclosed file handles or processes
-3. Verify temp directory cleanup
-4. Profile test execution time
+The goal is **test isolation verification**, not **CLI subprocess management**. We can achieve the goal more reliably without subprocesses.
+
+### Implementation Strategy
+
+1. **Test 1 (parallel execution)**: Use vitest's built-in parallel test execution instead of spawning
+2. **Test 2 (cleanup on failure)**: Create failing test directly, verify cleanup
+3. **Test 3 (isolation between runs)**: Import session-manager tests directly, run 3x, check filesystem
+4. **Test 4 (no project leakage)**: Import tests directly, verify no .hodge modifications
+
+All verification via filesystem assertions - no subprocess spawning.
 
 ## Test Intentions
 
 ### Behavioral Expectations
 
-1. **Should identify root cause of timeout**
-   - Given: Flaky test in test-isolation.integration.test.ts
-   - When: Debug logging and profiling added
-   - Then: Specific bottleneck or deadlock identified
+1. **Should verify test isolation without spawning subprocesses**
+   - Given: Test isolation verification needed
+   - When: Tests run with direct filesystem assertions
+   - Then: Isolation verified without hung processes
 
-2. **Should fix timeout without increasing limits**
-   - Given: Root cause identified
-   - When: Fix applied
-   - Then: Tests pass consistently within original timeout values
+2. **Should complete without leaving zombie Node processes**
+   - Given: All 4 test-isolation tests executed
+   - When: Tests complete (pass or fail)
+   - Then: No orphaned Node processes remain (verify via `ps aux | grep node`)
 
-3. **Should verify fix across multiple runs**
-   - Given: Fix applied
-   - When: Tests run 10+ times
-   - Then: No timeout failures occur
+3. **Should pass consistently in both local and CI environments**
+   - Given: Redesigned tests without subprocess spawning
+   - When: Tests run 10+ times locally and in CI
+   - Then: 100% pass rate with no timeouts
+
+4. **Should verify same isolation guarantees as before**
+   - Given: Tests redesigned without subprocesses
+   - When: Tests verify parallel execution, cleanup, repeated runs, project protection
+   - Then: All isolation requirements still enforced
 
 ## Decisions Needed
 
-### Decision 1: Temporary vs Permanent Fix
-**Context**: Should we increase timeouts now and investigate later, or block until root cause is fixed?
+No decisions needed - clear path forward with Approach 1.
 
-**Options**:
-- a) Increase timeouts temporarily, investigate separately
-- b) Block and fix root cause before proceeding
-- c) Disable tests temporarily, fix in dedicated sprint
+**Next step**: `/build HODGE-317` to implement the redesign.
 
-**Recommendation**: Option (a) for HODGE-316 ship, then Option (b) for HODGE-317 implementation.
+---
+
+## Related Issues
+
+- **HODGE-318** (to be created): Fix CI ERR_REQUIRE_ESM in Node 18.x - separate vitest/vite config issue
+- **HODGE-308**: Established basePath pattern for test isolation - reference implementation
 
 ---
 
 **Exploration completed**: 2025-10-02
+**Updated after conversational discovery**: 2025-10-02

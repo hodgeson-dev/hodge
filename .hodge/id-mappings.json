@@ -1248,9 +1248,9 @@
   "TEST-006: Test PM creation": {
     "localID": "TEST-006: Test PM creation",
     "created": "2025-09-30T03:44:33.069Z",
-    "externalID": "91da136a-7493-41cf-b3f0-27f0276a5b61",
+    "externalID": "e0ff643e-a40e-4dcb-8ffc-66b20dbe07f4",
     "pmTool": "linear",
-    "lastSynced": "2025-10-02T21:48:35.726Z"
+    "lastSynced": "2025-10-02T22:49:25.664Z"
   },
   "HODGE-301": {
     "localID": "HODGE-301",
@@ -1361,5 +1361,27 @@
   "HODGE-317": {
     "localID": "HODGE-317",
     "created": "2025-10-02T21:55:40.301Z"
+  },
+  "HODGE-318": {
+    "localID": "HODGE-318",
+    "created": "2025-10-02T22:15:45.407Z"
+  },
+  "HODGE-317.1": {
+    "localID": "HODGE-317.1",
+    "created": "2025-10-02T22:18:42.576Z",
+    "externalID": "4571cfe6-ab8a-449b-9e91-98473349737d",
+    "pmTool": "linear"
+  },
+  "HODGE-317.2": {
+    "localID": "HODGE-317.2",
+    "created": "2025-10-02T22:18:43.206Z",
+    "externalID": "750ee5d5-933f-4a24-9e59-7d62da831979",
+    "pmTool": "linear"
+  },
+  "HODGE-317: Fix hung Node processes in test-isolation integration tests": {
+    "localID": "HODGE-317: Fix hung Node processes in test-isolation integration tests",
+    "created": "2025-10-02T22:18:43.207Z",
+    "externalID": "5c582fc4-6b0e-42fb-87d5-64c7d9b8793f",
+    "pmTool": "linear"
   }
 }

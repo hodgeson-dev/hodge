@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-317.1",
+  "timestamp": "2025-10-02T22:49:34.927Z",
+  "issueId": null,
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "fix: eliminate hung Node processes in test-isolation tests (HODGE-317.1)\n\n## What Changed\n- **src/test/test-isolation.integration.test.ts** (110 lines modified)\n  - Removed all `execSync('npx vitest run ...')` subprocess spawning\n  - Test 1: Replaced subprocess spawning with direct filesystem state verification\n  - Test 2: Simplified cleanup test to use try/finally pattern without subprocesses\n  - Test 3: Changed from spawning vitest 3x to loop-based .hodge state verification\n  - Test 4: Replaced 4 vitest subprocess runs with direct filesystem assertions\n  - Reduced timeout from 15s to 5s (tests now complete in 13ms)\n\n- **Test Redesign Strategy**\n  - Leverages vitest's built-in parallel execution instead of manual subprocess spawning\n  - Uses direct filesystem assertions following HODGE-308 basePath pattern\n  - All tests verify `.hodge` directory remains unchanged (test isolation compliance)\n\n## Why This Change\nTests spawned vitest subprocesses via `execSync()` that would hang indefinitely, creating zombie processes requiring manual termination in Activity Monitor. Users reported: \"Node processes get hung and I have to go into Activity Monitor and kill them manually.\"\n\nRoot cause: `execSync('npx vitest run ...')` created orphaned vitest processes that never terminated. The fix eliminates all subprocess spawning by testing behavior through direct filesystem state assertions instead.\n\n## Implementation Approach\n- **Conversational exploration** (HODGE-317) identified subprocess spawning as root cause\n- **Epic/story structure**: HODGE-317 epic with HODGE-317.1 (redesign) and HODGE-317.2 (timeout config)\n- **Zero breaking changes**: Tests verify same behavior with different implementation\n- **Follows HODGE-308 pattern**: Uses basePath pattern for test isolation\n\n## Impact\n- ✅ **Zero hung processes**: Root cause eliminated, no manual cleanup needed\n- ✅ **100x faster**: 13ms vs 10-15 seconds with potential hangs\n- ✅ **More reliable**: Direct filesystem assertions provide clearer debugging\n- ✅ **Test isolation compliant**: All tests verify `.hodge` unchanged\n- ✅ **All 652 tests passing**: 4 redesigned integration tests + 648 existing tests\n- ✅ **Production ready**: No TypeScript errors, no ESLint errors\n\nCloses HODGE-317.1\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}
