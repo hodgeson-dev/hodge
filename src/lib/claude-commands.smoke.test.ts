@@ -134,3 +134,58 @@ describe('[smoke] PM mapping check - grep pattern behavior', () => {
     }
   });
 });
+
+describe('[smoke] decide.md template - decision prompt formatting', () => {
+  it('should have blank line between Topic and Context fields', () => {
+    const decideTemplate = readFileSync(
+      join(__dirname, '../../.claude/commands/decide.md'),
+      'utf-8'
+    );
+
+    // Check that Topic and Context are separated by a blank line
+    expect(decideTemplate).toContain(
+      '**Topic**: {{decision_topic}}\n\n   **Context**: {{brief_context}}'
+    );
+  });
+
+  it('should display decision prompt sections in correct order', () => {
+    const decideTemplate = readFileSync(
+      join(__dirname, '../../.claude/commands/decide.md'),
+      'utf-8'
+    );
+
+    // Verify decision prompt structure
+    expect(decideTemplate).toContain('## Decision {{number}} of {{total}}');
+    expect(decideTemplate).toContain('**Topic**: {{decision_topic}}');
+    expect(decideTemplate).toContain('**Context**: {{brief_context}}');
+    expect(decideTemplate).toContain('**Principle Consideration**:');
+  });
+});
+
+describe('[smoke] build.md template - PM check interpretation', () => {
+  it('should include explicit interpretation guidance for grep results', () => {
+    const buildTemplate = readFileSync(join(__dirname, '../../.claude/commands/build.md'), 'utf-8');
+
+    expect(buildTemplate).toContain('**Interpreting the result:**');
+    expect(buildTemplate).toContain(
+      '**Empty output (no lines returned)** = Feature is NOT mapped to PM issue'
+    );
+    expect(buildTemplate).toContain(
+      '**Output contains "externalID: ..."** = Feature IS mapped to PM issue'
+    );
+  });
+
+  it('should clarify when to show PM creation prompt', () => {
+    const buildTemplate = readFileSync(join(__dirname, '../../.claude/commands/build.md'), 'utf-8');
+
+    expect(buildTemplate).toContain('If the grep returns **empty/no output**');
+    expect(buildTemplate).toContain('the feature has no PM issue');
+  });
+
+  it('should clarify when to skip PM creation prompt', () => {
+    const buildTemplate = readFileSync(join(__dirname, '../../.claude/commands/build.md'), 'utf-8');
+
+    expect(buildTemplate).toContain('If the grep returns **output containing "externalID: ..."**');
+    expect(buildTemplate).toContain('already has a PM issue');
+  });
+});

@@ -1,0 +1,34 @@
+{
+  "mode": "explore",
+  "feature": "HODGE-317",
+  "localID": "HODGE-317",
+  "externalID": null,
+  "timestamp": "2025-10-02T21:55:40.504Z",
+  "intent": {
+    "type": "general",
+    "keywords": [
+      "HODGE-317"
+    ],
+    "suggestedPatterns": [
+      "service",
+      "utility",
+      "factory"
+    ],
+    "relatedCommands": [
+      "execute",
+      "process",
+      "handle"
+    ]
+  },
+  "standards": "suggested",
+  "validation": "optional",
+  "pmIssue": "HODGE-317",
+  "pmTool": null,
+  "approaches": [],
+  "relatedFeatures": [
+    "hodge-branding",
+    "HODGE-001",
+    "HODGE-002"
+  ],
+  "suggestedPatterns": []
+}

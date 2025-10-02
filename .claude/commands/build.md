@@ -10,8 +10,12 @@
 cat .hodge/id-mappings.json | grep -A 2 "\"{{feature}}\"" | grep "externalID"
 ```
 
+**Interpreting the result:**
+- **Empty output (no lines returned)** = Feature is NOT mapped to PM issue
+- **Output contains "externalID: ..."** = Feature IS mapped to PM issue
+
 ### If Feature is NOT Mapped
-If the feature doesn't exist in id-mappings.json, ask the user:
+If the grep returns **empty/no output**, the feature has no PM issue. Ask the user:
 
 ```
 I notice this feature ({{feature}}) doesn't have a PM issue tracking it yet.
@@ -37,7 +41,7 @@ Then execute `/plan {{feature}}` with AI generating a single-issue plan (no epic
 Proceed with build anyway (non-blocking). This respects user agency and the "freedom to explore" principle.
 
 ### If Feature IS Already Mapped
-Skip the prompt and proceed directly to build command.
+If the grep returns **output containing "externalID: ..."**, the feature already has a PM issue. Skip the prompt and proceed directly to build command.
 
 ## Command Execution
 Execute the portable Hodge CLI command:

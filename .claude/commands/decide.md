@@ -55,6 +55,7 @@ When `/decide` is invoked, follow this process:
    ## Decision {{number}} of {{total}}
 
    **Topic**: {{decision_topic}}
+
    **Context**: {{brief_context}}
 
    **Principle Consideration**:
