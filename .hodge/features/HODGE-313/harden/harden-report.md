@@ -1,32 +1,1840 @@
 # Harden Report: HODGE-313
 
 ## Validation Results
-**Date**: 10/1/2025, 5:53:29 AM
-**Overall Status**: ❌ FAILED
+**Date**: 10/1/2025, 11:07:51 PM
+**Overall Status**: ✅ PASSED
 
 ### Test Results
-- **Tests**: ❌ Failed
+- **Tests**: ✅ Passed
 - **Linting**: ✅ Passed
 - **Type Check**: ✅ Passed
 - **Build**: ✅ Passed
 
 ## Standards Compliance
-Standards violations detected. Please fix before shipping.
+All standards have been met. Code is production-ready.
 
 ## Performance
 Validations were run in parallel for optimal performance.
 
 ## Next Steps
-❌ Issues need to be resolved:
-- Review validation output below
-- Fix identified issues
-- Run `/harden HODGE-313` again
+✅ Feature is production-ready!
+- Use `/ship HODGE-313` to deploy
+- Update PM issue status to "Done"
 
 ## Detailed Output
 
 ### Test Output
 ```
-Command failed: npm test 2>&1
+
+> @agile-explorations/hodge@0.1.0-alpha.1 test
+> NODE_ENV=test vitest run
+
+
+ RUN  v3.2.4 /Users/michaelkelly/Projects/hodge
+
+stdout | src/commands/context.smoke.test.ts > ContextCommand - HODGE-297 Enhanced Loading > [smoke] should execute context command without crashing
+📚 Loading Hodge Context
+
+
+stdout | src/commands/context.smoke.test.ts > ContextCommand - HODGE-297 Enhanced Loading > [smoke] should execute context command without crashing
+✓ Generated fresh HODGE.md
+
+(node:81255) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should initialize without configuration
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should handle explore hook
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should handle explore hook
+✓ Added TEST-001 to project management tracking
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should handle build hook
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should handle build hook
+✓ Updated TEST-001 status to: building
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should handle harden hook
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should handle harden hook
+✓ Updated TEST-001 status to: hardening
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should handle ship hook with string
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should handle ship hook with string
+✓ Updated TEST-001 status to: shipped
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should handle ship hook with string
+✓ Updated project plan phase progress
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should handle ship hook with string
+✓ Updated project management tracking
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should handle ship hook with context
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should handle ship hook with context
+✓ Updated TEST-001 status to: shipped
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should handle ship hook with context
+✓ Updated project plan phase progress
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should handle ship hook with context
+✓ Updated project management tracking
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should load configuration from hodge.json
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should handle missing PM tool gracefully
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should handle missing PM tool gracefully
+✓ Added TEST-002 to project management tracking
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should handle missing PM tool gracefully
+✓ Updated TEST-002 status to: building
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should handle missing PM tool gracefully
+✓ Updated TEST-002 status to: hardening
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should handle missing PM tool gracefully
+✓ Updated TEST-002 status to: shipped
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should handle missing PM tool gracefully
+✓ Updated project plan phase progress
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should handle missing PM tool gracefully
+✓ Updated project management tracking
+
+stdout | src/commands/context.smoke.test.ts > ContextCommand - HODGE-297 Enhanced Loading > [smoke] should execute context command without crashing
+
+Recent Saved Sessions:
+1. auto-HODGE-313-2025-10-02T05-24-55 (17 hours ago)
+   Feature: HODGE-313, Mode: ship
+2. auto-HODGE-312-2025-10-01T03-51-46 (1 day ago)
+   Feature: HODGE-312, Mode: ship
+3. auto-HODGE-312-2025-10-01T04-10-11 (1 day ago)
+   Feature: HODGE-312, Mode: ship
+4. auto-HODGE-311-2025-10-01T01-27-46 (1 day ago)
+   Feature: HODGE-311, Mode: ship
+5. auto-HODGE-310-2025-10-01T01-06-00 (1 day ago)
+   Feature: HODGE-310, Mode: ship
+
+To load a save: hodge context --recent
+To list all saves: hodge context --list
+
+Context loaded. Ready to work!
+
+stdout | src/commands/context.smoke.test.ts > ContextCommand - HODGE-313 Session-Based Mode Detection > [smoke] should use session feature for mode detection when session exists
+📚 Loading Hodge Context
+
+
+stdout | src/commands/context.smoke.test.ts > ContextCommand - HODGE-313 Session-Based Mode Detection > [smoke] should use session feature for mode detection when session exists
+✓ Generated fresh HODGE.md
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should update local PM tracking
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should update local PM tracking
+✓ Added TEST-003 to project management tracking
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should update local PM tracking
+✓ Updated TEST-003 status to: building
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should update local PM tracking
+✓ Updated TEST-003 status to: hardening
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should update local PM tracking
+✓ Updated TEST-003 status to: shipped
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should update local PM tracking
+✓ Updated project plan phase progress
+
+stdout | src/lib/pm/pm-hooks.smoke.test.ts > PM Hooks Smoke Tests > [smoke] should update local PM tracking
+✓ Updated project management tracking
+
+ ✓ src/lib/pm/pm-hooks.smoke.test.ts (10 tests) 926ms
+stdout | src/commands/context.smoke.test.ts > ContextCommand - HODGE-313 Session-Based Mode Detection > [smoke] should use session feature for mode detection when session exists
+
+Recent Saved Sessions:
+1. auto-HODGE-313-2025-10-02T05-24-55 (17 hours ago)
+   Feature: HODGE-313, Mode: ship
+2. auto-HODGE-312-2025-10-01T03-51-46 (1 day ago)
+   Feature: HODGE-312, Mode: ship
+3. auto-HODGE-312-2025-10-01T04-10-11 (1 day ago)
+   Feature: HODGE-312, Mode: ship
+4. auto-HODGE-311-2025-10-01T01-27-46 (1 day ago)
+   Feature: HODGE-311, Mode: ship
+5. auto-HODGE-310-2025-10-01T01-06-00 (1 day ago)
+   Feature: HODGE-310, Mode: ship
+
+To load a save: hodge context --recent
+To list all saves: hodge context --list
+
+Context loaded. Ready to work!
+
+stdout | src/commands/context.smoke.test.ts > ContextCommand - HODGE-313 Session-Based Mode Detection > [smoke] should fall back to general when no session exists
+📚 Loading Hodge Context
+
+
+stdout | src/commands/context.smoke.test.ts > ContextCommand - HODGE-313 Session-Based Mode Detection > [smoke] should fall back to general when no session exists
+✓ Generated fresh HODGE.md
+
+(node:81464) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+stdout | src/commands/plan.test.ts > PlanCommand - Smoke Tests > [smoke] should not crash when creating plan without decisions
+📋 Planning Work Structure
+
+stdout | src/commands/plan.test.ts > PlanCommand - Smoke Tests > [smoke] should not crash when creating plan without decisions
+No decisions found for TEST-001. Run /decide first.
+
+stdout | src/commands/plan.test.ts > PlanCommand - Smoke Tests > [smoke] should create plan locally without --create-pm flag
+📋 Planning Work Structure
+
+stdout | src/commands/plan.test.ts > PlanCommand - Smoke Tests > [smoke] should create plan locally without --create-pm flag
+ℹ️  No AI plan found, using keyword matching (legacy behavior)
+
+stdout | src/commands/plan.test.ts > PlanCommand - Smoke Tests > [smoke] should create plan locally without --create-pm flag
+
+📋 Development Plan
+==================================================
+Feature: TEST-002
+Type: single
+
+Estimated Timeline: 1 days
+==================================================
+
+stdout | src/commands/plan.test.ts > PlanCommand - Smoke Tests > [smoke] should create plan locally without --create-pm flag
+
+💾 Plan saved locally. Use --create-pm to create PM issues in Linear.
+
+✓ Plan created for TEST-002
+
+Next Steps:
+  Start building: hodge build TEST-002
+
+stdout | src/commands/plan.test.ts > PlanCommand - Smoke Tests > [smoke] should extract feature description from exploration.md
+📋 Planning Work Structure
+
+stdout | src/commands/plan.test.ts > PlanCommand - Smoke Tests > [smoke] should extract feature description from exploration.md
+ℹ️  No AI plan found, using keyword matching (legacy behavior)
+
+stdout | src/commands/plan.test.ts > PlanCommand - Smoke Tests > [smoke] should extract feature description from exploration.md
+
+📋 Development Plan
+==================================================
+Feature: TEST-003
+Type: single
+
+Estimated Timeline: 1 days
+==================================================
+
+stdout | src/commands/plan.test.ts > PlanCommand - Smoke Tests > [smoke] should extract feature description from exploration.md
+
+💾 Plan saved locally. Use --create-pm to create PM issues in Linear.
+
+✓ Plan created for TEST-003
+
+Next Steps:
+  Start building: hodge build TEST-003
+
+stdout | src/commands/plan.test.ts > PlanCommand - Smoke Tests > [smoke] should handle feature with multiple decisions
+📋 Planning Work Structure
+
+stdout | src/commands/plan.test.ts > PlanCommand - Smoke Tests > [smoke] should handle feature with multiple decisions
+ℹ️  No AI plan found, using keyword matching (legacy behavior)
+
+stdout | src/commands/plan.test.ts > PlanCommand - Smoke Tests > [smoke] should handle feature with multiple decisions
+
+📋 Development Plan
+==================================================
+Feature: TEST-004
+Type: epic
+
+Stories (2):
+  TEST-004.1: Core implementation (Lane 1)
+  TEST-004.2: Tests and documentation [depends on: TEST-004.1] (Lane 2)
+
+Lane Allocation (2 lanes):
+  Lane 1: TEST-004.1
+  Lane 2: TEST-004.2
+
+Estimated Timeline: 2 days
+==================================================
+
+stdout | src/commands/plan.test.ts > PlanCommand - Smoke Tests > [smoke] should handle feature with multiple decisions
+
+💾 Plan saved locally. Use --create-pm to create PM issues in Linear.
+
+✓ Plan created for TEST-004
+
+Next Steps:
+
+Parallel development ready:
+  Lane 1: hodge build TEST-004.1
+  Lane 2: hodge build TEST-004.2
+
+stdout | src/commands/plan.test.ts > PlanCommand - Smoke Tests > [smoke] should respect lane allocation parameter
+📋 Planning Work Structure
+
+stdout | src/commands/plan.test.ts > PlanCommand - Smoke Tests > [smoke] should respect lane allocation parameter
+ℹ️  No AI plan found, using keyword matching (legacy behavior)
+
+stdout | src/commands/plan.test.ts > PlanCommand - Smoke Tests > [smoke] should respect lane allocation parameter
+
+📋 Development Plan
+==================================================
+Feature: TEST-005
+Type: single
+
+Estimated Timeline: 1 days
+==================================================
+
+stdout | src/commands/plan.test.ts > PlanCommand - Smoke Tests > [smoke] should respect lane allocation parameter
+
+💾 Plan saved locally. Use --create-pm to create PM issues in Linear.
+
+✓ Plan created for TEST-005
+
+Next Steps:
+  Start building: hodge build TEST-005
+
+stdout | src/commands/plan.test.ts > PlanCommand - Smoke Tests > [smoke] should accept --create-pm flag without crashing
+📋 Planning Work Structure
+
+stdout | src/commands/context.smoke.test.ts > ContextCommand - HODGE-313 Session-Based Mode Detection > [smoke] should fall back to general when no session exists
+
+Recent Saved Sessions:
+1. auto-HODGE-313-2025-10-02T05-24-55 (17 hours ago)
+   Feature: HODGE-313, Mode: ship
+2. auto-HODGE-312-2025-10-01T03-51-46 (1 day ago)
+   Feature: HODGE-312, Mode: ship
+3. auto-HODGE-312-2025-10-01T04-10-11 (1 day ago)
+   Feature: HODGE-312, Mode: ship
+4. auto-HODGE-311-2025-10-01T01-27-46 (1 day ago)
+   Feature: HODGE-311, Mode: ship
+5. auto-HODGE-310-2025-10-01T01-06-00 (1 day ago)
+   Feature: HODGE-310, Mode: ship
+
+To load a save: hodge context --recent
+To list all saves: hodge context --list
+
+Context loaded. Ready to work!
+
+stdout | src/commands/plan.test.ts > PlanCommand - Smoke Tests > [smoke] should accept --create-pm flag without crashing
+ℹ️  No AI plan found, using keyword matching (legacy behavior)
+
+stdout | src/commands/plan.test.ts > PlanCommand - Smoke Tests > [smoke] should accept --create-pm flag without crashing
+
+📋 Development Plan
+==================================================
+Feature: TEST-006
+Type: single
+
+Estimated Timeline: 1 days
+==================================================
+
+stdout | src/commands/context.smoke.test.ts > ContextCommand - HODGE-313 Session-Based Mode Detection > [smoke] should detect build mode correctly for session feature
+📚 Loading Hodge Context
+
+
+stdout | src/commands/context.smoke.test.ts > ContextCommand - HODGE-313 Session-Based Mode Detection > [smoke] should detect build mode correctly for session feature
+✓ Generated fresh HODGE.md
+
+stdout | src/commands/context.smoke.test.ts > ContextCommand - HODGE-313 Session-Based Mode Detection > [smoke] should detect build mode correctly for session feature
+
+Recent Saved Sessions:
+1. auto-HODGE-313-2025-10-02T05-24-55 (17 hours ago)
+   Feature: HODGE-313, Mode: ship
+2. auto-HODGE-312-2025-10-01T03-51-46 (1 day ago)
+   Feature: HODGE-312, Mode: ship
+3. auto-HODGE-312-2025-10-01T04-10-11 (1 day ago)
+   Feature: HODGE-312, Mode: ship
+4. auto-HODGE-311-2025-10-01T01-27-46 (1 day ago)
+   Feature: HODGE-311, Mode: ship
+5. auto-HODGE-310-2025-10-01T01-06-00 (1 day ago)
+   Feature: HODGE-310, Mode: ship
+
+To load a save: hodge context --recent
+To list all saves: hodge context --list
+
+Context loaded. Ready to work!
+
+ ✓ src/commands/context.smoke.test.ts (8 tests) 2898ms
+   ✓ ContextCommand - HODGE-297 Enhanced Loading > [smoke] should execute context command without crashing  1043ms
+   ✓ ContextCommand - HODGE-313 Session-Based Mode Detection > [smoke] should use session feature for mode detection when session exists  596ms
+   ✓ ContextCommand - HODGE-313 Session-Based Mode Detection > [smoke] should fall back to general when no session exists  448ms
+   ✓ ContextCommand - HODGE-313 Session-Based Mode Detection > [smoke] should detect build mode correctly for session feature  592ms
+- Detecting project configuration...
+✔ Project detection complete
+- Creating Hodge structure...
+✔ Hodge structure created successfully
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should save and load a session successfully
+📝 Creating full save...
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should save and load a session successfully
+✓ Save complete in 28ms
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should save and load a session successfully
+✓ Session saved successfully
+  Name: integration-test-save
+  Location: /var/folders/_g/gy5jp17j06s7b882m93tlk140000gn/T/hodge-integration-test-aa0169d3ca761a24/.hodge/saves/integration-test-save
+  Time: 28ms
+  Type: Full save
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should save and load a session successfully
+📂 Loading session...
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should save and load a session successfully
+✓ Manifest loaded in 0ms
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should save and load a session successfully
+✓ Session loaded successfully (1ms)
+
+Session Overview:
+  Feature: TEST-INTEGRATION
+  Phase: build
+  Last Action: test
+  Duration: 0 minutes
+
+Current State:
+  Test Status: unknown
+  Completed Tasks: 0
+  Pending Tasks: 0
+  Modified Files: 0
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should save and load a session successfully
+
+Quick Actions:
+  • Continue building: /build TEST-INTEGRATION
+  • Run tests: npm test
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should handle minimal saves efficiently
+📝 Creating minimal save (manifest only)...
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should handle minimal saves efficiently
+✓ Minimal save complete in 32ms
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should handle minimal saves efficiently
+✓ Session saved successfully
+  Name: minimal-integration-test
+  Location: /var/folders/_g/gy5jp17j06s7b882m93tlk140000gn/T/hodge-integration-test-56aa1ff2a1ec3700/.hodge/saves/minimal-integration-test
+  Time: 33ms
+  Type: Minimal (manifest only)
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should list saves correctly
+📝 Creating full save...
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should list saves correctly
+✓ Save complete in 19ms
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should list saves correctly
+✓ Session saved successfully
+  Name: list-test-1
+  Location: /var/folders/_g/gy5jp17j06s7b882m93tlk140000gn/T/hodge-integration-test-e4b935f205813dd2/.hodge/saves/list-test-1
+  Time: 19ms
+  Type: Full save
+
+stdout | src/commands/plan.test.ts > PlanCommand - Smoke Tests > [smoke] should accept --create-pm flag without crashing
+✓ Created PM issue: f5e2be48-1cd3-4d7e-b63c-11ddd34c225b
+
+stdout | src/commands/plan.test.ts > PlanCommand - Smoke Tests > [smoke] should accept --create-pm flag without crashing
+
+✓ Plan created for TEST-006
+
+Next Steps:
+  Start building: hodge build TEST-006
+
+stdout | src/commands/plan.test.ts > PlanCommand - AI-Generated Plan Detection > [smoke] should detect and use AI-generated plan file
+📋 Planning Work Structure
+
+stdout | src/commands/plan.test.ts > PlanCommand - AI-Generated Plan Detection > [smoke] should detect and use AI-generated plan file
+✓ Using AI-generated plan from slash command
+
+stdout | src/commands/plan.test.ts > PlanCommand - AI-Generated Plan Detection > [smoke] should detect and use AI-generated plan file
+
+📋 Development Plan
+==================================================
+Feature: TEST-AI-001
+Type: single
+
+Estimated Timeline: 1 days
+==================================================
+
+stdout | src/commands/plan.test.ts > PlanCommand - AI-Generated Plan Detection > [smoke] should detect and use AI-generated plan file
+
+💾 Plan saved locally. Use --create-pm to create PM issues in Linear.
+
+✓ Plan created for TEST-AI-001
+
+Next Steps:
+  Start building: hodge build TEST-AI-001
+
+stdout | src/commands/plan.test.ts > PlanCommand - AI-Generated Plan Detection > [smoke] should use AI-generated epic plan with stories
+📋 Planning Work Structure
+
+stdout | src/commands/plan.test.ts > PlanCommand - AI-Generated Plan Detection > [smoke] should use AI-generated epic plan with stories
+✓ Using AI-generated plan from slash command
+
+stdout | src/commands/plan.test.ts > PlanCommand - AI-Generated Plan Detection > [smoke] should use AI-generated epic plan with stories
+
+📋 Development Plan
+==================================================
+Feature: TEST-AI-002
+Type: epic
+
+Stories (2):
+  TEST-AI-002.1: Fix template check logic (Lane 1)
+  TEST-AI-002.2: Add smoke tests [depends on: TEST-AI-002.1] (Lane 1)
+
+Lane Allocation (1 lanes):
+  Lane 1: TEST-AI-002.1, TEST-AI-002.2
+
+Estimated Timeline: 2 days
+==================================================
+
+stdout | src/commands/plan.test.ts > PlanCommand - AI-Generated Plan Detection > [smoke] should use AI-generated epic plan with stories
+
+💾 Plan saved locally. Use --create-pm to create PM issues in Linear.
+
+✓ Plan created for TEST-AI-002
+
+Next Steps:
+  Start with: hodge build TEST-AI-002.1
+
+stdout | src/commands/plan.test.ts > PlanCommand - AI-Generated Plan Detection > [smoke] should fall back to keyword matching if AI plan file is invalid JSON
+📋 Planning Work Structure
+
+stdout | src/commands/plan.test.ts > PlanCommand - AI-Generated Plan Detection > [smoke] should fall back to keyword matching if AI plan file is invalid JSON
+⚠️  AI plan file exists but is invalid, falling back to keyword matching
+ℹ️  No AI plan found, using keyword matching (legacy behavior)
+
+stdout | src/commands/plan.test.ts > PlanCommand - AI-Generated Plan Detection > [smoke] should fall back to keyword matching if AI plan file is invalid JSON
+
+📋 Development Plan
+==================================================
+Feature: TEST-AI-003
+Type: single
+
+Estimated Timeline: 1 days
+==================================================
+
+stdout | src/commands/plan.test.ts > PlanCommand - AI-Generated Plan Detection > [smoke] should fall back to keyword matching if AI plan file is invalid JSON
+
+💾 Plan saved locally. Use --create-pm to create PM issues in Linear.
+
+✓ Plan created for TEST-AI-003
+
+Next Steps:
+  Start building: hodge build TEST-AI-003
+
+stdout | src/commands/plan.test.ts > PlanCommand - AI-Generated Plan Detection > [smoke] should use keyword matching if no AI plan file exists
+📋 Planning Work Structure
+
+stdout | src/commands/plan.test.ts > PlanCommand - AI-Generated Plan Detection > [smoke] should use keyword matching if no AI plan file exists
+ℹ️  No AI plan found, using keyword matching (legacy behavior)
+
+stdout | src/commands/plan.test.ts > PlanCommand - AI-Generated Plan Detection > [smoke] should use keyword matching if no AI plan file exists
+
+📋 Development Plan
+==================================================
+Feature: TEST-AI-004
+Type: epic
+
+Stories (1):
+  TEST-AI-004.1: Database schema and migrations (Lane 1)
+
+Lane Allocation (1 lanes):
+  Lane 1: TEST-AI-004.1
+
+Estimated Timeline: 2 days
+==================================================
+
+stdout | src/commands/plan.test.ts > PlanCommand - AI-Generated Plan Detection > [smoke] should use keyword matching if no AI plan file exists
+
+💾 Plan saved locally. Use --create-pm to create PM issues in Linear.
+
+✓ Plan created for TEST-AI-004
+
+Next Steps:
+  Start with: hodge build TEST-AI-004.1
+
+ ✓ src/commands/plan.test.ts (12 tests) 1524ms
+   ✓ PlanCommand - Smoke Tests > [smoke] should accept --create-pm flag without crashing  1370ms
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should list saves correctly
+📝 Creating full save...
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should list saves correctly
+✓ Save complete in 52ms
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should list saves correctly
+✓ Session saved successfully
+  Name: list-test-2
+  Location: /var/folders/_g/gy5jp17j06s7b882m93tlk140000gn/T/hodge-integration-test-e4b935f205813dd2/.hodge/saves/list-test-2
+  Time: 52ms
+  Type: Full save
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should list saves correctly
+📝 Creating minimal save (manifest only)...
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should list saves correctly
+✓ Minimal save complete in 36ms
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should list saves correctly
+✓ Session saved successfully
+  Name: list-test-3
+  Location: /var/folders/_g/gy5jp17j06s7b882m93tlk140000gn/T/hodge-integration-test-e4b935f205813dd2/.hodge/saves/list-test-3
+  Time: 37ms
+  Type: Minimal (manifest only)
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should load most recent save automatically
+📝 Creating full save...
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should load most recent save automatically
+✓ Save complete in 37ms
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should load most recent save automatically
+✓ Session saved successfully
+  Name: old-save
+  Location: /var/folders/_g/gy5jp17j06s7b882m93tlk140000gn/T/hodge-integration-test-e3ab4651d5bb0b47/.hodge/saves/old-save
+  Time: 37ms
+  Type: Full save
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should load most recent save automatically
+📝 Creating full save...
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should load most recent save automatically
+✓ Save complete in 48ms
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should load most recent save automatically
+✓ Session saved successfully
+  Name: recent-save
+  Location: /var/folders/_g/gy5jp17j06s7b882m93tlk140000gn/T/hodge-integration-test-e3ab4651d5bb0b47/.hodge/saves/recent-save
+  Time: 48ms
+  Type: Full save
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should load most recent save automatically
+Loading most recent save: recent-save
+📂 Loading session...
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should load most recent save automatically
+✓ Manifest loaded in 3ms
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should load most recent save automatically
+✓ Session loaded successfully (3ms)
+
+Session Overview:
+  Feature: TEST-INTEGRATION
+  Phase: build
+  Last Action: save old-save
+  Duration: 0 minutes
+
+Current State:
+  Test Status: unknown
+  Completed Tasks: 0
+  Pending Tasks: 0
+  Modified Files: 0
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should load most recent save automatically
+
+Quick Actions:
+  • Continue building: /build TEST-INTEGRATION
+  • Run tests: npm test
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should preserve session metadata through save/load cycle
+📝 Creating full save...
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should preserve session metadata through save/load cycle
+✓ Save complete in 43ms
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should preserve session metadata through save/load cycle
+✓ Session saved successfully
+  Name: metadata-test-save
+  Location: /var/folders/_g/gy5jp17j06s7b882m93tlk140000gn/T/hodge-integration-test-8a45c83514210934/.hodge/saves/metadata-test-save
+  Time: 43ms
+  Type: Full save
+
+ ✓ src/commands/explore-timing-fix.integration.test.ts (2 tests) 4417ms
+   ✓ [integration] Explore Command Timing Fix > [integration] explore command completes within reasonable time  1144ms
+   ✓ [integration] Explore Command Timing Fix > [integration] multiple explores complete within time limit  3272ms
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should preserve session metadata through save/load cycle
+📂 Loading session...
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should preserve session metadata through save/load cycle
+✓ Manifest loaded in 0ms
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should preserve session metadata through save/load cycle
+✓ Session loaded successfully (0ms)
+
+Session Overview:
+  Feature: METADATA-TEST
+  Phase: harden
+  Last Action: test-command
+  Duration: 0 minutes
+
+Current State:
+  Test Status: unknown
+  Completed Tasks: 0
+  Pending Tasks: 0
+  Modified Files: 0
+
+stdout | src/commands/save-load.integration.test.ts > Save/Load Commands [integration] > should preserve session metadata through save/load cycle
+
+Quick Actions:
+  • Continue hardening: /harden METADATA-TEST
+  • Run integration tests: npm run test:integration
+
+ ✓ src/commands/save-load.integration.test.ts (5 tests) 1051ms
+   ✓ Save/Load Commands [integration] > should list saves correctly  312ms
+   ✓ Save/Load Commands [integration] > should load most recent save automatically  338ms
+stdout | src/lib/pm/local-pm-adapter-unified.smoke.test.ts > LocalPMAdapter Unified Architecture Smoke Tests > [smoke] should preserve special init method
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/local-pm-adapter-unified.smoke.test.ts > LocalPMAdapter Unified Architecture Smoke Tests > [smoke] should preserve updateFeatureStatus method
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/local-pm-adapter-unified.smoke.test.ts > LocalPMAdapter Unified Architecture Smoke Tests > [smoke] should preserve updateFeatureStatus method
+✓ Updated TEST-001 status to: building
+
+stdout | src/lib/pm/local-pm-adapter-unified.smoke.test.ts > LocalPMAdapter Unified Architecture Smoke Tests > [smoke] should preserve addFeature method
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/local-pm-adapter-unified.smoke.test.ts > LocalPMAdapter Unified Architecture Smoke Tests > [smoke] should preserve addFeature method
+✓ Added TEST-002 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.smoke.test.ts > LocalPMAdapter Unified Architecture Smoke Tests > [smoke] should map feature to issue through getIssue
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/local-pm-adapter-unified.smoke.test.ts > LocalPMAdapter Unified Architecture Smoke Tests > [smoke] should map feature to issue through getIssue
+✓ Added TEST-003 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.smoke.test.ts > LocalPMAdapter Unified Architecture Smoke Tests > [smoke] should update feature through updateIssueState
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/local-pm-adapter-unified.smoke.test.ts > LocalPMAdapter Unified Architecture Smoke Tests > [smoke] should update feature through updateIssueState
+✓ Added TEST-004 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.smoke.test.ts > LocalPMAdapter Unified Architecture Smoke Tests > [smoke] should update feature through updateIssueState
+✓ Updated TEST-004 status to: building
+
+stdout | src/lib/pm/local-pm-adapter-unified.smoke.test.ts > LocalPMAdapter Unified Architecture Smoke Tests > [smoke] should search features through searchIssues
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/local-pm-adapter-unified.smoke.test.ts > LocalPMAdapter Unified Architecture Smoke Tests > [smoke] should search features through searchIssues
+✓ Added TEST-005 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.smoke.test.ts > LocalPMAdapter Unified Architecture Smoke Tests > [smoke] should search features through searchIssues
+✓ Added TEST-006 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should work as a drop-in replacement for BasePMAdapter
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should work as a drop-in replacement for BasePMAdapter
+✓ Added UNIFIED-001 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.smoke.test.ts > LocalPMAdapter Unified Architecture Smoke Tests > [smoke] should create feature through createIssue
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/local-pm-adapter-unified.smoke.test.ts > LocalPMAdapter Unified Architecture Smoke Tests > [smoke] should create feature through createIssue
+✓ Added TEST-007 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should work as a drop-in replacement for BasePMAdapter
+✓ Updated UNIFIED-001 status to: building
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should work as a drop-in replacement for BasePMAdapter
+✓ Updated UNIFIED-001 status to: hardening
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should work as a drop-in replacement for BasePMAdapter
+✓ Updated UNIFIED-001 status to: shipped
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should maintain backward compatibility with special methods
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/local-pm-adapter-unified.smoke.test.ts > LocalPMAdapter Unified Architecture Smoke Tests > [smoke] should be compatible with BasePMAdapter interface
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/local-pm-adapter-unified.smoke.test.ts > LocalPMAdapter Unified Architecture Smoke Tests > [smoke] should be compatible with BasePMAdapter interface
+✓ Added TEST-008 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should maintain backward compatibility with special methods
+✓ Added COMPAT-001 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should maintain backward compatibility with special methods
+✓ Updated COMPAT-001 status to: building
+
+stdout | src/lib/pm/local-pm-adapter-unified.smoke.test.ts > LocalPMAdapter Unified Architecture Smoke Tests > [smoke] should be compatible with BasePMAdapter interface
+✓ Updated TEST-008 status to: shipped
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should maintain backward compatibility with special methods
+✓ Updated project plan phase progress
+
+(node:81834) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ src/test/ship-lessons.smoke.test.ts (5 tests) 224ms
+stdout | src/lib/pm/local-pm-adapter-unified.smoke.test.ts > LocalPMAdapter Unified Architecture Smoke Tests > [smoke] should handle file operations with serialization
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/local-pm-adapter-unified.smoke.test.ts > LocalPMAdapter Unified Architecture Smoke Tests > [smoke] should handle file operations with serialization
+✓ Added TEST-009 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.smoke.test.ts > LocalPMAdapter Unified Architecture Smoke Tests > [smoke] should handle file operations with serialization
+✓ Added TEST-010 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.smoke.test.ts > LocalPMAdapter Unified Architecture Smoke Tests > [smoke] should handle file operations with serialization
+✓ Updated TEST-009 status to: building
+
+stdout | src/lib/pm/local-pm-adapter-unified.smoke.test.ts > LocalPMAdapter Unified Architecture Smoke Tests > [smoke] should handle file operations with serialization
+✓ Updated TEST-010 status to: hardening
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should handle search through unified interface
+ℹ️  Created project_management.md with project plan
+
+ ✓ src/lib/pm/local-pm-adapter-unified.smoke.test.ts (12 tests) 695ms
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should handle search through unified interface
+✓ Added SEARCH-001 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should handle search through unified interface
+✓ Added SEARCH-002 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should handle search through unified interface
+✓ Added SEARCH-003 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should handle search through unified interface
+✓ Added SEARCH-004 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should properly serialize concurrent operations
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should properly serialize concurrent operations
+✓ Added CONCURRENT-001 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should properly serialize concurrent operations
+✓ Added CONCURRENT-002 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should properly serialize concurrent operations
+✓ Added CONCURRENT-003 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should properly serialize concurrent operations
+✓ Added CONCURRENT-004 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should properly serialize concurrent operations
+✓ Added CONCURRENT-005 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should properly serialize concurrent operations
+✓ Added CONCURRENT-006 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should properly serialize concurrent operations
+✓ Added CONCURRENT-007 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should properly serialize concurrent operations
+✓ Added CONCURRENT-008 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should properly serialize concurrent operations
+✓ Added CONCURRENT-009 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should properly serialize concurrent operations
+✓ Added CONCURRENT-010 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should properly serialize concurrent operations
+✓ Updated CONCURRENT-001 status to: hardening
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should properly serialize concurrent operations
+✓ Updated CONCURRENT-002 status to: building
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should properly serialize concurrent operations
+✓ Updated CONCURRENT-003 status to: hardening
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should properly serialize concurrent operations
+✓ Updated CONCURRENT-004 status to: building
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should properly serialize concurrent operations
+✓ Updated CONCURRENT-005 status to: hardening
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should properly serialize concurrent operations
+✓ Updated CONCURRENT-006 status to: building
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should properly serialize concurrent operations
+✓ Updated CONCURRENT-007 status to: hardening
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should properly serialize concurrent operations
+✓ Updated CONCURRENT-008 status to: building
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should properly serialize concurrent operations
+✓ Updated CONCURRENT-009 status to: hardening
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should properly serialize concurrent operations
+✓ Updated CONCURRENT-010 status to: building
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should handle state transitions correctly
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should handle state transitions correctly
+✓ Added TRANSITION-001 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should handle state transitions correctly
+✓ Updated TRANSITION-001 status to: building
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should handle state transitions correctly
+✓ Updated TRANSITION-001 status to: hardening
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should handle state transitions correctly
+✓ Updated TRANSITION-001 status to: shipped
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should provide proper issue URLs
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should provide proper issue URLs
+✓ Added URL-001 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should provide proper issue URLs
+✓ Updated URL-001 status to: shipped
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should handle missing features gracefully
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/local-pm-adapter-unified.integration.test.ts > LocalPMAdapter Unified Architecture Integration Tests > [integration] should handle missing features gracefully
+✓ Updated NONEXISTENT-002 status to: building
+
+ ✓ src/lib/pm/local-pm-adapter-unified.integration.test.ts (7 tests) 483ms
+ ✓ src/commands/ship.smoke.test.ts (5 tests) 5358ms
+   ✓ Ship Command - Smoke Tests > [smoke] should not crash when executed without state  1040ms
+   ✓ Ship Command - Smoke Tests > [smoke] should detect and use pre-approved message from state  1214ms
+   ✓ Ship Command - Smoke Tests > [smoke] should be completely non-interactive  1419ms
+   ✓ Ship Command - Smoke Tests > [smoke] should handle corrupted state files gracefully  1373ms
+   ✓ Ship Command - Smoke Tests > [smoke] should be non-interactive by default (no prompts allowed)  312ms
+stdout | src/commands/status.smoke.test.ts > StatusCommand - Non-Interactive Smoke Tests > [smoke] should not crash when showing overall status
+📂 Showing status for HODGE-312 from session
+
+📊 Status for feature: HODGE-312
+
+
+stdout | src/commands/status.smoke.test.ts > StatusCommand - Non-Interactive Smoke Tests > [smoke] should not crash when showing overall status
+Progress:
+  ✓ Exploration
+  ✓ Decision
+  ✓ Build
+  ✓ Harden
+  ○ Production Ready
+  ✓ Shipped
+
+PM Integration:
+  Issue: HODGE-312
+  Tool: linear
+
+Next Step:
+  Fix validation issues and run:
+  hodge harden HODGE-312
+
+ ✓ src/test/commonjs-compatibility.integration.test.ts (3 tests) 5430ms
+   ✓ CommonJS Compatibility [integration] > should execute full hodge workflow without CommonJS warnings  2935ms
+   ✓ CommonJS Compatibility [integration] > should handle all primary commands without warnings  2417ms
+stdout | src/commands/status.smoke.test.ts > StatusCommand - Non-Interactive Smoke Tests > [smoke] should not crash when showing feature status
+📊 Status for feature: TEST-001
+
+⚠️  No work found for this feature.
+   Start with: hodge explore TEST-001
+
+stdout | src/commands/status.smoke.test.ts > StatusCommand - Non-Interactive Smoke Tests > [smoke] should not update HODGE.md file
+📂 Showing status for HODGE-312 from session
+
+📊 Status for feature: HODGE-312
+
+
+stdout | src/commands/status.smoke.test.ts > StatusCommand - Non-Interactive Smoke Tests > [smoke] should not update HODGE.md file
+Progress:
+  ✓ Exploration
+  ✓ Decision
+  ✓ Build
+  ✓ Harden
+  ○ Production Ready
+  ✓ Shipped
+
+PM Integration:
+  Issue: HODGE-312
+  Tool: linear
+
+Next Step:
+  Fix validation issues and run:
+  hodge harden HODGE-312
+
+(node:82005) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+stdout | src/commands/status.smoke.test.ts > StatusCommand - Non-Interactive Smoke Tests > [smoke] should handle session without prompting
+📂 Showing status for HODGE-312 from session
+
+📊 Status for feature: HODGE-312
+
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should create PM tracking on explore
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should create PM tracking on explore
+✓ Added TEST-FEATURE to project management tracking
+
+stdout | src/commands/status.smoke.test.ts > StatusCommand - Non-Interactive Smoke Tests > [smoke] should handle session without prompting
+Progress:
+  ✓ Exploration
+  ✓ Decision
+  ✓ Build
+  ✓ Harden
+  ○ Production Ready
+  ✓ Shipped
+
+PM Integration:
+  Issue: HODGE-312
+  Tool: linear
+
+Next Step:
+  Fix validation issues and run:
+  hodge harden HODGE-312
+
+ ✓ src/lib/id-manager.test.ts (27 tests) 412ms
+stdout | src/commands/status.smoke.test.ts > StatusCommand - Non-Interactive Smoke Tests > [smoke] should detect decision.md at feature root (not in explore/)
+📊 Status for feature: TEST-002
+
+⚠️  No work found for this feature.
+   Start with: hodge explore TEST-002
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should update status through workflow phases
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should update status through workflow phases
+✓ Added WORKFLOW-TEST to project management tracking
+
+stdout | src/commands/status.smoke.test.ts > StatusCommand - Non-Interactive Smoke Tests > [smoke] should detect shipped status when ship-record.json exists
+📊 Status for feature: TEST-003
+
+⚠️  No work found for this feature.
+   Start with: hodge explore TEST-003
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should update status through workflow phases
+✓ Updated WORKFLOW-TEST status to: building
+
+ ✓ src/commands/status.smoke.test.ts (6 tests) 496ms
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should update status through workflow phases
+✓ Updated WORKFLOW-TEST status to: hardening
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should update status through workflow phases
+✓ Updated WORKFLOW-TEST status to: shipped
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should update status through workflow phases
+✓ Updated project plan phase progress
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should update status through workflow phases
+✓ Updated project management tracking
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should maintain project plan structure
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should maintain project plan structure
+✓ Added PLAN-TEST-1 to project management tracking
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should maintain project plan structure
+✓ Updated PLAN-TEST-1 status to: building
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should maintain project plan structure
+✓ Added PLAN-TEST-2 to project management tracking
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should maintain project plan structure
+✓ Updated PLAN-TEST-2 status to: shipped
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should handle HODGE-006 specifically
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should handle HODGE-006 specifically
+✓ Added HODGE-006 to project management tracking
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should handle HODGE-006 specifically
+✓ Updated HODGE-006 status to: building
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should handle HODGE-006 specifically
+✓ Updated HODGE-006 status to: shipped
+
+ ✓ src/commands/ship-commit-messages.integration.test.ts (4 tests) 617ms
+   ✓ Ship Commit Message Workflow [integration] > should not regenerate ui.md when state is edited  311ms
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should preserve existing PM content
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should preserve existing PM content
+✓ Added EXISTING-1 to project management tracking
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should preserve existing PM content
+✓ Added EXISTING-2 to project management tracking
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should preserve existing PM content
+✓ Added NEW-FEATURE to project management tracking
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should handle concurrent updates gracefully
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should handle concurrent updates gracefully
+✓ Added CONCURRENT-1 to project management tracking
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should handle concurrent updates gracefully
+✓ Added CONCURRENT-2 to project management tracking
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should handle concurrent updates gracefully
+✓ Added CONCURRENT-3 to project management tracking
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should track feature history correctly
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should track feature history correctly
+✓ Added HISTORY-TEST to project management tracking
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should track feature history correctly
+✓ Updated HISTORY-TEST status to: building
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should track feature history correctly
+✓ Updated HISTORY-TEST status to: hardening
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should track feature history correctly
+✓ Updated HISTORY-TEST status to: shipped
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should track feature history correctly
+✓ Updated project plan phase progress
+
+stdout | src/lib/pm/integration.test.ts > PM Integration Tests > [integration] should track feature history correctly
+✓ Updated project management tracking
+
+ ✓ src/lib/pm/integration.test.ts (7 tests) 687ms
+ ✓ src/commands/ship.integration.test.ts (5 tests) 6489ms
+   ✓ Ship Command - Integration Tests > [integration] should complete full ship workflow with pre-approved message  1129ms
+   ✓ Ship Command - Integration Tests > [integration] should fallback to default message when no state exists  1619ms
+   ✓ Ship Command - Integration Tests > [integration] should handle corrupted state gracefully and fallback  1192ms
+   ✓ Ship Command - Integration Tests > [integration] should create ship record and release notes  1104ms
+   ✓ Ship Command - Integration Tests > [integration] should skip push to protected branch without prompting  1441ms
+stdout | src/lib/__tests__/auto-save.test.ts > AutoSave > Behavioral Tests > [unit] should create auto-save when switching features
+✓ Save complete in 81ms
+
+ ✓ src/test/commonjs-compatibility.smoke.test.ts (3 tests) 769ms
+   ✓ CommonJS Compatibility [smoke] > should import inquirer without warnings in CommonJS  570ms
+stdout | src/lib/__tests__/auto-save.test.ts > AutoSave > Behavioral Tests > [unit] should create auto-save when switching features
+📦 Auto-saved: old-feature → /var/folders/_g/gy5jp17j06s7b882m93tlk140000gn/T/hodge-test-1759385257707-333cb24b/.hodge/saves/auto-old-feature-2025-10-02T06-07-37 (86ms)
+
+stdout | src/lib/__tests__/auto-save.test.ts > AutoSave > Behavioral Tests > [unit] should preserve context in auto-save
+✓ Save complete in 64ms
+
+stdout | src/lib/__tests__/auto-save.test.ts > AutoSave > Behavioral Tests > [unit] should preserve context in auto-save
+📦 Auto-saved: old-feature → /var/folders/_g/gy5jp17j06s7b882m93tlk140000gn/T/hodge-test-1759385257803-c27aa53f/.hodge/saves/auto-old-feature-2025-10-02T06-07-37 (64ms)
+
+stdout | src/lib/__tests__/auto-save.test.ts > AutoSave > Behavioral Tests > [unit] should use auto- prefix for save names
+✓ Save complete in 53ms
+
+stdout | src/lib/__tests__/auto-save.test.ts > AutoSave > Behavioral Tests > [unit] should use auto- prefix for save names
+📦 Auto-saved: test-feature → /var/folders/_g/gy5jp17j06s7b882m93tlk140000gn/T/hodge-test-1759385257869-91857d75/.hodge/saves/auto-test-feature-2025-10-02T06-07-37 (53ms)
+
+stderr | src/lib/__tests__/auto-save.test.ts > AutoSave > Error Handling > [integration] should continue even if save fails
+Auto-save failed for old-feature: EACCES: permission denied, mkdir '/var/folders/_g/gy5jp17j06s7b882m93tlk140000gn/T/hodge-test-1759385257937-5a54a389/.hodge/saves/auto-old-feature-2025-10-02T06-07-37'
+
+ ✓ src/lib/__tests__/auto-save.test.ts (10 tests) 291ms
+(node:82076) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+stdout | test/pm-integration.smoke.test.ts > [smoke] DecideCommand should record decisions without PM integration
+📝 Recording Decision
+
+stdout | test/pm-integration.smoke.test.ts > [smoke] DecideCommand should record decisions without PM integration
+
+════════════════════════════════════════════════════════════
+DECISION RECORDED:
+════════════════════════════════════════════════════════════
+Decision: Implement as a single story
+Date: 2025-10-02 11:07:38 PM
+Feature: HODGE-301
+
+This decision is now part of the project context and should be
+considered in all future implementations.
+════════════════════════════════════════════════════════════
+
+✓ Decision recorded successfully
+  Location: /var/folders/_g/gy5jp17j06s7b882m93tlk140000gn/T/hodge-test-1759385258145-brqdll/.hodge/features/HODGE-301/decisions.md
+  Feature: HODGE-301
+
+stdout | test/pm-integration.smoke.test.ts > [smoke] DecideCommand should record decisions without PM integration
+  Total decisions: 1
+
+ ✓ src/test/standards-enforcement.integration.test.ts (2 tests) 107ms
+ ✓ test/pm-integration.smoke.test.ts (13 tests) 136ms
+(node:82136) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ src/commands/ship-clean-tree.integration.test.ts (4 tests) 197ms
+(node:82127) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ src/test/documentation-hierarchy.integration.test.ts (2 tests) 193ms
+ ✓ src/lib/install-hodge-way.test.ts (6 tests) 135ms
+stdout | src/lib/pm/pm-hooks-integration.test.ts > PM Hooks Integration > [smoke] PM hooks should handle missing configuration gracefully
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/pm-hooks-integration.test.ts > PM Hooks Integration > [smoke] PM hooks should handle missing configuration gracefully
+✓ Added test-feature to project management tracking
+
+stdout | src/lib/pm/pm-hooks-integration.test.ts > PM Hooks Integration > [smoke] PM hooks should handle missing configuration gracefully
+✓ Updated test-feature status to: building
+
+stdout | src/lib/pm/pm-hooks-integration.test.ts > PM Hooks Integration > [smoke] PM hooks should handle missing configuration gracefully
+✓ Updated test-feature status to: shipped
+
+stdout | src/lib/pm/pm-hooks-integration.test.ts > PM Hooks Integration > [smoke] PM hooks should handle missing configuration gracefully
+✓ Updated project plan phase progress
+
+stdout | src/lib/pm/pm-hooks-integration.test.ts > PM Hooks Integration > [smoke] PM hooks should handle missing configuration gracefully
+✓ Updated project management tracking
+
+ ✓ src/lib/pm/pm-hooks-integration.test.ts (6 tests) 381ms
+(node:82200) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ src/lib/metadata-clarity.smoke.test.ts (5 tests) 301ms
+ ✓ src/commands/ship-clean-tree.smoke.test.ts (3 tests) 303ms
+stdout | src/lib/__tests__/feature-spec-loader.test.ts > [unit] FeatureSpecLoader > loadSpec > should load a valid YAML spec
+✓ Loaded feature spec from /var/folders/_g/gy5jp17j06s7b882m93tlk140000gn/T/hodge-test-sxevdg/test-spec.yaml
+
+stdout | src/lib/__tests__/feature-spec-loader.test.ts > [unit] FeatureSpecLoader > loadSpec > should handle spec with minimal required fields
+✓ Loaded feature spec from /var/folders/_g/gy5jp17j06s7b882m93tlk140000gn/T/hodge-test-gz0iln/minimal-spec.yaml
+
+ ✓ src/lib/__tests__/feature-spec-loader.test.ts (15 tests) 217ms
+(node:82203) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should properly integrate with configuration loading
+ℹ️  Created project_management.md with project plan
+
+(node:82207) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should properly integrate with configuration loading
+✓ Added TEST-001 to project management tracking
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should properly integrate with configuration loading
+✓ Updated TEST-001 status to: building
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should properly integrate with configuration loading
+✓ Updated TEST-001 status to: hardening
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should properly integrate with configuration loading
+✓ Updated TEST-001 status to: shipped
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should properly integrate with configuration loading
+✓ Updated project plan phase progress
+
+stdout | test/pm-integration.integration.test.ts > [integration] PM integration: decide command creates issues after decisions
+📝 Recording Decision
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should properly integrate with configuration loading
+✓ Updated project management tracking
+
+stdout | src/commands/decide.smoke.test.ts > Decide Command --feature Flag (HODGE-313) > [smoke] Feature decision writes ONLY to feature decisions.md (not global)
+📝 Recording Decision
+
+stdout | src/commands/decide.smoke.test.ts > Decide Command --feature Flag (HODGE-313) > [smoke] Feature decision writes ONLY to feature decisions.md (not global)
+
+════════════════════════════════════════════════════════════
+DECISION RECORDED:
+════════════════════════════════════════════════════════════
+Decision: Test feature decision
+Date: 2025-10-02 11:07:39 PM
+Feature: TEST-001
+
+This decision is now part of the project context and should be
+considered in all future implementations.
+════════════════════════════════════════════════════════════
+
+✓ Decision recorded successfully
+  Location: /var/folders/_g/gy5jp17j06s7b882m93tlk140000gn/T/hodge-test-1759385259226/.hodge/features/TEST-001/decisions.md
+  Feature: TEST-001
+
+stdout | src/commands/decide.smoke.test.ts > Decide Command --feature Flag (HODGE-313) > [smoke] Feature decision writes ONLY to feature decisions.md (not global)
+  Total decisions: 1
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should track features through entire workflow
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should track features through entire workflow
+✓ Added WORKFLOW-TEST to project management tracking
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should track features through entire workflow
+✓ Updated WORKFLOW-TEST status to: building
+
+stdout | src/commands/decide.smoke.test.ts > Decide Command --feature Flag (HODGE-313) > [smoke] Global decision writes ONLY to global decisions.md (not feature)
+📝 Recording Decision
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should track features through entire workflow
+✓ Updated WORKFLOW-TEST status to: hardening
+
+stdout | src/commands/decide.smoke.test.ts > Decide Command --feature Flag (HODGE-313) > [smoke] Global decision writes ONLY to global decisions.md (not feature)
+
+════════════════════════════════════════════════════════════
+DECISION RECORDED:
+════════════════════════════════════════════════════════════
+Decision: Test global decision
+Date: 2025-10-02 11:07:39 PM
+
+This decision is now part of the project context and should be
+considered in all future implementations.
+════════════════════════════════════════════════════════════
+
+✓ Decision recorded successfully
+  Location: /var/folders/_g/gy5jp17j06s7b882m93tlk140000gn/T/hodge-test-1759385259259/.hodge/decisions.md
+  Total decisions: 1
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should track features through entire workflow
+✓ Updated WORKFLOW-TEST status to: shipped
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should track features through entire workflow
+✓ Updated project plan phase progress
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should track features through entire workflow
+✓ Updated project management tracking
+
+stdout | src/commands/decide.smoke.test.ts > Decide Command --feature Flag (HODGE-313) > [smoke] Multiple feature decisions accumulate in decisions.md
+📝 Recording Decision
+
+stdout | src/commands/decide.smoke.test.ts > Decide Command --feature Flag (HODGE-313) > [smoke] Multiple feature decisions accumulate in decisions.md
+
+════════════════════════════════════════════════════════════
+DECISION RECORDED:
+════════════════════════════════════════════════════════════
+Decision: First decision
+Date: 2025-10-02 11:07:39 PM
+Feature: TEST-002
+
+This decision is now part of the project context and should be
+considered in all future implementations.
+════════════════════════════════════════════════════════════
+
+✓ Decision recorded successfully
+  Location: /var/folders/_g/gy5jp17j06s7b882m93tlk140000gn/T/hodge-test-1759385259265/.hodge/features/TEST-002/decisions.md
+  Feature: TEST-002
+
+stdout | src/commands/decide.smoke.test.ts > Decide Command --feature Flag (HODGE-313) > [smoke] Multiple feature decisions accumulate in decisions.md
+  Total decisions: 1
+
+stdout | src/commands/decide.smoke.test.ts > Decide Command --feature Flag (HODGE-313) > [smoke] Multiple feature decisions accumulate in decisions.md
+📝 Recording Decision
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should handle concurrent feature updates
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should handle concurrent feature updates
+✓ Added CONCURRENT-1 to project management tracking
+
+stdout | src/commands/decide.smoke.test.ts > Decide Command --feature Flag (HODGE-313) > [smoke] Multiple feature decisions accumulate in decisions.md
+
+════════════════════════════════════════════════════════════
+DECISION RECORDED:
+════════════════════════════════════════════════════════════
+Decision: Second decision
+Date: 2025-10-02 11:07:39 PM
+Feature: TEST-002
+
+This decision is now part of the project context and should be
+considered in all future implementations.
+════════════════════════════════════════════════════════════
+
+✓ Decision recorded successfully
+  Location: /var/folders/_g/gy5jp17j06s7b882m93tlk140000gn/T/hodge-test-1759385259265/.hodge/features/TEST-002/decisions.md
+  Feature: TEST-002
+
+stdout | src/commands/decide.smoke.test.ts > Decide Command --feature Flag (HODGE-313) > [smoke] Multiple feature decisions accumulate in decisions.md
+  Total decisions: 2
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should handle concurrent feature updates
+✓ Added CONCURRENT-2 to project management tracking
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should handle concurrent feature updates
+✓ Added CONCURRENT-3 to project management tracking
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should handle concurrent feature updates
+✓ Updated CONCURRENT-1 status to: building
+
+stdout | src/commands/decide.smoke.test.ts > Decide Command --feature Flag (HODGE-313) > [smoke] Error when feature directory does not exist
+📝 Recording Decision
+
+✗ Error: Feature directory does not exist
+  Expected: /var/folders/_g/gy5jp17j06s7b882m93tlk140000gn/T/hodge-test-1759385259272/.hodge/features/NONEXISTENT
+
+  Please run /explore first to create the feature structure.
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should handle concurrent feature updates
+✓ Updated CONCURRENT-2 status to: hardening
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should handle concurrent feature updates
+✓ Updated CONCURRENT-3 status to: shipped
+
+stdout | src/commands/decide.smoke.test.ts > Decide Command --feature Flag (HODGE-313) > [smoke] Feature decisions file uses correct template format
+📝 Recording Decision
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should handle concurrent feature updates
+✓ Updated project plan phase progress
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should handle concurrent feature updates
+✓ Updated project management tracking
+
+stdout | src/commands/decide.smoke.test.ts > Decide Command --feature Flag (HODGE-313) > [smoke] Feature decisions file uses correct template format
+
+════════════════════════════════════════════════════════════
+DECISION RECORDED:
+════════════════════════════════════════════════════════════
+Decision: Template test decision
+Date: 2025-10-02 11:07:39 PM
+Feature: TEST-003
+
+This decision is now part of the project context and should be
+considered in all future implementations.
+════════════════════════════════════════════════════════════
+
+✓ Decision recorded successfully
+  Location: /var/folders/_g/gy5jp17j06s7b882m93tlk140000gn/T/hodge-test-1759385259275/.hodge/features/TEST-003/decisions.md
+  Feature: TEST-003
+
+stdout | src/commands/decide.smoke.test.ts > Decide Command --feature Flag (HODGE-313) > [smoke] Feature decisions file uses correct template format
+  Total decisions: 1
+
+stdout | test/pm-integration.integration.test.ts > [integration] PM integration: decide command creates issues after decisions
+
+════════════════════════════════════════════════════════════
+DECISION RECORDED:
+════════════════════════════════════════════════════════════
+Decision: Create epic for authentication
+Date: 2025-10-02 11:07:39 PM
+Feature: TEST-001
+
+This decision is now part of the project context and should be
+considered in all future implementations.
+════════════════════════════════════════════════════════════
+
+✓ Decision recorded successfully
+  Location: /var/folders/_g/gy5jp17j06s7b882m93tlk140000gn/T/hodge-test-1759385259236/.hodge/features/TEST-001/decisions.md
+  Feature: TEST-001
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should silently handle external PM failures
+ℹ️  Created project_management.md with project plan
+
+ ✓ src/commands/decide.smoke.test.ts (5 tests) 55ms
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should silently handle external PM failures
+✓ Added PM-TEST to project management tracking
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should silently handle external PM failures
+📋 Updating linear issue: PM-TEST
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should silently handle external PM failures
+   ℹ️ Could not update linear issue (non-blocking)
+
+stdout | test/pm-integration.integration.test.ts > [integration] PM integration: decide command creates issues after decisions
+  Total decisions: 1
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should silently handle external PM failures
+✓ Updated PM-TEST status to: building
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should silently handle external PM failures
+📋 Updating linear issue: PM-TEST
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should silently handle external PM failures
+   ℹ️ Could not update linear issue (non-blocking)
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should respect custom status mappings
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/pm-hooks.integration.test.ts > PMHooks Integration Tests > [integration] should respect custom status mappings
+✓ Added CUSTOM-STATUS to project management tracking
+
+ ✓ src/lib/pm/pm-hooks.integration.test.ts (5 tests) 92ms
+stdout | test/pm-integration.integration.test.ts > [integration] PM integration: plan command analyzes decisions
+📋 Planning Work Structure
+
+stdout | test/pm-integration.integration.test.ts > [integration] PM integration: plan command analyzes decisions
+ℹ️  No AI plan found, using keyword matching (legacy behavior)
+
+stdout | test/pm-integration.integration.test.ts > [integration] PM integration: plan command analyzes decisions
+
+📋 Development Plan
+==================================================
+Feature: FEAT-001
+Type: epic
+
+Stories (1):
+  FEAT-001.1: Frontend components (Lane 1)
+
+Lane Allocation (1 lanes):
+  Lane 1: FEAT-001.1
+
+Estimated Timeline: 2 days
+==================================================
+
+stdout | test/pm-integration.integration.test.ts > [integration] PM integration: plan command analyzes decisions
+
+💾 Plan saved locally. Use --create-pm to create PM issues in Linear.
+
+✓ Plan created for FEAT-001
+
+Next Steps:
+  Start with: hodge build FEAT-001.1
+
+ ✓ test/pm-integration.integration.test.ts (6 tests) 130ms
+(node:82258) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ scripts/create-test-workspace.test.ts (34 tests | 3 skipped) 85ms
+stdout | src/test/pm-hooks.smoke.test.ts > [smoke] PMHooks should initialize without crashing
+ℹ️  Created project_management.md with project plan
+
+stdout | src/test/pm-hooks.smoke.test.ts > [smoke] PMHooks should handle missing configuration gracefully
+ℹ️  Created project_management.md with project plan
+
+stdout | src/test/pm-hooks.smoke.test.ts > [smoke] PMHooks should handle missing configuration gracefully
+✓ Added TEST-001 to project management tracking
+
+stdout | src/test/pm-hooks.smoke.test.ts > [smoke] PMHooks should handle missing configuration gracefully
+✓ Updated TEST-001 status to: building
+
+stdout | src/test/pm-hooks.smoke.test.ts > [smoke] PMHooks should handle missing configuration gracefully
+✓ Updated TEST-001 status to: hardening
+
+stdout | src/test/pm-hooks.smoke.test.ts > [smoke] PMHooks should handle missing configuration gracefully
+✓ Updated TEST-001 status to: shipped
+
+stdout | src/test/pm-hooks.smoke.test.ts > [smoke] PMHooks should handle missing configuration gracefully
+✓ Updated project plan phase progress
+
+stdout | src/test/pm-hooks.smoke.test.ts > [smoke] PMHooks should handle missing configuration gracefully
+✓ Updated project management tracking
+
+stdout | src/lib/pm/local-pm-adapter.test.ts > LocalPMAdapter > [smoke] should not crash on init
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/local-pm-adapter.test.ts > LocalPMAdapter > [smoke] should create project_management.md on init
+ℹ️  Created project_management.md with project plan
+
+stdout | src/test/pm-hooks.smoke.test.ts > [smoke] PMHooks should update local PM tracking
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/local-pm-adapter.test.ts > LocalPMAdapter > [smoke] should include project plan in template
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/local-pm-adapter.test.ts > LocalPMAdapter > [smoke] should add new feature to tracking
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/local-pm-adapter.test.ts > LocalPMAdapter > [smoke] should add new feature to tracking
+✓ Added TEST-001 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter.test.ts > LocalPMAdapter > [smoke] should update feature status
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/local-pm-adapter.test.ts > LocalPMAdapter > [smoke] should update feature status
+✓ Added TEST-002 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter.test.ts > LocalPMAdapter > [smoke] should update feature status
+✓ Updated TEST-002 status to: building
+
+stdout | src/lib/pm/local-pm-adapter.test.ts > LocalPMAdapter > [smoke] should mark feature complete in project plan
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/local-pm-adapter.test.ts > LocalPMAdapter > [smoke] should mark feature complete in project plan
+✓ Added HODGE-006 to project management tracking
+
+stdout | src/test/pm-hooks.smoke.test.ts > [smoke] PMHooks should update local PM tracking
+✓ Added TEST-002 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter.test.ts > LocalPMAdapter > [smoke] should mark feature complete in project plan
+✓ Updated HODGE-006 status to: shipped
+
+stdout | src/lib/pm/local-pm-adapter.test.ts > LocalPMAdapter > [smoke] should handle in-progress status in project plan
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/local-pm-adapter.test.ts > LocalPMAdapter > [smoke] should handle in-progress status in project plan
+✓ Added HODGE-006 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter.test.ts > LocalPMAdapter > [smoke] should handle in-progress status in project plan
+✓ Updated HODGE-006 status to: building
+
+stdout | src/lib/pm/local-pm-adapter.test.ts > LocalPMAdapter > [smoke] should preserve project plan structure
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/local-pm-adapter.test.ts > LocalPMAdapter > [smoke] should preserve project plan structure
+✓ Added TEST-003 to project management tracking
+
+stdout | src/test/pm-hooks.smoke.test.ts > [smoke] LocalPMAdapter should track feature status changes
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/local-pm-adapter.test.ts > LocalPMAdapter > [smoke] should preserve project plan structure
+✓ Updated TEST-003 status to: building
+
+stdout | src/test/pm-hooks.smoke.test.ts > [smoke] LocalPMAdapter should track feature status changes
+✓ Added TEST-003 to project management tracking
+
+stdout | src/test/pm-hooks.smoke.test.ts > [smoke] LocalPMAdapter should track feature status changes
+✓ Updated TEST-003 status to: building
+
+stdout | src/lib/pm/local-pm-adapter.test.ts > LocalPMAdapter > [smoke] should not duplicate features
+ℹ️  Created project_management.md with project plan
+
+stdout | src/test/pm-hooks.smoke.test.ts > [smoke] PMHooks should load configuration from hodge.json
+ℹ️  Created project_management.md with project plan
+
+stdout | src/lib/pm/local-pm-adapter.test.ts > LocalPMAdapter > [smoke] should not duplicate features
+✓ Added TEST-004 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter.test.ts > LocalPMAdapter > [smoke] should not duplicate features
+⚠️  Feature TEST-004 already exists
+
+stdout | src/test/pm-hooks.smoke.test.ts > [smoke] PMHooks should load configuration from hodge.json
+✓ Added TEST-004 to project management tracking
+
+stdout | src/lib/pm/local-pm-adapter.test.ts > LocalPMAdapter > [smoke] should move feature to completed on ship
+ℹ️  Created project_management.md with project plan
+
+ ✓ src/test/pm-hooks.smoke.test.ts (5 tests) 271ms
+stdout | src/lib/pm/local-pm-adapter.test.ts > LocalPMAdapter > [smoke] should move feature to completed on ship
+✓ Added TEST-005 to project management tracking
+
+ ✓ src/lib/config-manager.integration.test.ts (6 tests) 31ms
+stdout | src/lib/pm/local-pm-adapter.test.ts > LocalPMAdapter > [smoke] should move feature to completed on ship
+✓ Updated TEST-005 status to: shipped
+
+ ✓ src/lib/pm/local-pm-adapter.test.ts (10 tests) 73ms
+ ✓ src/lib/logger.smoke.test.ts (9 tests) 241ms
+ ✓ scripts/sync-claude-commands.test.ts (6 tests) 8623ms
+   ✓ sync-claude-commands > [smoke] should generate valid TypeScript  1338ms
+   ✓ sync-claude-commands > [smoke] should generate properly formatted code  1959ms
+   ✓ sync-claude-commands > [smoke] should complete within reasonable time  911ms
+   ✓ sync-claude-commands > [smoke] should preserve command content  738ms
+   ✓ sync-claude-commands > [smoke] should generate consistent output across runs  2142ms
+   ✓ sync-claude-commands > [smoke] should handle prettier formatting gracefully  1534ms
+(node:82266) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:82306) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ src/commands/plan.smoke.test.ts (5 tests) 139ms
+ ✓ src/lib/cache-manager.test.ts (28 tests) 104ms
+ ✓ src/lib/pm/github-adapter.smoke.test.ts (4 tests) 64ms
+stderr | src/lib/__tests__/context-manager.test.ts > [smoke] ContextManager > should handle corrupted context gracefully
+Warning: Failed to load context.json: SyntaxError: Expected property name or '}' in JSON at position 2 (line 1 column 3)
+    at JSON.parse (<anonymous>)
+    at ContextManager.load [90m(/Users/michaelkelly/Projects/hodge/[39msrc/lib/context-manager.ts:59:19[90m)[39m
+    at [90m/Users/michaelkelly/Projects/hodge/[39msrc/lib/__tests__/context-manager.test.ts:76:21
+    at [90mfile:///Users/michaelkelly/Projects/hodge/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:752:20
+
+ ✓ src/lib/__tests__/context-manager.test.ts (9 tests) 27ms
+ ✓ src/lib/config-defaults.smoke.test.ts (5 tests) 261ms
+ ✓ scripts/cross-platform.test.ts (25 tests) 80ms
+(node:82312) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ src/lib/claude-commands.smoke.test.ts (8 tests) 42ms
+stderr | src/lib/detection.test.ts > ProjectDetector > project name detection > should handle package.json read errors gracefully
+Warning: Failed to read package.json: Malformed JSON
+
+stderr | src/lib/detection.test.ts > ProjectDetector > project name detection > should handle package.json read errors gracefully
+Warning: Failed to read package.json for test framework detection: Malformed JSON
+
+stderr | src/lib/detection.test.ts > ProjectDetector > project type detection > should detect Node.js project from package.json
+Warning: Failed to read package.json: Cannot read properties of undefined (reading 'name')
+
+stderr | src/lib/detection.test.ts > ProjectDetector > project type detection > should detect Node.js project from package.json
+Warning: Failed to read package.json for test framework detection: Cannot read properties of undefined (reading 'dependencies')
+
+stderr | src/lib/detection.test.ts > ProjectDetector > test framework detection > should handle malformed package.json gracefully
+Warning: Failed to read package.json: Invalid JSON
+
+stderr | src/lib/detection.test.ts > ProjectDetector > test framework detection > should handle malformed package.json gracefully
+Warning: Failed to read package.json for test framework detection: Invalid JSON
+
+ ✓ src/commands/ship-lessons.test.ts (5 tests) 129ms
+ ✓ src/lib/detection.test.ts (37 tests) 35ms
+ ✓ src/lib/config-cleanup.smoke.test.ts (5 tests) 157ms
+ ✓ src/commands/load.test.ts (4 tests) 45ms
+- Detecting project configuration...
+✔ Project detection complete
+- Creating Hodge structure...
+✔ Hodge structure created successfully
+- Detecting project configuration...
+✔ Project detection complete
+- Creating Hodge structure...
+stdout | src/commands/init.test.ts > InitCommand Integration Tests > successful initialization scenarios > should initialize Python project successfully
+\n📋 Detected Configuration:
+   Name: project
+   Type: python
+   PM Tool: linear
+   Git: Yes
+
+
+✔ Hodge structure created successfully
+stdout | src/commands/init.test.ts > InitCommand Integration Tests > successful initialization scenarios > should initialize Python project successfully
+✅ Hodge initialization completed successfully
+
+🎉 Hodge initialized successfully!
+
+📁 Created structure:
+   .hodge/
+   ├── config.json     # Project configuration
+   ├── standards.md    # Development standards
+   ├── decisions.md    # Architecture decisions
+   ├── patterns/       # Extracted patterns
+   └── features/       # Feature development
+
+💡 Tip: Run `claude project init` to set up Claude Code for this project
+
+🔧 PM Integration (linear):
+   ✓ Automatic status updates on workflow progression
+   ✓ Local tracking in .hodge/project_management.md
+   Configure in hodge.json for custom workflow mappings
+\n💡 Tip: Use --interactive for full setup with PM tool selection and pattern learning
+
+🚀 Next steps:
+   hodge explore <feature>  # Start exploring a new feature
+   hodge status              # Check current status
+
+
+- Detecting project configuration...
+✔ Project detection complete
+- Creating Hodge structure...
+✔ Hodge structure created successfully
+stdout | src/commands/init.test.ts > InitCommand Integration Tests > successful initialization scenarios > should handle unknown project type gracefully
+\n📋 Detected Configuration:
+   Name: project
+   Type: unknown
+   PM Tool: linear
+   Git: Yes
+
+
+stdout | src/commands/init.test.ts > InitCommand Integration Tests > successful initialization scenarios > should handle unknown project type gracefully
+✅ Hodge initialization completed successfully
+
+🎉 Hodge initialized successfully!
+
+📁 Created structure:
+   .hodge/
+   ├── config.json     # Project configuration
+   ├── standards.md    # Development standards
+   ├── decisions.md    # Architecture decisions
+   ├── patterns/       # Extracted patterns
+   └── features/       # Feature development
+
+💡 Tip: Run `claude project init` to set up Claude Code for this project
+
+🔧 PM Integration (linear):
+   ✓ Automatic status updates on workflow progression
+   ✓ Local tracking in .hodge/project_management.md
+   Configure in hodge.json for custom workflow mappings
+\n💡 Tip: Use --interactive for full setup with PM tool selection and pattern learning
+
+🚀 Next steps:
+   hodge explore <feature>  # Start exploring a new feature
+   hodge status              # Check current status
+
+
+- Detecting project configuration...
+✔ Project detection complete
+- Creating Hodge structure...
+✔ Hodge structure created successfully
+stdout | src/commands/init.test.ts > InitCommand Integration Tests > successful initialization scenarios > should skip questions with --yes flag
+\n📋 Detected Configuration:
+   Name: project
+   Type: unknown
+   PM Tool: linear
+   Git: Yes
+
+Using all defaults (--yes flag)
+
+stdout | src/commands/init.test.ts > InitCommand Integration Tests > successful initialization scenarios > should skip questions with --yes flag
+✅ Hodge initialization completed successfully
+
+🎉 Hodge initialized successfully!
+
+📁 Created structure:
+   .hodge/
+   ├── config.json     # Project configuration
+   ├── standards.md    # Development standards
+   ├── decisions.md    # Architecture decisions
+   ├── patterns/       # Extracted patterns
+   └── features/       # Feature development
+
+💡 Tip: Run `claude project init` to set up Claude Code for this project
+
+🔧 PM Integration (linear):
+   ✓ Automatic status updates on workflow progression
+   ✓ Local tracking in .hodge/project_management.md
+   Configure in hodge.json for custom workflow mappings
+\n💡 Tip: Use --interactive for full setup with PM tool selection and pattern learning
+
+🚀 Next steps:
+   hodge explore <feature>  # Start exploring a new feature
+   hodge status              # Check current status
+
+
+ ✓ src/commands/init.test.ts (5 tests) 19ms
+ ✓ src/lib/session-manager.test.ts (11 tests) 149ms
+ ✓ src/lib/config-manager.smoke.test.ts (10 tests) 14ms
+ ✓ src/lib/hodge-md-generator.test.ts (12 tests) 28ms
+ ✓ src/lib/pm/env-validator.test.ts (13 tests) 11ms
+ ✓ src/commands/save.test.ts (4 tests) 14ms
+(node:82379) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+stderr | src/lib/pattern-learner.test.ts > PatternLearner > analyzeShippedCode > should handle file read errors gracefully
+Failed to analyze src/error-file.ts: Error: File read error
+    at [90m/Users/michaelkelly/Projects/hodge/[39msrc/lib/pattern-learner.test.ts:108:38
+    at [90mfile:///Users/michaelkelly/Projects/hodge/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:155:11
+    at [90mfile:///Users/michaelkelly/Projects/hodge/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:752:26
+    at [90mfile:///Users/michaelkelly/Projects/hodge/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///Users/michaelkelly/Projects/hodge/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1863:10[90m)[39m
+    at runTest [90m(file:///Users/michaelkelly/Projects/hodge/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1574:12[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at runSuite [90m(file:///Users/michaelkelly/Projects/hodge/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1729:8[90m)[39m
+    at runSuite [90m(file:///Users/michaelkelly/Projects/hodge/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1729:8[90m)[39m
+
+ ✓ src/lib/pattern-learner.test.ts (14 tests) 79ms
+ ✓ src/commands/ship-commit-messages.smoke.test.ts (5 tests) 76ms
+ ✓ src/test/context-aware-commands.test.ts (8 tests) 56ms
+ ✓ src/lib/structure-generator.test.ts (27 tests) 63ms
+ ✓ src/lib/pm/index.test.ts (10 tests) 17ms
+ ✓ src/lib/pm/base-adapter.test.ts (16 tests) 24ms
+(node:82397) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ src/commands/explore.hodge053.test.ts (11 tests) 5ms
+ ✓ src/test/explore-no-approach-generation.smoke.test.ts (5 tests) 3ms
+ ✓ src/lib/pm/pm-adapter.test.ts (14 tests) 8ms
+ ✓ src/test/standards-enforcement.smoke.test.ts (7 tests) 4ms
+ ✓ test/commands/hodge-context-loading.test.ts (4 tests) 48ms
+ ✓ test/pre-push-hook.test.ts (10 tests) 4ms
+ ✓ src/lib/standards-validator.test.ts (7 tests) 2ms
+ ✓ src/test/decide-command.smoke.test.ts (6 tests) 2ms
+ ✓ src/test/documentation-hierarchy.smoke.test.ts (4 tests) 4ms
+ ✓ src/commands/save-load.basic.integration.test.ts (5 tests) 3ms
+ ✓ src/commands/explore-enhanced-simple.test.ts (2 tests) 2ms
+ ✓ src/test/test-isolation.smoke.test.ts (3 tests) 3ms
+(node:82450) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ src/lib/pm/linear-adapter.smoke.test.ts (6 tests) 6ms
+ ↓ scripts/npm-link-integration.test.ts (17 tests | 17 skipped)
+ ↓ src/lib/save-performance.test.ts (5 tests | 5 skipped)
+(node:82490) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ↓ src/commands/build.test.ts (7 tests | 7 skipped)
+(node:82489) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ↓ src/commands/explore.test.ts (6 tests | 6 skipped)
+(node:82497) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ↓ src/commands/harden.test.ts (5 tests | 5 skipped)
+ ✓ src/commands/explore.new-style.test.ts (12 tests) 13702ms
+   ✓ ExploreCommand > Smoke Tests > [smoke] should not crash with valid input  1153ms
+   ✓ ExploreCommand > Smoke Tests > [smoke] should complete quickly  1647ms
+   ✓ ExploreCommand > Integration Tests > [integration] should create exploration structure  1289ms
+   ✓ ExploreCommand > Integration Tests > [integration] should detect existing exploration  3203ms
+   ✓ ExploreCommand > Integration Tests > [integration] should create test intentions file  2259ms
+   ✓ ExploreCommand > Integration Tests > [integration] should integrate with PM tools when configured  1445ms
+   ✓ ExploreCommand > Acceptance Tests > [acceptance] should support complete exploration workflow  1849ms
+   ✓ ExploreCommand > ExploreCommand (Real FS) > [integration] should work with real file system  678ms
+ ✓ src/test/test-isolation.integration.test.ts (4 tests) 17423ms
+   ✓ [integration] Test Isolation > [integration] should handle parallel test execution without conflicts  6709ms
+   ✓ [integration] Test Isolation > [integration] should maintain complete isolation between test runs  6137ms
+   ✓ [integration] Test Isolation > [integration] should prevent test data from leaking into project  4443ms
+
+ Test Files  73 passed | 5 skipped (78)
+      Tests  640 passed | 43 skipped (683)
+   Start at  23:07:30
+   Duration  18.40s (transform 1.82s, setup 0ms, collect 12.28s, tests 77.19s, environment 13ms, prepare 10.58s)
+
 
 ```
 
@@ -56,7 +1864,8 @@ Command failed: npm test 2>&1
 
 /Users/michaelkelly/Projects/hodge/src/commands/decide.ts
    14:30  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
-  156:57  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  185:68  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  192:59  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
 
 /Users/michaelkelly/Projects/hodge/src/commands/explore.ts
    77:32  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
@@ -284,9 +2093,9 @@ Command failed: npm test 2>&1
   364:50  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
   409:54  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
   507:11  warning  Prefer using an optional chain expression instead, as it's more concise and easier to read                 @typescript-eslint/prefer-optional-chain
-  513:11  warning  Prefer using an optional chain expression instead, as it's more concise and easier to read                 @typescript-eslint/prefer-optional-chain
-  572:52  warning  Unnecessary conditional, both sides of the expression are literal values                                   @typescript-eslint/no-unnecessary-condition
-  576:32  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  515:11  warning  Prefer using an optional chain expression instead, as it's more concise and easier to read                 @typescript-eslint/prefer-optional-chain
+  574:52  warning  Unnecessary conditional, both sides of the expression are literal values                                   @typescript-eslint/no-unnecessary-condition
+  578:32  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
 
 /Users/michaelkelly/Projects/hodge/src/lib/save-manager.ts
    86:22  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
@@ -366,7 +2175,7 @@ Command failed: npm test 2>&1
   236:47  warning  Unsafe argument of type `any` assigned to a parameter of type `number | undefined`                                                                                     @typescript-eslint/no-unsafe-argument
   236:53  warning  Unsafe argument of type `any` assigned to a parameter of type `number | undefined`                                                                                     @typescript-eslint/no-unsafe-argument
 
-✖ 255 problems (0 errors, 255 warnings)
+✖ 256 problems (0 errors, 256 warnings)
 
 
 ```

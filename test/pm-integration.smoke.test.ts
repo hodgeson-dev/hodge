@@ -167,9 +167,17 @@ smokeTest('DecideCommand should record decisions without PM integration', async 
   const hodgeDir = path.join(testDir, '.hodge');
   await fs.mkdir(hodgeDir, { recursive: true });
 
+  // Create feature directory (required for --feature flag validation)
+  const featureDir = path.join(hodgeDir, 'features', 'HODGE-301');
+  await fs.mkdir(featureDir, { recursive: true });
+
   await decideCommand.execute('Implement as a single story', { feature: 'HODGE-301' });
 
-  const decisions = await fs.readFile(path.join(hodgeDir, 'decisions.md'), 'utf-8');
+  // With --feature flag, decision should be in feature-specific file
+  const decisions = await fs.readFile(
+    path.join(hodgeDir, 'features', 'HODGE-301', 'decisions.md'),
+    'utf-8'
+  );
   expect(decisions).toContain('Implement as a single story');
   expect(decisions).toContain('HODGE-301');
 

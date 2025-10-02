@@ -1,7 +1,7 @@
 # Build Plan: HODGE-313
 
 ## Feature Overview
-No PM issue linked
+**PM Issue**: HODGE-313 (linear)
 **Status**: In Progress
 
 ## Implementation Checklist

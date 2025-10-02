@@ -37,6 +37,10 @@ Implement feature with epic structure
 
   await fs.writeFile(path.join(hodgeDir, 'decisions.md'), decisionsContent);
 
+  // Create feature directory (required for --feature flag validation)
+  const featureDir = path.join(hodgeDir, 'features', 'TEST-001');
+  await fs.mkdir(featureDir, { recursive: true });
+
   // Create decide command instance with test directory
   const decideCommand = new DecideCommand(testDir);
 
@@ -48,8 +52,11 @@ Implement feature with epic structure
     // Execute decision recording
     await decideCommand.execute('Create epic for authentication', { feature: 'TEST-001' });
 
-    // Verify decision was recorded
-    const updatedDecisions = await fs.readFile(path.join(hodgeDir, 'decisions.md'), 'utf-8');
+    // Verify decision was recorded in feature-specific file
+    const updatedDecisions = await fs.readFile(
+      path.join(hodgeDir, 'features', 'TEST-001', 'decisions.md'),
+      'utf-8'
+    );
     expect(updatedDecisions).toContain('Create epic for authentication');
     expect(updatedDecisions).toContain('TEST-001');
   } finally {

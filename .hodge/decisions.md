@@ -26,6 +26,82 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-10-02 - Error if --feature directory doesn't exist - provides clear feedback to user, prevents typos in feature names, encourages proper workflow (run /explore before /decide), aligns with discipline principle
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-313
+
+**Decision**:
+Error if --feature directory doesn't exist - provides clear feedback to user, prevents typos in feature names, encourages proper workflow (run /explore before /decide), aligns with discipline principle
+
+**Rationale**:
+Recorded via `hodge decide` command at 10:40:22 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-10-02 - No migration - leave existing decision
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-313
+
+**Decision**:
+No migration - leave existing decision.md files as-is - keeps implementation simple, no risk to existing data, new decisions will use correct decisions.md filename going forward, minor naming inconsistency in old features is acceptable for internal tool
+
+**Rationale**:
+Recorded via `hodge decide` command at 10:38:58 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-10-02 - Append decisions to accumulate in one file - multiple decisions for same feature build up in decisions
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-313
+
+**Decision**:
+Append decisions to accumulate in one file - multiple decisions for same feature build up in decisions.md providing complete decision history and making it easy to review evolution, matches global decisions.md behavior
+
+**Rationale**:
+Recorded via `hodge decide` command at 10:35:29 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
+### 2025-10-02 - Use same template format as global decisions
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-313
+
+**Decision**:
+Use same template format as global decisions.md for feature decisions.md - provides consistent mental model across all decision files, makes them easy to review and parse, future-proof for any tooling that processes decisions
+
+**Rationale**:
+Recorded via `hodge decide` command at 10:34:44 PM
+
+**Consequences**:
+To be determined based on implementation.
+
+---
+
+
 ### 2025-10-01 - Structure PM issue description with Problem Statement above Decisions Made - extract problem statement from exploration
 
 **Status**: Accepted

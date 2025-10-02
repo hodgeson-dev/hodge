@@ -2,21 +2,23 @@
 
 ## Status
 **Phase**: ship
-**Last Updated**: 2025-10-01T12:55:56.764Z
+**Last Updated**: 2025-10-02T06:16:16.407Z
 
 ## Exploration
 # Exploration: HODGE-313
 
-**Title**: Fix PM issue description extraction from decisions and exploration.md
+**Title**: Fix --feature flag to write ONLY to feature decisions.md (not global)
 
 ## Problem Statement
-When users execute `/build` after `/decide` without executing `/plan`, they're prompted to create a PM issue. However, the issue title is `"HODGE-XXX: No description available"` and there's no actual description text in the issue body, only a list of "Decisions Made".
+The `/decide` command's `--feature` flag has two bugs:
+1. It writes to `decision.md` (singular) instead of `decisions.md` (plural)
+2. It writes to BOTH `.hodge/decisions.md` AND `.hodge/features/XXX/decision.md`, but it should only write to the feature file when `--feature` is provided
 
 ## Root Cause Analysis
 
-The issue occurs in the `/build` workflow:
+In `src/commands/decide.ts`:
 
-1. **build.md template** (line 29...
+**Line 103**: Always writes t...
 
 ## Test Intentions
 # Test Intentions: HODGE-313
@@ -39,8 +41,8 @@ _None linked_
 
 ## Harden Results
 ## Validation Results
-**Date**: 10/1/2025, 5:53:29 AM
-**Overall Status**: ❌ FAILED
+**Date**: 10/1/2025, 11:07:51 PM
+**Overall Status**: ✅ PASSED
 
 
 

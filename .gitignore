@@ -52,3 +52,4 @@ Thumbs.db
 
 # Hodge local files
 .hodge/local/
+.claude/settings.local.json

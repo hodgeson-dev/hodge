@@ -100,33 +100,54 @@ To be determined based on implementation.
       content += newDecision;
     }
 
-    await fs.writeFile(decisionsFile, content);
+    // Write to global decisions file only if no feature specified
+    if (!options.feature) {
+      await fs.writeFile(decisionsFile, content);
+    }
 
-    // If feature is specified, also save to feature directory
+    // If feature is specified, write to feature directory only
     if (options.feature) {
-      const featureDecisionFile = path.join(
-        this.basePath,
-        '.hodge',
-        'features',
-        options.feature,
-        'decision.md'
-      );
-      if (existsSync(path.dirname(featureDecisionFile))) {
-        await fs.writeFile(
-          featureDecisionFile,
-          `# Decision for ${options.feature}
+      const featureDir = path.join(this.basePath, '.hodge', 'features', options.feature);
 
-**Date**: ${date}
-**Time**: ${timestamp}
-
-## Decision
-${decision}
-
-## Status
-This decision has been recorded in the main decisions file.
-`
-        );
+      // Validate that feature directory exists
+      if (!existsSync(featureDir)) {
+        console.log(chalk.red('\n✗ Error: Feature directory does not exist'));
+        console.log(chalk.gray(`  Expected: ${featureDir}`));
+        console.log(chalk.yellow('\n  Please run /explore first to create the feature structure.'));
+        throw new Error(`Feature directory not found: ${options.feature}`);
       }
+
+      const featureDecisionFile = path.join(featureDir, 'decisions.md');
+
+      // Read existing feature decisions or create template
+      let featureContent = '';
+      if (existsSync(featureDecisionFile)) {
+        featureContent = await fs.readFile(featureDecisionFile, 'utf-8');
+      } else {
+        featureContent = `# Feature Decisions: ${options.feature}
+
+This file tracks decisions specific to ${options.feature}.
+
+## Decisions
+
+<!-- Add your decisions below -->
+
+`;
+      }
+
+      // Append decision to feature file (same logic as global)
+      const insertPosition = featureContent.lastIndexOf('<!-- Add your decisions below -->');
+      if (insertPosition !== -1) {
+        featureContent =
+          featureContent.slice(0, insertPosition + '<!-- Add your decisions below -->'.length) +
+          '\n' +
+          newDecision +
+          featureContent.slice(insertPosition + '<!-- Add your decisions below -->'.length);
+      } else {
+        featureContent += newDecision;
+      }
+
+      await fs.writeFile(featureDecisionFile, featureContent);
     }
 
     // PM integration has moved to /plan command
@@ -147,13 +168,29 @@ This decision has been recorded in the main decisions file.
 
     // Success message
     console.log('\n' + chalk.green('✓ Decision recorded successfully'));
-    console.log(chalk.gray(`  Location: ${decisionsFile}`));
     if (options.feature) {
+      const featureDecisionFile = path.join(
+        this.basePath,
+        '.hodge',
+        'features',
+        options.feature,
+        'decisions.md'
+      );
+      console.log(chalk.gray(`  Location: ${featureDecisionFile}`));
       console.log(chalk.gray(`  Feature: ${options.feature}`));
-    }
 
-    // Show decision count
-    const allDecisions = content.match(/^### \d{4}-/gm) || [];
-    console.log(chalk.gray(`  Total decisions: ${allDecisions.length}`));
+      // Show decision count for feature file
+      if (existsSync(featureDecisionFile)) {
+        const featureContent = await fs.readFile(featureDecisionFile, 'utf-8');
+        const allDecisions = featureContent.match(/^### \d{4}-/gm) || [];
+        console.log(chalk.gray(`  Total decisions: ${allDecisions.length}`));
+      }
+    } else {
+      console.log(chalk.gray(`  Location: ${decisionsFile}`));
+
+      // Show decision count for global file
+      const allDecisions = content.match(/^### \d{4}-/gm) || [];
+      console.log(chalk.gray(`  Total decisions: ${allDecisions.length}`));
+    }
   }
 }

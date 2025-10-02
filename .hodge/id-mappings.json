@@ -1248,9 +1248,9 @@
   "TEST-006: Test PM creation": {
     "localID": "TEST-006: Test PM creation",
     "created": "2025-09-30T03:44:33.069Z",
-    "externalID": "c3be5ad2-cfa3-4281-94b5-da17c3cb2cb3",
+    "externalID": "ed5f5854-e512-4d19-9bce-0c8cdfb1450f",
     "pmTool": "linear",
-    "lastSynced": "2025-10-01T12:53:50.288Z"
+    "lastSynced": "2025-10-02T06:15:55.223Z"
   },
   "HODGE-301": {
     "localID": "HODGE-301",
@@ -1322,6 +1322,16 @@
     "localID": "HODGE-313: No description available",
     "created": "2025-10-01T04:10:07.659Z",
     "externalID": "18504bcf-cadf-41a4-8cdf-6488656c368d",
+    "pmTool": "linear"
+  },
+  "HODGE-313": {
+    "localID": "HODGE-313",
+    "created": "2025-10-02T05:24:55.596Z"
+  },
+  "HODGE-313: Fix --feature flag to write ONLY to feature decisions.md (not global)": {
+    "localID": "HODGE-313: Fix --feature flag to write ONLY to feature decisions.md (not global)",
+    "created": "2025-10-02T05:43:29.532Z",
+    "externalID": "e0ec2c6c-a64b-48c7-b410-310ff18e617e",
     "pmTool": "linear"
   }
 }

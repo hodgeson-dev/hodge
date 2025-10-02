@@ -1,10 +1,10 @@
 # Decision for HODGE-313
 
-**Date**: 2025-10-01
-**Time**: 5:44:12 AM
+**Date**: 2025-10-02
+**Time**: 10:40:22 PM
 
 ## Decision
-Structure PM issue description with Problem Statement above Decisions Made - extract problem statement from exploration.md and place before decisions list in formatDecisionsForPM() to provide context before implementation details
+Error if --feature directory doesn't exist - provides clear feedback to user, prevents typos in feature names, encourages proper workflow (run /explore before /decide), aligns with discipline principle
 
 ## Status
 This decision has been recorded in the main decisions file.

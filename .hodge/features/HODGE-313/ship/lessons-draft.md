@@ -1,15 +1,15 @@
 # Lessons Learned: HODGE-313
 
 ## Ship Date
-2025-10-01
+2025-10-02
 
 ## Objective Metrics
 - **Files Changed**: 0 (0 added, 0 modified, 0 deleted)
-- **Patterns Identified**: 2
+- **Patterns Identified**: 1
 - **Tests Status**: All passed ✅
 
 ## What Changed
-fix: enhance PM issue description extraction from exploration and decisions (HODGE-313)
+fix: correct --feature flag to write ONLY to feature decisions.md (HODGE-313)
 
 ### Files Modified
 
@@ -19,8 +19,7 @@ fix: enhance PM issue description extraction from exploration and decisions (HOD
 
 
 ## Patterns Applied
-- Error Boundary (20% confidence)
-- Input Validation (20% confidence)
+- Input Validation (40% confidence)
 
 ## Draft Status
 This is an objective draft created by the CLI. For meaningful insights and reflections, use the /ship slash command to enhance this with AI analysis.

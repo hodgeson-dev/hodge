@@ -6,9 +6,9 @@ This file provides AI assistants with context about the current Hodge workflow s
 **Feature**: HODGE-312
 **Mode**: shipped
 **PM Issue**: HODGE-312
-**Last Updated**: 2025-10-01T05:06:28.906Z
+**Last Updated**: 2025-10-02T05:20:55.744Z
 ## Current Session
-**Resumed**: 3 hours ago
+**Resumed**: 27 hours ago
 **Progress**: Explored HODGE-312 - template ready for AI approach generation
 **Working on**: HODGE-312 (explore mode)
 ## AI Context Restoration
@@ -16,6 +16,12 @@ You were helping with HODGE-312. Explored HODGE-312 - template ready for AI appr
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
+- **2025-10-01**: Structure PM issue description with Problem Statement above Decisions Made - extract problem statement from exploration
+- **2025-10-01**: Make Title field required for new explorations only - /explore template must generate Title field, existing features without Title continue using fallback patterns, no validation failure just ensures AI generates it for new explorations
+- **2025-10-01**: AI-generated title field in exploration
+- **2025-10-01**: Use 'No description available' fallback only when genuinely no content exists - no exploration
+- **2025-10-01**: Fix exploration
+- **2025-10-01**: Smart Description Extraction approach - enhance getFeatureDescription() to extract from decisions automatically when exploration
 - **2025-10-01**: No backward compatibility concerns - This is a bug fix not a feature change, no evidence of dependencies on incorrect behavior, proceed with fix directly
 - **2025-10-01**: Update /hodge template with clarification - Add note in
 - **2025-10-01**: Skip --project flag for now - Don't add hodge context --project flag in this fix, keeps scope minimal and focused on bug fix, can add later if users request it
@@ -30,12 +36,6 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - **2025-10-01**: Use ship/ship-record
 - **2025-10-01**: Keep shipped features visible in HODGE
 - **2025-10-01**: Next steps for shipped features: 'Feature completed
-- **2025-10-01**: Use 'shipped' as mode name for completed features - matches existing phase terminology and natural past tense of ship phase
-- **2025-09-30**: Skip backward compatibility audit - only build
-- **2025-09-30**: Document PM mapping check pattern in
-- **2025-09-30**: Add smoke test for bash command logic to verify grep pattern correctly identifies externalID presence/absence - tests command syntax in isolation, provides regression protection for template changes
-- **2025-09-30**: Use enhanced grep pattern for PM check: grep -A 2 "{{feature}}" | grep externalID - maintains template-only approach from HODGE-306, one-line fix in build
-- **2025-09-30**: Move test file now during build phase to establish correct pattern immediately and prevent proliferation
 
 ## Active Standards
 

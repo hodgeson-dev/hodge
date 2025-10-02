@@ -100,35 +100,39 @@ describe('[integration] Test Isolation', () => {
     }
   });
 
-  integrationTest('should maintain complete isolation between test runs', async () => {
-    // Run the same test multiple times and verify each run is isolated
-    const testFile = 'src/lib/session-manager.test.ts';
-    const runs = 3;
+  integrationTest(
+    'should maintain complete isolation between test runs',
+    async () => {
+      // Run the same test multiple times and verify each run is isolated
+      const testFile = 'src/lib/session-manager.test.ts';
+      const runs = 3;
 
-    for (let i = 0; i < runs; i++) {
-      // Get initial state of .hodge/saves
-      const beforeSaves = existsSync('.hodge/saves')
-        ? execSync('ls -1 .hodge/saves 2>/dev/null | wc -l', { encoding: 'utf8' }).trim()
-        : '0';
+      for (let i = 0; i < runs; i++) {
+        // Get initial state of .hodge/saves
+        const beforeSaves = existsSync('.hodge/saves')
+          ? execSync('ls -1 .hodge/saves 2>/dev/null | wc -l', { encoding: 'utf8' }).trim()
+          : '0';
 
-      // Run test
-      try {
-        execSync(`npx vitest run ${testFile}`, {
-          stdio: 'pipe',
-          env: { ...process.env, NODE_ENV: 'test' },
-        });
-      } catch {
-        // Ignore test failures, we're checking isolation
+        // Run test
+        try {
+          execSync(`npx vitest run ${testFile}`, {
+            stdio: 'pipe',
+            env: { ...process.env, NODE_ENV: 'test' },
+          });
+        } catch {
+          // Ignore test failures, we're checking isolation
+        }
+
+        // Verify saves count hasn't changed
+        const afterSaves = existsSync('.hodge/saves')
+          ? execSync('ls -1 .hodge/saves 2>/dev/null | wc -l', { encoding: 'utf8' }).trim()
+          : '0';
+
+        expect(afterSaves).toBe(beforeSaves);
       }
-
-      // Verify saves count hasn't changed
-      const afterSaves = existsSync('.hodge/saves')
-        ? execSync('ls -1 .hodge/saves 2>/dev/null | wc -l', { encoding: 'utf8' }).trim()
-        : '0';
-
-      expect(afterSaves).toBe(beforeSaves);
-    }
-  });
+    },
+    10000 // Increase timeout to 10s for this slow test
+  );
 
   integrationTest('should prevent test data from leaking into project', async () => {
     // Create a marker file in project's .hodge to detect modifications
