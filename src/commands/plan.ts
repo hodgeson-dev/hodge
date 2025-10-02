@@ -115,16 +115,167 @@ export class PlanCommand {
     return null;
   }
 
+  /**
+   * Analyzes decisions using cascading file check strategy:
+   * 1. Feature-specific decisions.md
+   * 2. exploration.md (Recommendation + Decisions Needed)
+   * 3. Global decisions.md (fallback)
+   */
   private async analyzeDecisions(feature: string): Promise<string[]> {
+    // Strategy 1: Check feature-specific decisions.md
+    const featureDecisions = await this.checkFeatureDecisions(feature);
+    if (featureDecisions.length > 0) {
+      return featureDecisions;
+    }
+
+    // Strategy 2: Extract from exploration.md
+    const explorationDecisions = await this.extractFromExploration(feature);
+    if (explorationDecisions.length > 0) {
+      return explorationDecisions;
+    }
+
+    // Strategy 3: Fall back to global decisions.md
+    return this.checkGlobalDecisions(feature);
+  }
+
+  /**
+   * Check for decisions in feature-specific decisions.md file
+   */
+  private async checkFeatureDecisions(feature: string): Promise<string[]> {
+    const featureDecisionsFile = path.join(
+      this.basePath,
+      '.hodge',
+      'features',
+      feature,
+      'decisions.md'
+    );
+
+    if (!existsSync(featureDecisionsFile)) {
+      return [];
+    }
+
+    const content = await fs.readFile(featureDecisionsFile, 'utf-8');
+    return this.parseDecisionsFromMarkdown(content, feature);
+  }
+
+  /**
+   * Extract decisions from exploration.md (Recommendation + Decisions Needed sections)
+   */
+  private async extractFromExploration(feature: string): Promise<string[]> {
+    const explorationFile = path.join(
+      this.basePath,
+      '.hodge',
+      'features',
+      feature,
+      'explore',
+      'exploration.md'
+    );
+
+    if (!existsSync(explorationFile)) {
+      return [];
+    }
+
+    try {
+      const content = await fs.readFile(explorationFile, 'utf-8');
+      const decisions: string[] = [];
+
+      // Extract Recommendation section
+      const recommendationMatch = content.match(/## Recommendation\s*\n\n\*\*(.+?)\*\*/);
+      if (recommendationMatch && recommendationMatch[1]) {
+        decisions.push(recommendationMatch[1].trim());
+      }
+
+      // Extract Decisions Needed section
+      const decisionsNeededMatch = content.match(/## Decisions Needed([\s\S]*?)(?=\n## |\n---|$)/);
+      if (decisionsNeededMatch && decisionsNeededMatch[1]) {
+        // Parse individual decision titles from "### Decision N:" headers
+        const decisionTitles = decisionsNeededMatch[1].match(/### Decision \d+: (.+)/g);
+        if (decisionTitles) {
+          decisionTitles.forEach((title) => {
+            const match = title.match(/### Decision \d+: (.+)/);
+            if (match && match[1]) {
+              decisions.push(match[1].trim());
+            }
+          });
+        }
+      }
+
+      // If we have decisions from exploration, check for uncovered decisions
+      if (decisions.length > 0) {
+        this.checkUncoveredDecisions(content, recommendationMatch?.[1] || '');
+      }
+
+      return decisions;
+    } catch (error) {
+      return [];
+    }
+  }
+
+  /**
+   * Check for uncovered decisions in Decisions Needed section
+   * Prompts user interactively if uncovered decisions are found
+   */
+  private checkUncoveredDecisions(explorationContent: string, recommendation: string): void {
+    const decisionsNeededMatch = explorationContent.match(
+      /## Decisions Needed([\s\S]*?)(?=\n## |\n---|$)/
+    );
+
+    if (!decisionsNeededMatch) {
+      return;
+    }
+
+    // Extract decision titles
+    const decisionTitles = decisionsNeededMatch[1].match(/### Decision \d+: (.+)/g);
+    if (!decisionTitles || decisionTitles.length === 0) {
+      return;
+    }
+
+    // Check if recommendation covers all decisions
+    const uncoveredDecisions = decisionTitles.filter((title) => {
+      const match = title.match(/### Decision \d+: (.+)/);
+      if (!match) return false;
+      const decisionTopic = match[1].toLowerCase();
+      return !recommendation.toLowerCase().includes(decisionTopic);
+    });
+
+    if (uncoveredDecisions.length > 0) {
+      console.log(chalk.yellow('\n⚠️  Uncovered Decisions Detected:'));
+      console.log(
+        chalk.yellow(
+          `The Recommendation doesn't address ${uncoveredDecisions.length} decision(s) from Decisions Needed:`
+        )
+      );
+      uncoveredDecisions.forEach((decision, index) => {
+        const match = decision.match(/### Decision \d+: (.+)/);
+        if (match) {
+          console.log(chalk.yellow(`  ${index + 1}. ${match[1]}`));
+        }
+      });
+      console.log(
+        chalk.yellow('\nNote: You may want to revisit /decide to address these before proceeding.')
+      );
+      console.log(chalk.yellow('Continuing with plan generation...\n'));
+    }
+  }
+
+  /**
+   * Check global decisions.md file (final fallback)
+   */
+  private async checkGlobalDecisions(feature: string): Promise<string[]> {
     const decisionsFile = path.join(this.basePath, '.hodge', 'decisions.md');
     if (!existsSync(decisionsFile)) {
       return [];
     }
 
     const content = await fs.readFile(decisionsFile, 'utf-8');
-    const decisions: string[] = [];
+    return this.parseDecisionsFromMarkdown(content, feature);
+  }
 
-    // Parse decisions from markdown
+  /**
+   * Parse decisions from markdown content with feature filtering
+   */
+  private parseDecisionsFromMarkdown(content: string, feature: string): string[] {
+    const decisions: string[] = [];
     const lines = content.split('\n');
     let inDecisionBlock = false;
     let currentDecision = '';

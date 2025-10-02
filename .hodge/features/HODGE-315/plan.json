@@ -1,0 +1,20 @@
+{
+  "feature": "HODGE-315",
+  "type": "epic",
+  "stories": [
+    {
+      "id": "HODGE-315.1",
+      "title": "Frontend components",
+      "effort": "medium",
+      "dependencies": [],
+      "lane": 0
+    }
+  ],
+  "lanes": {
+    "count": 1,
+    "assignments": {}
+  },
+  "dependencies": {},
+  "estimatedDays": 2,
+  "createdAt": "2025-10-02T21:04:16.189Z"
+}

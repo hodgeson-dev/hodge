@@ -1,8 +1,9 @@
 {
-  "feature": "HODGE-314",
+  "feature": "HODGE-313",
   "type": "single",
-  "title": "Interactive conversational exploration for /explore slash command",
-  "description": "Transform /explore into an interactive, conversational experience where AI asks clarifying questions to deeply understand features before documenting.\n\nImplementation Approach:\n- Template-only enhancement (no CLI changes)\n- Update .claude/commands/explore.md with conversation instructions\n- Required steps: conversation flow, context loading, preview approval\n- Flexible guidance: question depth adapts to feature complexity\n\nDecisions Implemented:\n1. Mix of required steps and flexible guidance for template structure\n2. Define required coverage areas (what/why/gotchas/tests)\n3. Summary with key sections highlighted for preview\n4. Scoped to /explore only (not /build, /decide, /ship)\n5. Store conversation in exploration.md as synthesized prose\n6. User can provide direction or request restart for error handling",
-  "estimatedDays": 2,
-  "createdAt": "2025-10-02T07:24:30.000Z"
+  "title": "Fix /hodge command to show correct status for last feature worked on",
+  "description": "The /hodge command incorrectly shows 'explore' mode for shipped features. Root cause: hodge context generates HODGE.md using 'general' for mode detection instead of the session's actual feature, causing a mismatch between detected mode and displayed feature.\n\nImplementation:\n1. Modify src/commands/context.ts - loadDefaultContext() method to use session?.feature || 'general' for mode detection\n2. Add smoke tests to verify shipped/active/no-session scenarios\n\nFiles to modify: src/commands/context.ts, src/commands/context.smoke.test.ts",
+  "estimatedDays": 0.25,
+  "effort": "small",
+  "createdAt": "2025-10-01T03:56:00.000Z"
 }

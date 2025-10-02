@@ -1248,9 +1248,9 @@
   "TEST-006: Test PM creation": {
     "localID": "TEST-006: Test PM creation",
     "created": "2025-09-30T03:44:33.069Z",
-    "externalID": "c805a43f-9703-45da-8446-9140046201a9",
+    "externalID": "3e4219e4-421c-4ff6-9efb-6c91c145b4db",
     "pmTool": "linear",
-    "lastSynced": "2025-10-02T07:54:34.150Z"
+    "lastSynced": "2025-10-02T21:26:18.006Z"
   },
   "HODGE-301": {
     "localID": "HODGE-301",
@@ -1342,6 +1342,12 @@
     "localID": "HODGE-314: Interactive conversational exploration for /explore slash command",
     "created": "2025-10-02T07:31:54.134Z",
     "externalID": "358cd8c8-a008-4168-b952-030ea5039551",
+    "pmTool": "linear"
+  },
+  "HODGE-315: Fix /plan command to check feature-specific decisions files": {
+    "localID": "HODGE-315: Fix /plan command to check feature-specific decisions files",
+    "created": "2025-10-02T20:17:40.994Z",
+    "externalID": "fb71c530-60ff-471d-b3e1-58afa09c0ef9",
     "pmTool": "linear"
   }
 }

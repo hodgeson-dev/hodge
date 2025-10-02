@@ -120,3 +120,188 @@ TBD
     expect(description).toBe('No description available');
   });
 });
+
+describe('PlanCommand - Cascading Decision Loading (Smoke Tests)', () => {
+  let testDir: string;
+  let planCommand: PlanCommand;
+
+  beforeEach(async () => {
+    testDir = await fs.mkdtemp(path.join(os.tmpdir(), 'hodge-plan-cascade-'));
+    planCommand = new PlanCommand(testDir);
+  });
+
+  afterEach(async () => {
+    await fs.rm(testDir, { recursive: true, force: true });
+  });
+
+  smokeTest('should find decisions in feature-specific decisions.md', async () => {
+    // Setup feature-specific decisions
+    const featureDir = path.join(testDir, '.hodge', 'features', 'TEST-001');
+    await fs.mkdir(path.join(featureDir, 'explore'), { recursive: true });
+    await fs.writeFile(
+      path.join(featureDir, 'decisions.md'),
+      `# Feature Decisions: TEST-001
+
+## Decisions
+
+### 2025-10-02 - Use approach A
+
+**Status**: Accepted
+
+**Context**:
+Feature: TEST-001
+
+**Decision**:
+Use approach A for implementation
+
+**Rationale**:
+Best practice
+
+**Consequences**:
+TBD
+
+---
+`
+    );
+
+    const decisions = await (planCommand as any).analyzeDecisions('TEST-001');
+
+    // Should find the decision from feature-specific file
+    expect(decisions.length).toBeGreaterThan(0);
+    expect(decisions[0]).toContain('approach A');
+  });
+
+  smokeTest(
+    'should extract recommendation from exploration.md when decisions.md missing',
+    async () => {
+      const featureDir = path.join(testDir, '.hodge', 'features', 'TEST-002');
+      await fs.mkdir(path.join(featureDir, 'explore'), { recursive: true });
+
+      // Create exploration.md with Recommendation section
+      await fs.writeFile(
+        path.join(featureDir, 'explore', 'exploration.md'),
+        `# Feature Exploration: TEST-002
+
+## Recommendation
+
+**Cascading File Checker with Smart Extraction** is recommended.
+
+**Rationale**:
+This is the best approach for the problem.
+`
+      );
+
+      const decisions = await (planCommand as any).analyzeDecisions('TEST-002');
+
+      // Should extract recommendation from exploration.md
+      expect(decisions.length).toBeGreaterThan(0);
+      expect(decisions[0]).toContain('Cascading File Checker');
+    }
+  );
+
+  smokeTest('should fall back to global decisions.md', async () => {
+    // Setup global decisions only
+    const hodgeDir = path.join(testDir, '.hodge');
+    await fs.mkdir(hodgeDir, { recursive: true });
+    await fs.writeFile(
+      path.join(hodgeDir, 'decisions.md'),
+      `# Decisions
+
+### 2025-10-02 - Global decision
+
+**Status**: Accepted
+
+**Context**:
+Feature: TEST-003
+
+**Decision**:
+Use global decision approach
+
+**Rationale**:
+Fallback test
+
+**Consequences**:
+TBD
+
+---
+`
+    );
+
+    const decisions = await (planCommand as any).analyzeDecisions('TEST-003');
+
+    // Should find decision from global file
+    expect(decisions.length).toBeGreaterThan(0);
+    expect(decisions[0]).toContain('global decision');
+  });
+
+  smokeTest('should handle empty decisions gracefully', async () => {
+    const featureDir = path.join(testDir, '.hodge', 'features', 'TEST-004');
+    await fs.mkdir(path.join(featureDir, 'explore'), { recursive: true });
+
+    // Create empty decisions.md
+    await fs.writeFile(path.join(featureDir, 'decisions.md'), '# Feature Decisions: TEST-004\n');
+
+    const decisions = await (planCommand as any).analyzeDecisions('TEST-004');
+
+    // Should return empty array without crashing
+    expect(Array.isArray(decisions)).toBe(true);
+  });
+
+  smokeTest('should prioritize feature decisions over global', async () => {
+    // Setup both feature-specific and global decisions
+    const featureDir = path.join(testDir, '.hodge', 'features', 'TEST-005');
+    await fs.mkdir(path.join(featureDir, 'explore'), { recursive: true });
+
+    await fs.writeFile(
+      path.join(featureDir, 'decisions.md'),
+      `### 2025-10-02 - Feature-specific decision
+
+**Context**:
+Feature: TEST-005
+
+**Decision**:
+Feature-specific approach
+
+---
+`
+    );
+
+    const hodgeDir = path.join(testDir, '.hodge');
+    await fs.mkdir(hodgeDir, { recursive: true });
+    await fs.writeFile(
+      path.join(hodgeDir, 'decisions.md'),
+      `### 2025-10-02 - Global decision
+
+**Context**:
+Feature: TEST-005
+
+**Decision**:
+Global approach
+
+---
+`
+    );
+
+    const decisions = await (planCommand as any).analyzeDecisions('TEST-005');
+
+    // Should find feature-specific decision, not global
+    expect(decisions.length).toBeGreaterThan(0);
+    expect(decisions[0]).toContain('Feature-specific');
+  });
+
+  smokeTest('should handle malformed exploration.md gracefully', async () => {
+    const featureDir = path.join(testDir, '.hodge', 'features', 'TEST-006');
+    await fs.mkdir(path.join(featureDir, 'explore'), { recursive: true });
+
+    // Create malformed exploration.md
+    await fs.writeFile(
+      path.join(featureDir, 'explore', 'exploration.md'),
+      '# Malformed\nNo proper sections here'
+    );
+
+    const decisions = await (planCommand as any).analyzeDecisions('TEST-006');
+
+    // Should return empty array without crashing
+    expect(Array.isArray(decisions)).toBe(true);
+  });
+});

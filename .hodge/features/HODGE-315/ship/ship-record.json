@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-315",
+  "timestamp": "2025-10-02T21:26:43.112Z",
+  "issueId": null,
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "feat: add cascading decision file checker to /plan command (HODGE-315)\n\n## What Changed\n- **src/commands/plan.ts** (157 lines added)\n  - Refactored analyzeDecisions() to use cascading file check strategy\n  - Added checkFeatureDecisions() - checks feature-specific decisions.md\n  - Added extractFromExploration() - extracts from exploration.md Recommendation section\n  - Added checkUncoveredDecisions() - warns about uncovered decisions\n  - Added checkGlobalDecisions() - falls back to global decisions.md\n  - Added parseDecisionsFromMarkdown() - shared parser for all sources\n\n- **src/commands/plan.smoke.test.ts** (182 lines added)\n  - Added 6 new smoke tests for cascading decision loading\n  - Tests feature-specific priority, exploration extraction, global fallback\n  - Tests edge cases: empty files, malformed content, priority handling\n  - All tests use isolated temp directories (test isolation compliance)\n\n- **.hodge/decisions.md** (65 lines added)\n  - Documented 3 implementation decisions for HODGE-315\n\n## Why This Change\nThe /plan command only checked global .hodge/decisions.md, but when using `hodge decide --feature`, decisions were written to feature-specific .hodge/features/{feature}/decisions.md. This workflow mismatch caused /plan to report \"No decisions found\" even when feature decisions existed, breaking the planning workflow and forcing manual workarounds.\n\nThe fix implements a smart cascading strategy:\n1. Check feature-specific decisions.md first\n2. Extract from exploration.md (Recommendation + Decisions Needed) if no decisions.md\n3. Fall back to global decisions.md as final fallback\n4. Warn users about uncovered decisions without blocking\n\n## Implementation Approach\n- Template enhancement pattern: AI-driven exploration with cascading fallback\n- Zero breaking changes: backward compatible with existing workflows\n- Progressive enhancement: degrades gracefully through fallback chain\n- User agency preserved: warnings instead of blockers\n\n## Impact\n- ✅ **Fixes workflow bug**: `/plan` now works with feature-specific decisions\n- ✅ **Backward compatible**: existing features with global decisions still work\n- ✅ **Supports skipped /decide**: extracts from exploration.md when decisions.md missing\n- ✅ **Better UX**: warns about uncovered decisions instead of failing silently\n- ✅ **Comprehensive testing**: 6 new smoke tests + all 652 existing tests passing\n- ✅ **Production ready**: no linting errors, TypeScript strict mode compliant\n\nCloses HODGE-315\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}
