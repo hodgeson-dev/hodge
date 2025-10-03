@@ -25,42 +25,40 @@ describe('ship command integration - HODGE-220', () => {
     expect(typeof shipCommand.execute).toBe('function');
   });
 
-  integrationTest('should verify metadata update order in source code', async () => {
-    // Read the ship.ts source file
-    const shipPath = path.join(process.cwd(), 'src', 'commands', 'ship.ts');
-    const content = await fs.readFile(shipPath, 'utf-8');
+  integrationTest(
+    'should verify metadata update order without HODGE.md (HODGE-319.1)',
+    async () => {
+      // Read the ship.ts source file
+      const shipPath = path.join(process.cwd(), 'src', 'commands', 'ship.ts');
+      const content = await fs.readFile(shipPath, 'utf-8');
 
-    // Verify the order of operations
-    const lines = content.split('\n');
-    let backupLine = -1;
-    let generateLine = -1;
-    let commitLine = -1;
-    let restoreLine = -1;
+      // Verify the order of operations (without HODGE.md generation)
+      const lines = content.split('\n');
+      let backupLine = -1;
+      let commitLine = -1;
+      let restoreLine = -1;
 
-    for (let i = 0; i < lines.length; i++) {
-      if (lines[i].includes('await backupMetadata(feature)')) {
-        backupLine = i;
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].includes('await backupMetadata(feature)')) {
+          backupLine = i;
+        }
+        if (lines[i].includes('`git commit -m')) {
+          commitLine = i;
+        }
+        if (lines[i].includes('await restoreMetadata(feature, metadataBackup)')) {
+          restoreLine = i;
+        }
       }
-      if (lines[i].includes('await populator.generateFeatureHodgeMD(feature)')) {
-        generateLine = i;
-      }
-      if (lines[i].includes('`git commit -m')) {
-        commitLine = i;
-      }
-      if (lines[i].includes('await restoreMetadata(feature, metadataBackup)')) {
-        restoreLine = i;
-      }
+
+      // Verify correct order: backup -> commit -> restore (on error)
+      expect(backupLine).toBeGreaterThan(0);
+      expect(commitLine).toBeGreaterThan(backupLine);
+      expect(restoreLine).toBeGreaterThan(commitLine);
+
+      // Verify HODGE.md generation was removed (HODGE-319.1)
+      expect(content).not.toContain('generateFeatureHodgeMD');
     }
-
-    // Verify correct order: backup -> generate -> commit -> restore (on error)
-    expect(backupLine).toBeGreaterThan(0);
-    expect(generateLine).toBeGreaterThan(backupLine);
-    expect(commitLine).toBeGreaterThan(generateLine);
-    expect(restoreLine).toBeGreaterThan(commitLine);
-
-    // Verify HODGE-220 comment is present
-    expect(content).toContain('HODGE-220');
-  });
+  );
 
   integrationTest('should use git add -A for staging all changes', async () => {
     // Read the compiled ship.js file to verify runtime behavior

@@ -4,7 +4,6 @@ import * as path from 'path';
 import { CacheManager } from '../lib/cache-manager.js';
 import { autoSave } from '../lib/auto-save.js';
 import { contextManager } from '../lib/context-manager.js';
-import { FeaturePopulator } from '../lib/feature-populator.js';
 import { PMHooks } from '../lib/pm/pm-hooks.js';
 
 export interface BuildOptions {
@@ -78,7 +77,7 @@ export class BuildCommand {
       const featureDir = path.join('.hodge', 'features', feature);
       const buildDir = path.join(featureDir, 'build');
       const exploreDir = path.join(featureDir, 'explore');
-      const decisionFile = path.join(exploreDir, 'decision.md');
+      const decisionFile = path.join(featureDir, 'decisions.md');
       const issueIdFile = path.join(featureDir, 'issue-id.txt');
       const standardsFile = path.join('.hodge', 'standards.md');
       const patternsDir = path.join('.hodge', 'patterns');
@@ -238,10 +237,6 @@ export class BuildCommand {
       );
 
       console.log(chalk.dim('Build context saved to: ' + buildDir));
-
-      // Regenerate feature HODGE.md to include build plan (HODGE-005)
-      const populator = new FeaturePopulator();
-      await populator.generateFeatureHodgeMD(feature);
 
       // Performance metrics (only in development)
       if (process.env.NODE_ENV === 'development' || process.env.HODGE_DEBUG) {

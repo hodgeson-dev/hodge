@@ -23,7 +23,6 @@ import {
 import { getConfigManager } from '../lib/config-manager.js';
 import { autoSave } from '../lib/auto-save.js';
 import { contextManager } from '../lib/context-manager.js';
-import { FeaturePopulator } from '../lib/feature-populator.js';
 import { PMHooks } from '../lib/pm/pm-hooks.js';
 import type { LearningResult } from '../lib/pattern-learner.js';
 
@@ -31,20 +30,13 @@ const execAsync = promisify(exec);
 
 // HODGE-220: Backup/restore mechanism for metadata rollback
 interface MetadataBackup {
-  featureHodgeMd?: string;
   projectManagement?: string;
   session?: string;
   context?: string;
 }
 
-async function backupMetadata(feature: string): Promise<MetadataBackup> {
+async function backupMetadata(_feature: string): Promise<MetadataBackup> {
   const backup: MetadataBackup = {};
-
-  // Backup feature HODGE.md if it exists
-  const featureHodgePath = path.join('.hodge', 'features', feature, 'HODGE.md');
-  if (existsSync(featureHodgePath)) {
-    backup.featureHodgeMd = await fs.readFile(featureHodgePath, 'utf-8');
-  }
 
   // Backup project management file
   const pmPath = path.join('.hodge', 'project_management.md');
@@ -67,13 +59,7 @@ async function backupMetadata(feature: string): Promise<MetadataBackup> {
   return backup;
 }
 
-async function restoreMetadata(feature: string, backup: MetadataBackup): Promise<void> {
-  // Restore feature HODGE.md
-  if (backup.featureHodgeMd) {
-    const featureHodgePath = path.join('.hodge', 'features', feature, 'HODGE.md');
-    await fs.writeFile(featureHodgePath, backup.featureHodgeMd);
-  }
-
+async function restoreMetadata(_feature: string, backup: MetadataBackup): Promise<void> {
   // Restore project management file
   if (backup.projectManagement) {
     const pmPath = path.join('.hodge', 'project_management.md');
@@ -582,9 +568,6 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}
 
     try {
       // Move all metadata updates BEFORE git commit to prevent uncommitted files
-      // Regenerate feature HODGE.md to include ship summary
-      const populator = new FeaturePopulator();
-      await populator.generateFeatureHodgeMD(feature);
 
       // Create git commit (unless --no-commit flag is used)
       if (!options.noCommit) {

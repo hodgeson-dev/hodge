@@ -1,5 +1,42 @@
 # Test Patterns
 
+## ⚠️ CRITICAL RULES
+
+### 1. NO SUBPROCESS SPAWNING (HODGE-317.1 + HODGE-319.1)
+**NEVER use `execSync()`, `spawn()`, or `exec()` in tests.**
+
+**Why**: Creates zombie processes that hang indefinitely and require manual kill.
+
+**Fixed In**:
+- HODGE-317.1 (2025-09-30) - Eliminated from test-isolation tests
+- HODGE-319.1 (2025-10-03) - Fixed commonjs-compatibility regression
+
+❌ **BAD** (creates hung processes):
+```typescript
+const result = execSync('node dist/src/bin/hodge.js init', {
+  encoding: 'utf-8',
+  cwd: testDir,
+});
+```
+
+✅ **GOOD** (verify artifacts):
+```typescript
+// Verify configuration
+const packageJson = await fs.readJson('package.json');
+expect(packageJson.type).toBe('module');
+
+// Verify compiled output
+const compiled = await fs.readFile('dist/src/bin/hodge.js', 'utf-8');
+expect(compiled).toContain('import');
+```
+
+### 2. Test Isolation (HODGE-308)
+**NEVER modify the project's `.hodge` directory in tests.**
+
+Use `os.tmpdir()` for all file operations.
+
+---
+
 ## Quick Reference
 ```typescript
 import { smokeTest, integrationTest, unitTest, acceptanceTest } from '../test/helpers';

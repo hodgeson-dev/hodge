@@ -37,32 +37,21 @@ describe('ship command - clean working tree', () => {
     expect(content).toContain('restoreMetadata');
   });
 
-  smokeTest('should move metadata updates before commit', async () => {
-    // Verify the code structure has been changed
+  smokeTest('should not generate HODGE.md (HODGE-319.1)', async () => {
+    // Verify HODGE.md generation was removed in HODGE-319.1
     const fs = await import('fs/promises');
     const shipPath = path.join(process.cwd(), 'src', 'commands', 'ship.ts');
     const content = await fs.readFile(shipPath, 'utf-8');
 
-    // Find line numbers for key operations
-    const lines = content.split('\n');
-    let generateLineNum = -1;
-    let commitLineNum = -1;
+    // Verify HODGE.md generation has been removed
+    expect(content).not.toContain('generateFeatureHodgeMD(feature)');
+    expect(content).not.toContain('populator.generateFeatureHodgeMD');
 
-    for (let i = 0; i < lines.length; i++) {
-      if (lines[i].includes('generateFeatureHodgeMD(feature)')) {
-        generateLineNum = i;
-      }
-      if (lines[i].includes('`git commit -m')) {
-        commitLineNum = i;
-      }
-    }
+    // Verify backup/restore still exists for other metadata
+    expect(content).toContain('backupMetadata');
+    expect(content).toContain('restoreMetadata');
 
-    // Verify generateFeatureHodgeMD comes before git commit
-    expect(generateLineNum).toBeGreaterThan(0);
-    expect(commitLineNum).toBeGreaterThan(0);
-    expect(generateLineNum).toBeLessThan(commitLineNum);
-
-    // Verify the HODGE-220 comment is present
-    expect(content).toContain('HODGE-220');
+    // Verify git commit still exists
+    expect(content).toContain('`git commit -m');
   });
 });

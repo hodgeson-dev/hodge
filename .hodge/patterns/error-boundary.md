@@ -1,7 +1,7 @@
 # Error Boundary
 
 **Category**: error-handling
-**Frequency**: Used 8 times
+**Frequency**: Used 12 times
 **Confidence**: 100%
 
 ## Description
@@ -22,28 +22,24 @@ try {
 ```
 
 
-### src/commands/init.ts
+### src/commands/build.ts
 ```typescript
 try {
-      this.detector = new ProjectDetector(rootPath);
-      this.generator = new StructureGenerator(rootPath);
-    } catch (error) {
-      if (error instanceof ValidationError || error instanceof
+      // Validate inputs (redundant but keeping for safety)
+      if (!feature || typeof feature !== 'string') {
+        throw new Error('Feature name is required and must be a string');
+      }
 ```
 
 
-### src/lib/logger.ts
+### src/commands/explore.ts
 ```typescript
-try {
-    fs.ensureDirSync(projectLogDir, { mode: 0o755 });
-    return projectLogDir;
-  } catch {
-    fs.ensureDirSync(fallbackLogDir, { mode: 0o755 });
-    return fallbackLogDir;
-  }
-}
-
-// Detect if 
+.catch(() => {
+          // Silently handle PM update failures
+        });
+      } else if (!featureID) {
+        // It looks like an ID but we couldn't find it
+        // Create a new feature and lin
 ```
 
 
@@ -53,5 +49,5 @@ try {
 - 
 
 ---
-*First seen: 2025-10-03T05:38:46.441Z*
-*Last used: 2025-10-03T05:38:46.447Z*
+*First seen: 2025-10-03T15:21:59.884Z*
+*Last used: 2025-10-03T15:21:59.893Z*

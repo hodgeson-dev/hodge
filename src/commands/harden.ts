@@ -6,7 +6,6 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import { autoSave } from '../lib/auto-save.js';
 import { contextManager } from '../lib/context-manager.js';
-import { FeaturePopulator } from '../lib/feature-populator.js';
 import { PMHooks } from '../lib/pm/pm-hooks.js';
 
 const execAsync = promisify(exec);
@@ -186,10 +185,6 @@ export class HardenCommand {
       // Generate and save report
       const reportContent = this.generateReport(feature, results, options);
       await fs.writeFile(path.join(hardenDir, 'harden-report.md'), reportContent);
-
-      // Regenerate feature HODGE.md to include harden results (HODGE-005)
-      const populator = new FeaturePopulator();
-      await populator.generateFeatureHodgeMD(feature);
 
       // Display final summary
       this.displaySummary(feature, results, hardenDir, options);

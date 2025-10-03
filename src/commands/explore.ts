@@ -618,7 +618,7 @@ ${pmIssue ? `**PM Issue**: ${pmIssue.id}` : ''}
     template: SmartTemplate,
     intent: FeatureIntent,
     pmIssue: { id: string; title: string; url: string } | null,
-    featureID: FeatureID | null = null
+    _featureID: FeatureID | null = null
   ): Promise<void> {
     // Create directory
     await fs.mkdir(exploreDir, { recursive: true });
@@ -631,37 +631,11 @@ ${pmIssue ? `**PM Issue**: ${pmIssue.id}` : ''}
       [
         fs.writeFile(path.join(exploreDir, 'exploration.md'), template.content),
         fs.writeFile(path.join(exploreDir, 'test-intentions.md'), testIntentions),
-        fs.writeFile(
-          path.join(exploreDir, 'context.json'),
-          JSON.stringify(
-            {
-              mode: 'explore',
-              feature: feature,
-              localID: featureID?.localID || feature,
-              externalID: featureID?.externalID || null,
-              timestamp: new Date().toISOString(),
-              intent,
-              standards: 'suggested',
-              validation: 'optional',
-              pmIssue: pmIssue?.id || featureID?.externalID || null,
-              pmTool: featureID?.pmTool || null,
-              approaches: template.approaches,
-              relatedFeatures: template.relatedFeatures,
-              suggestedPatterns: template.suggestedPatterns,
-            },
-            null,
-            2
-          )
-        ),
         pmIssue
           ? fs.writeFile(path.join('.hodge', 'features', feature, 'issue-id.txt'), pmIssue.id)
           : Promise.resolve(),
       ].filter(Boolean)
     );
-
-    // Generate feature HODGE.md for aggregation (HODGE-005)
-    const populator = new FeaturePopulator();
-    await populator.generateFeatureHodgeMD(feature);
 
     // Invalidate cache for this feature
     this.cache.invalidateFeature(feature);
@@ -820,7 +794,6 @@ Add any specific test scenarios or edge cases discovered during exploration:
 
     console.log('\n' + chalk.bold('Files created:'));
     console.log(chalk.gray(`  • .hodge/features/${feature}/explore/exploration.md`));
-    console.log(chalk.gray(`  • .hodge/features/${feature}/explore/context.json`));
 
     console.log('\n' + chalk.bold('Next steps:'));
     console.log(`  1. Review the AI-generated exploration`);

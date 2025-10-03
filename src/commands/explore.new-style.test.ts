@@ -163,9 +163,9 @@ describe('ExploreCommand', () => {
 
         // 2. Check that all necessary files are created
         // With ID management, user-authentication becomes HODGE-001
+        // NOTE: context.json removed in HODGE-319.1 (phase-specific context elimination)
         const files = [
           '.hodge/features/HODGE-001/explore/exploration.md',
-          '.hodge/features/HODGE-001/explore/context.json',
           '.hodge/features/HODGE-001/explore/test-intentions.md',
           '.hodge/id-mappings.json', // ID management file
         ];
@@ -174,12 +174,9 @@ describe('ExploreCommand', () => {
           expect(await workspace.exists(file)).toBe(true);
         }
 
-        // 3. Verify AI context is set up
-        const context = JSON.parse(
-          await workspace.readFile('.hodge/features/HODGE-001/explore/context.json')
-        );
-        expect(context.mode).toBe('explore');
-        expect(context.standards).toBe('suggested');
+        // 3. Verify global context is maintained (not phase-specific)
+        // Context now managed globally by context-manager, not per-phase files
+        expect(await workspace.exists('.hodge/context.json')).toBe(true);
 
         // 4. Can transition to build
         const build = await workspace.hodge('build HODGE-001');

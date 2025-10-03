@@ -1,31 +1,32 @@
 # Input Validation
 
 **Category**: security
-**Frequency**: Used 3 times
-**Confidence**: 60%
+**Frequency**: Used 6 times
+**Confidence**: 100%
 
 ## Description
 Input validation before processing
 
 ## Examples
 
-### src/lib/pm/base-adapter.ts
+### src/commands/build.ts
 ```typescript
-if (!targetState) {
+if (!resolvedFeature) {
       throw new Error
 ```
 
 
-### src/lib/pm/env-validator.ts
+### src/commands/harden.ts
 ```typescript
-function validatePMEnvironment
+if (!resolvedFeature) {
+      throw new Error
 ```
 
 
-### src/lib/pm/linear-adapter.ts
+### src/commands/ship.ts
 ```typescript
-if (!state) {
-        throw new Error
+if (!resolvedFeature) {
+      throw new Error
 ```
 
 
@@ -35,5 +36,5 @@ if (!state) {
 - 
 
 ---
-*First seen: 2025-10-03T05:38:46.446Z*
-*Last used: 2025-10-03T05:38:46.447Z*
+*First seen: 2025-10-03T15:21:59.886Z*
+*Last used: 2025-10-03T15:21:59.893Z*

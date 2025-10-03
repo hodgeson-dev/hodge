@@ -1248,9 +1248,9 @@
   "TEST-006: Test PM creation": {
     "localID": "TEST-006: Test PM creation",
     "created": "2025-09-30T03:44:33.069Z",
-    "externalID": "95102a5a-c6a9-4fbe-956d-71f2653e710c",
+    "externalID": "0c21fef9-c814-46c3-97fb-7c1f3efbb0a4",
     "pmTool": "linear",
-    "lastSynced": "2025-10-03T05:38:38.320Z"
+    "lastSynced": "2025-10-03T15:21:48.577Z"
   },
   "HODGE-301": {
     "localID": "HODGE-301",
@@ -1388,6 +1388,46 @@
     "localID": "HODGE-318: Fix CI ERR_REQUIRE_ESM error in Node 18.x quality checks workflow",
     "created": "2025-10-02T23:38:15.737Z",
     "externalID": "fb8157e7-35d3-41c4-917d-322becea7436",
+    "pmTool": "linear"
+  },
+  "HODGE-319": {
+    "localID": "HODGE-319",
+    "created": "2025-10-03T05:40:48.187Z"
+  },
+  "HODGE-319.1": {
+    "localID": "HODGE-319.1",
+    "created": "2025-10-03T06:53:12.626Z",
+    "externalID": "ae45fc37-3b96-4280-84b6-d6f7b4b99792",
+    "pmTool": "linear"
+  },
+  "HODGE-319.2": {
+    "localID": "HODGE-319.2",
+    "created": "2025-10-03T06:53:13.376Z",
+    "externalID": "e74e33f5-6fbd-414b-9283-492d41e20839",
+    "pmTool": "linear"
+  },
+  "HODGE-319.3": {
+    "localID": "HODGE-319.3",
+    "created": "2025-10-03T06:53:14.052Z",
+    "externalID": "cc51a745-825c-4d2f-9ff6-1094cfa4b2bf",
+    "pmTool": "linear"
+  },
+  "HODGE-319.4": {
+    "localID": "HODGE-319.4",
+    "created": "2025-10-03T06:53:14.569Z",
+    "externalID": "f6e32980-be3b-43fd-8c66-e303a8d8d46f",
+    "pmTool": "linear"
+  },
+  "HODGE-319.5": {
+    "localID": "HODGE-319.5",
+    "created": "2025-10-03T06:53:15.251Z",
+    "externalID": "1174df70-147a-4cb8-a5f7-e5676c99bf13",
+    "pmTool": "linear"
+  },
+  "HODGE-319: Workflow System Optimization: Data Flow, UX, and Solution Quality Improvements": {
+    "localID": "HODGE-319: Workflow System Optimization: Data Flow, UX, and Solution Quality Improvements",
+    "created": "2025-10-03T06:53:15.253Z",
+    "externalID": "66f3b25e-539e-49ab-84f3-1a6b34d0ed59",
     "pmTool": "linear"
   }
 }

@@ -82,6 +82,40 @@ This project follows the Hodge development philosophy:
 - This prevents tests from corrupting project data or affecting other tests
 - Violation of this rule can lead to data loss and unpredictable test behavior
 
+### Subprocess Spawning Ban (HODGE-317.1 + HODGE-319.1)
+**Enforcement: ALL PHASES (mandatory)**
+**⚠️ CRITICAL**: Tests must NEVER spawn subprocesses using `execSync()`, `spawn()`, or `exec()`.
+- **Root Cause**: Subprocesses create orphaned zombie processes that hang indefinitely
+- **Symptom**: Tests timeout, hung Node processes require manual kill in Activity Monitor
+- **Solution**: Test behavior through direct assertions, not subprocess execution
+- **Exceptions**: None - if you think you need subprocess spawning, you're testing the wrong thing
+
+**Why This Matters**:
+- HODGE-317.1 (2025-09-30) eliminated subprocess spawning from test-isolation tests
+- HODGE-318 (2025-10-01) inadvertently reintroduced it in commonjs-compatibility tests
+- HODGE-319.1 (2025-10-03) fixed regression and added this standard
+
+**Correct Pattern** (verify artifacts, not runtime):
+```typescript
+// ✅ GOOD: Verify configuration files and build artifacts
+const packageJson = await fs.readJson('package.json');
+expect(packageJson.type).toBe('module');
+
+const compiled = await fs.readFile('dist/src/bin/hodge.js', 'utf-8');
+expect(compiled).toContain('import');
+```
+
+**Incorrect Pattern** (spawns subprocess):
+```typescript
+// ❌ BAD: Creates zombie processes that hang
+const result = execSync('node dist/src/bin/hodge.js init', {
+  encoding: 'utf-8',
+  cwd: testDir,
+});
+```
+
+**See Also**: `.hodge/patterns/test-pattern.md` for examples
+
 ## Code Comments and TODOs
 **Enforcement: Build(suggested) → Harden(expected) → Ship(mandatory)**
 - **TODO Convention**: Always use `// TODO:` comments for incomplete work

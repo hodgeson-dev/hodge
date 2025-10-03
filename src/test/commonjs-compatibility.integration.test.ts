@@ -1,114 +1,151 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { execSync } from 'child_process';
+/**
+ * CommonJS Compatibility Integration Tests (HODGE-318)
+ *
+ * These tests verify that the Hodge CLI is properly configured as an ES module
+ * and doesn't trigger CommonJS warnings when executed.
+ *
+ * IMPORTANT: Following HODGE-317.1, these tests DO NOT spawn subprocesses.
+ * Instead, they verify configuration and built artifacts that ensure ESM compatibility.
+ */
+
+import { describe, expect, beforeAll } from 'vitest';
+import { integrationTest } from './helpers.js';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import * as os from 'os';
 
 describe('CommonJS Compatibility [integration]', () => {
-  let testDir: string;
-  const hodgePath = path.join(__dirname, '../../dist/src/bin/hodge.js');
+  let distExists: boolean;
+  let packageJson: any;
 
-  beforeEach(async () => {
-    // Create isolated test directory
-    testDir = await fs.mkdtemp(path.join(os.tmpdir(), 'hodge-commonjs-test-'));
+  beforeAll(async () => {
+    // Verify dist directory exists (built code)
+    distExists = await fs.pathExists(path.join(process.cwd(), 'dist'));
+
+    // Load package.json
+    packageJson = await fs.readJson(path.join(process.cwd(), 'package.json'));
   });
 
-  afterEach(async () => {
-    // Cleanup
-    await fs.remove(testDir);
+  integrationTest('should have ES module configuration in package.json', async () => {
+    // Verify package.json is configured for ES modules
+    expect(packageJson.type).toBe('module');
+
+    // Verify Node.js version requirement (ES modules fully supported in Node 20+)
+    expect(packageJson.engines).toBeDefined();
+    expect(packageJson.engines.node).toBeDefined();
+
+    // Should require Node 20+ for full ESM support
+    const nodeVersion = packageJson.engines.node;
+    expect(nodeVersion).toMatch(/>=\s*20/);
   });
 
-  it('should execute full hodge workflow without CommonJS warnings', async () => {
-    // Initialize hodge project
-    const initResult = execSync(`node ${hodgePath} init --force 2>&1`, {
-      encoding: 'utf-8',
-      cwd: testDir,
-    });
+  integrationTest('should have NodeNext module resolution in tsconfig', async () => {
+    // Verify TypeScript is configured for ES modules
+    const tsconfigPath = path.join(process.cwd(), 'tsconfig.json');
+    expect(await fs.pathExists(tsconfigPath)).toBe(true);
 
-    expect(initResult).not.toContain('ExperimentalWarning');
-    expect(fs.existsSync(path.join(testDir, '.hodge'))).toBe(true);
+    const tsconfig = await fs.readJson(tsconfigPath);
 
-    // Run explore command
-    const exploreResult = execSync(`node ${hodgePath} explore test-feature 2>&1`, {
-      encoding: 'utf-8',
-      cwd: testDir,
-    });
-
-    expect(exploreResult).not.toContain('ExperimentalWarning');
-    expect(exploreResult).not.toContain('CommonJS module');
-
-    // Run build command
-    const buildResult = execSync(`node ${hodgePath} build test-feature 2>&1`, {
-      encoding: 'utf-8',
-      cwd: testDir,
-    });
-
-    expect(buildResult).not.toContain('ExperimentalWarning');
-    expect(buildResult).not.toContain('loading ES Module');
+    // NodeNext is the correct module system for ES modules
+    expect(tsconfig.compilerOptions.module).toBe('NodeNext');
+    expect(tsconfig.compilerOptions.moduleResolution).toBe('NodeNext');
   });
 
-  it('should handle all primary commands without warnings', async () => {
-    // Initialize project first
-    execSync(`node ${hodgePath} init --force`, {
-      encoding: 'utf-8',
-      cwd: testDir,
-    });
-
-    // Test primary commands
-    const commands = ['--help', 'explore test-feature', 'build test-feature', 'decide 1'];
-
-    for (const cmd of commands) {
-      const result = execSync(`node ${hodgePath} ${cmd} 2>&1`, {
-        encoding: 'utf-8',
-        cwd: testDir,
-      });
-
-      expect(result).not.toContain('ExperimentalWarning');
-      expect(result).not.toContain('loading ES Module');
+  integrationTest('should have compiled CLI entry point with ESM compatibility', async () => {
+    if (!distExists) {
+      throw new Error('dist/ directory not found. Run `npm run build` first.');
     }
+
+    const hodgePath = path.join(process.cwd(), 'dist', 'src', 'bin', 'hodge.js');
+    expect(await fs.pathExists(hodgePath)).toBe(true);
+
+    // Read the compiled entry point
+    const hodgeContent = await fs.readFile(hodgePath, 'utf-8');
+
+    // Should NOT contain CommonJS patterns that cause warnings
+    expect(hodgeContent).not.toContain('require(');
+    expect(hodgeContent).not.toContain('module.exports');
+
+    // Should contain ES module patterns
+    expect(hodgeContent).toContain('import');
   });
 
-  it('should work with package.json chalk dependency', async () => {
-    // Verify our downgraded chalk version works in temp project
-    const packageJson = {
-      name: 'test-project',
-      version: '1.0.0',
-      dependencies: {
-        chalk: '^4.1.2',
-      },
-    };
+  integrationTest('should use ESM-compatible __dirname pattern', async () => {
+    if (!distExists) {
+      throw new Error('dist/ directory not found. Run `npm run build` first.');
+    }
 
-    await fs.writeJson(path.join(testDir, 'package.json'), packageJson);
+    const filesToCheck = ['dist/src/bin/hodge.js', 'dist/src/lib/install-hodge-way.js'];
 
-    // Create a simple test file
-    const testScript = `
-      const chalk = require('chalk');
-      console.log(chalk.green('✓ Success'));
-    `;
+    for (const file of filesToCheck) {
+      const filePath = path.join(process.cwd(), file);
 
-    await fs.writeFile(path.join(testDir, 'test.js'), testScript);
+      if (!(await fs.pathExists(filePath))) {
+        continue; // Skip if file doesn't exist
+      }
 
-    // Copy node_modules chalk to temp dir (avoid npm install in test)
-    const chalkPath = path.join(__dirname, '../../node_modules/chalk');
-    const targetModulesPath = path.join(testDir, 'node_modules');
-    await fs.ensureDir(targetModulesPath);
-    await fs.copy(chalkPath, path.join(targetModulesPath, 'chalk'));
+      const content = await fs.readFile(filePath, 'utf-8');
 
-    // Also copy chalk's dependencies
-    const chalkDeps = ['ansi-styles', 'supports-color', 'has-flag'];
-    for (const dep of chalkDeps) {
-      const depPath = path.join(__dirname, '../../node_modules', dep);
-      if (await fs.pathExists(depPath)) {
-        await fs.copy(depPath, path.join(targetModulesPath, dep));
+      // Should use fileURLToPath pattern for ESM compatibility
+      // The pattern looks like:
+      //   const __filename = fileURLToPath(import.meta.url);
+      //   const __dirname = dirname(__filename) or path.dirname(__filename)
+      if (content.includes('__dirname')) {
+        expect(content).toContain('fileURLToPath');
+        expect(content).toContain('import.meta.url');
+
+        // Should declare __dirname locally using dirname()
+        // Can be either dirname(__filename) or path.dirname(__filename)
+        expect(content).toMatch(/__dirname\s*=\s*(path\.)?dirname\(__filename\)/);
       }
     }
+  });
 
-    const result = execSync(`node test.js 2>&1`, {
-      encoding: 'utf-8',
-      cwd: testDir,
-    });
+  integrationTest('should have all relative imports with .js extensions', async () => {
+    if (!distExists) {
+      throw new Error('dist/ directory not found. Run `npm run build` first.');
+    }
 
-    expect(result).not.toContain('ExperimentalWarning');
-    expect(result).toContain('✓ Success');
+    // Sample a few key files to verify .js extensions
+    const filesToCheck = [
+      'dist/src/commands/build.js',
+      'dist/src/commands/explore.js',
+      'dist/src/lib/context-manager.js',
+    ];
+
+    for (const file of filesToCheck) {
+      const filePath = path.join(process.cwd(), file);
+
+      if (!(await fs.pathExists(filePath))) {
+        continue;
+      }
+
+      const content = await fs.readFile(filePath, 'utf-8');
+
+      // Check for relative imports without .js extension (would cause ESM errors)
+      const relativeImportRegex = /from ['"]\.\.?\//g;
+      const matches = content.match(relativeImportRegex) || [];
+
+      for (const match of matches) {
+        // Get the full import line for better error messages
+        const lines = content.split('\n');
+        const importLine = lines.find((line) => line.includes(match));
+
+        // Should end with .js extension (required for ESM)
+        if (importLine && !importLine.includes('.json')) {
+          expect(importLine).toMatch(/\.js['"];?$/);
+        }
+      }
+    }
+  });
+
+  integrationTest('should have chalk downgraded to v4 for CommonJS compatibility', async () => {
+    // Verify chalk is at v4.x (supports both CommonJS and ESM)
+    expect(packageJson.dependencies.chalk).toBeDefined();
+
+    const chalkVersion = packageJson.dependencies.chalk;
+    expect(chalkVersion).toMatch(/^[~^]?4\./);
+
+    // Chalk v5+ is pure ESM and would cause issues with some dependencies
+    expect(chalkVersion).not.toMatch(/^[~^]?5\./);
   });
 });
