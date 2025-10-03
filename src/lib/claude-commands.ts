@@ -1438,15 +1438,16 @@ Your choice:
 
 **IMPORTANT**: Before calling the CLI, save your generated plan structure to a file so the CLI can use it instead of keyword matching.
 
-\`\`\`bash
-# Create interaction directory
-mkdir -p .hodge/temp/plan-interaction/{{feature}}
+Use the Write tool to create the plan file:
 
-# Save the AI-generated plan structure as JSON
-cat > .hodge/temp/plan-interaction/{{feature}}/plan.json << 'EOF'
+**For epic plans with multiple stories:**
+\`\`\`
+Write to: .hodge/temp/plan-interaction/{{feature}}/plan.json
+
+Content (replace all {{placeholders}} with actual values):
 {
   "feature": "{{feature}}",
-  "type": "single|epic",
+  "type": "epic",
   "stories": [
     {
       "id": "{{feature}}.1",
@@ -1469,11 +1470,13 @@ cat > .hodge/temp/plan-interaction/{{feature}}/plan.json << 'EOF'
   "estimatedDays": {{days}},
   "createdAt": "{{current_iso_timestamp}}"
 }
-EOF
 \`\`\`
 
 **For single-issue plans:**
-\`\`\`json
+\`\`\`
+Write to: .hodge/temp/plan-interaction/{{feature}}/plan.json
+
+Content:
 {
   "feature": "{{feature}}",
   "type": "single",
@@ -1955,13 +1958,12 @@ Your choice [a/r/e/c]:
 ### Based on User Choice:
 
 **If (a) Approve:**
-Save the message to the interaction state and proceed with shipping:
-\`\`\`bash
-# Save the approved message to both ui.md AND state.json for hodge ship to use
-mkdir -p .hodge/temp/ship-interaction/{{feature}}
+Save the message to the interaction state and proceed with shipping.
 
-# Save to ui.md for display
-cat > .hodge/temp/ship-interaction/{{feature}}/ui.md << 'EOF'
+Use the Write tool to save the approved message to both ui.md AND state.json (Write tool creates parent directories automatically):
+
+**Write to:** \`.hodge/temp/ship-interaction/{{feature}}/ui.md\`
+\`\`\`markdown
 # Ship Commit - {{feature}}
 
 ## Approved Commit Message
@@ -1969,10 +1971,10 @@ cat > .hodge/temp/ship-interaction/{{feature}}/ui.md << 'EOF'
 \`\`\`
 [The approved commit message]
 \`\`\`
-EOF
+\`\`\`
 
-# Save to state.json with "edited" status so ship command uses it
-cat > .hodge/temp/ship-interaction/{{feature}}/state.json << 'EOF'
+**Write to:** \`.hodge/temp/ship-interaction/{{feature}}/state.json\`
+\`\`\`json
 {
   "command": "ship",
   "feature": "{{feature}}",
@@ -1991,9 +1993,12 @@ cat > .hodge/temp/ship-interaction/{{feature}}/state.json << 'EOF'
     }
   ]
 }
-EOF
+\`\`\`
 
-# Run ship with the message (it will detect and use the edited state)
+**Important**: Replace \`{{feature}}\` and \`{{current_iso_timestamp}}\` with actual values, and insert the actual approved commit message in the appropriate locations.
+
+Finally, run ship with the message (it will detect and use the edited state):
+\`\`\`bash
 hodge ship "{{feature}}"
 \`\`\`
 
@@ -2009,12 +2014,11 @@ Ask the user to provide their edited version:
 Please provide your edited commit message:
 (Paste the complete message below)
 \`\`\`
-Then save their edited version to state files:
-\`\`\`bash
-# Save the edited message to both ui.md AND state.json
-mkdir -p .hodge/temp/ship-interaction/{{feature}}
 
-cat > .hodge/temp/ship-interaction/{{feature}}/ui.md << 'EOF'
+Then use the Write tool to save their edited version to state files (Write tool creates parent directories automatically):
+
+**Write to:** \`.hodge/temp/ship-interaction/{{feature}}/ui.md\`
+\`\`\`markdown
 # Ship Commit - {{feature}}
 
 ## Edited Commit Message
@@ -2022,9 +2026,10 @@ cat > .hodge/temp/ship-interaction/{{feature}}/ui.md << 'EOF'
 \`\`\`
 [User's edited commit message]
 \`\`\`
-EOF
+\`\`\`
 
-cat > .hodge/temp/ship-interaction/{{feature}}/state.json << 'EOF'
+**Write to:** \`.hodge/temp/ship-interaction/{{feature}}/state.json\`
+\`\`\`json
 {
   "command": "ship",
   "feature": "{{feature}}",
@@ -2043,9 +2048,12 @@ cat > .hodge/temp/ship-interaction/{{feature}}/state.json << 'EOF'
     }
   ]
 }
-EOF
+\`\`\`
 
-# Run ship with the edited message
+**Important**: Replace \`{{feature}}\` and \`{{current_iso_timestamp}}\` with actual values, and insert the user's actual edited commit message.
+
+Finally, run ship with the edited message:
+\`\`\`bash
 hodge ship "{{feature}}"
 \`\`\`
 
@@ -2153,18 +2161,18 @@ After gathering responses, analyze and create enriched lesson:
    - Lessons structure similar to \`HODGE-003-feature-extraction.md\`
 
 3. **Create finalized lesson**:
+
+   First, generate descriptive slug from feature title:
    \`\`\`bash
-   # Generate descriptive slug from feature title
-   slug=$(echo "$feature" | tr '[:upper:]' '[:lower:]' | sed 's/hodge-//' | sed 's/[^a-z0-9]/-/g')
+   slug=$(echo "{{feature}}" | tr '[:upper:]' '[:lower:]' | sed 's/hodge-//' | sed 's/[^a-z0-9]/-/g')
+   echo "Lesson file will be: .hodge/lessons/{{feature}}-\${slug}.md"
+   \`\`\`
 
-   # Create lessons directory if needed
-   mkdir -p .hodge/lessons
+   Then use the Write tool to create the enriched lesson (Write tool creates parent directories automatically):
 
-   # Write enriched lesson with descriptive filename
-   lessons_file=".hodge/lessons/\${feature}-\${slug}.md"
-
-   cat > "$lessons_file" << EOF
-# Lessons Learned: $feature
+   **Write to:** \`.hodge/lessons/{{feature}}-{{slug}}.md\`
+   \`\`\`markdown
+# Lessons Learned: {{feature}}
 
 ## Feature: [Feature Title]
 
@@ -2193,10 +2201,14 @@ After gathering responses, analyze and create enriched lesson:
 [List related decisions from decisions.md]
 
 ---
-_Documented: $(date +%Y-%m-%d)_
-EOF
+_Documented: {{current_date}}_
+\`\`\`
 
-   echo "✅ Lessons documented at: $lessons_file"
+   **Important**: Replace \`{{feature}}\`, \`{{slug}}\`, and \`{{current_date}}\` with actual values, and fill in all bracketed sections with the enriched content.
+
+   Then confirm to the user:
+   \`\`\`bash
+   echo "✅ Lessons documented at: .hodge/lessons/{{feature}}-{{slug}}.md"
    \`\`\`
 
 4. **Preserve draft** (per HODGE-299 decision):

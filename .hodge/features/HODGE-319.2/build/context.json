@@ -1,0 +1,9 @@
+{
+  "mode": "build",
+  "feature": "HODGE-319.2",
+  "timestamp": "2025-10-03T15:36:14.654Z",
+  "standards": "recommended",
+  "validation": "suggested",
+  "pmIssue": "e74e33f5-6fbd-414b-9283-492d41e20839",
+  "pmTool": "linear"
+}

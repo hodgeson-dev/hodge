@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-319.2",
+  "timestamp": "2025-10-03T15:54:32.292Z",
+  "issueId": "e74e33f5-6fbd-414b-9283-492d41e20839",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "refactor: replace bash heredoc with Write tool in /plan and /ship commands (HODGE-319.2)\n\n## What Changed\n- **.claude/commands/plan.md** (19 lines modified)\n  - Replaced `cat > file << 'EOF'` with Write tool instructions\n  - Removed `mkdir -p` commands (Write tool auto-creates directories)\n  - Added clear placeholder replacement guidance\n\n- **.claude/commands/ship.md** (73 lines modified)\n  - Replaced bash heredoc at 3 locations:\n    - Interaction state files (ui.md, state.json) - 2 instances\n    - Lessons documentation - 1 instance\n  - Removed all `mkdir -p` commands\n  - Added Write tool instructions with explicit placeholder documentation\n\n- **src/lib/claude-commands.ts** (92 lines modified)\n  - Auto-synced from template changes via sync:commands script\n\n- **src/commands/hodge-319.2.smoke.test.ts** (NEW - 145 lines)\n  - 10 comprehensive smoke tests validating template changes\n  - Tests verify bash heredoc removal, Write tool adoption, mkdir elimination\n  - File path consistency validation\n\n## Why This Change\nThe /plan and /ship slash commands used bash heredoc (`cat > file << 'EOF'`) to create temporary interaction files, which displayed visible bash commands to users during AI workflows. This created unnecessary noise in the UX. The Write tool provides invisible file creation while maintaining identical behavior.\n\nThis is a template-only refactoring with zero CLI code changes, improving user experience without altering functionality.\n\n## Implementation Approach\n- Template-only enhancement pattern\n- Zero breaking changes (same file paths, same behavior, cleaner method)\n- Comprehensive smoke test coverage (10 tests, 100% passing)\n- Write tool handles directory creation automatically\n\n## Impact\n- ✅ **UX Improvement**: Temp file creation now invisible to users (no bash commands shown)\n- ✅ **Better Maintainability**: Write tool pattern simpler than bash heredoc\n- ✅ **Zero Breaking Changes**: File creation behavior identical, just cleaner implementation\n- ✅ **Well-tested**: 10 smoke tests verify template correctness\n- ✅ **All 689 tests passing**: Zero regressions\n\nCloses HODGE-319.2\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}

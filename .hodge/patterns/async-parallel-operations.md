@@ -1,7 +1,7 @@
 # Async Parallel Operations
 
 **Category**: performance
-**Frequency**: Used 8 times
+**Frequency**: Used 6 times
 **Confidence**: 100%
 
 ## Description
@@ -33,5 +33,5 @@ Promise.all(
 - 
 
 ---
-*First seen: 2025-10-03T15:21:59.886Z*
-*Last used: 2025-10-03T15:21:59.891Z*
+*First seen: 2025-10-03T15:54:32.368Z*
+*Last used: 2025-10-03T15:54:32.370Z*

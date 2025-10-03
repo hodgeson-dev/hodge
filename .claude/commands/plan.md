@@ -421,15 +421,16 @@ Your choice:
 
 **IMPORTANT**: Before calling the CLI, save your generated plan structure to a file so the CLI can use it instead of keyword matching.
 
-```bash
-# Create interaction directory
-mkdir -p .hodge/temp/plan-interaction/{{feature}}
+Use the Write tool to create the plan file:
 
-# Save the AI-generated plan structure as JSON
-cat > .hodge/temp/plan-interaction/{{feature}}/plan.json << 'EOF'
+**For epic plans with multiple stories:**
+```
+Write to: .hodge/temp/plan-interaction/{{feature}}/plan.json
+
+Content (replace all {{placeholders}} with actual values):
 {
   "feature": "{{feature}}",
-  "type": "single|epic",
+  "type": "epic",
   "stories": [
     {
       "id": "{{feature}}.1",
@@ -452,11 +453,13 @@ cat > .hodge/temp/plan-interaction/{{feature}}/plan.json << 'EOF'
   "estimatedDays": {{days}},
   "createdAt": "{{current_iso_timestamp}}"
 }
-EOF
 ```
 
 **For single-issue plans:**
-```json
+```
+Write to: .hodge/temp/plan-interaction/{{feature}}/plan.json
+
+Content:
 {
   "feature": "{{feature}}",
   "type": "single",

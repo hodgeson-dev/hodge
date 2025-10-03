@@ -1,1 +1,15 @@
-found 0 vulnerabilities
+# npm audit report
+
+fast-redact  *
+fast-redact vulnerable to prototype pollution - https://github.com/advisories/GHSA-ffrw-9mx8-89p8
+fix available via `npm audit fix --force`
+Will install pino@10.0.0, which is a breaking change
+node_modules/fast-redact
+  pino  5.0.0-rc.1 - 9.11.0
+  Depends on vulnerable versions of fast-redact
+  node_modules/pino
+
+2 low severity vulnerabilities
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
