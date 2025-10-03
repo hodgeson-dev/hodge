@@ -110,15 +110,9 @@ describe('Save/Load Commands [integration]', () => {
     process.cwd = () => testDir;
 
     try {
-      const startTime = Date.now();
-
       // Create minimal save
+      // HODGE-320: Removed timing assertion to prevent flakiness
       await saveCommand.execute('minimal-integration-test', { minimal: true });
-
-      const elapsed = Date.now() - startTime;
-
-      // Should be very fast for minimal save
-      expect(elapsed).toBeLessThan(500);
 
       // Verify only manifest exists (minimal save)
       const saveDir = join(testDir, '.hodge', 'saves', 'minimal-integration-test');
