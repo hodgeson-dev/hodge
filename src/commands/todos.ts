@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { findTodos, displayTodos } from '../lib/todo-checker';
+import { findTodos, displayTodos } from '../lib/todo-checker.js';
 
 export interface TodosOptions {
   dir?: string;

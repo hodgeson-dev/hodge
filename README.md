@@ -6,6 +6,10 @@ AI development framework: Freedom to explore, discipline to build, confidence to
 
 🚧 **Alpha Development** - Not ready for production use
 
+## Requirements
+
+- **Node.js** ≥ 20.0.0
+
 ## Installation
 
 ```bash

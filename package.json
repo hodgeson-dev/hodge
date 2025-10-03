@@ -2,6 +2,7 @@
   "name": "@agile-explorations/hodge",
   "version": "0.1.0-alpha.1",
   "description": "AI development framework: Freedom to explore, discipline to build, confidence to ship",
+  "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
@@ -38,7 +39,7 @@
     "logs:follow": "tsx src/bin/hodge.ts logs --follow"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   },
   "dependencies": {
     "@octokit/rest": "^22.0.0",

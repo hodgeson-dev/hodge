@@ -5,8 +5,13 @@
  * This ensures that manual updates to slash commands are included in the build
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { execSync } from 'child_process';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const COMMANDS_DIR = path.join(__dirname, '..', '.claude', 'commands');
 const OUTPUT_FILE = path.join(__dirname, '..', 'src', 'lib', 'claude-commands.ts');
@@ -96,7 +101,6 @@ async function syncCommands() {
 
     // Format the generated file with Prettier
     try {
-      const { execSync } = require('child_process');
       execSync(`npx prettier --write ${OUTPUT_FILE}`, { stdio: 'pipe' });
       console.log('✨ Formatted generated file with Prettier');
     } catch (prettierError) {
@@ -113,8 +117,8 @@ async function syncCommands() {
 }
 
 // Run if called directly
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   syncCommands();
 }
 
-module.exports = { syncCommands };
+export { syncCommands };

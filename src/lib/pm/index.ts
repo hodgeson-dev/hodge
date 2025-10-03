@@ -2,15 +2,15 @@
  * PM Module - Exports and factory
  */
 
-import { LinearAdapter } from './linear-adapter';
-import { BasePMAdapter } from './base-adapter';
-import { PMTool, PMConfig, PMOverrides, HodgeMode } from './types';
+import { LinearAdapter } from './linear-adapter.js';
+import { BasePMAdapter } from './base-adapter.js';
+import { PMTool, PMConfig, PMOverrides, HodgeMode } from './types.js';
 
-export * from './types';
-export { BasePMAdapter } from './base-adapter';
-export { LinearAdapter } from './linear-adapter';
-export { StateConventions } from './conventions';
-export { validatePMEnvironment, isPMAvailable, printValidationResults } from './env-validator';
+export * from './types.js';
+export { BasePMAdapter } from './base-adapter.js';
+export { LinearAdapter } from './linear-adapter.js';
+export { StateConventions } from './conventions.js';
+export { validatePMEnvironment, isPMAvailable, printValidationResults } from './env-validator.js';
 
 /**
  * Factory to create appropriate PM adapter

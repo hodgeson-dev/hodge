@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import chalk from 'chalk';
-import { LocalPMAdapter } from './pm/local-pm-adapter';
+import { LocalPMAdapter } from './pm/local-pm-adapter.js';
 
 interface FeatureConfig {
   status: string;

@@ -1248,9 +1248,9 @@
   "TEST-006: Test PM creation": {
     "localID": "TEST-006: Test PM creation",
     "created": "2025-09-30T03:44:33.069Z",
-    "externalID": "e0ff643e-a40e-4dcb-8ffc-66b20dbe07f4",
+    "externalID": "95102a5a-c6a9-4fbe-956d-71f2653e710c",
     "pmTool": "linear",
-    "lastSynced": "2025-10-02T22:49:25.664Z"
+    "lastSynced": "2025-10-03T05:38:38.320Z"
   },
   "HODGE-301": {
     "localID": "HODGE-301",
@@ -1382,6 +1382,12 @@
     "localID": "HODGE-317: Fix hung Node processes in test-isolation integration tests",
     "created": "2025-10-02T22:18:43.207Z",
     "externalID": "5c582fc4-6b0e-42fb-87d5-64c7d9b8793f",
+    "pmTool": "linear"
+  },
+  "HODGE-318: Fix CI ERR_REQUIRE_ESM error in Node 18.x quality checks workflow": {
+    "localID": "HODGE-318: Fix CI ERR_REQUIRE_ESM error in Node 18.x quality checks workflow",
+    "created": "2025-10-02T23:38:15.737Z",
+    "externalID": "fb8157e7-35d3-41c4-917d-322becea7436",
     "pmTool": "linear"
   }
 }

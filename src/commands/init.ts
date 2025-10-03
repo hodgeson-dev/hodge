@@ -8,10 +8,10 @@ import chalk from 'chalk';
 import ora from 'ora';
 import path from 'path';
 import fs from 'fs-extra';
-import { ProjectDetector, ProjectInfo, DetectionError, ValidationError } from '../lib/detection';
-import { StructureGenerator, StructureGenerationError } from '../lib/structure-generator';
-import { PMTool } from '../lib/pm/types';
-import { installClaudeSlashCommands } from './init-claude-commands';
+import { ProjectDetector, ProjectInfo, DetectionError, ValidationError } from '../lib/detection.js';
+import { StructureGenerator, StructureGenerationError } from '../lib/structure-generator.js';
+import { PMTool } from '../lib/pm/types.js';
+import { installClaudeSlashCommands } from './init-claude-commands.js';
 
 /**
  * Valid PM tool values that can be selected by users

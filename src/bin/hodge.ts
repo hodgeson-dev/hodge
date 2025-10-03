@@ -1,7 +1,11 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import { readFileSync } from 'fs';
-import { join } from 'path';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 interface PackageJson {
   version: string;
@@ -29,7 +33,7 @@ program
   .option('-i, --interactive', 'Interactive setup with PM tool selection and pattern learning')
   .option('-y, --yes', 'Accept all defaults without prompts')
   .action(async (options: { force?: boolean; interactive?: boolean; yes?: boolean }) => {
-    const { InitCommand } = await import('../commands/init');
+    const { InitCommand } = await import('../commands/init.js');
     const initCommand = new InitCommand();
     await initCommand.execute(options);
   });
@@ -46,7 +50,7 @@ const exploreCmd = program
       feature: string,
       options: { force?: boolean; fromSpec?: string; prePopulate?: boolean; decisions?: string[] }
     ) => {
-      const { ExploreCommand } = await import('../commands/explore');
+      const { ExploreCommand } = await import('../commands/explore.js');
       const exploreCommand = new ExploreCommand();
       await exploreCommand.execute(feature, options);
     }
@@ -57,7 +61,7 @@ const buildCmd = program
   .description('[Internal] Build a feature (uses current context if not specified)')
   .option('--skip-checks', 'Skip exploration and decision checks')
   .action(async (feature: string | undefined, options: { skipChecks?: boolean }) => {
-    const { BuildCommand } = await import('../commands/build');
+    const { BuildCommand } = await import('../commands/build.js');
     const buildCommand = new BuildCommand();
     await buildCommand.execute(feature, options);
   });
@@ -69,7 +73,7 @@ const hardenCmd = program
   .option('--auto-fix', 'Attempt to auto-fix linting issues')
   .action(
     async (feature: string | undefined, options: { skipTests?: boolean; autoFix?: boolean }) => {
-      const { HardenCommand } = await import('../commands/harden');
+      const { HardenCommand } = await import('../commands/harden.js');
       const hardenCommand = new HardenCommand();
       await hardenCommand.execute(feature, options);
     }
@@ -79,7 +83,7 @@ const statusCmd = program
   .command('status [feature]')
   .description('[Internal] Show status of features')
   .action(async (feature?: string) => {
-    const { StatusCommand } = await import('../commands/status');
+    const { StatusCommand } = await import('../commands/status.js');
     const statusCommand = new StatusCommand();
     await statusCommand.execute(feature);
   });
@@ -91,7 +95,7 @@ const contextCmd = program
   .option('--recent', 'Load most recent saved session')
   .option('--feature <feature>', 'Load context for specific feature')
   .action(async (options: { list?: boolean; recent?: boolean; feature?: string }) => {
-    const { ContextCommand } = await import('../commands/context');
+    const { ContextCommand } = await import('../commands/context.js');
     const contextCommand = new ContextCommand();
     await contextCommand.execute(options);
   });
@@ -107,7 +111,7 @@ const saveCmd = program
       name: string | undefined,
       options: { minimal?: boolean; incremental?: boolean; type?: string }
     ) => {
-      const { SaveCommand } = await import('../commands/save');
+      const { SaveCommand } = await import('../commands/save.js');
       const saveCommand = new SaveCommand();
       await saveCommand.execute(name, {
         minimal: options.minimal,
@@ -129,7 +133,7 @@ const loadCmd = program
       name: string | undefined,
       options: { recent?: boolean; list?: boolean; lazy?: boolean }
     ) => {
-      const { LoadCommand } = await import('../commands/load');
+      const { LoadCommand } = await import('../commands/load.js');
       const loadCommand = new LoadCommand();
       await loadCommand.execute(name, {
         recent: options.recent,
@@ -144,7 +148,7 @@ const decideCmd = program
   .description('[Internal] Record a project decision')
   .option('-f, --feature <feature>', 'Associate decision with a specific feature')
   .action(async (decision: string, options: { feature?: string }) => {
-    const { DecideCommand } = await import('../commands/decide');
+    const { DecideCommand } = await import('../commands/decide.js');
     const decideCommand = new DecideCommand();
     await decideCommand.execute(decision, options);
   });
@@ -155,7 +159,7 @@ program
   .option('--lanes <number>', 'Number of development lanes', parseInt)
   .option('--create-pm', 'Create PM issues in Linear after saving plan')
   .action(async (feature: string | undefined, options: { lanes?: number; createPm?: boolean }) => {
-    const { PlanCommand } = await import('../commands/plan');
+    const { PlanCommand } = await import('../commands/plan.js');
     const planCommand = new PlanCommand();
     await planCommand.execute({ feature, ...options });
   });
@@ -191,7 +195,7 @@ const shipCmd = program
         continuePush?: boolean;
       }
     ) => {
-      const { ShipCommand } = await import('../commands/ship');
+      const { ShipCommand } = await import('../commands/ship.js');
       const shipCommand = new ShipCommand();
       await shipCommand.execute(feature, options);
     }
@@ -203,7 +207,7 @@ const todosCmd = program
   .option('-p, --pattern <pattern>', 'Glob pattern for files to search')
   .option('--json', 'Output as JSON')
   .action(async (options: { pattern?: string; json?: boolean }) => {
-    const { TodosCommand } = await import('../commands/todos');
+    const { TodosCommand } = await import('../commands/todos.js');
     const todosCommand = new TodosCommand();
     todosCommand.execute(options);
   });
@@ -212,7 +216,7 @@ const linkCmd = program
   .command('link <localID> <externalID>')
   .description('[Internal] Link feature IDs')
   .action(async (localID: string, externalID: string) => {
-    const { LinkCommand } = await import('../commands/link');
+    const { LinkCommand } = await import('../commands/link.js');
     const linkCommand = new LinkCommand();
     await linkCommand.execute(localID, externalID);
   });
@@ -236,7 +240,7 @@ program
       clear?: boolean;
       pretty?: boolean;
     }) => {
-      const { LogsCommand } = await import('../commands/logs');
+      const { LogsCommand } = await import('../commands/logs.js');
       const logsCommand = new LogsCommand();
       await logsCommand.execute({
         ...options,

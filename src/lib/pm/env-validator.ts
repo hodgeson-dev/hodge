@@ -2,7 +2,7 @@
  * Environment variable validation for PM integrations
  */
 
-import { PMTool } from './types';
+import { PMTool } from './types.js';
 
 export interface PMEnvironmentConfig {
   tool: PMTool;

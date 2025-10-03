@@ -6,7 +6,7 @@
 
 import fs from 'fs-extra';
 import path from 'path';
-import { ProjectInfo } from './detection';
+import { ProjectInfo } from './detection.js';
 import {
   getLinearScripts,
   getGitHubScripts,
@@ -15,8 +15,8 @@ import {
   getAsanaScripts,
   getCommonScripts,
   PMScript,
-} from './pm-scripts-templates';
-import { installHodgeWay } from './install-hodge-way';
+} from './pm-scripts-templates.js';
+import { installHodgeWay } from './install-hodge-way.js';
 
 /**
  * Custom error class for structure generation errors

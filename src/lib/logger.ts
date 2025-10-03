@@ -5,7 +5,8 @@
  * and proper separation of concerns for different execution contexts.
  */
 
-import pino from 'pino';
+import { pino } from 'pino';
+import type { LoggerOptions } from 'pino';
 import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
@@ -55,43 +56,37 @@ const errorDestination = pino.destination({
   mkdir: true,
 });
 
-// Create the base logger
-export const logger = pino(
-  {
-    level: process.env.LOG_LEVEL ?? 'info',
-    timestamp: pino.stdTimeFunctions.isoTime,
-    formatters: {
-      level: (label: string) => ({ level: label }),
-      bindings: (bindings: Record<string, unknown>) => ({
-        pid: bindings.pid as number,
-        // Remove hostname for privacy
-      }),
-    },
-    base: {
-      // Base context for all logs
-      hodgeVersion: process.env.npm_package_version,
-    },
+// Shared logger configuration for consistency
+const baseLoggerOptions: LoggerOptions = {
+  timestamp: pino.stdTimeFunctions.isoTime,
+  formatters: {
+    level: (label: string) => ({ level: label }),
+    bindings: (bindings: Record<string, unknown>) => ({
+      pid: bindings.pid as number,
+      // Remove hostname for privacy
+    }),
   },
-  logDestination
-);
+  base: {
+    // Base context for all logs
+    hodgeVersion: process.env.npm_package_version,
+  },
+};
+
+// Create the base logger
+const loggerOptions: LoggerOptions = {
+  ...baseLoggerOptions,
+  level: process.env.LOG_LEVEL ?? 'info',
+};
+
+export const logger = pino(loggerOptions, logDestination);
 
 // Also create error-only logger
-export const errorLogger = pino(
-  {
-    level: 'error',
-    timestamp: pino.stdTimeFunctions.isoTime,
-    formatters: {
-      level: (label: string) => ({ level: label }),
-      bindings: (bindings: Record<string, unknown>) => ({
-        pid: bindings.pid as number,
-      }),
-    },
-    base: {
-      hodgeVersion: process.env.npm_package_version,
-    },
-  },
-  errorDestination
-);
+const errorLoggerOptions: LoggerOptions = {
+  ...baseLoggerOptions,
+  level: 'error',
+};
+
+export const errorLogger = pino(errorLoggerOptions, errorDestination);
 
 /**
  * Create a child logger for a specific command

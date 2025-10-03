@@ -2,8 +2,8 @@
  * Base PM Adapter - Abstract class for PM tool integrations
  */
 
-import { StateConventions } from './conventions';
-import { PMAdapterOptions, PMIssue, PMState, PMOverrides, HodgeMode, StateType } from './types';
+import { StateConventions } from './conventions.js';
+import { PMAdapterOptions, PMIssue, PMState, PMOverrides, HodgeMode, StateType } from './types.js';
 import * as fs from 'fs';
 import * as path from 'path';
 

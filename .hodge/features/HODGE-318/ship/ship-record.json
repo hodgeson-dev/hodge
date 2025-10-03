@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-318",
+  "timestamp": "2025-10-03T05:38:46.368Z",
+  "issueId": "HODGE-318",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "fix: complete ESM migration and fix __dirname compatibility (HODGE-318)\n\n## What Changed\n- **Core ESM Fixes** (2 files)\n  - src/bin/hodge.ts: Added ESM-compatible __dirname using fileURLToPath\n  - src/lib/install-hodge-way.ts: Added ESM-compatible __dirname using fileURLToPath\n\n- **ESM Import Updates** (15 files)\n  - Added .js extensions to all relative imports for ESM compatibility\n  - Updated scripts/sync-claude-commands.js to use ES modules\n  - Fixed pino logger imports to use named imports\n\n- **Configuration Updates** (4 files)\n  - package.json: Added \"type\": \"module\", updated engines to >=20.0.0\n  - tsconfig.json: Set module/moduleResolution to \"NodeNext\"\n  - .github/workflows/quality.yml: Removed Node 18.x, test on 20.x and 22.x\n  - README.md: Documented Node.js ≥ 20.0.0 requirement\n\n- **Comprehensive Testing** (2 new test files, 11 tests total)\n  - src/lib/esm-config.smoke.test.ts: 5 smoke tests for configuration verification\n  - src/lib/esm-config.integration.test.ts: 6 integration tests for ESM functionality\n\n## Why This Change\nCI was failing with ERR_REQUIRE_ESM errors because package.json had \"type\": \"module\" but the code still used CommonJS __dirname patterns which don't exist in ES modules. This incomplete ESM migration caused builds to fail and the CLI to crash when executed.\n\n## Implementation Approach\n1. Discovered actual bug through integration testing - config was ESM-ready but code wasn't\n2. Fixed __dirname usage using standard ESM pattern: `fileURLToPath(import.meta.url)`\n3. Added .js extensions to all relative imports (required by NodeNext module resolution)\n4. Created comprehensive test suite to prevent regressions\n\n## Impact\n- ✅ **CI Fixed**: Quality checks workflow now passes on Node 20.x and 22.x\n- ✅ **CLI Works**: hodge command executes without ERR_REQUIRE_ESM crashes\n- ✅ **Future-proof**: Full ESM compatibility with modern Node.js\n- ✅ **Well-tested**: 11 new tests (5 smoke + 6 integration) verify ESM functionality\n- ✅ **All 667 tests passing**: Zero breaking changes to existing functionality\n\nCloses HODGE-318\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}

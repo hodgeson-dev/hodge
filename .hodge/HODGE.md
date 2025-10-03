@@ -3,20 +3,39 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: HODGE-314
-**Mode**: shipped
-**PM Issue**: HODGE-314
-**Last Updated**: 2025-10-02T21:29:01.803Z
+**Feature**: HODGE-318
+**Mode**: build
+**PM Issue**: HODGE-318
+**Last Updated**: 2025-10-03T04:52:33.874Z
 ## Current Session
-**Resumed**: 14 hours ago
-**Progress**: Explored HODGE-314 - template ready for AI approach generation
-**Working on**: HODGE-314 (explore mode)
+**Resumed**: 6 hours ago
+**Progress**: Explored HODGE-318 - template ready for AI approach generation
+**Working on**: HODGE-318 (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-314. Explored HODGE-314 - template ready for AI approach generation
+You were helping with HODGE-318. Explored HODGE-318 - template ready for AI approach generation
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
-- **2025-10-02**: Keep HODGE-314 scoped to /explore only, defer other commands to future work - validates conversational pattern in one place before scaling, allows gathering lessons from real usage, reduces risk and scope, future features can apply pattern to /build, /decide, /ship after validation
+- **2025-10-02**: Error if --feature directory doesn't exist - provides clear feedback to user, prevents typos in feature names, encourages proper workflow (run /explore before /decide), aligns with discipline principle
+- **2025-10-02**: No migration - leave existing decision
+- **2025-10-02**: Append decisions to accumulate in one file - multiple decisions for same feature build up in decisions
+- **2025-10-02**: Use same template format as global decisions
+- **2025-10-01**: Structure PM issue description with Problem Statement above Decisions Made - extract problem statement from exploration
+- **2025-10-01**: Make Title field required for new explorations only - /explore template must generate Title field, existing features without Title continue using fallback patterns, no validation failure just ensures AI generates it for new explorations
+- **2025-10-01**: AI-generated title field in exploration
+- **2025-10-01**: Use 'No description available' fallback only when genuinely no content exists - no exploration
+- **2025-10-01**: Fix exploration
+- **2025-10-01**: Smart Description Extraction approach - enhance getFeatureDescription() to extract from decisions automatically when exploration
+- **2025-10-01**: No backward compatibility concerns - This is a bug fix not a feature change, no evidence of dependencies on incorrect behavior, proceed with fix directly
+- **2025-10-01**: Update /hodge template with clarification - Add note in
+- **2025-10-01**: Skip --project flag for now - Don't add hodge context --project flag in this fix, keeps scope minimal and focused on bug fix, can add later if users request it
+- **2025-10-01**: No staleness check for sessions - Always use session feature for mode detection regardless of age, keeps implementation simple, user can manually start new work if needed
+- **2025-10-01**: Use session feature for mode detection - Load session first in loadDefaultContext(), use session
+- **2025-10-01**: Write feature decisions to feature-specific decision
+- **2025-10-01**: Add 'Shipped' as separate progress line (6th checkbox) - provides clear progression through all stages: Exploration → Decision → Build → Harden → Production Ready → Shipped
+- **2025-10-01**: Use ship-record
+- **2025-10-01**: Check feature root for decision
+- **2025-10-01**: Use 'shipped' as mode name for completed features - matches existing phase terminology and natural past tense of ship phase
 
 ## Active Standards
 
@@ -100,18 +119,17 @@ Suggested next: Review exploration and decide with 'hodge decide'
 
 ## Working Files
 
-- `.hodge/features/HODGE-314/explore/context.json`
-- `.hodge/features/HODGE-314/explore/exploration.md`
-- `.hodge/features/HODGE-314/explore/test-intentions.md`
-- `.hodge/features/HODGE-314/build/build-plan.md`
-- `.hodge/features/HODGE-314/build/context.json`
-- `.hodge/features/HODGE-314/ship/lessons-draft.md`
-- `.hodge/features/HODGE-314/ship/release-notes.md`
-- `.hodge/features/HODGE-314/ship/ship-record.json`
+- `.hodge/features/HODGE-318/explore/context.json`
+- `.hodge/features/HODGE-318/explore/exploration.md`
+- `.hodge/features/HODGE-318/explore/test-intentions.md`
+- `.hodge/features/HODGE-318/build/build-plan.md`
+- `.hodge/features/HODGE-318/build/context.json`
 
 ## Next Steps
 
-1. Feature completed. Start new work with `hodge explore <feature>`
+1. Complete implementation
+2. Run tests with `npm test`
+3. Harden with `hodge harden HODGE-318`
 
 
 ---

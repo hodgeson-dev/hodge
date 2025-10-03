@@ -2,7 +2,7 @@
  * Convention-based pattern matching for PM state detection
  */
 
-import { StateType, ConventionPattern, PMState } from './types';
+import { StateType, ConventionPattern, PMState } from './types.js';
 
 /**
  * State conventions for detecting PM tool state types

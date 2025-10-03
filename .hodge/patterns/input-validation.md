@@ -1,41 +1,31 @@
 # Input Validation
 
 **Category**: security
-**Frequency**: Used 4 times
-**Confidence**: 80%
+**Frequency**: Used 3 times
+**Confidence**: 60%
 
 ## Description
 Input validation before processing
 
 ## Examples
 
-### src/lib/config-manager.ts
+### src/lib/pm/base-adapter.ts
 ```typescript
-if (!this.configLoaded) {
-      await this.loadUserConfig();
-      await this.loadGeneratedConfig();
-      this.configLoaded = true;
-    }
-
-    // Merge all config sources with proper priority
-    ret
-```
-
-
-### src/lib/id-manager.ts
-```typescript
-if (!feature) {
+if (!targetState) {
       throw new Error
 ```
 
 
-### src/lib/pm/github-adapter.ts
+### src/lib/pm/env-validator.ts
 ```typescript
-if (!this.octokitLoaded) {
-      try {
-        // Dynamic import to avoid loading at module level
-        const { Octokit } = await import('@octokit/rest');
-        // Cast to our interface - we know 
+function validatePMEnvironment
+```
+
+
+### src/lib/pm/linear-adapter.ts
+```typescript
+if (!state) {
+        throw new Error
 ```
 
 
@@ -45,5 +35,5 @@ if (!this.octokitLoaded) {
 - 
 
 ---
-*First seen: 2025-09-29T20:23:48.718Z*
-*Last used: 2025-09-29T20:23:48.720Z*
+*First seen: 2025-10-03T05:38:46.446Z*
+*Last used: 2025-10-03T05:38:46.447Z*

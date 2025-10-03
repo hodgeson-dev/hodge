@@ -11,4 +11,4 @@ export interface HodgeConfig {
 }
 
 // Export PM module
-export * from './pm';
+export * from './pm/index.js';

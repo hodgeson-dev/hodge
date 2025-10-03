@@ -5,7 +5,7 @@
 import path from 'path';
 import fs from 'fs-extra';
 import chalk from 'chalk';
-import { getClaudeCommands } from '../lib/claude-commands';
+import { getClaudeCommands } from '../lib/claude-commands.js';
 
 // Simple logger for this module
 const log = {

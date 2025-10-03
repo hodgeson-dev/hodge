@@ -3,8 +3,8 @@
  */
 
 import { LinearClient } from '@linear/sdk';
-import { BasePMAdapter } from './base-adapter';
-import { PMAdapterOptions, PMIssue, PMState, StateType } from './types';
+import { BasePMAdapter } from './base-adapter.js';
+import { PMAdapterOptions, PMIssue, PMState, StateType } from './types.js';
 
 export class LinearAdapter extends BasePMAdapter {
   private client: LinearClient;

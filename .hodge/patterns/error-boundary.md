@@ -1,22 +1,34 @@
 # Error Boundary
 
 **Category**: error-handling
-**Frequency**: Used 3 times
-**Confidence**: 60%
+**Frequency**: Used 8 times
+**Confidence**: 100%
 
 ## Description
 Consistent error handling with logging
 
 ## Examples
 
-### src/commands/explore.ts
+### scripts/sync-claude-commands.js
 ```typescript
-.catch(() => {
-          // Silently handle PM update failures
-        });
-      } else if (!featureID) {
-        // It looks like an ID but we couldn't find it
-        // Create a new feature and lin
+try {
+    // Check if commands directory exists
+    if (!fs.existsSync(COMMANDS_DIR)) {
+      console.error('❌ Commands directory not found:', COMMANDS_DIR);
+      process.exit(1);
+    }
+
+    // Read 
+```
+
+
+### src/commands/init.ts
+```typescript
+try {
+      this.detector = new ProjectDetector(rootPath);
+      this.generator = new StructureGenerator(rootPath);
+    } catch (error) {
+      if (error instanceof ValidationError || error instanceof
 ```
 
 
@@ -31,14 +43,7 @@ try {
   }
 }
 
-const logDir 
-```
-
-
-### src/lib/logger.ts
-```typescript
-.catch((error: unknown) => {
-  logger.error
+// Detect if 
 ```
 
 
@@ -48,5 +53,5 @@ const logDir
 - 
 
 ---
-*First seen: 2025-09-29T01:56:40.289Z*
-*Last used: 2025-09-29T01:56:40.292Z*
+*First seen: 2025-10-03T05:38:46.441Z*
+*Last used: 2025-10-03T05:38:46.447Z*
