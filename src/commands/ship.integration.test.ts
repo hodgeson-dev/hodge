@@ -8,13 +8,7 @@ describe('Ship Command - Integration Tests', () => {
     await withTestWorkspace('ship-integration-full', async (workspace) => {
       // Setup complete .hodge structure
       await workspace.writeFile('.hodge/standards.md', '# Standards');
-      await workspace.writeFile(
-        '.hodge/features/test-feature/build/context.json',
-        JSON.stringify({
-          feature: 'test-feature',
-          mode: 'build',
-        })
-      );
+      await workspace.writeFile('.hodge/features/test-feature/build/build-plan.md', '# Build Plan');
 
       // Create pre-approved state file (simulating slash command)
       const state = {
@@ -81,14 +75,8 @@ describe('Ship Command - Integration Tests', () => {
 
   integrationTest('should fallback to default message when no state exists', async () => {
     await withTestWorkspace('ship-integration-fallback', async (workspace) => {
-      // Setup minimal structure
-      await workspace.writeFile(
-        '.hodge/features/test-feature/build/context.json',
-        JSON.stringify({
-          feature: 'test-feature',
-          mode: 'build',
-        })
-      );
+      // Setup minimal build structure
+      await workspace.writeFile('.hodge/features/test-feature/build/build-plan.md', '# Build Plan');
 
       // Initialize git repo
       await workspace.run('git init');
@@ -122,13 +110,8 @@ describe('Ship Command - Integration Tests', () => {
 
   integrationTest('should handle corrupted state gracefully and fallback', async () => {
     await withTestWorkspace('ship-integration-corrupted', async (workspace) => {
-      await workspace.writeFile(
-        '.hodge/features/test-feature/build/context.json',
-        JSON.stringify({
-          feature: 'test-feature',
-          mode: 'build',
-        })
-      );
+      // Setup minimal build structure
+      await workspace.writeFile('.hodge/features/test-feature/build/build-plan.md', '# Build Plan');
 
       // Create corrupted state file
       await workspace.writeFile(
@@ -164,13 +147,8 @@ describe('Ship Command - Integration Tests', () => {
 
   integrationTest('should create ship record and release notes', async () => {
     await withTestWorkspace('ship-integration-records', async (workspace) => {
-      await workspace.writeFile(
-        '.hodge/features/test-feature/build/context.json',
-        JSON.stringify({
-          feature: 'test-feature',
-          mode: 'build',
-        })
-      );
+      // Setup minimal build structure
+      await workspace.writeFile('.hodge/features/test-feature/build/build-plan.md', '# Build Plan');
 
       // Initialize git repo
       await workspace.run('git init');
@@ -216,13 +194,8 @@ describe('Ship Command - Integration Tests', () => {
 
   integrationTest('should skip push to protected branch without prompting', async () => {
     await withTestWorkspace('ship-integration-protected', async (workspace) => {
-      await workspace.writeFile(
-        '.hodge/features/test-feature/build/context.json',
-        JSON.stringify({
-          feature: 'test-feature',
-          mode: 'build',
-        })
-      );
+      // Setup minimal build structure
+      await workspace.writeFile('.hodge/features/test-feature/build/build-plan.md', '# Build Plan');
 
       // Initialize git repo on main branch (protected)
       await workspace.run('git init -b main');

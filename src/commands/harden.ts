@@ -110,19 +110,6 @@ export class HardenCommand {
       }
 
       // Create harden context
-      const context = {
-        mode: 'harden',
-        feature,
-        timestamp: new Date().toISOString(),
-        standards: 'enforced',
-        validation: 'required',
-        pmIssue: issueId,
-        pmTool: pmTool ?? null,
-      };
-
-      // Save context
-      await fs.writeFile(path.join(hardenDir, 'context.json'), JSON.stringify(context, null, 2));
-
       console.log(chalk.bold('In Harden Mode:'));
       console.log('  • Standards are ' + chalk.red('strictly enforced'));
       console.log('  • All tests must ' + chalk.red('pass'));

@@ -100,7 +100,7 @@ describe('ContextCommand - HODGE-297 Enhanced Loading', () => {
 
       // Create test files
       await fs.writeFile(path.join(buildDir, 'build-plan.md'), '# Build Plan');
-      await fs.writeFile(path.join(buildDir, 'context.json'), '{}');
+      await fs.writeFile(path.join(buildDir, 'other-data.json'), '{"test": true}');
       await fs.writeFile(path.join(buildDir, 'notes.txt'), 'notes'); // Should be ignored
 
       // Execute with tmpDir basePath
@@ -110,7 +110,7 @@ describe('ContextCommand - HODGE-297 Enhanced Loading', () => {
       // Should find 2 files (.md and .json, not .txt)
       expect(files).toHaveLength(2);
       expect(files).toContain('build-plan.md');
-      expect(files).toContain('context.json');
+      expect(files).toContain('other-data.json');
       expect(files).not.toContain('notes.txt');
     } finally {
       // Cleanup

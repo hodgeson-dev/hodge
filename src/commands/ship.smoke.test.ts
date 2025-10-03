@@ -5,15 +5,6 @@ import { withTestWorkspace } from '../test/runners.js';
 describe('Ship Command - Smoke Tests', () => {
   smokeTest('should not crash when executed without state', async () => {
     await withTestWorkspace('ship-no-state', async (workspace) => {
-      // Setup minimal .hodge structure
-      await workspace.writeFile(
-        '.hodge/features/test-feature/build/context.json',
-        JSON.stringify({
-          feature: 'test-feature',
-          mode: 'build',
-        })
-      );
-
       // Initialize git repo
       await workspace.run('git init');
       await workspace.run('git config user.email "test@example.com"');
@@ -29,15 +20,6 @@ describe('Ship Command - Smoke Tests', () => {
 
   smokeTest('should detect and use pre-approved message from state', async () => {
     await withTestWorkspace('ship-with-state', async (workspace) => {
-      // Setup .hodge structure with pre-approved message
-      await workspace.writeFile(
-        '.hodge/features/test-feature/build/context.json',
-        JSON.stringify({
-          feature: 'test-feature',
-          mode: 'build',
-        })
-      );
-
       // Create pre-approved state file
       const state = {
         command: 'ship',
@@ -101,14 +83,6 @@ describe('Ship Command - Smoke Tests', () => {
 
   smokeTest('should handle corrupted state files gracefully', async () => {
     await withTestWorkspace('ship-corrupted-state', async (workspace) => {
-      await workspace.writeFile(
-        '.hodge/features/test-feature/build/context.json',
-        JSON.stringify({
-          feature: 'test-feature',
-          mode: 'build',
-        })
-      );
-
       // Create corrupted state file
       await workspace.writeFile(
         '.hodge/temp/ship-interaction/test-feature/state.json',
@@ -130,14 +104,6 @@ describe('Ship Command - Smoke Tests', () => {
 
   smokeTest('should be non-interactive by default (no prompts allowed)', async () => {
     await withTestWorkspace('ship-no-prompts', async (workspace) => {
-      await workspace.writeFile(
-        '.hodge/features/test-feature/ship/context.json',
-        JSON.stringify({
-          feature: 'test-feature',
-          mode: 'ship',
-        })
-      );
-
       // Initialize git repo with main branch
       await workspace.run('git init');
       await workspace.run('git config user.email "test@example.com"');

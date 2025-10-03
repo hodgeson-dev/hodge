@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-319.4",
+  "timestamp": "2025-10-03T18:47:07.466Z",
+  "issueId": "f6e32980-be3b-43fd-8c66-e303a8d8d46f",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "fix: eliminate unused phase-specific context.json files (HODGE-319.4)\n\n## What Changed\n- **Core Changes** (2 files, -48 lines)\n  - build.ts: Removed unused BuildContext interface and context.json file creation\n  - harden.ts: Removed unused context.json file creation\n  - Eliminated unnecessary file I/O operations in both commands\n\n- **Test Updates** (6 files, -137 lines)\n  - build.test.ts: Removed \"should create context.json\" test (obsolete)\n  - harden.test.ts: Removed \"should create context.json\" test (obsolete)\n  - ship.smoke.test.ts: Removed 4 unused context.json file expectations\n  - ship.integration.test.ts: Removed 4 unused context.json expectations, added build directory setup\n  - context.smoke.test.ts: Updated test to use different fixture file\n\n- **New Test Coverage** (1 file, +72 lines)\n  - hodge-319.4.smoke.test.ts: Added 2 smoke tests verifying context.json is NOT created\n\n- **Documentation** (1 file, +306 lines)\n  - .hodge/patterns/ai-template-extraction.md: Documented AI vs CLI extraction pattern decision\n\n- **Net Impact**: -185 lines of code (deletion of dead code)\n\n## Why This Change\nInvestigation revealed phase-specific context.json files (`.hodge/features/{feature}/build/context.json`, `.../harden/context.json`) were write-only - created by CLI commands but never read by any code. These files served no purpose and created unnecessary file clutter.\n\nAdditionally, the original HODGE-319 Phase 3 plan proposed creating a WorkflowDataExtractor utility to centralize extraction logic. However, analysis proved that AI template extraction is objectively superior to CLI regex extraction for user-facing workflows because it preserves full context, enables interactive prompting, and handles edge cases gracefully. This finding was documented as a reusable pattern.\n\n## Impact\n- ✅ **Cleaner File Structure**: No more unused context.json files in feature directories\n- ✅ **Performance Improvement**: Eliminated 2 unnecessary file I/O operations per feature\n- ✅ **Better Test Coverage**: 2 new smoke tests + 705 total tests passing\n- ✅ **Pattern Documentation**: AI extraction pattern now documented for future reference\n- ✅ **Zero Breaking Changes**: Global `.hodge/context.json` preserved (actively used by save/load)\n- ✅ **Code Quality**: -185 lines (removed dead code)\n\nCloses HODGE-319.4\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}

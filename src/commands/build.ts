@@ -11,16 +11,6 @@ export interface BuildOptions {
   sequential?: boolean; // Run I/O operations sequentially for debugging
 }
 
-interface BuildContext {
-  mode: string;
-  feature: string;
-  timestamp: string;
-  standards: string;
-  validation: string;
-  pmIssue: string | null;
-  pmTool: string | null;
-}
-
 /**
  * Build Command with parallel I/O and smart caching
  * Combines parallel I/O and smart caching for 60-70% performance improvement
@@ -175,31 +165,17 @@ export class BuildCommand {
         console.log(chalk.blue(`📋 Linked to ${pmTool} issue: ${issueId}`));
       }
 
-      // Create build context
-      const context: BuildContext = {
-        mode: 'build',
-        feature,
-        timestamp: new Date().toISOString(),
-        standards: 'recommended',
-        validation: 'suggested',
-        pmIssue: issueId,
-        pmTool: pmTool || null,
-      };
-
       // Phase 3: Parallel directory creation and file writes
       await Promise.all([
         fs.mkdir(buildDir, { recursive: true }),
         // Don't write context and build plan until directory is created
       ]);
 
-      // Now write files in parallel
-      await Promise.all([
-        fs.writeFile(path.join(buildDir, 'context.json'), JSON.stringify(context, null, 2)),
-        fs.writeFile(
-          path.join(buildDir, 'build-plan.md'),
-          this.populateBuildPlan(buildPlanTemplate, feature, issueId, pmTool || null)
-        ),
-      ]);
+      // Write build plan
+      await fs.writeFile(
+        path.join(buildDir, 'build-plan.md'),
+        this.populateBuildPlan(buildPlanTemplate, feature, issueId, pmTool || null)
+      );
 
       // Display results
       console.log(chalk.green('✓ Build environment prepared\n'));
@@ -219,7 +195,6 @@ export class BuildCommand {
       }
 
       console.log(chalk.bold('Files created:'));
-      console.log(chalk.gray(`  • ${path.join(buildDir, 'context.json')}`));
       console.log(chalk.gray(`  • ${path.join(buildDir, 'build-plan.md')}`));
 
       console.log('\n' + chalk.bold('Build guidelines:'));

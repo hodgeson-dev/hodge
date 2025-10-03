@@ -68,36 +68,6 @@ describe.skip('BuildCommand', () => {
       expect(fs.writeFile).toHaveBeenCalled();
     });
 
-    it('should create context.json with build mode', async () => {
-      const feature = 'test-feature';
-
-      vi.mocked(existsSync).mockImplementation((path) => {
-        if (path.toString().includes('explore')) return true;
-        if (path.toString().includes('decision.md')) return true;
-        return false;
-      });
-
-      vi.mocked(fs.mkdir).mockResolvedValue(undefined);
-      vi.mocked(fs.writeFile).mockResolvedValue(undefined);
-      vi.mocked(fs.readFile).mockResolvedValue('Standards content');
-      vi.mocked(fs.readdir).mockResolvedValue([]);
-
-      await command.execute(feature);
-
-      const contextCall = vi
-        .mocked(fs.writeFile)
-        .mock.calls.find((call) => call[0].toString().includes('context.json'));
-
-      expect(contextCall).toBeDefined();
-      if (contextCall) {
-        const context = JSON.parse(contextCall[1] as string);
-        expect(context.mode).toBe('build');
-        expect(context.feature).toBe(feature);
-        expect(context.standards).toBe('recommended');
-        expect(context.validation).toBe('suggested');
-      }
-    });
-
     it('should create build plan template', async () => {
       const feature = 'test-feature';
 

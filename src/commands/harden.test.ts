@@ -61,34 +61,6 @@ describe.skip('HardenCommand', () => {
       });
     });
 
-    it('should create context.json with harden mode', async () => {
-      const feature = 'test-feature';
-
-      vi.mocked(existsSync).mockImplementation((path) => {
-        if (path.toString().includes('build')) return true;
-        return false;
-      });
-
-      vi.mocked(fs.mkdir).mockResolvedValue(undefined);
-      vi.mocked(fs.writeFile).mockResolvedValue(undefined);
-      vi.mocked(fs.readFile).mockResolvedValue('HOD-123');
-
-      await command.execute(feature);
-
-      const contextCall = vi
-        .mocked(fs.writeFile)
-        .mock.calls.find((call) => call[0].toString().includes('context.json'));
-
-      expect(contextCall).toBeDefined();
-      if (contextCall) {
-        const context = JSON.parse(contextCall[1] as string);
-        expect(context.mode).toBe('harden');
-        expect(context.feature).toBe(feature);
-        expect(context.standards).toBe('enforced');
-        expect(context.validation).toBe('required');
-      }
-    });
-
     // TODO: Add validation tests once execAsync mocking is properly implemented
     // These tests require complex mocking of the promisified exec function
 
