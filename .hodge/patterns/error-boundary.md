@@ -1,8 +1,8 @@
 # Error Boundary
 
 **Category**: error-handling
-**Frequency**: Used 4 times
-**Confidence**: 80%
+**Frequency**: Used 3 times
+**Confidence**: 60%
 
 ## Description
 Consistent error handling with logging
@@ -19,17 +19,6 @@ try {
 ```
 
 
-### src/commands/explore.ts
-```typescript
-.catch(() => {
-          // Silently handle PM update failures
-        });
-      } else if (!featureID) {
-        // It looks like an ID but we couldn't find it
-        // Create a new feature and lin
-```
-
-
 ### src/commands/harden.ts
 ```typescript
 try {
@@ -42,11 +31,22 @@ try {
 ```
 
 
+### src/commands/save.ts
+```typescript
+try {
+      // Generate save name if not provided (delegate to SaveService)
+      const saveName = name || (await this.saveService.generateSaveName());
+
+      // Determine save type based on options
+ 
+```
+
+
 ## When to Use
 - 
 - 
 - 
 
 ---
-*First seen: 2025-10-03T15:54:32.368Z*
-*Last used: 2025-10-03T15:54:32.371Z*
+*First seen: 2025-10-03T20:19:31.296Z*
+*Last used: 2025-10-03T20:19:31.298Z*

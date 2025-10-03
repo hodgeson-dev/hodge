@@ -2,18 +2,18 @@
 
 ## Statistics
 - Total patterns detected: 3
-- High confidence patterns: 1
+- High confidence patterns: 0
 - Most frequent category: error-handling
 
 ## Patterns by Category
 
 
 ### Error-handling
-- **Error Boundary** (2x, 40% confidence)
+- **Error Boundary** (3x, 60% confidence)
 
 
 ### Performance
-- **Async Parallel Operations** (4x, 80% confidence)
+- **Async Parallel Operations** (2x, 40% confidence)
 
 
 ### Security
@@ -21,7 +21,7 @@
 
 
 ## Recommendations
-- Consider using Async Parallel Operations pattern (used 4 times)
+- Consider using Error Boundary pattern (used 3 times)
 
 ---
-*Generated: 2025-10-03T18:47:07.554Z*
+*Generated: 2025-10-03T20:19:31.299Z*

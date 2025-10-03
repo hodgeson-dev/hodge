@@ -2,30 +2,19 @@ import chalk from 'chalk';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { existsSync } from 'fs';
-import { exec } from 'child_process';
-import { promisify } from 'util';
 import { autoSave } from '../lib/auto-save.js';
 import { contextManager } from '../lib/context-manager.js';
 import { PMHooks } from '../lib/pm/pm-hooks.js';
-
-const execAsync = promisify(exec);
+import {
+  HardenService,
+  type ValidationResult,
+  type ValidationResults,
+} from '../lib/harden-service.js';
 
 export interface HardenOptions {
   skipTests?: boolean;
   autoFix?: boolean;
   sequential?: boolean; // Run validations sequentially for debugging
-}
-
-interface ValidationResult {
-  passed: boolean;
-  output: string;
-}
-
-interface ValidationResults {
-  tests: ValidationResult;
-  lint: ValidationResult;
-  typecheck: ValidationResult;
-  build: ValidationResult;
 }
 
 /**
@@ -34,9 +23,11 @@ interface ValidationResults {
  *
  * @class HardenCommand
  * @description Production-ready harden command with parallel validation by default
+ * @note Refactored in HODGE-321 to use HardenService for testable business logic
  */
 export class HardenCommand {
   private pmHooks = new PMHooks();
+  private hardenService = new HardenService();
 
   /**
    * Execute the harden command for a feature
@@ -116,34 +107,22 @@ export class HardenCommand {
       console.log('  • Code must be ' + chalk.red('production-ready'));
       console.log('  • No warnings or errors ' + chalk.red('allowed') + '\n');
 
-      // Run validation checks
+      // Run validation checks using HardenService
       console.log(chalk.bold('Running validation checks...\n'));
 
-      let testResult: ValidationResult;
-      let lintResult: ValidationResult;
-      let typecheckResult: ValidationResult;
-
       if (options.sequential) {
-        // Sequential execution for debugging
         console.log(chalk.cyan('📝 Running validations sequentially (debug mode)...'));
-
-        testResult = options.skipTests ? this.skipTests() : await this.runTests();
-        lintResult = await this.runLinting(options.autoFix);
-        typecheckResult = await this.runTypeCheck();
       } else {
-        // Phase 1: Run parallel validations (test, lint, typecheck)
         console.log(chalk.cyan('🚀 Running validations in parallel...'));
+      }
 
-        const parallelStartTime = Date.now();
+      const parallelStartTime = Date.now();
 
-        // Run test, lint, and typecheck in parallel
-        [testResult, lintResult, typecheckResult] = await Promise.all([
-          options.skipTests ? Promise.resolve(this.skipTests()) : this.runTests(),
-          this.runLinting(options.autoFix),
-          this.runTypeCheck(),
-        ]);
+      // Delegate to HardenService for business logic
+      const results: ValidationResults = await this.hardenService.runValidations(options);
 
-        const parallelEndTime = Date.now();
+      const parallelEndTime = Date.now();
+      if (!options.sequential) {
         console.log(
           chalk.dim(
             `   Parallel validations completed in ${parallelEndTime - parallelStartTime}ms\n`
@@ -151,17 +130,8 @@ export class HardenCommand {
         );
       }
 
-      // Phase 2: Run build (depends on TypeScript, must be sequential)
-      console.log(chalk.cyan('🏗️  Running build...'));
-      const buildResult = await this.runBuild();
-
-      // Aggregate results
-      const results: ValidationResults = {
-        tests: testResult,
-        lint: lintResult,
-        typecheck: typecheckResult,
-        build: buildResult,
-      };
+      // Display validation status (presentation layer)
+      this.displayValidationStatus(results, options);
 
       // Save validation results
       await fs.writeFile(
@@ -215,169 +185,29 @@ export class HardenCommand {
   }
 
   /**
-   * Run tests in parallel
+   * Display validation status (presentation layer)
    * @private
    */
-  private async runTests(): Promise<ValidationResult> {
-    const spinner = this.startSpinner('Running tests...');
-
-    try {
-      const { stdout, stderr } = await execAsync('npm test 2>&1', {
-        maxBuffer: 10 * 1024 * 1024, // 10MB buffer
-        timeout: 120000, // 2 minute timeout
-      });
-
-      const passed = !stderr || !stderr.includes('FAIL');
-      this.stopSpinner(spinner, passed ? '✓ Tests passed' : '✗ Tests failed', passed);
-
-      return {
-        passed,
-        output: stdout + stderr,
-      };
-    } catch (error) {
-      this.stopSpinner(spinner, '✗ Tests failed', false);
-
-      return {
-        passed: false,
-        output: error instanceof Error ? error.message : String(error),
-      };
-    }
-  }
-
-  /**
-   * Skip tests when requested
-   * @private
-   */
-  private skipTests(): ValidationResult {
-    console.log(chalk.yellow('   ⚠️  Tests skipped'));
-    return {
-      passed: true,
-      output: 'Tests skipped via --skip-tests flag',
-    };
-  }
-
-  /**
-   * Run linting in parallel
-   * @private
-   */
-  private async runLinting(autoFix?: boolean): Promise<ValidationResult> {
-    const spinner = this.startSpinner('Running linter...');
-
-    try {
-      const { stdout, stderr } = await execAsync('npm run lint 2>&1', {
-        maxBuffer: 10 * 1024 * 1024,
-        timeout: 60000, // 1 minute timeout
-      });
-
-      const passed = !stderr || !stderr.includes('error');
-
-      if (!passed && autoFix) {
-        this.stopSpinner(spinner, '🔧 Attempting auto-fix...', false);
-
-        try {
-          await execAsync('npm run lint -- --fix');
-          console.log(chalk.green('   ✓ Auto-fix applied'));
-        } catch {
-          console.log(chalk.red('   ✗ Auto-fix failed'));
-        }
-      } else {
-        this.stopSpinner(spinner, passed ? '✓ Linting passed' : '✗ Linting failed', passed);
-      }
-
-      return {
-        passed,
-        output: stdout + stderr,
-      };
-    } catch (error) {
-      this.stopSpinner(spinner, '✗ Linting failed', false);
-
-      return {
-        passed: false,
-        output: error instanceof Error ? error.message : String(error),
-      };
-    }
-  }
-
-  /**
-   * Run type checking in parallel
-   * @private
-   */
-  private async runTypeCheck(): Promise<ValidationResult> {
-    const spinner = this.startSpinner('Running type check...');
-
-    try {
-      const { stdout, stderr } = await execAsync('npm run typecheck 2>&1', {
-        maxBuffer: 10 * 1024 * 1024,
-        timeout: 60000,
-      });
-
-      const passed = !stderr || !stderr.includes('error');
-      this.stopSpinner(spinner, passed ? '✓ Type check passed' : '✗ Type check failed', passed);
-
-      return {
-        passed,
-        output: stdout + stderr,
-      };
-    } catch (error) {
-      this.stopSpinner(spinner, '✗ Type check failed', false);
-
-      return {
-        passed: false,
-        output: error instanceof Error ? error.message : String(error),
-      };
-    }
-  }
-
-  /**
-   * Run build (sequential, depends on TypeScript)
-   * @private
-   */
-  private async runBuild(): Promise<ValidationResult> {
-    try {
-      const { stdout, stderr } = await execAsync('npm run build 2>&1', {
-        maxBuffer: 10 * 1024 * 1024,
-        timeout: 120000, // 2 minute timeout
-      });
-
-      const passed = !stderr || !stderr.includes('error');
-      console.log(passed ? chalk.green('   ✓ Build succeeded') : chalk.red('   ✗ Build failed'));
-
-      return {
-        passed,
-        output: stdout + stderr,
-      };
-    } catch (error) {
-      console.log(chalk.red('   ✗ Build failed'));
-
-      return {
-        passed: false,
-        output: error instanceof Error ? error.message : String(error),
-      };
-    }
-  }
-
-  /**
-   * Simple spinner for parallel operations
-   * @private
-   */
-  private startSpinner(text: string): { text: string; stop: () => void } {
-    process.stdout.write(chalk.cyan(`   ${text}`));
-
-    return {
-      text,
-      stop: () => {
-        process.stdout.write('\r\x1b[K'); // Clear line
-      },
-    };
-  }
-
-  /**
-   * Stop spinner and show result
-   * @private
-   */
-  private stopSpinner(spinner: { stop: () => void }, message: string, success: boolean): void {
-    spinner.stop();
-    console.log(success ? chalk.green(`   ${message}`) : chalk.red(`   ${message}`));
+  private displayValidationStatus(results: ValidationResults, options: HardenOptions): void {
+    console.log(
+      results.tests.passed
+        ? chalk.green('   ✓ Tests passed')
+        : options.skipTests
+          ? chalk.yellow('   ⚠️  Tests skipped')
+          : chalk.red('   ✗ Tests failed')
+    );
+    console.log(
+      results.lint.passed ? chalk.green('   ✓ Linting passed') : chalk.red('   ✗ Linting failed')
+    );
+    console.log(
+      results.typecheck.passed
+        ? chalk.green('   ✓ Type check passed')
+        : chalk.red('   ✗ Type check failed')
+    );
+    console.log(
+      results.build.passed ? chalk.green('   ✓ Build succeeded') : chalk.red('   ✗ Build failed')
+    );
+    console.log();
   }
 
   /**

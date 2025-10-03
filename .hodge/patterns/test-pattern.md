@@ -35,6 +35,53 @@ expect(compiled).toContain('import');
 
 Use `os.tmpdir()` for all file operations.
 
+### 3. Service Class Extraction for CLI Commands (HODGE-321)
+**Extract testable business logic from AI-orchestrated CLI commands.**
+
+❌ **BAD** (untestable mixed logic):
+```typescript
+class HardenCommand {
+  async execute() {
+    // 300 lines mixing orchestration + business logic
+    console.log('Running standards...');
+    const standards = await runStandards(); // business logic
+    console.log(standards); // orchestration
+    // ...cannot test without subprocess spawning
+  }
+}
+```
+
+✅ **GOOD** (testable service + thin CLI):
+```typescript
+// Testable business logic
+class HardenService {
+  async validateStandards(): Promise<ValidationResults> {
+    // Pure business logic, returns data
+    return { passed: true, errors: [] };
+  }
+
+  async runQualityGates(): Promise<GateResults> {
+    return { gates: ['lint', 'typecheck'], allPassed: true };
+  }
+}
+
+// Thin orchestration wrapper
+class HardenCommand {
+  async execute() {
+    const service = new HardenService();
+    const results = await service.validateStandards();
+    console.log(formatResults(results)); // just presentation
+  }
+}
+
+// Test the service directly
+test('validates standards correctly', async () => {
+  const service = new HardenService();
+  const results = await service.validateStandards();
+  expect(results.passed).toBe(true);
+});
+```
+
 ---
 
 ## Quick Reference

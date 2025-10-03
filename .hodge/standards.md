@@ -49,13 +49,26 @@ This project follows the Hodge development philosophy:
 
 ## CLI Architecture Standards
 **Enforcement: ALL PHASES (mandatory)**
-**⚠️ CRITICAL**: All Hodge CLI commands MUST be non-interactive.
-- Commands are called by Claude Code slash commands, never directly by developers
-- There is no possibility of user interaction when called from slash commands
-- NO prompts, confirmations, or user input of any kind
+
+### AI-Orchestrated Commands (HODGE-321)
+**⚠️ CRITICAL**: Hodge CLI commands are AI-orchestrated, not user-facing tools.
+
+**Command Categories**:
+- **AI-Orchestrated** (explore, decide, build, harden, ship, save, load, plan, status, link): Called exclusively by Claude Code slash commands
+- **User-Facing Exceptions** (init, logs): Interactive CLI tools called directly by developers
+
+**Design Principles**:
+- AI-orchestrated commands MUST be non-interactive (no prompts, confirmations, or user input)
 - All parameters must come from command arguments or environment variables
-- If a decision is needed, the command should make a sensible default choice
+- Commands should make sensible default choices when decisions are needed
 - Use exit codes and structured output to communicate state
+- There is no possibility of user interaction when called from slash commands
+
+**Testing Implications**:
+- AI-orchestrated commands should extract testable business logic into Service classes
+- CLI command classes remain thin orchestration wrappers (presentation layer)
+- Test business outcomes through Service classes, not CLI orchestration
+- User-facing commands (init, logs) may accept lower test coverage due to interactive nature
 
 ## Testing Requirements
 **Enforcement: Progressive per phase (see table below)**

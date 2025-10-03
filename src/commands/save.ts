@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import { saveManager } from '../lib/save-manager.js';
 import { SaveOptions } from '../types/save-manifest.js';
 import { ContextManager } from '../lib/context-manager.js';
+import { SaveService } from '../lib/save-service.js';
 
 export interface SaveCommandOptions extends SaveOptions {
   name?: string;
@@ -12,9 +13,15 @@ export interface SaveCommandOptions extends SaveOptions {
  * CLI save command for creating optimized session snapshots
  * Delegates to SaveManager for actual implementation (code does the work)
  * This command provides the interface and feedback (what code does best)
+ * @note Refactored in HODGE-321 to use SaveService for testable business logic
  */
 export class SaveCommand {
   private _contextManager?: ContextManager;
+  private saveService: SaveService;
+
+  constructor() {
+    this.saveService = new SaveService();
+  }
 
   private get contextManager(): ContextManager {
     if (!this._contextManager) {
@@ -25,8 +32,8 @@ export class SaveCommand {
 
   async execute(name?: string, options: SaveCommandOptions = {}): Promise<void> {
     try {
-      // Generate save name if not provided
-      const saveName = name || (await this.generateSaveName());
+      // Generate save name if not provided (delegate to SaveService)
+      const saveName = name || (await this.saveService.generateSaveName());
 
       // Determine save type based on options
       const saveOptions: SaveOptions = {
@@ -35,16 +42,9 @@ export class SaveCommand {
         includeGenerated: options.includeGenerated || false,
       };
 
-      // Show what type of save we're doing
-      if (saveOptions.minimal) {
-        console.log(chalk.blue('📝 Creating minimal save (manifest only)...'));
-      } else if (saveOptions.type === 'incremental') {
-        console.log(chalk.blue('📝 Creating incremental save...'));
-      } else if (saveOptions.type === 'auto') {
-        console.log(chalk.blue('📝 Creating auto-save...'));
-      } else {
-        console.log(chalk.blue('📝 Creating full save...'));
-      }
+      // Show what type of save we're doing (delegate to SaveService for description)
+      const saveType = this.saveService.getSaveTypeDescription(saveOptions);
+      console.log(chalk.blue(`📝 Creating ${saveType.toLowerCase()}...`));
 
       // Perform the save using SaveManager
       const startTime = Date.now();
@@ -56,14 +56,7 @@ export class SaveCommand {
       console.log(chalk.gray(`  Name: ${saveName}`));
       console.log(chalk.gray(`  Location: ${savePath}`));
       console.log(chalk.gray(`  Time: ${elapsed}ms`));
-
-      if (saveOptions.minimal) {
-        console.log(chalk.gray(`  Type: Minimal (manifest only)`));
-      } else if (saveOptions.type === 'incremental') {
-        console.log(chalk.gray(`  Type: Incremental (changes only)`));
-      } else {
-        console.log(chalk.gray(`  Type: Full save`));
-      }
+      console.log(chalk.gray(`  Type: ${saveType}`));
 
       // Update context timestamp
       await this.contextManager.save({
@@ -79,22 +72,6 @@ export class SaveCommand {
       }
 
       throw error;
-    }
-  }
-
-  /**
-   * Generate automatic save name based on current context
-   */
-  private async generateSaveName(): Promise<string> {
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').substring(0, 19);
-
-    // Try to get feature from context
-    try {
-      const context = await this.contextManager.load();
-      const feature = context?.feature || 'general';
-      return `${feature}-${timestamp}`;
-    } catch {
-      return `save-${timestamp}`;
     }
   }
 }
