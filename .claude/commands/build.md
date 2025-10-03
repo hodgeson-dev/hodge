@@ -1,5 +1,143 @@
 # Hodge Build Mode
 
+## Decision Extraction (Before Build)
+
+**IMPORTANT**: Before checking PM issues, check if this feature has decisions. If not, try to extract guidance from exploration.md.
+
+### Step 1: Check for decisions.md
+```bash
+cat .hodge/features/{{feature}}/decisions.md 2>/dev/null
+```
+
+**If decisions.md exists** → Skip extraction, proceed to PM check
+
+**If decisions.md does NOT exist** → Continue to Step 2
+
+### Step 2: Check for wrong-location decisions.md
+```bash
+# Check common wrong locations
+cat .hodge/features/{{feature}}/explore/decisions.md 2>/dev/null
+```
+
+**If found in wrong location**:
+```
+⚠️  I found decisions.md in the wrong location (.hodge/features/{{feature}}/explore/)
+
+The correct location is: .hodge/features/{{feature}}/decisions.md
+
+Would you like me to move it for you?
+a) Yes - Move it to the correct location
+b) No - I'll handle it manually
+
+Your choice:
+```
+
+**If user chooses (a)**:
+```bash
+mv .hodge/features/{{feature}}/explore/decisions.md .hodge/features/{{feature}}/decisions.md
+```
+Then confirm: "✓ Moved decisions.md to correct location. Proceeding with build..."
+Proceed to PM check.
+
+**If user chooses (b)** or file not in wrong location:
+Continue to Step 3
+
+### Step 3: Extract from exploration.md
+```bash
+cat .hodge/features/{{feature}}/explore/exploration.md 2>/dev/null
+```
+
+**If exploration.md exists**, parse for:
+- **Recommendation section**: Look for `## Recommendation` followed by text starting with `**Use ` or `**`
+- **Decisions Needed section**: Look for `## Decisions Needed` followed by `### Decision N:` entries
+
+**Extraction Pattern**:
+1. Find `## Recommendation` section
+2. Extract the paragraph after it (usually starts with `**Use Approach...`)
+3. Find `## Decisions Needed` section
+4. Extract all `### Decision N: [title]` entries (just the titles)
+
+### Step 4: Handle Extraction Results
+
+**Case A: Single Recommendation Found**
+
+Display to user:
+```
+📋 No decisions.md found, but I found this recommendation from exploration:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[Full verbatim text of Recommendation section]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Decisions to consider:
+  1. [Decision 1 title]
+  2. [Decision 2 title]
+  ...
+
+What would you like to do?
+  a) ✅ Use this recommendation and proceed with /build
+  b) 🔄 Go to /decide to formalize decisions first
+  c) ⏭️  Skip and build without guidance
+
+Your choice:
+```
+
+**User Response Handling**:
+- **(a)** → Call `hodge build {{feature}}` and proceed with implementation
+- **(b)** → Exit with message: "Please run `/decide` to formalize your decisions, then return to `/build {{feature}}`"
+- **(c)** → Call `hodge build {{feature}} --skip-checks` and proceed
+
+**Case B: Multiple Recommendations Found**
+
+Display to user:
+```
+📋 No decisions.md found, but I found multiple recommendations from exploration:
+
+1. [First recommendation text excerpt - first 100 chars...]
+2. [Second recommendation text excerpt - first 100 chars...]
+3. [Third recommendation text excerpt - first 100 chars...]
+
+Which recommendation would you like to use?
+  a) Use recommendation 1
+  b) Use recommendation 2
+  c) Use recommendation 3
+  d) Go to /decide to formalize decisions
+  e) Skip and build without guidance
+
+Your choice:
+```
+
+After user selects a recommendation (a/b/c), show full text:
+```
+You selected:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[Full verbatim text of selected Recommendation]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Proceed with /build using this guidance?
+  a) Yes, proceed
+  b) No, go to /decide instead
+
+Your choice:
+```
+
+**Case C: No Recommendation Found**
+
+Display to user:
+```
+⚠️  No decisions.md found and exploration.md has no recommendation section.
+
+To proceed, you can either:
+  a) Run /decide to make and record decisions
+  b) Use --skip-checks to build anyway (not recommended)
+
+Your choice:
+```
+
+**Case D: exploration.md Missing**
+
+Fall back to current behavior (proceed to PM check, CLI will show warning).
+
 ## PM Issue Check (Before Build)
 
 **IMPORTANT**: Before executing `hodge build`, check if this feature has a PM issue mapping.

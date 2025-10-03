@@ -3,15 +3,16 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: HODGE-319.1
-**Mode**: build
-**Last Updated**: 2025-10-03T14:30:00.287Z
+**Feature**: HODGE-319
+**Mode**: explore
+**PM Issue**: HODGE-319
+**Last Updated**: 2025-10-03T17:08:55.376Z
 ## Current Session
-**Resumed**: 8 hours ago
-**Progress**: Explored HODGE-319 - template ready for AI approach generation
-**Working on**: HODGE-319 (explore mode)
+**Resumed**: 1 hours ago
+**Progress**: Explored HODGE-320 - template ready for AI approach generation
+**Working on**: HODGE-320 (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-319. Explored HODGE-319 - template ready for AI approach generation
+You were helping with HODGE-320. Explored HODGE-320 - template ready for AI approach generation
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
@@ -73,6 +74,13 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - Any test that needs a `.hodge` structure should create it in an isolated temp directory
 - This prevents tests from corrupting project data or affecting other tests
 - Violation of this rule can lead to data loss and unpredictable test behavior
+- **Root Cause**: Subprocesses create orphaned zombie processes that hang indefinitely
+- **Symptom**: Tests timeout, hung Node processes require manual kill in Activity Monitor
+- **Solution**: Test behavior through direct assertions, not subprocess execution
+- **Exceptions**: None - if you think you need subprocess spawning, you're testing the wrong thing
+- HODGE-317.1 (2025-09-30) eliminated subprocess spawning from test-isolation tests
+- HODGE-318 (2025-10-01) inadvertently reintroduced it in commonjs-compatibility tests
+- HODGE-319.1 (2025-10-03) fixed regression and added this standard
 
 ### Code Comments and TODOs
 - **TODO Convention**: Always use `// TODO:` comments for incomplete work
@@ -118,14 +126,15 @@ Suggested next: Review exploration and decide with 'hodge decide'
 
 ## Working Files
 
-- `.hodge/features/HODGE-319.1/build/build-plan.md`
-- `.hodge/features/HODGE-319.1/build/context.json`
+- `.hodge/features/HODGE-319/explore/context.json`
+- `.hodge/features/HODGE-319/explore/exploration.md`
+- `.hodge/features/HODGE-319/explore/test-intentions.md`
 
 ## Next Steps
 
-1. Complete implementation
-2. Run tests with `npm test`
-3. Harden with `hodge harden HODGE-319.1`
+1. Review exploration approaches
+2. Make decision with `hodge decide`
+3. Start building with `hodge build HODGE-319`
 
 
 ---
