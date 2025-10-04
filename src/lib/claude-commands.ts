@@ -535,15 +535,30 @@ After the conversation, you MUST:
 
 1. **Generate a concise title** from the \`/explore {{feature}}\` command text (under 100 characters)
 
-2. **Synthesize conversation into prose** (not Q&A format) covering:
+2. **Track decisions made during conversation**:
+   - Review the conversation history for decisions that were resolved
+   - Identify firm decisions using language cues:
+     * Explicit choices between options ("use approach A", "definitely B")
+     * Clear directional guidance ("we should prioritize performance")
+     * Definitive answers to specific questions ("yes, include that feature")
+   - Flag edge cases to remain in "Decisions Needed":
+     * Tentative answers with uncertainty ("probably X, but not sure", "maybe")
+     * Contradictory feedback (user says A early, then implies B later)
+     * Partial decisions on complex multi-part questions
+   - Create two lists:
+     * **Decided during exploration**: Firm decisions made in conversation
+     * **Still needs decision**: Unresolved items or edge cases
+
+3. **Synthesize conversation into prose** (not Q&A format) covering:
    - Problem Statement
    - Conversation Summary (key points discussed)
    - Implementation Approaches (2-3 options based on discussion)
    - Recommendation (which approach and why)
    - Test Intentions (finalized during conversation)
-   - Decisions Needed (for /decide phase)
+   - Decisions Decided During Exploration (if any)
+   - Decisions Needed (only unresolved items, or "No Decisions Needed" if all resolved)
 
-3. **Show preview for approval** using this format:
+4. **Show preview for approval** using this format:
    \`\`\`
    ## Preview: exploration.md Summary
 
@@ -560,12 +575,16 @@ After the conversation, you MUST:
 
    **Test Intentions**: [count] behavioral expectations defined
 
+   **Decisions Decided During Exploration**:
+   1. ✓ [Decision summary 1]
+   2. ✓ [Decision summary 2]
+   3. ✓ [Decision summary 3]
+
    **Decisions Needed**:
    1. [Decision question 1]
    2. [Decision question 2]
-   3. [Decision question 3]
 
-   OR if no decisions:
+   OR if no unresolved decisions:
 
    **No Decisions Needed**
 
@@ -576,14 +595,15 @@ After the conversation, you MUST:
    d) ➖ Simplify certain areas
    \`\`\`
 
-4. **Only after approval**, update \`.hodge/features/{{feature}}/explore/exploration.md\` with:
+5. **Only after approval**, update \`.hodge/features/{{feature}}/explore/exploration.md\` with:
    - Title field
    - Problem Statement
    - Conversation Summary (synthesized prose)
    - Implementation Approaches section (2-3 approaches)
    - Recommendation section
    - Test Intentions section
-   - Decisions Needed section
+   - Decisions Decided During Exploration section (if any decisions were resolved)
+   - Decisions Needed section (only unresolved items, or **"No Decisions Needed"** in bold if everything resolved)
 
 ### Phase 4: Traditional Approach Generation (If Needed)
 

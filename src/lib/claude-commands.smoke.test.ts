@@ -200,7 +200,7 @@ describe('[smoke] explore.md template - Phase 3 preview format', () => {
     expect(exploreTemplate).toContain('**Decisions Needed**:');
     expect(exploreTemplate).toContain('1. [Decision question 1]');
     expect(exploreTemplate).toContain('2. [Decision question 2]');
-    expect(exploreTemplate).toContain('3. [Decision question 3]');
+    // HODGE-325: Updated template to show 2 examples instead of 3
   });
 
   it('should show bold "No Decisions Needed" when no decisions exist', () => {
@@ -209,7 +209,8 @@ describe('[smoke] explore.md template - Phase 3 preview format', () => {
       'utf-8'
     );
 
-    expect(exploreTemplate).toContain('OR if no decisions:');
+    // HODGE-325: Updated text to "OR if no unresolved decisions:"
+    expect(exploreTemplate).toContain('OR if no unresolved decisions:');
     expect(exploreTemplate).toContain('**No Decisions Needed**');
   });
 

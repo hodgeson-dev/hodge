@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-325",
+  "timestamp": "2025-10-04T02:20:08.522Z",
+  "issueId": "HODGE-325",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "feat: filter resolved decisions from exploration conversations (HODGE-325)\n\n## What Changed\n\n**Core Template Enhancement** (1 file, net +27 lines):\n- `.claude/commands/explore.md`: Enhanced Phase 3 with conversation tracking\n  - Added Step 2: Track decisions made during conversation\n  - Defined firm decision criteria (explicit choices, clear guidance, definitive answers)\n  - Defined edge case criteria (tentative/contradictory/partial responses)\n  - Updated preview format with \"Decisions Decided During Exploration\" section\n  - Updated synthesis instructions to filter resolved decisions\n  - Changed \"OR if no decisions:\" to \"OR if no unresolved decisions:\"\n\n**Test Coverage** (2 files, net +15 tests):\n- `src/commands/hodge-325.smoke.test.ts`: Created 13 smoke tests validating template structure\n- `src/lib/claude-commands.smoke.test.ts`: Updated 2 existing tests for new preview format\n\n**Auto-Generated Sync** (1 file):\n- `src/lib/claude-commands.ts`: Template changes automatically synced to TypeScript\n\n**Metadata Updates** (4 files):\n- `.hodge/.session`, `context.json`, `id-counter.json`, `id-mappings.json`: PM tracking synchronized\n\n## Why This Change\n\nThe `/explore` workflow was creating redundant work by listing decisions in \"Decisions Needed\" even when users had already made firm choices during the conversational exploration phase. This violated the principle of respecting user decisions and created confusion during the `/decide` phase.\n\nRoot cause: The template had no logic to distinguish between decisions resolved during conversation versus those needing formal review.\n\n## Impact\n\n✅ **User Experience**:\n- Eliminates redundant decision review in `/decide` phase\n- Provides transparency via \"Decided during exploration\" summary\n- Shows bold **\"No Decisions Needed\"** when everything is resolved\n- Respects edge cases (tentative/contradictory answers still flagged)\n\n✅ **Workflow Efficiency**:\n- Reduces friction in exploration → decide → build flow\n- Conversation-driven decisions now have immediate effect\n- Clear visual separation between decided vs. pending items\n\n✅ **Code Quality**:\n- 13 new smoke tests (100% passing)\n- All 738 tests passing\n- Zero regressions introduced\n- Template changes only (no runtime code changes)\n\nCloses HODGE-325\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}
