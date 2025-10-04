@@ -200,52 +200,28 @@ echo "Ship cancelled. Your changes remain uncommitted."
 echo "Run '/ship {{feature}}' when ready to try again."
 ```
 
-## Step 4: Ship Quality Checks
-The ship command will:
-- ✅ Run all tests
-- ✅ Check code coverage
-- ✅ Verify documentation
-- ✅ Create git commit with approved message
-- ✅ Update PM tracking
-- ✅ Learn patterns from shipped code
+## Step 3.5: Capture Lessons Learned (Optional - Before Commit)
 
-## Step 5: Capture lessons learned (Interactive AI Enhancement)
+**IMPORTANT**: This step happens BEFORE the ship command executes, so lessons are included in the feature commit.
 
-After shipping successfully, the CLI creates a `lessons-draft.md` with objective metrics. Now let's enhance it with your insights and AI analysis.
-
-### Check for Lessons Draft
-```bash
-draft_path=".hodge/features/$feature/ship/lessons-draft.md"
-if [ -f "$draft_path" ]; then
-  echo "📝 Lessons draft found. Let's enhance it with your insights."
-else
-  echo "ℹ️  No lessons draft found (feature had no significant changes)"
-  # Skip lessons enhancement
-fi
-```
-
-### Interactive Lessons Enhancement
-
-**IMPORTANT**: Ask user if they want to document lessons (respect their choice):
+### Ask User About Lessons
 
 ```
 Would you like to document lessons learned from this feature? (y/n)
+
+This will be committed with your feature work.
 ```
 
 If user says **no** or **n**:
-- Thank them and skip lessons enhancement
-- Draft remains in feature directory for later review if desired
-- Move to Post-Ship Actions
+- Thank them and skip to Step 4
+- No lesson files will be created
+- Proceed directly to ship execution
 
 If user says **yes** or **y**, proceed with enhancement questions:
 
-#### Read the Draft
-First, read the lessons draft to see what the CLI captured:
-```bash
-cat ".hodge/features/$feature/ship/lessons-draft.md"
-```
+### Gather Lessons Information
 
-#### Ask Enhancement Questions (3-4 questions)
+Ask the following questions to gather insights (3-4 questions):
 
 **Question 1: What Worked Well**
 ```
@@ -275,26 +251,27 @@ Did you create reusable code that could become a pattern for others?
 (Share your thoughts, or type 'skip' to skip this question)
 ```
 
-### Enrich and Finalize Lesson
+### Analyze and Create Finalized Lesson
 
-After gathering responses, analyze and create enriched lesson:
+After gathering responses, create the enriched lesson:
 
 1. **Read context files**:
    ```bash
    # Get git diff to analyze changes
-   git diff HEAD~1 HEAD
+   git diff --stat
+   git diff --name-status
 
    # Review exploration decisions
    cat ".hodge/features/$feature/explore/exploration.md"
 
    # Check decisions made
-   grep -A 10 "Feature: $feature" .hodge/decisions.md
+   cat ".hodge/features/$feature/decisions.md" 2>/dev/null || grep -A 10 "Feature: $feature" .hodge/decisions.md
    ```
 
 2. **Generate enriched lesson** combining:
-   - Objective metrics from draft (files changed, patterns, tests)
+   - Git diff analysis (files changed, scope of changes)
    - User insights from questions above
-   - AI analysis of git diff and decisions
+   - Exploration context and decisions made
    - Lessons structure similar to `HODGE-003-feature-extraction.md`
 
 3. **Create finalized lesson**:
@@ -345,21 +322,29 @@ _Documented: {{current_date}}_
 
    Then confirm to the user:
    ```bash
-   echo "✅ Lessons documented at: .hodge/lessons/{{feature}}-{{slug}}.md"
+   echo "✅ Lessons documented at: .hodge/lessons/{{feature}}-${slug}.md"
+   echo "This will be committed with your feature."
    ```
 
-4. **Preserve draft** (per HODGE-299 decision):
-   - Keep `lessons-draft.md` in feature directory as audit trail
-   - Do NOT delete it after finalization
+4. **Example Enriched Lesson Structure**:
 
-### Example Enriched Lesson Structure
+   See `.hodge/lessons/HODGE-003-feature-extraction.md` for example of rich lesson format with:
+   - Problem statement and context
+   - Approach evolution (what worked, what didn't)
+   - Key learnings with code examples
+   - Impact assessment
+   - Related decisions
 
-See `.hodge/lessons/HODGE-003-feature-extraction.md` for example of rich lesson format with:
-- Problem statement and context
-- Approach evolution (what worked, what didn't)
-- Key learnings with code examples
-- Impact assessment
-- Related decisions
+## Step 4: Ship Quality Checks & Commit
+
+The ship command will:
+- ✅ Run all tests
+- ✅ Check code coverage
+- ✅ Verify documentation
+- ✅ Stage all files (including lessons if created) with `git add -A`
+- ✅ Create git commit with approved message
+- ✅ Update PM tracking
+- ✅ Learn patterns from shipped code
 
 ## Post-Ship Actions
 After successful shipping:
