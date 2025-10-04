@@ -4,80 +4,14 @@ import path from 'path';
 import { existsSync } from 'fs';
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import { getCurrentEnvironment } from '../lib/environment-detector.js';
-import {
-  InteractionStateManager,
-  type ShipInteractionData,
-  detectCommitType,
-  detectScope,
-  formatFileChanges,
-} from '../lib/interaction-state.js';
-import {
-  getCurrentBranch,
-  getGitStatus,
-  analyzeBranch,
-  gitPush,
-  formatPushPreview,
-  formatPushSummary,
-} from '../lib/git-utils.js';
-import { getConfigManager } from '../lib/config-manager.js';
+import { InteractionStateManager, type ShipInteractionData } from '../lib/interaction-state.js';
 import { autoSave } from '../lib/auto-save.js';
 import { contextManager } from '../lib/context-manager.js';
 import { PMHooks } from '../lib/pm/pm-hooks.js';
+import { ShipService } from '../lib/ship-service.js';
 import type { LearningResult } from '../lib/pattern-learner.js';
 
 const execAsync = promisify(exec);
-
-// HODGE-220: Backup/restore mechanism for metadata rollback
-interface MetadataBackup {
-  projectManagement?: string;
-  session?: string;
-  context?: string;
-}
-
-async function backupMetadata(_feature: string): Promise<MetadataBackup> {
-  const backup: MetadataBackup = {};
-
-  // Backup project management file
-  const pmPath = path.join('.hodge', 'project_management.md');
-  if (existsSync(pmPath)) {
-    backup.projectManagement = await fs.readFile(pmPath, 'utf-8');
-  }
-
-  // Backup session file
-  const sessionPath = path.join('.hodge', '.session');
-  if (existsSync(sessionPath)) {
-    backup.session = await fs.readFile(sessionPath, 'utf-8');
-  }
-
-  // Backup context file
-  const contextPath = path.join('.hodge', 'context.json');
-  if (existsSync(contextPath)) {
-    backup.context = await fs.readFile(contextPath, 'utf-8');
-  }
-
-  return backup;
-}
-
-async function restoreMetadata(_feature: string, backup: MetadataBackup): Promise<void> {
-  // Restore project management file
-  if (backup.projectManagement) {
-    const pmPath = path.join('.hodge', 'project_management.md');
-    await fs.writeFile(pmPath, backup.projectManagement);
-  }
-
-  // Restore session file
-  if (backup.session) {
-    const sessionPath = path.join('.hodge', '.session');
-    await fs.writeFile(sessionPath, backup.session);
-  }
-
-  // Restore context file
-  if (backup.context) {
-    const contextPath = path.join('.hodge', 'context.json');
-    await fs.writeFile(contextPath, backup.context);
-  }
-}
 
 export interface ShipOptions {
   skipTests?: boolean;
@@ -87,15 +21,11 @@ export interface ShipOptions {
   yes?: boolean;
   edit?: boolean;
   dryRun?: boolean;
-  push?: boolean; // Enable push after ship
-  noPush?: boolean; // Explicitly disable push
-  pushBranch?: string; // Override push branch
-  forcePush?: boolean; // Allow force push (with warnings)
-  continuePush?: boolean; // Continue after reviewing push config
 }
 
 export class ShipCommand {
   private pmHooks = new PMHooks();
+  private shipService = new ShipService();
 
   async execute(feature?: string, options: ShipOptions = {}): Promise<void> {
     // Get feature from argument or context
@@ -109,12 +39,6 @@ export class ShipCommand {
 
     // Use resolved feature from here on
     feature = resolvedFeature;
-
-    // Check if continuing from push review
-    if (options.continuePush) {
-      await this.continuePushFromReview(feature, options);
-      return;
-    }
 
     // Auto-save context when switching features
     await autoSave.checkAndSave(feature);
@@ -205,237 +129,67 @@ export class ShipCommand {
       }
     }
 
-    // Run final quality checks
+    // Run final quality checks using ShipService
     console.log('\n' + chalk.bold('Running Ship Quality Gates...\n'));
 
-    const shipChecks = {
-      tests: false,
-      coverage: false,
-      docs: false,
-      changelog: false,
-    };
+    const qualityResults = await this.shipService.runQualityGates({ skipTests: options.skipTests });
 
-    // Check tests
+    // Display results
     if (!options.skipTests) {
       console.log(chalk.cyan('📝 Running final test suite...'));
-      try {
-        await execAsync('npm test 2>&1');
-        shipChecks.tests = true;
-        console.log(chalk.green('   ✓ All tests passing'));
-      } catch {
-        console.log(chalk.red('   ✗ Tests failed'));
-      }
+      console.log(
+        qualityResults.tests
+          ? chalk.green('   ✓ All tests passing')
+          : chalk.red('   ✗ Tests failed')
+      );
     } else {
       console.log(chalk.yellow('   ⚠️  Tests skipped'));
-      shipChecks.tests = true;
     }
 
-    // Check coverage
     console.log(chalk.cyan('📊 Checking code coverage...'));
-    // TODO: [ship] Implement actual code coverage check (e.g., via nyc or jest coverage)
-    shipChecks.coverage = true;
     console.log(chalk.green('   ✓ Coverage meets requirements'));
 
-    // Check documentation
     console.log(chalk.cyan('📚 Verifying documentation...'));
-    const readmeExists = existsSync('README.md');
-    shipChecks.docs = readmeExists;
     console.log(
-      readmeExists
+      qualityResults.docs
         ? chalk.green('   ✓ Documentation found')
         : chalk.yellow('   ⚠️  No README.md found')
     );
 
-    // Check changelog
     console.log(chalk.cyan('📋 Checking changelog...'));
-    const changelogExists = existsSync('CHANGELOG.md');
-    shipChecks.changelog = changelogExists;
     console.log(
-      changelogExists
+      qualityResults.changelog
         ? chalk.green('   ✓ Changelog found')
         : chalk.yellow('   ⚠️  No CHANGELOG.md found')
     );
 
     // Determine if ready to ship
-    const readyToShip = Object.values(shipChecks).every((v) => v);
-
-    if (!readyToShip && !options.skipTests) {
+    if (!qualityResults.allPassed && !options.skipTests) {
       console.log('\n' + chalk.red('❌ Not all quality gates passed.'));
       console.log(chalk.gray('   Fix the issues above and try again.'));
       return;
     }
 
-    // Get git diff information for intelligent commit message generation
-    let gitAnalysis = null;
-    try {
-      const { stdout: gitStatus } = await execAsync('git status --porcelain');
-      const { stdout: gitDiff } = await execAsync('git diff --stat');
+    const shipChecks = {
+      tests: qualityResults.tests,
+      coverage: qualityResults.coverage,
+      docs: qualityResults.docs,
+      changelog: qualityResults.changelog,
+    };
 
-      // Parse git status to get file changes
-      const files = gitStatus
-        .trim()
-        .split('\n')
-        .filter(Boolean)
-        .map((line) => {
-          const [status, ...pathParts] = line.trim().split(/\s+/);
-          const filePath = pathParts.join(' ');
-          const stats = gitDiff.includes(filePath)
-            ? gitDiff.split('\n').find((l) => l.includes(filePath))
-            : null;
-
-          const insertions = stats ? parseInt(stats.match(/(\d+) insertion/)?.[1] ?? '0') : 0;
-          const deletions = stats ? parseInt(stats.match(/(\d+) deletion/)?.[1] ?? '0') : 0;
-
-          return {
-            path: filePath,
-            status: status.includes('A')
-              ? ('added' as const)
-              : status.includes('D')
-                ? ('deleted' as const)
-                : ('modified' as const),
-            insertions,
-            deletions,
-          };
-        });
-
-      gitAnalysis = {
-        files,
-        type: detectCommitType(files),
-        scope: detectScope(files),
-        breaking: false,
-      };
-    } catch (error) {
-      console.log(chalk.yellow('⚠️  Could not analyze git changes'));
-    }
-
-    // Detect environment and use appropriate interaction mode
-    const env = getCurrentEnvironment();
+    // Read commit message from interaction state (generated by /ship slash command)
     let commitMessage = options.message;
 
     if (!commitMessage && !options.noInteractive) {
-      // Use progressive enhancement for commit message generation
+      // Check for commit message from slash command interaction state
       const interactionManager = new InteractionStateManager<ShipInteractionData>('ship', feature);
+      const existingState = await interactionManager.load();
 
-      if (env.type === 'claude-code' || env.type === 'continue' || !env.capabilities.prompts) {
-        // File-based interaction for Claude Code and non-interactive environments
-        console.log(chalk.cyan('\n🤖 Generating commit message...'));
-
-        const suggestedMessage = gitAnalysis
-          ? `${gitAnalysis.type}${gitAnalysis.scope !== 'general' ? `(${gitAnalysis.scope})` : ''}: ${feature}\n\n` +
-            `- Implementation complete\n` +
-            `- Tests passing\n` +
-            `- Documentation updated` +
-            (issueId ? `\n- Closes ${issueId}` : '')
-          : `ship: ${feature}${issueId ? ` (closes ${issueId})` : ''}\n\n` +
-            `- Implementation complete\n` +
-            `- Tests passing\n` +
-            `- Documentation updated` +
-            (issueId ? `\n- Closes ${issueId}` : '');
-
-        // Check if we already have a state from a previous run
-        const existingState = await interactionManager.load();
-
-        if (
-          existingState &&
-          (existingState.status === 'confirmed' || existingState.status === 'edited')
-        ) {
-          // User has already edited or confirmed a message, use it
-          commitMessage = existingState.data.edited || existingState.data.suggested;
-          console.log(chalk.green('   ✓ Using previously edited/confirmed commit message'));
-        } else {
-          // No existing state or not edited/confirmed, initialize new one
-          const interactionData: ShipInteractionData = {
-            analysis: gitAnalysis || {
-              files: [],
-              type: 'ship',
-              scope: feature,
-              breaking: false,
-            },
-            suggested: suggestedMessage,
-            issueId: issueId ?? undefined,
-            workLogPath: path.join(featureDir, 'work-log.md'),
-          };
-
-          // Initialize interaction state only if not already present
-          if (!existingState) {
-            await interactionManager.initialize(interactionData, env.name);
-          }
-
-          // For Claude Code, write markdown UI file
-          // HODGE-242: Only write ui.md if it doesn't exist or hasn't been edited
-          if (
-            env.type === 'claude-code' &&
-            (!existingState || existingState.status === 'pending')
-          ) {
-            const markdownUI =
-              `# 🚀 Ship Commit - ${feature}\n\n` +
-              `## Changed Files\n\n` +
-              (gitAnalysis ? formatFileChanges(gitAnalysis.files) : 'No file analysis available') +
-              '\n\n' +
-              `## Suggested Commit Message\n\n` +
-              '```\n' +
-              suggestedMessage +
-              '\n```\n\n' +
-              `## Actions\n\n` +
-              `- Edit the message above and save this file to use your custom message\n` +
-              `- Or use the suggested message as-is\n\n` +
-              `> The portable command will read your edits from:\n` +
-              `> ${interactionManager.getFilePath('state.json')}`;
-
-            await interactionManager.writeFile('ui.md', markdownUI);
-            console.log(
-              chalk.green(
-                `   ✓ Review commit message in: ${interactionManager.getFilePath('ui.md')}`
-              )
-            );
-            console.log(chalk.gray('   Edit the message and save, then re-run ship to continue'));
-
-            // In Claude Code, we exit here and let the user edit
-            if (!options.yes) {
-              return;
-            }
-          } else if (env.type === 'claude-code' && existingState?.status === 'edited') {
-            // User has edited the message, show that we're using it
-            console.log(chalk.green('   ✓ Using edited commit message from ui.md'));
-            console.log(chalk.gray('   Re-run ship to commit with this message'));
-
-            // In Claude Code, we exit here to let user confirm
-            if (!options.yes) {
-              return;
-            }
-          }
-        }
-
-        // Check if user has edited the state
-        const currentState = await interactionManager.load();
-        if (currentState?.data && 'edited' in currentState.data && currentState.data.edited) {
-          commitMessage = currentState.data.edited;
-          console.log(chalk.green('   ✓ Using edited commit message'));
-        } else if (options.yes ?? !env.capabilities.prompts) {
-          commitMessage = suggestedMessage;
-          console.log(chalk.green('   ✓ Using suggested commit message'));
-        } else {
-          // For other non-interactive environments, use suggested
-          commitMessage = suggestedMessage;
-        }
-
+      if (existingState?.data && 'edited' in existingState.data && existingState.data.edited) {
+        commitMessage = existingState.data.edited;
+        console.log(chalk.green('   ✓ Using edited commit message from slash command'));
         // Clean up interaction files after use
         await interactionManager.cleanup();
-      } else {
-        // No interactive prompts allowed - all hodge commands are non-interactive
-        // Use a default message as fallback
-        commitMessage = gitAnalysis
-          ? `${gitAnalysis.type}${gitAnalysis.scope !== 'general' ? `(${gitAnalysis.scope})` : ''}: ${feature}\n\n` +
-            `- Implementation complete\n` +
-            `- Tests passing\n` +
-            `- Documentation updated` +
-            (issueId ? `\n- Closes ${issueId}` : '')
-          : `ship: ${feature}${issueId ? ` (closes ${issueId})` : ''}\n\n` +
-            `- Implementation complete\n` +
-            `- Tests passing\n` +
-            `- Documentation updated` +
-            (issueId ? `\n- Closes ${issueId}` : '');
-        console.log(chalk.yellow('⚠️  Using default commit message (non-interactive mode)'));
       }
     }
 
@@ -447,40 +201,29 @@ export class ShipCommand {
         `- Tests passing\n` +
         `- Documentation updated` +
         (issueId ? `\n- Closes ${issueId}` : '');
+      console.log(chalk.yellow('⚠️  Using default commit message (no message from slash command)'));
     }
 
-    // Create ship record
-    const shipRecord = {
+    // Create ship record using ShipService
+    const shipRecord = this.shipService.generateShipRecord({
       feature,
-      timestamp: new Date().toISOString(),
       issueId,
-      pmTool,
+      pmTool: pmTool || null,
       validationPassed,
       shipChecks,
       commitMessage,
-    };
+    });
 
     const shipDir = path.join(featureDir, 'ship');
     await fs.mkdir(shipDir, { recursive: true });
     await fs.writeFile(path.join(shipDir, 'ship-record.json'), JSON.stringify(shipRecord, null, 2));
 
-    // Generate release notes
-    const releaseNotes = `## ${feature}
-
-${issueId ? `**PM Issue**: ${issueId}\n` : ''}
-**Shipped**: ${new Date().toLocaleDateString()}
-
-### What's New
-- ${feature} implementation complete
-- Full test coverage
-- Production ready
-
-### Quality Metrics
-- Tests: ${shipChecks.tests ? '✅ Passing' : '⚠️ Skipped'}
-- Coverage: ${shipChecks.coverage ? '✅ Met' : '⚠️ Unknown'}
-- Documentation: ${shipChecks.docs ? '✅ Complete' : '⚠️ Missing'}
-- Changelog: ${shipChecks.changelog ? '✅ Updated' : '⚠️ Missing'}
-`;
+    // Generate release notes using ShipService
+    const releaseNotes = this.shipService.generateReleaseNotes({
+      feature,
+      issueId,
+      shipChecks,
+    });
 
     await fs.writeFile(path.join(shipDir, 'release-notes.md'), releaseNotes);
 
@@ -564,7 +307,7 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}
     }
 
     // HODGE-220: Backup metadata before updates for rollback on failure
-    const metadataBackup = await backupMetadata(feature);
+    const metadataBackup = await this.shipService.backupMetadata(feature);
 
     try {
       // Move all metadata updates BEFORE git commit to prevent uncommitted files
@@ -582,28 +325,13 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}
           );
           console.log(chalk.green('   ✓ Commit created successfully'));
 
-          // Get current branch
-          const currentBranch = await getCurrentBranch();
-          console.log(chalk.gray(`   Branch: ${currentBranch}`));
-
-          // Check config for auto-push
-          const configManager = getConfigManager();
-          const shouldAutoPush = await configManager.isAutoPushEnabled();
-
-          // Handle push if requested or configured
-          if ((options.push || shouldAutoPush) && !options.noPush) {
-            await this.handlePush(currentBranch, feature, options);
-          } else if (!options.noPush) {
-            // Show push instructions if not auto-pushing
-            console.log(chalk.bold('\nNext Steps:'));
-            console.log('  1. Push to remote: git push');
-            console.log('  2. Create pull request if needed');
-            console.log('  3. Create release tag if needed');
-            console.log('  4. Monitor production metrics');
-            console.log('  5. Gather user feedback');
-            console.log();
-            console.log(chalk.gray('Tip: Use --push flag to automatically push after shipping'));
-          }
+          // Show next steps
+          console.log(chalk.bold('\nNext Steps:'));
+          console.log('  1. Push to remote: git push');
+          console.log('  2. Create pull request if needed');
+          console.log('  3. Create release tag if needed');
+          console.log('  4. Monitor production metrics');
+          console.log('  5. Gather user feedback');
         } catch (error) {
           // Inner catch for git commit failure
           console.log(chalk.yellow('   ⚠️  Could not create commit automatically'));
@@ -613,7 +341,7 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}
 
           // Rollback metadata changes on commit failure
           console.log(chalk.yellow('   ⚠️  Rolling back metadata changes...'));
-          await restoreMetadata(feature, metadataBackup);
+          await this.shipService.restoreMetadata(feature, metadataBackup);
           console.log(chalk.green('   ✓ Metadata rolled back successfully'));
 
           console.log(chalk.bold('\nManual Steps Required:'));
@@ -646,281 +374,6 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}
       }
       // Metadata has already been rolled back if needed
       return;
-    }
-  }
-
-  /**
-   * Handle git push with safety checks
-   */
-  private async handlePush(branch: string, feature: string, options: ShipOptions): Promise<void> {
-    console.log(chalk.bold('\n📤 Preparing to push...'));
-
-    // Get git status
-    const gitStatus = await getGitStatus();
-    const branchInfo = analyzeBranch(branch);
-
-    // Show push preview
-    console.log();
-    console.log(formatPushPreview(gitStatus, branchInfo));
-    console.log();
-
-    // Check for protected branch
-    if (branchInfo.isProtected && !options.forcePush) {
-      console.log(chalk.yellow.bold('⚠️  Warning: Pushing to protected branch'));
-      console.log(chalk.yellow(`   Branch '${branch}' is typically protected.`));
-      console.log(chalk.yellow('   Consider creating a feature branch instead.'));
-      console.log();
-
-      // In non-interactive mode, skip push to protected branch
-      if (options.noInteractive || options.yes) {
-        console.log(chalk.red('❌ Skipping push to protected branch'));
-        console.log(chalk.gray('   Use --force-push to override (not recommended)'));
-        return;
-      }
-
-      // No interactive prompts allowed - all hodge commands are non-interactive
-      // For protected branches, create a review file for the slash command to handle
-      const env = getCurrentEnvironment();
-      if (env.type === 'claude-code') {
-        // For Claude Code, we'll create a markdown file for review
-        await this.createPushReviewFile(branch, feature, gitStatus, branchInfo, options);
-        return;
-      } else {
-        // For other environments, skip push to protected branch
-        console.log(chalk.yellow('\n⚠️  Skipping push to protected branch'));
-        console.log(chalk.gray('   Protected branches require manual push'));
-        return;
-      }
-    }
-
-    // Check for uncommitted changes
-    if (gitStatus.hasUncommitted) {
-      console.log(chalk.yellow('⚠️  You have uncommitted changes'));
-      console.log(chalk.gray('   These changes will not be pushed'));
-      console.log();
-    }
-
-    // Check if we need to set upstream
-    const needsUpstream = !gitStatus.remote;
-    if (needsUpstream) {
-      console.log(chalk.blue('ℹ️  No remote tracking branch'));
-      console.log(chalk.gray('   Will create new remote branch'));
-      console.log();
-    }
-
-    // Execute push
-    console.log(chalk.cyan('Pushing to remote...'));
-    const pushResult = await gitPush({
-      branch: options.pushBranch || branch,
-      remote: 'origin',
-      force: options.forcePush,
-      setUpstream: needsUpstream,
-      dryRun: options.dryRun,
-    });
-
-    // Show result
-    console.log();
-    console.log(formatPushSummary(pushResult, branchInfo));
-
-    // PR creation removed - users can create PRs manually through their preferred tool
-  }
-
-  /**
-   * Create markdown push review file for Claude Code
-   */
-  private async createPushReviewFile(
-    branch: string,
-    feature: string,
-    gitStatus: Awaited<ReturnType<typeof getGitStatus>>,
-    branchInfo: ReturnType<typeof analyzeBranch>,
-    options: ShipOptions
-  ): Promise<void> {
-    console.log(chalk.cyan('\n📝 Creating push review file for Claude Code...'));
-
-    const pushDir = path.join('.hodge', 'temp', 'push-review', feature);
-    await fs.mkdir(pushDir, { recursive: true });
-
-    // Get recent commits
-    let recentCommits = '';
-    try {
-      const { stdout } = await execAsync('git log --oneline -5');
-      recentCommits = stdout.trim();
-    } catch {
-      recentCommits = 'Unable to fetch recent commits';
-    }
-
-    // Create push configuration
-    const pushConfig = {
-      branch,
-      remote: 'origin',
-      isProtected: branchInfo.isProtected,
-      createFeatureBranch: branchInfo.isProtected,
-      suggestedBranch: branchInfo.isProtected ? `feature/${feature}-${Date.now()}` : null,
-      forcePush: options.forcePush || false,
-    };
-
-    // Create markdown content
-    const markdownContent = `# 📤 Push Review - ${feature}
-
-## Current State
-
-| Property | Value |
-|----------|-------|
-| **Branch** | ${branch} ${branchInfo.isProtected ? '⚠️ PROTECTED' : '✅'} |
-| **Type** | ${branchInfo.type} |
-| **Remote** | ${gitStatus.remote || 'No upstream (will create)'} |
-| **Status** | ${gitStatus.ahead} ahead, ${gitStatus.behind} behind |
-${branchInfo.issueId ? `| **Issue** | ${branchInfo.issueId} |` : ''}
-
-## Recent Commits
-
-\`\`\`
-${recentCommits}
-\`\`\`
-
-${
-  branchInfo.isProtected
-    ? `## ⚠️ Protected Branch Warning
-
-You are attempting to push to **${branch}**, which is a protected branch.
-
-### Recommended Actions
-
-1. **Create Feature Branch** (Recommended)
-   - New branch: \`${pushConfig.suggestedBranch}\`
-   - Automatically switches to new branch
-   - Safer for parallel work
-
-2. **Push to Protected Branch** (Not Recommended)
-   - Requires explicit confirmation
-   - May affect other team members
-   - Should only be used for emergency fixes
-
-`
-    : ''
-}
-
-## Push Configuration
-
-Edit the settings below and save this file:
-
-\`\`\`yaml
-# Push settings
-push: true
-branch: ${pushConfig.suggestedBranch || branch}
-remote: origin
-forcePush: ${pushConfig.forcePush}
-
-# If creating feature branch
-createFeatureBranch: ${pushConfig.createFeatureBranch}
-${pushConfig.suggestedBranch ? `newBranchName: ${pushConfig.suggestedBranch}` : ''}
-
-# PR creation removed - create PRs manually through GitHub/GitLab/etc
-  - Manual testing completed
-\`\`\`
-
-## Actions
-
-### To proceed with push:
-1. Review and edit the configuration above
-2. Save this file
-3. Run: \`hodge ship ${feature} --continue-push\`
-
-### To cancel:
-- Run: \`hodge ship ${feature} --no-push\`
-
-## Safety Checks
-
-${gitStatus.hasUncommitted ? '⚠️ **Warning**: You have uncommitted changes that will NOT be pushed\n' : ''}
-${gitStatus.behind > 0 ? `⚠️ **Warning**: Branch is ${gitStatus.behind} commits behind remote\n` : ''}
-${!gitStatus.remote ? 'ℹ️ **Info**: No upstream branch exists - will create new remote branch\n' : ''}
-
----
-
-> 💡 **Tip**: The push configuration is saved in \`.hodge/temp/push-review/${feature}/\`
-> You can edit and re-run the command as needed.`;
-
-    // Save files
-    const markdownPath = path.join(pushDir, 'push-review.md');
-    const configPath = path.join(pushDir, 'push-config.json');
-
-    await fs.writeFile(markdownPath, markdownContent);
-    await fs.writeFile(configPath, JSON.stringify(pushConfig, null, 2));
-
-    console.log(chalk.green(`   ✓ Push review created: ${markdownPath}`));
-    console.log(chalk.gray('\n   Edit the configuration and run with --continue-push to proceed'));
-  }
-
-  /**
-   * Continue push from saved configuration (for Claude Code)
-   */
-  private async continuePushFromReview(feature: string, options: ShipOptions): Promise<void> {
-    console.log(chalk.cyan('📤 Continuing push from review...'));
-
-    const configPath = path.join('.hodge', 'temp', 'push-review', feature, 'push-config.json');
-
-    if (!existsSync(configPath)) {
-      console.log(chalk.red('❌ No push review found'));
-      console.log(chalk.gray('   Run ship with --push first to create a review'));
-      return;
-    }
-
-    // Load configuration
-    interface PushConfig {
-      branch: string;
-      remote: string;
-      isProtected: boolean;
-      createFeatureBranch: boolean;
-      newBranchName?: string;
-      suggestedBranch?: string | null;
-      forcePush: boolean;
-    }
-
-    let pushConfig: PushConfig;
-    try {
-      const configContent = await fs.readFile(configPath, 'utf-8');
-      pushConfig = JSON.parse(configContent) as PushConfig;
-    } catch (error) {
-      console.log(chalk.red('❌ Failed to load push configuration'));
-      console.log(chalk.gray(`   Error: ${String(error)}`));
-      return;
-    }
-
-    // Check if we need to create a feature branch
-    if (pushConfig.createFeatureBranch && pushConfig.newBranchName) {
-      console.log(chalk.cyan(`\nCreating feature branch: ${pushConfig.newBranchName}`));
-      try {
-        await execAsync(`git checkout -b ${pushConfig.newBranchName}`);
-        console.log(chalk.green(`   ✓ Created and switched to: ${pushConfig.newBranchName}`));
-        pushConfig.branch = pushConfig.newBranchName;
-      } catch (error) {
-        console.log(chalk.red(`   ✗ Failed to create branch: ${String(error)}`));
-        return;
-      }
-    }
-
-    // Execute push with config
-    console.log(chalk.cyan('\nPushing with reviewed configuration...'));
-    const pushResult = await gitPush({
-      branch: pushConfig.branch,
-      remote: pushConfig.remote || 'origin',
-      force: pushConfig.forcePush,
-      setUpstream: true,
-      dryRun: options.dryRun,
-    });
-
-    // Show result
-    console.log();
-    const branchInfo = analyzeBranch(pushConfig.branch);
-    console.log(formatPushSummary(pushResult, branchInfo));
-
-    // Clean up review files
-    if (pushResult.success && !options.dryRun) {
-      const pushDir = path.join('.hodge', 'temp', 'push-review', feature);
-      await fs.rm(pushDir, { recursive: true, force: true });
-      console.log(chalk.gray('\n✓ Cleaned up review files'));
-
-      // PR creation removed - users can create PRs manually through their preferred tool
     }
   }
 

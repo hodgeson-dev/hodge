@@ -39,13 +39,14 @@ describe('ship command integration - HODGE-220', () => {
       let restoreLine = -1;
 
       for (let i = 0; i < lines.length; i++) {
-        if (lines[i].includes('await backupMetadata(feature)')) {
+        // Updated for HODGE-322: backup/restore now via ShipService
+        if (lines[i].includes('await this.shipService.backupMetadata(feature)')) {
           backupLine = i;
         }
         if (lines[i].includes('`git commit -m')) {
           commitLine = i;
         }
-        if (lines[i].includes('await restoreMetadata(feature, metadataBackup)')) {
+        if (lines[i].includes('await this.shipService.restoreMetadata(feature, metadataBackup)')) {
           restoreLine = i;
         }
       }
@@ -86,9 +87,9 @@ describe('ship command integration - HODGE-220', () => {
     const shipPath = path.join(process.cwd(), 'src', 'commands', 'ship.ts');
     const content = await fs.readFile(shipPath, 'utf-8');
 
-    // Verify error handling includes rollback
+    // Verify error handling includes rollback (Updated for HODGE-322: now via ShipService)
     expect(content).toContain('// Inner catch for git commit failure');
-    expect(content).toContain('await restoreMetadata(feature, metadataBackup)');
+    expect(content).toContain('await this.shipService.restoreMetadata(feature, metadataBackup)');
     expect(content).toContain('✓ Metadata rolled back successfully');
 
     // Verify outer catch for overall failures

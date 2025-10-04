@@ -9,16 +9,6 @@ Consistent error handling with logging
 
 ## Examples
 
-### src/commands/build.ts
-```typescript
-try {
-      // Validate inputs (redundant but keeping for safety)
-      if (!feature || typeof feature !== 'string') {
-        throw new Error('Feature name is required and must be a string');
-      }
-```
-
-
 ### src/commands/harden.ts
 ```typescript
 try {
@@ -42,11 +32,22 @@ try {
 ```
 
 
+### src/commands/ship.ts
+```typescript
+try {
+        const results = JSON.parse(await fs.readFile(validationFile, 'utf-8')) as Record<
+          string,
+          { passed: boolean }
+        >;
+        validationPassed = Object.values(resu
+```
+
+
 ## When to Use
 - 
 - 
 - 
 
 ---
-*First seen: 2025-10-03T20:19:31.296Z*
-*Last used: 2025-10-03T20:19:31.298Z*
+*First seen: 2025-10-04T00:43:01.151Z*
+*Last used: 2025-10-04T00:43:01.153Z*

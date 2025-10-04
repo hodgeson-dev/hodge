@@ -1248,9 +1248,9 @@
   "TEST-006: Test PM creation": {
     "localID": "TEST-006: Test PM creation",
     "created": "2025-09-30T03:44:33.069Z",
-    "externalID": "44f60943-f563-4ff4-86a8-3e88d515b026",
+    "externalID": "e4f2922d-43c1-47f2-bd84-012a8551e51c",
     "pmTool": "linear",
-    "lastSynced": "2025-10-03T20:19:25.366Z"
+    "lastSynced": "2025-10-04T00:42:52.399Z"
   },
   "HODGE-301": {
     "localID": "HODGE-301",
@@ -1443,5 +1443,63 @@
   "HODGE-321": {
     "localID": "HODGE-321",
     "created": "2025-10-03T18:49:26.798Z"
+  },
+  "HODGE-322": {
+    "localID": "HODGE-322",
+    "created": "2025-10-03T20:21:23.341Z"
+  },
+  "HODGE-322.1": {
+    "localID": "HODGE-322.1",
+    "created": "2025-10-03T21:41:35.997Z",
+    "externalID": "b32c0a67-e523-48a8-ae03-cf9cd3c80fa1",
+    "pmTool": "linear"
+  },
+  "HODGE-322.2": {
+    "localID": "HODGE-322.2",
+    "created": "2025-10-03T21:41:36.495Z",
+    "externalID": "17facf01-147d-4b45-b34a-3587534afda1",
+    "pmTool": "linear"
+  },
+  "HODGE-322.3": {
+    "localID": "HODGE-322.3",
+    "created": "2025-10-03T21:41:37.013Z",
+    "externalID": "e3259765-fda0-4def-9b24-18dd3c6c2e82",
+    "pmTool": "linear"
+  },
+  "HODGE-322.4": {
+    "localID": "HODGE-322.4",
+    "created": "2025-10-03T21:41:37.472Z",
+    "externalID": "d76dd275-42dc-4d2f-9440-095edc1d63aa",
+    "pmTool": "linear"
+  },
+  "HODGE-322.5": {
+    "localID": "HODGE-322.5",
+    "created": "2025-10-03T21:41:38.051Z",
+    "externalID": "33cb695d-43c2-4b26-bd89-7ca74f4c5094",
+    "pmTool": "linear"
+  },
+  "HODGE-322.6": {
+    "localID": "HODGE-322.6",
+    "created": "2025-10-03T21:41:38.573Z",
+    "externalID": "40c035f5-e4c7-401e-b016-bfdad46bd69e",
+    "pmTool": "linear"
+  },
+  "HODGE-322.7": {
+    "localID": "HODGE-322.7",
+    "created": "2025-10-03T21:41:39.044Z",
+    "externalID": "aa958c23-0ffd-4f43-a40e-ea99567c7409",
+    "pmTool": "linear"
+  },
+  "HODGE-322.8": {
+    "localID": "HODGE-322.8",
+    "created": "2025-10-03T21:41:40.371Z",
+    "externalID": "de656e42-2afd-404a-ac74-e12afefc4696",
+    "pmTool": "linear"
+  },
+  "HODGE-322: HODGE-321 successfully established the Service class extraction pattern by refactoring...": {
+    "localID": "HODGE-322: HODGE-321 successfully established the Service class extraction pattern by refactoring...",
+    "created": "2025-10-03T21:41:40.372Z",
+    "externalID": "9f9ad5c4-39cc-473b-9483-f7daf57daea2",
+    "pmTool": "linear"
   }
 }

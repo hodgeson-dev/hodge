@@ -130,16 +130,23 @@ export class HardenService {
         timeout: 120000, // 2 minute timeout
       });
 
-      const passed = !stderr || !stderr.includes('FAIL');
+      // If execAsync succeeds (no throw), tests passed (exit code 0)
+      // Check output for test failures as secondary validation
+      const output = stdout + stderr;
+      const hasFailed = output.includes(' FAIL ') || /Test Files.*\d+\s+failed/.test(output);
 
       return {
-        passed,
-        output: stdout + stderr,
+        passed: !hasFailed,
+        output,
       };
     } catch (error) {
+      // execAsync throws on non-zero exit code = tests failed
+      // Error object from child_process.exec contains stdout/stderr properties
+      const execError = error as { stdout?: string; stderr?: string; message?: string };
+      const output = execError.stdout || execError.stderr || execError.message || String(error);
       return {
         passed: false,
-        output: error instanceof Error ? error.message : String(error),
+        output,
       };
     }
   }
@@ -166,10 +173,14 @@ export class HardenService {
         timeout: 60000, // 1 minute timeout
       });
 
-      const passed = !stderr || !stderr.includes('error');
+      // execAsync succeeds = exit code 0 = no linting errors (warnings are OK)
+      const output = stdout + stderr;
+      // Check for ESLint error summary format: "X problems (Y errors, Z warnings)"
+      const errorMatch = output.match(/\((\d+) errors?,/);
+      const hasErrors = errorMatch && parseInt(errorMatch[1]) > 0;
 
-      // Auto-fix if requested and failed
-      if (!passed && autoFix) {
+      // Auto-fix if requested and has errors
+      if (hasErrors && autoFix) {
         try {
           await execAsync('npm run lint -- --fix');
         } catch {
@@ -178,10 +189,11 @@ export class HardenService {
       }
 
       return {
-        passed,
-        output: stdout + stderr,
+        passed: !hasErrors,
+        output,
       };
     } catch (error) {
+      // execAsync throws on non-zero exit code = linting errors exist
       return {
         passed: false,
         output: error instanceof Error ? error.message : String(error),
@@ -200,13 +212,16 @@ export class HardenService {
         timeout: 60000,
       });
 
-      const passed = !stderr || !stderr.includes('error');
+      // execAsync succeeds = exit code 0 = no TypeScript errors
+      const output = stdout + stderr;
+      const hasErrors = output.includes('error TS') || /Found \d+ errors?/.test(output);
 
       return {
-        passed,
-        output: stdout + stderr,
+        passed: !hasErrors,
+        output,
       };
     } catch (error) {
+      // execAsync throws on non-zero exit code = TypeScript errors exist
       return {
         passed: false,
         output: error instanceof Error ? error.message : String(error),
@@ -225,13 +240,16 @@ export class HardenService {
         timeout: 120000, // 2 minute timeout
       });
 
-      const passed = !stderr || !stderr.includes('error');
+      // execAsync succeeds = exit code 0 = build succeeded
+      const output = stdout + stderr;
+      const hasErrors = output.includes('error TS') || output.includes('Build failed');
 
       return {
-        passed,
-        output: stdout + stderr,
+        passed: !hasErrors,
+        output,
       };
     } catch (error) {
+      // execAsync throws on non-zero exit code = build failed
       return {
         passed: false,
         output: error instanceof Error ? error.message : String(error),

@@ -1,123 +1,224 @@
-import { describe, expect } from 'vitest';
+import { describe, expect, vi, beforeEach, afterEach } from 'vitest';
 import { smokeTest } from '../test/helpers.js';
 import { ShipService } from './ship-service.js';
+import { existsSync } from 'fs';
+import fs from 'fs/promises';
+import { exec } from 'child_process';
 
-describe('ShipService - HODGE-321 Service Extraction', () => {
+// Mock modules
+vi.mock('fs', async () => {
+  const actual = await vi.importActual('fs');
+  return {
+    ...actual,
+    existsSync: vi.fn(),
+  };
+});
+
+vi.mock('fs/promises', () => ({
+  default: {
+    readFile: vi.fn(),
+    writeFile: vi.fn(),
+  },
+}));
+
+vi.mock('child_process', () => ({
+  exec: vi.fn(),
+}));
+
+describe('ShipService - HODGE-322 Service Extraction', () => {
+  let service: ShipService;
+
+  beforeEach(() => {
+    service = new ShipService();
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   smokeTest('should instantiate without errors', () => {
-    const service = new ShipService();
     expect(service).toBeDefined();
     expect(service).toBeInstanceOf(ShipService);
   });
 
-  smokeTest('should have validateCommitMessage method', () => {
-    const service = new ShipService();
-    expect(service.validateCommitMessage).toBeDefined();
-    expect(typeof service.validateCommitMessage).toBe('function');
+  // Quality Gates Tests
+  smokeTest('should have runQualityGates method', () => {
+    expect(service.runQualityGates).toBeDefined();
+    expect(typeof service.runQualityGates).toBe('function');
   });
 
-  smokeTest('should have isProtectedBranch method', () => {
-    const service = new ShipService();
-    expect(service.isProtectedBranch).toBeDefined();
-    expect(typeof service.isProtectedBranch).toBe('function');
+  smokeTest('should return all passed when tests pass and files exist', async () => {
+    // Mock successful test execution
+    vi.mocked(existsSync).mockReturnValue(true);
+
+    const results = await service.runQualityGates({ skipTests: true });
+
+    expect(results.tests).toBe(true);
+    expect(results.coverage).toBe(true);
+    expect(results.docs).toBe(true);
+    expect(results.changelog).toBe(true);
+    expect(results.allPassed).toBe(true);
   });
 
-  smokeTest('should have shouldSkipPush method', () => {
-    const service = new ShipService();
-    expect(service.shouldSkipPush).toBeDefined();
-    expect(typeof service.shouldSkipPush).toBe('function');
+  smokeTest('should return false for missing docs when README missing', async () => {
+    vi.mocked(existsSync).mockImplementation((path: string) => {
+      if (path.toString().includes('README')) return false;
+      if (path.toString().includes('CHANGELOG')) return true;
+      return true;
+    });
+
+    const results = await service.runQualityGates({ skipTests: true });
+
+    expect(results.docs).toBe(false);
+    expect(results.changelog).toBe(true);
+    expect(results.allPassed).toBe(false);
   });
 
-  smokeTest('should have generateCommitMetadata method', () => {
-    const service = new ShipService();
-    expect(service.generateCommitMetadata).toBeDefined();
-    expect(typeof service.generateCommitMetadata).toBe('function');
+  smokeTest('should mark tests as passing when skipTests is true', async () => {
+    vi.mocked(existsSync).mockReturnValue(true);
+
+    const results = await service.runQualityGates({ skipTests: true });
+
+    expect(results.tests).toBe(true);
   });
 
-  smokeTest('should validate correct commit messages', () => {
-    const service = new ShipService();
-
-    expect(service.validateCommitMessage('feat: add new feature')).toBe(true);
-    expect(service.validateCommitMessage('fix: resolve bug')).toBe(true);
-    expect(service.validateCommitMessage('Multi-line\nmessage\nhere')).toBe(true);
+  // Ship Record Tests
+  smokeTest('should have generateShipRecord method', () => {
+    expect(service.generateShipRecord).toBeDefined();
+    expect(typeof service.generateShipRecord).toBe('function');
   });
 
-  smokeTest('should reject invalid commit messages', () => {
-    const service = new ShipService();
+  smokeTest('should generate ship record with all required fields', () => {
+    const record = service.generateShipRecord({
+      feature: 'test-feature',
+      issueId: 'TEST-123',
+      pmTool: 'linear',
+      validationPassed: true,
+      shipChecks: { tests: true, coverage: true, docs: true, changelog: true },
+      commitMessage: 'feat: test commit',
+    });
 
-    expect(service.validateCommitMessage('')).toBe(false);
-    expect(service.validateCommitMessage('   ')).toBe(false);
-    expect(service.validateCommitMessage('x'.repeat(6000))).toBe(false);
+    expect(record.feature).toBe('test-feature');
+    expect(record.issueId).toBe('TEST-123');
+    expect(record.pmTool).toBe('linear');
+    expect(record.validationPassed).toBe(true);
+    expect(record.shipChecks).toEqual({ tests: true, coverage: true, docs: true, changelog: true });
+    expect(record.commitMessage).toBe('feat: test commit');
+    expect(record.timestamp).toBeDefined();
+    expect(new Date(record.timestamp)).toBeInstanceOf(Date);
   });
 
-  smokeTest('should detect protected branches', () => {
-    const service = new ShipService();
+  smokeTest('should handle null issueId and pmTool in ship record', () => {
+    const record = service.generateShipRecord({
+      feature: 'test-feature',
+      issueId: null,
+      pmTool: null,
+      validationPassed: false,
+      shipChecks: { tests: false, coverage: true, docs: true, changelog: false },
+      commitMessage: 'ship: quick fix',
+    });
 
-    expect(service.isProtectedBranch('main')).toBe(true);
-    expect(service.isProtectedBranch('master')).toBe(true);
-    expect(service.isProtectedBranch('production')).toBe(true);
-    expect(service.isProtectedBranch('prod')).toBe(true);
-    expect(service.isProtectedBranch('MAIN')).toBe(true); // case insensitive
+    expect(record.issueId).toBeNull();
+    expect(record.pmTool).toBeNull();
+    expect(record.validationPassed).toBe(false);
   });
 
-  smokeTest('should not detect feature branches as protected', () => {
-    const service = new ShipService();
-
-    expect(service.isProtectedBranch('feature-123')).toBe(false);
-    expect(service.isProtectedBranch('develop')).toBe(false);
-    expect(service.isProtectedBranch('staging')).toBe(false);
+  // Release Notes Tests
+  smokeTest('should have generateReleaseNotes method', () => {
+    expect(service.generateReleaseNotes).toBeDefined();
+    expect(typeof service.generateReleaseNotes).toBe('function');
   });
 
-  smokeTest('should skip push when noPush flag is set', () => {
-    const service = new ShipService();
+  smokeTest('should generate release notes with PM issue', () => {
+    const notes = service.generateReleaseNotes({
+      feature: 'awesome-feature',
+      issueId: 'PROJ-456',
+      shipChecks: { tests: true, coverage: true, docs: true, changelog: true },
+    });
 
-    const result = service.shouldSkipPush('feature-branch', { noPush: true });
-
-    expect(result.skip).toBe(true);
-    expect(result.reason).toContain('--no-push');
+    expect(notes).toContain('awesome-feature');
+    expect(notes).toContain('PROJ-456');
+    expect(notes).toContain('✅ Passing');
+    expect(notes).toContain('✅ Met');
+    expect(notes).toContain('✅ Complete');
+    expect(notes).toContain('✅ Updated');
   });
 
-  smokeTest('should skip push on protected branch without force', () => {
-    const service = new ShipService();
+  smokeTest('should generate release notes without PM issue', () => {
+    const notes = service.generateReleaseNotes({
+      feature: 'simple-feature',
+      issueId: null,
+      shipChecks: { tests: false, coverage: true, docs: false, changelog: false },
+    });
 
-    const result = service.shouldSkipPush('main', {});
-
-    expect(result.skip).toBe(true);
-    expect(result.reason).toContain('Protected branch');
+    expect(notes).toContain('simple-feature');
+    expect(notes).not.toContain('**PM Issue**');
+    expect(notes).toContain('⚠️ Skipped');
+    expect(notes).toContain('⚠️ Missing');
   });
 
-  smokeTest('should allow push on protected branch with forcePush', () => {
-    const service = new ShipService();
-
-    const result = service.shouldSkipPush('main', { forcePush: true });
-
-    expect(result.skip).toBe(false);
+  // Metadata Backup/Restore Tests
+  smokeTest('should have backupMetadata method', () => {
+    expect(service.backupMetadata).toBeDefined();
+    expect(typeof service.backupMetadata).toBe('function');
   });
 
-  smokeTest('should allow push on feature branches', () => {
-    const service = new ShipService();
-
-    const result = service.shouldSkipPush('feature-123', {});
-
-    expect(result.skip).toBe(false);
+  smokeTest('should have restoreMetadata method', () => {
+    expect(service.restoreMetadata).toBeDefined();
+    expect(typeof service.restoreMetadata).toBe('function');
   });
 
-  smokeTest('should generate commit metadata correctly', () => {
-    const service = new ShipService();
+  smokeTest('should backup existing metadata files', async () => {
+    vi.mocked(existsSync).mockReturnValue(true);
+    vi.mocked(fs.readFile).mockResolvedValue('file content');
 
-    const metadata = service.generateCommitMetadata('test-feature', 'feat: test commit');
+    const backup = await service.backupMetadata('test-feature');
 
-    expect(metadata.feature).toBe('test-feature');
-    expect(metadata.message).toBe('feat: test commit');
-    expect(metadata.valid).toBe(true);
-    expect(metadata.timestamp).toBeDefined();
-    expect(new Date(metadata.timestamp)).toBeInstanceOf(Date);
+    expect(backup.projectManagement).toBe('file content');
+    expect(backup.session).toBe('file content');
+    expect(backup.context).toBe('file content');
   });
 
-  smokeTest('should mark invalid commit in metadata', () => {
-    const service = new ShipService();
+  smokeTest('should handle missing metadata files in backup', async () => {
+    vi.mocked(existsSync).mockReturnValue(false);
 
-    const metadata = service.generateCommitMetadata('test-feature', '');
+    const backup = await service.backupMetadata('test-feature');
 
-    expect(metadata.valid).toBe(false);
+    expect(backup.projectManagement).toBeUndefined();
+    expect(backup.session).toBeUndefined();
+    expect(backup.context).toBeUndefined();
+  });
+
+  smokeTest('should restore metadata from backup', async () => {
+    const backup = {
+      projectManagement: 'pm content',
+      session: 'session content',
+      context: 'context content',
+    };
+
+    await service.restoreMetadata('test-feature', backup);
+
+    expect(fs.writeFile).toHaveBeenCalledTimes(3);
+    expect(fs.writeFile).toHaveBeenCalledWith(
+      expect.stringContaining('project_management.md'),
+      'pm content'
+    );
+    expect(fs.writeFile).toHaveBeenCalledWith(
+      expect.stringContaining('.session'),
+      'session content'
+    );
+    expect(fs.writeFile).toHaveBeenCalledWith(
+      expect.stringContaining('context.json'),
+      'context content'
+    );
+  });
+
+  smokeTest('should handle empty backup in restore', async () => {
+    const backup = {};
+
+    await service.restoreMetadata('test-feature', backup);
+
+    expect(fs.writeFile).not.toHaveBeenCalled();
   });
 });

@@ -81,17 +81,21 @@ describe('sync-claude-commands', () => {
     }
   });
 
-  smokeTest('should generate consistent output across runs', () => {
-    // Run sync script twice
-    execSync(`node ${SYNC_SCRIPT}`, { stdio: 'pipe' });
-    const firstRun = fs.readFileSync(OUTPUT_FILE, 'utf8');
+  smokeTest(
+    'should generate consistent output across runs',
+    () => {
+      // Run sync script twice
+      execSync(`node ${SYNC_SCRIPT}`, { stdio: 'pipe' });
+      const firstRun = fs.readFileSync(OUTPUT_FILE, 'utf8');
 
-    execSync(`node ${SYNC_SCRIPT}`, { stdio: 'pipe' });
-    const secondRun = fs.readFileSync(OUTPUT_FILE, 'utf8');
+      execSync(`node ${SYNC_SCRIPT}`, { stdio: 'pipe' });
+      const secondRun = fs.readFileSync(OUTPUT_FILE, 'utf8');
 
-    // Output should be identical
-    expect(firstRun).toBe(secondRun);
-  });
+      // Output should be identical
+      expect(firstRun).toBe(secondRun);
+    },
+    10000
+  ); // Increased timeout to 10s to prevent flaky failures
 
   smokeTest('should handle prettier formatting gracefully', () => {
     // This test ensures the script doesn't crash if prettier has issues

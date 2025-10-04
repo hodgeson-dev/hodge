@@ -35,8 +35,10 @@ expect(compiled).toContain('import');
 
 Use `os.tmpdir()` for all file operations.
 
-### 3. Service Class Extraction for CLI Commands (HODGE-321)
+### 3. Service Class Extraction for CLI Commands (HODGE-321, HODGE-322)
 **Extract testable business logic from AI-orchestrated CLI commands.**
+
+**Why**: CLI commands called by Claude Code slash commands cannot be tested via subprocess spawning (creates hung processes). Extract business logic into Service classes that can be tested directly.
 
 ❌ **BAD** (untestable mixed logic):
 ```typescript
@@ -53,7 +55,7 @@ class HardenCommand {
 
 ✅ **GOOD** (testable service + thin CLI):
 ```typescript
-// Testable business logic
+// Testable business logic in Service class
 class HardenService {
   async validateStandards(): Promise<ValidationResults> {
     // Pure business logic, returns data
@@ -65,22 +67,179 @@ class HardenService {
   }
 }
 
-// Thin orchestration wrapper
+// Thin orchestration wrapper (CLI command)
 class HardenCommand {
+  private service = new HardenService();
+
   async execute() {
-    const service = new HardenService();
-    const results = await service.validateStandards();
+    const results = await this.service.validateStandards();
     console.log(formatResults(results)); // just presentation
   }
 }
 
-// Test the service directly
-test('validates standards correctly', async () => {
+// Test the service directly - no subprocess needed
+smokeTest('validates standards correctly', async () => {
   const service = new HardenService();
   const results = await service.validateStandards();
   expect(results.passed).toBe(true);
 });
 ```
+
+**Real Example - ShipService (HODGE-322)**:
+```typescript
+// src/lib/ship-service.ts - Testable business logic
+export class ShipService {
+  async runQualityGates(options: { skipTests?: boolean }): Promise<QualityGateResults> {
+    const results = {
+      tests: false,
+      coverage: false,
+      docs: false,
+      changelog: false,
+      allPassed: false,
+    };
+
+    if (!options.skipTests) {
+      try {
+        await execAsync('npm test 2>&1');
+        results.tests = true;
+      } catch {
+        results.tests = false;
+      }
+    } else {
+      results.tests = true;
+    }
+
+    results.coverage = true;
+    results.docs = existsSync('README.md');
+    results.changelog = existsSync('CHANGELOG.md');
+    results.allPassed = Object.values(results).every(v => v === true);
+
+    return results;
+  }
+
+  generateShipRecord(params: ShipRecordParams): ShipRecordData {
+    return {
+      feature: params.feature,
+      timestamp: new Date().toISOString(),
+      issueId: params.issueId,
+      pmTool: params.pmTool,
+      validationPassed: params.validationPassed,
+      shipChecks: params.shipChecks,
+      commitMessage: params.commitMessage,
+    };
+  }
+
+  generateReleaseNotes(params: ReleaseNotesParams): string {
+    const { feature, issueId, shipChecks } = params;
+    return `## ${feature}\n\n${issueId ? `**PM Issue**: ${issueId}\n` : ''}...`;
+  }
+}
+
+// src/commands/ship.ts - Thin CLI orchestration
+export class ShipCommand {
+  private shipService = new ShipService();
+
+  async execute(feature?: string, options: ShipOptions = {}): Promise<void> {
+    // Delegate to service for business logic
+    const qualityResults = await this.shipService.runQualityGates({
+      skipTests: options.skipTests
+    });
+
+    const shipRecord = this.shipService.generateShipRecord({
+      feature,
+      issueId,
+      pmTool: pmTool || null,
+      validationPassed,
+      shipChecks: {
+        tests: qualityResults.tests,
+        coverage: qualityResults.coverage,
+        docs: qualityResults.docs,
+        changelog: qualityResults.changelog,
+      },
+      commitMessage,
+    });
+
+    const releaseNotes = this.shipService.generateReleaseNotes({
+      feature,
+      issueId,
+      shipChecks: shipRecord.shipChecks,
+    });
+
+    // CLI just presents results
+    console.log(releaseNotes);
+    await fs.writeFile('ship-record.json', JSON.stringify(shipRecord));
+  }
+}
+
+// src/lib/ship-service.test.ts - Direct service testing with mocks
+import { describe, expect, vi, beforeEach } from 'vitest';
+import { smokeTest } from '../test/helpers.js';
+import { ShipService } from './ship-service.js';
+
+vi.mock('fs', async () => ({
+  ...await vi.importActual('fs'),
+  existsSync: vi.fn(),
+}));
+
+vi.mock('child_process', () => ({
+  exec: vi.fn(),
+}));
+
+describe('ShipService - HODGE-322', () => {
+  let service: ShipService;
+
+  beforeEach(() => {
+    service = new ShipService();
+    vi.clearAllMocks();
+  });
+
+  smokeTest('should return all passed when quality gates pass', async () => {
+    vi.mocked(existsSync).mockReturnValue(true);
+
+    const results = await service.runQualityGates({ skipTests: true });
+
+    expect(results.tests).toBe(true);
+    expect(results.coverage).toBe(true);
+    expect(results.docs).toBe(true);
+    expect(results.changelog).toBe(true);
+    expect(results.allPassed).toBe(true);
+  });
+
+  smokeTest('should generate ship record with all required fields', () => {
+    const record = service.generateShipRecord({
+      feature: 'test-feature',
+      issueId: 'TEST-123',
+      pmTool: 'linear',
+      validationPassed: true,
+      shipChecks: { tests: true, coverage: true, docs: true, changelog: true },
+      commitMessage: 'feat: test commit',
+    });
+
+    expect(record.feature).toBe('test-feature');
+    expect(record.issueId).toBe('TEST-123');
+    expect(record.timestamp).toBeDefined();
+    expect(new Date(record.timestamp)).toBeInstanceOf(Date);
+  });
+
+  smokeTest('should generate release notes with PM issue', () => {
+    const notes = service.generateReleaseNotes({
+      feature: 'awesome-feature',
+      issueId: 'PROJ-456',
+      shipChecks: { tests: true, coverage: true, docs: true, changelog: true },
+    });
+
+    expect(notes).toContain('awesome-feature');
+    expect(notes).toContain('PROJ-456');
+    expect(notes).toContain('✅ Passing');
+  });
+});
+```
+
+**Benefits**:
+- ✅ Fast tests (<100ms) - mock execAsync() and file I/O
+- ✅ No subprocess spawning - test business logic directly
+- ✅ Easy to test edge cases - control all inputs/outputs
+- ✅ CLI stays thin - just orchestration and presentation
 
 ---
 

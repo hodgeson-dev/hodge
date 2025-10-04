@@ -3,16 +3,16 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: HODGE-319.4
+**Feature**: HODGE-321
 **Mode**: shipped
-**PM Issue**: f6e32980-be3b-43fd-8c66-e303a8d8d46f
-**Last Updated**: 2025-10-03T18:48:51.715Z
+**PM Issue**: HODGE-321
+**Last Updated**: 2025-10-03T20:20:39.383Z
 ## Current Session
-**Resumed**: 46 minutes ago
-**Progress**: Explored HODGE-319.4 - template ready for AI approach generation
-**Working on**: HODGE-319.4 (explore mode)
+**Resumed**: 1 hours ago
+**Progress**: Explored HODGE-321 - template ready for AI approach generation
+**Working on**: HODGE-321 (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-319.4. Explored HODGE-319.4 - template ready for AI approach generation
+You were helping with HODGE-321. Explored HODGE-321 - template ready for AI approach generation
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
@@ -57,12 +57,17 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - Prettier formatting
 
 ### CLI Architecture Standards
-- Commands are called by Claude Code slash commands, never directly by developers
-- There is no possibility of user interaction when called from slash commands
-- NO prompts, confirmations, or user input of any kind
+- **AI-Orchestrated** (explore, decide, build, harden, ship, save, load, plan, status, link): Called exclusively by Claude Code slash commands
+- **User-Facing Exceptions** (init, logs): Interactive CLI tools called directly by developers
+- AI-orchestrated commands MUST be non-interactive (no prompts, confirmations, or user input)
 - All parameters must come from command arguments or environment variables
-- If a decision is needed, the command should make a sensible default choice
+- Commands should make sensible default choices when decisions are needed
 - Use exit codes and structured output to communicate state
+- There is no possibility of user interaction when called from slash commands
+- AI-orchestrated commands should extract testable business logic into Service classes
+- CLI command classes remain thin orchestration wrappers (presentation layer)
+- Test business outcomes through Service classes, not CLI orchestration
+- User-facing commands (init, logs) may accept lower test coverage due to interactive nature
 
 ### Testing Requirements
 - Test what users see, not how it works
@@ -126,13 +131,12 @@ Suggested next: Review exploration and decide with 'hodge decide'
 
 ## Working Files
 
-- `.hodge/features/HODGE-319.4/explore/exploration.md`
-- `.hodge/features/HODGE-319.4/explore/test-intentions.md`
-- `.hodge/features/HODGE-319.4/build/build-plan.md`
-- `.hodge/features/HODGE-319.4/build/context.json`
-- `.hodge/features/HODGE-319.4/ship/lessons-draft.md`
-- `.hodge/features/HODGE-319.4/ship/release-notes.md`
-- `.hodge/features/HODGE-319.4/ship/ship-record.json`
+- `.hodge/features/HODGE-321/explore/exploration.md`
+- `.hodge/features/HODGE-321/explore/test-intentions.md`
+- `.hodge/features/HODGE-321/build/build-plan.md`
+- `.hodge/features/HODGE-321/ship/lessons-draft.md`
+- `.hodge/features/HODGE-321/ship/release-notes.md`
+- `.hodge/features/HODGE-321/ship/ship-record.json`
 
 ## Next Steps
 
