@@ -1,0 +1,105 @@
+name: "Default Code Quality"
+description: "Universal code quality checks for any language - coupling, SRP, DRY, complexity, naming"
+
+applies_to:
+  - "**/*.ts"
+  - "**/*.js"
+  - "**/*.tsx"
+  - "**/*.jsx"
+  - "**/*.py"
+  - "**/*.java"
+  - "**/*.kt"
+  - "**/*.kts"
+  - "**/*.go"
+
+criteria:
+  - name: "Lessons Learned Violations"
+    severity: blocker
+    reference: ".hodge/lessons/"
+    patterns:
+      - "Check for subprocess spawning in tests (HODGE-317.1 ban)"
+      - "Verify test isolation - no .hodge directory modification (HODGE-308)"
+      - "Ensure ESM compatibility - no CommonJS patterns (HODGE-318)"
+      - "Check for direct function calls instead of subprocess spawning (HODGE-320)"
+    custom_instructions: |
+      Cross-reference code against all lessons in .hodge/lessons/.
+      Any violation of a documented lesson is a BLOCKER.
+      Reference the specific lesson (e.g., "Violates HODGE-317.1") in findings.
+
+  - name: "Single Responsibility Principle"
+    severity: warning
+    patterns:
+      - "Check if classes/functions do multiple unrelated things"
+      - "Look for god objects or utility classes with disparate responsibilities"
+      - "Identify classes that would change for multiple reasons"
+    custom_instructions: |
+      A class/function should have one reason to change.
+      Flag when responsibilities are unrelated (e.g., UserService doing auth + validation + database + email).
+      Use project principles to guide interpretation of "responsibility boundaries".
+
+  - name: "DRY Violations"
+    severity: suggestion
+    patterns:
+      - "Look for duplicated logic across functions or files"
+      - "Check for repeated validation patterns"
+      - "Identify similar code blocks that could be extracted"
+    custom_instructions: |
+      Focus on substantive duplication, not incidental similarity.
+      Flag when the SAME business logic appears in 3+ places.
+      Suggest extraction to shared service/utility with clear name.
+
+  - name: "Coupling & Cohesion"
+    severity: warning
+    patterns:
+      - "Check if modules depend on internal details of other modules"
+      - "Look for tight coupling between unrelated components"
+      - "Identify classes that know too much about other classes"
+    custom_instructions: |
+      Modules should depend on interfaces, not implementations.
+      Flag when code accesses private details or internal state of other modules.
+      Consider if dependency could be inverted or abstracted.
+
+  - name: "Complexity Hotspots"
+    severity: warning
+    patterns:
+      - "Flag functions with 4+ levels of nesting"
+      - "Identify functions longer than 50 lines"
+      - "Look for complex conditional logic"
+    custom_instructions: |
+      Consider cognitive load - would this confuse a new team member?
+      Suggest extraction of complex logic into well-named helper functions.
+      Balance readability with performance (readability usually wins per project principles).
+
+  - name: "Naming Consistency"
+    severity: suggestion
+    patterns:
+      - "Check if names clearly convey intent"
+      - "Look for misleading or unclear names"
+      - "Identify inconsistent naming patterns"
+    custom_instructions: |
+      Names should reveal intent without needing comments.
+      Check against project patterns for naming conventions.
+      Flag names like "handler", "manager", "util" that don't convey specific purpose.
+
+  - name: "Error Handling"
+    severity: warning
+    patterns:
+      - "Check for missing error handling in critical paths"
+      - "Look for empty catch blocks"
+      - "Identify uncaught promise rejections"
+    custom_instructions: |
+      All async operations should handle errors.
+      Empty catch blocks are code smells unless justified with comment.
+      Error messages should be actionable (tell user what to do).
+
+  - name: "Pattern Adherence"
+    severity: warning
+    reference: ".hodge/patterns/"
+    patterns:
+      - "Check if code follows established project patterns"
+      - "Look for deviations from documented architectural patterns"
+      - "Identify opportunities to apply existing patterns"
+    custom_instructions: |
+      Reference patterns from .hodge/patterns/ directory.
+      Flag when code solves a problem that a pattern already addresses.
+      Suggest pattern application with reference to pattern file.
