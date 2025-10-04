@@ -189,3 +189,57 @@ describe('[smoke] build.md template - PM check interpretation', () => {
     expect(buildTemplate).toContain('already has a PM issue');
   });
 });
+
+describe('[smoke] explore.md template - Phase 3 preview format', () => {
+  it('should show numbered decision list in preview format', () => {
+    const exploreTemplate = readFileSync(
+      join(__dirname, '../../.claude/commands/explore.md'),
+      'utf-8'
+    );
+
+    expect(exploreTemplate).toContain('**Decisions Needed**:');
+    expect(exploreTemplate).toContain('1. [Decision question 1]');
+    expect(exploreTemplate).toContain('2. [Decision question 2]');
+    expect(exploreTemplate).toContain('3. [Decision question 3]');
+  });
+
+  it('should show bold "No Decisions Needed" when no decisions exist', () => {
+    const exploreTemplate = readFileSync(
+      join(__dirname, '../../.claude/commands/explore.md'),
+      'utf-8'
+    );
+
+    expect(exploreTemplate).toContain('OR if no decisions:');
+    expect(exploreTemplate).toContain('**No Decisions Needed**');
+  });
+
+  it('should preserve other preview sections unchanged', () => {
+    const exploreTemplate = readFileSync(
+      join(__dirname, '../../.claude/commands/explore.md'),
+      'utf-8'
+    );
+
+    // Verify structure is intact
+    expect(exploreTemplate).toContain('## Preview: exploration.md Summary');
+    expect(exploreTemplate).toContain('**Title**: [generated title]');
+    expect(exploreTemplate).toContain('**Problem Statement**: [1-2 sentences]');
+    expect(exploreTemplate).toContain('**Key Discussion Points**:');
+    expect(exploreTemplate).toContain('**Recommended Approach**: [approach name]');
+    expect(exploreTemplate).toContain(
+      '**Test Intentions**: [count] behavioral expectations defined'
+    );
+  });
+
+  it('should include approval options after preview', () => {
+    const exploreTemplate = readFileSync(
+      join(__dirname, '../../.claude/commands/explore.md'),
+      'utf-8'
+    );
+
+    expect(exploreTemplate).toContain('Would you like to:');
+    expect(exploreTemplate).toContain('a) ✅ Approve and write to exploration.md');
+    expect(exploreTemplate).toContain('b) 🔄 Revise specific sections');
+    expect(exploreTemplate).toContain('c) ➕ Add more detail');
+    expect(exploreTemplate).toContain('d) ➖ Simplify certain areas');
+  });
+});

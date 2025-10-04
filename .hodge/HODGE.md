@@ -3,16 +3,16 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: HODGE-321
+**Feature**: HODGE-322
 **Mode**: shipped
-**PM Issue**: HODGE-321
-**Last Updated**: 2025-10-03T20:20:39.383Z
+**PM Issue**: HODGE-322
+**Last Updated**: 2025-10-04T00:44:30.048Z
 ## Current Session
-**Resumed**: 1 hours ago
-**Progress**: Explored HODGE-321 - template ready for AI approach generation
-**Working on**: HODGE-321 (explore mode)
+**Resumed**: 4 hours ago
+**Progress**: Explored HODGE-322 - template ready for AI approach generation
+**Working on**: HODGE-322 (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-321. Explored HODGE-321 - template ready for AI approach generation
+You were helping with HODGE-322. Explored HODGE-322 - template ready for AI approach generation
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
@@ -131,12 +131,12 @@ Suggested next: Review exploration and decide with 'hodge decide'
 
 ## Working Files
 
-- `.hodge/features/HODGE-321/explore/exploration.md`
-- `.hodge/features/HODGE-321/explore/test-intentions.md`
-- `.hodge/features/HODGE-321/build/build-plan.md`
-- `.hodge/features/HODGE-321/ship/lessons-draft.md`
-- `.hodge/features/HODGE-321/ship/release-notes.md`
-- `.hodge/features/HODGE-321/ship/ship-record.json`
+- `.hodge/features/HODGE-322/explore/exploration.md`
+- `.hodge/features/HODGE-322/explore/test-intentions.md`
+- `.hodge/features/HODGE-322/build/build-plan.md`
+- `.hodge/features/HODGE-322/ship/lessons-draft.md`
+- `.hodge/features/HODGE-322/ship/release-notes.md`
+- `.hodge/features/HODGE-322/ship/ship-record.json`
 
 ## Next Steps
 

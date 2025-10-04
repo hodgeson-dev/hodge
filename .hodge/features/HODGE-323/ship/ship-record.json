@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-323",
+  "timestamp": "2025-10-04T01:07:33.685Z",
+  "issueId": "HODGE-323",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "feat: show decision questions in /explore preview instead of count (HODGE-323)\n\n## What Changed\n\n**Template Enhancement** (1 file, +8 lines):\n- .claude/commands/explore.md: Updated Phase 3 preview format\n  - Changed \"Decisions Needed: [count]\" to numbered list format\n  - Added bold \"**No Decisions Needed**\" for zero-decision case\n  - Preserves all other preview sections unchanged\n\n**Test Coverage** (1 file, +40 lines):\n- src/lib/claude-commands.smoke.test.ts: Added 4 smoke tests\n  - Validates numbered decision list format (1, 2, 3...)\n  - Validates bold \"No Decisions Needed\" format\n  - Validates preview structure preservation\n  - Validates approval options presence\n\n**Auto-sync** (1 file, +8 lines):\n- src/lib/claude-commands.ts: Synchronized template changes\n\n**Metadata Updates** (6 files):\n- .hodge/: Session state, context, and project tracking synchronized\n\n## Why This Change\n\nThe /explore command's Phase 3 approval preview previously showed only a count of decisions (e.g., \"3 decisions for /decide phase\"), which didn't give users visibility into what those decisions actually were before approving the exploration. This created an incomplete approval workflow - users couldn't make informed decisions about whether to approve, revise, or request changes without seeing the actual decision questions.\n\nThis implements a template-only enhancement following the proven pattern from HODGE-306 and HODGE-319.3 (template-based AI orchestration).\n\n## Impact\n\n✅ **UX Improvement**: Users now see actual decision questions in preview, enabling informed approval decisions\n✅ **Zero Risk**: Template-only change with no CLI code modifications\n✅ **Well-tested**: 4 smoke tests + 738 total tests passing\n✅ **Backward Compatible**: Existing /explore flows unchanged, pure enhancement\n✅ **Pattern Consistency**: Follows established template enhancement approach\n\nCloses HODGE-323"
+}

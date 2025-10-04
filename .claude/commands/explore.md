@@ -140,7 +140,14 @@ After the conversation, you MUST:
 
    **Test Intentions**: [count] behavioral expectations defined
 
-   **Decisions Needed**: [count] decisions for /decide phase
+   **Decisions Needed**:
+   1. [Decision question 1]
+   2. [Decision question 2]
+   3. [Decision question 3]
+
+   OR if no decisions:
+
+   **No Decisions Needed**
 
    Would you like to:
    a) ✅ Approve and write to exploration.md
