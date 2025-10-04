@@ -46,24 +46,32 @@ describe('sync-claude-commands', () => {
     expect(content).toContain('export function getClaudeCommands()');
   });
 
-  smokeTest('should generate properly formatted code', () => {
-    // Run sync script
-    execSync(`node ${SYNC_SCRIPT}`, { stdio: 'pipe' });
+  smokeTest(
+    'should generate properly formatted code',
+    () => {
+      // Run sync script
+      execSync(`node ${SYNC_SCRIPT}`, { stdio: 'pipe' });
 
-    // Run prettier check on generated file
-    expect(() => {
-      execSync(`npx prettier --check ${OUTPUT_FILE}`, { stdio: 'pipe' });
-    }).not.toThrow();
-  });
+      // Run prettier check on generated file
+      expect(() => {
+        execSync(`npx prettier --check ${OUTPUT_FILE}`, { stdio: 'pipe' });
+      }).not.toThrow();
+    },
+    10000
+  ); // Increased timeout to 10s for CI environments
 
-  smokeTest('should complete within reasonable time', () => {
-    const start = Date.now();
+  smokeTest(
+    'should complete within reasonable time',
+    () => {
+      const start = Date.now();
 
-    execSync(`node ${SYNC_SCRIPT}`, { stdio: 'pipe' });
+      execSync(`node ${SYNC_SCRIPT}`, { stdio: 'pipe' });
 
-    const duration = Date.now() - start;
-    expect(duration).toBeLessThan(5000); // 5 seconds max
-  });
+      const duration = Date.now() - start;
+      expect(duration).toBeLessThan(10000); // 10 seconds max (relaxed for CI)
+    },
+    15000
+  ); // Test timeout higher than assertion threshold
 
   smokeTest('should preserve command content', () => {
     // Get list of command files

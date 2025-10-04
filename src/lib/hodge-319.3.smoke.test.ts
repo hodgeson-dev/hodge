@@ -42,7 +42,10 @@ describe('[smoke] HODGE-319.3: Smart Decision Extraction Template', () => {
 
   it('should handle Case A: Single Recommendation with 3 options', async () => {
     const content = await fs.readFile(buildTemplatePath, 'utf-8');
-    expect(content).toContain('**Case A: Single Recommendation Found**');
+    // Updated in HODGE-326: Case A now handles empty decisions (silent proceed)
+    // Case B handles non-empty decisions (show prompt with 3 options)
+    expect(content).toContain('**Case A: Recommendation Found + Decisions Needed is EMPTY**');
+    expect(content).toContain('**Case B: Recommendation Found + Decisions Needed HAS items**');
     expect(content).toContain('a) ✅ Use this recommendation and proceed with /build');
     expect(content).toContain('b) 🔄 Go to /decide to formalize decisions first');
     expect(content).toContain('c) ⏭️  Skip and build without guidance');
@@ -77,7 +80,8 @@ describe('[smoke] HODGE-319.3: Smart Decision Extraction Template', () => {
 
   it('should extract Decisions Needed section', async () => {
     const content = await fs.readFile(buildTemplatePath, 'utf-8');
-    expect(content).toContain('Decisions to consider:');
+    // Updated in HODGE-326: conditional logic splits cases
+    expect(content).toContain('Unresolved decisions still need attention:');
     expect(content).toContain('[Decision 1 title]');
     expect(content).toContain('[Decision 2 title]');
   });

@@ -190,8 +190,9 @@ describe('ContextCommand - HODGE-313 Session-Based Mode Detection', () => {
         // Cleanup
         await fs.rm(tmpDir, { recursive: true, force: true });
       }
-    }
-  );
+    },
+    10000
+  ); // Increased timeout to 10s for CI environments
 
   smokeTest('should fall back to general when no session exists', async ({ expect }) => {
     const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'hodge-context-test-'));

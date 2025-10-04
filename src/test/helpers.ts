@@ -27,8 +27,8 @@ export function testCategory(category: string, name: string): string {
 /**
  * Create a smoke test
  */
-export function smokeTest(name: string, fn: () => void | Promise<void>): void {
-  return it(testCategory(TestCategory.SMOKE, name), fn);
+export function smokeTest(name: string, fn: () => void | Promise<void>, timeout?: number): void {
+  return it(testCategory(TestCategory.SMOKE, name), fn, timeout);
 }
 
 /**

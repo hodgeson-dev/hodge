@@ -59,7 +59,22 @@ cat .hodge/features/{{feature}}/explore/exploration.md 2>/dev/null
 
 ### Step 4: Handle Extraction Results
 
-**Case A: Single Recommendation Found**
+**IMPORTANT**: Check if "Decisions Needed" section has content before showing prompts.
+
+**Empty Check Logic**:
+- Treat whitespace-only content (spaces, newlines) as empty
+- Use regex pattern to check: `/##\s*Decisions Needed\s*(?:###|\n|$)/` (section header followed immediately by next section or end)
+- If section contains actual decision entries (`### Decision N:`), it's NOT empty
+
+**Case A: Recommendation Found + Decisions Needed is EMPTY**
+
+**Action**: Proceed silently with build (no prompt needed)
+```bash
+# User implicitly accepted recommendation by running /build without /decide
+hodge build {{feature}}
+```
+
+**Case B: Recommendation Found + Decisions Needed HAS items**
 
 Display to user:
 ```
@@ -69,7 +84,7 @@ Display to user:
 [Full verbatim text of Recommendation section]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Decisions to consider:
+⚠️  Unresolved decisions still need attention:
   1. [Decision 1 title]
   2. [Decision 2 title]
   ...
@@ -137,6 +152,25 @@ Your choice:
 **Case D: exploration.md Missing**
 
 Fall back to current behavior (proceed to PM check, CLI will show warning).
+
+**Case E: exploration.md Malformed (Cannot Parse)**
+
+If exploration.md exists but parsing fails (e.g., unexpected format, corrupted markdown):
+
+Display warning and proceed:
+```
+⚠️  Warning: Could not parse exploration.md (file may be malformed)
+   Proceeding with build without decision guidance.
+
+   You can:
+   - Fix exploration.md format manually
+   - Run /decide to create decisions.md
+   - Continue with build as-is
+
+Proceeding with build...
+```
+
+Then call `hodge build {{feature}}` to proceed.
 
 ## PM Issue Check (Before Build)
 
