@@ -5,9 +5,8 @@
  * Runs as part of pre-commit and CI/CD
  */
 
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+import fs from 'fs';
+import { execSync } from 'child_process';
 
 const RED = '\x1b[31m';
 const GREEN = '\x1b[32m';

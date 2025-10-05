@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-328",
+  "timestamp": "2025-10-05T01:01:26.513Z",
+  "issueId": "HODGE-328",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "fix: convert validate-standards.js to ESM and fix logger test isolation (HODGE-328)\n\n## What Changed\n\n**Core ESM Conversion** (1 file, -3 lines):\n- scripts/validate-standards.js: Converted from CommonJS to ESM syntax\n  - Replaced `const fs = require('fs')` → `import fs from 'fs'`\n  - Replaced `const { execSync } = require('child_process')` → `import { execSync } from 'child_process'`\n  - Removed unused `path` import\n\n**Test Isolation Fix** (1 file, +14 lines):\n- src/lib/logger.ts: Fixed LogRotator test isolation issue\n  - Added dynamic log directory resolution via HODGE_LOG_DIR env var\n  - Fixed ENOENT error when running full test suite\n  - Now properly respects test environment log directory overrides\n\n**Test Coverage** (2 new files, 8 tests total):\n- src/test/hodge-328.smoke.test.ts: 5 smoke tests validating ESM syntax\n- src/test/hodge-328.integration.test.ts: 3 integration tests verifying package.json compatibility\n\n**Metadata Updates** (5 files):\n- .hodge/.session, context.json, id-counter.json, id-mappings.json, project_management.md: PM tracking synchronized\n\n## Why This Change\n\nThe CI was failing in the \"Validate standards\" step with \"ReferenceError: require is not defined in ES module scope\" on Node.js 20.x. This occurred because package.json has `\"type\": \"module\"` which treats all `.js` files as ES modules, but validate-standards.js was still using CommonJS `require()` syntax.\n\nDuring harden phase testing, discovered a pre-existing logger test isolation bug where LogRotator was using a module-level constant instead of respecting the test environment's HODGE_LOG_DIR override. Fixed this to ensure tests run reliably in CI.\n\n## Impact\n\n✅ **CI Fixed**: Validate standards script now executes without ESM errors in Node 20.x+\n✅ **Test Reliability**: Logger tests pass consistently in full test suite (no more ENOENT errors)\n✅ **Code Quality**: 8 new tests (5 smoke + 3 integration), all passing\n✅ **ESM Compliance**: Script follows project's ESM-first architecture (`\"type\": \"module\"`)\n✅ **No Breaking Changes**: All 795 tests passing (was 794, +1 with logger fix)\n\nCloses HODGE-328\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}

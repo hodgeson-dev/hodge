@@ -119,8 +119,18 @@ export class LogRotator {
   }
 
   private async getLogFiles(): Promise<string[]> {
-    const files = await fs.readdir(logDir);
-    return files.filter((f) => f.endsWith('.log')).map((f) => path.join(logDir, f));
+    // Use dynamic log directory resolution for test compatibility
+    const dir = process.env.HODGE_LOG_DIR || logDir;
+
+    // Ensure directory exists before reading
+    try {
+      await fs.ensureDir(dir);
+      const files = await fs.readdir(dir);
+      return files.filter((f) => f.endsWith('.log')).map((f) => path.join(dir, f));
+    } catch (error) {
+      // Directory doesn't exist or can't be read - return empty array
+      return [];
+    }
   }
 
   private async checkAndRotate(filePath: string): Promise<void> {

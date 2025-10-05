@@ -1,45 +1,44 @@
 # Error Boundary
 
 **Category**: error-handling
-**Frequency**: Used 3 times
-**Confidence**: 60%
+**Frequency**: Used 4 times
+**Confidence**: 80%
 
 ## Description
 Consistent error handling with logging
 
 ## Examples
 
-### src/commands/harden.ts
+### scripts/validate-standards.js
 ```typescript
 try {
-      // Validate inputs
-      if (!feature || typeof feature !== 'string') {
-        throw new Error('Feature name is required and must be a string');
-      }
+    const tsconfig = JSON.parse(fs.readFileSync('tsconfig.json', 'utf8'));
 
-      console.log(chalk.magenta('
+    if (!tsconfig.compilerOptions?.strict) {
+      log('TypeScript strict mode is not enabled', 'error');
+      return
 ```
 
 
-### src/commands/save.ts
+### scripts/validate-standards.js
 ```typescript
-try {
-      // Generate save name if not provided (delegate to SaveService)
-      const saveName = name || (await this.saveService.generateSaveName());
-
-      // Determine save type based on options
- 
+.catch((error) => {
+  console.error
 ```
 
 
-### src/commands/ship.ts
+### src/lib/logger.ts
 ```typescript
 try {
-        const results = JSON.parse(await fs.readFile(validationFile, 'utf-8')) as Record<
-          string,
-          { passed: boolean }
-        >;
-        validationPassed = Object.values(resu
+    fs.ensureDirSync(projectLogDir, { mode: 0o755 });
+    return projectLogDir;
+  } catch {
+    fs.ensureDirSync(fallbackLogDir, { mode: 0o755 });
+    return fallbackLogDir;
+  }
+}
+
+// Detect if 
 ```
 
 
@@ -49,5 +48,5 @@ try {
 - 
 
 ---
-*First seen: 2025-10-04T00:43:01.151Z*
-*Last used: 2025-10-04T00:43:01.153Z*
+*First seen: 2025-10-05T01:01:26.549Z*
+*Last used: 2025-10-05T01:01:26.596Z*
