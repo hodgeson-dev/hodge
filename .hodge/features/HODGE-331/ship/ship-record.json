@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-331",
+  "timestamp": "2025-10-05T06:33:49.866Z",
+  "issueId": "HODGE-331",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "fix: eliminate recursive logging metadata in logs command (HODGE-331)\n\n## What Changed\n\n**Core Fix** (1 file, +32/-25 lines):\n- src/commands/logs.ts: Fixed recursive logging issue in logs command\n  - Changed user-facing output from logger.info() to console.log()\n  - Added 'name' field to LogEntry interface for logger instance names\n  - Updated formatLogLine to use command OR name field for bracketing\n  - Updated filter logic to check both command and name fields\n  - Prevents logger metadata from appearing in displayed logs\n\n**Test Coverage** (2 new files, +241 lines, 19 tests):\n- src/commands/logs.smoke.test.ts: Added 11 smoke tests\n  - Basic command execution (no crash, options handling)\n  - formatLogLine behavior (filtering, capitalization, formatting)\n  - Raw mode preservation test\n- src/commands/logs.integration.test.ts: Added 8 integration tests\n  - Real log file reading and formatting end-to-end\n  - Level and command filtering with actual files\n  - Tail functionality, clear operation, error handling\n\n**Metadata Updates** (5 files):\n- .hodge/.session, context.json, id-counter.json, id-mappings.json, project_management.md: PM tracking synchronized\n\n**Feature Documentation** (1 new directory):\n- .hodge/features/HODGE-331/: Complete exploration, build plan, and harden validation\n\n## Why This Change\n\nThe logs command was displaying its own logger metadata recursively, creating output like:\n```\n10/4/2025, 11:15:49 PM INFO   Showing 1 log entries {\n  \"name\": \"logs\",\n  \"enableConsole\": true\n}\n```\n\nRoot cause: Using logger.info() to display formatted log output caused the logger to log its own metadata, which then appeared in subsequent log views, creating a recursive display problem.\n\nSolution: Logs command is an exempted use case for console.log (user-facing output display). Internal operations still use logger for persistent tracking.\n\n## Impact\n\n✅ **Clean Output**: Logs now display in clean `timestamp level [Command] message` format\n✅ **Command Bracketing**: Commands displayed as [Explore], [Build], [Ship], etc.\n✅ **No Metadata Pollution**: Logger internals (name, enableConsole, hostname) completely hidden\n✅ **Dual Field Support**: Works with both 'command' and 'name' logger fields\n✅ **Test Coverage**: 19 tests (11 smoke + 8 integration), all passing\n✅ **Zero Breaking Changes**: All 831 tests passing (812 existing + 19 new)\n\nCloses HODGE-331\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}

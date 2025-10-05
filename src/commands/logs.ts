@@ -23,6 +23,7 @@ interface LogEntry {
   level: string;
   msg: string;
   command?: string;
+  name?: string;
   [key: string]: unknown;
 }
 
@@ -40,9 +41,9 @@ export class LogsCommand {
     }
 
     if (!(await fs.pathExists(logPath))) {
-      this.logger.info(chalk.yellow('No log file found.'));
-      this.logger.info(chalk.gray('Logs will be created when hodge commands are executed.'));
-      this.logger.info(chalk.gray(`Expected location: ${logPath}`));
+      console.log(chalk.yellow('No log file found.'));
+      console.log(chalk.gray('Logs will be created when hodge commands are executed.'));
+      console.log(chalk.gray(`Expected location: ${logPath}`));
       return;
     }
 
@@ -80,13 +81,13 @@ export class LogsCommand {
           await fs.remove(path.join(logDir, file));
         }
 
-        this.logger.info(chalk.green('✓ Logs cleared successfully'));
+        console.log(chalk.green('✓ Logs cleared successfully'));
         this.logger.info('Logs cleared by user');
       } else {
-        this.logger.info(chalk.yellow('No logs to clear'));
+        console.log(chalk.yellow('No logs to clear'));
       }
     } catch (error) {
-      this.logger.error(chalk.red('Failed to clear logs:', error));
+      console.log(chalk.red('Failed to clear logs:', error));
       this.logger.error('Failed to clear logs', { error });
     }
   }
@@ -111,23 +112,23 @@ export class LogsCommand {
     const output = options.tail ? lines.slice(-options.tail) : lines;
 
     if (output.length === 0) {
-      this.logger.info(chalk.yellow('No matching log entries found.'));
+      console.log(chalk.yellow('No matching log entries found.'));
       if (options.level ?? options.command) {
-        this.logger.info(chalk.gray('Try adjusting your filters or run without filters.'));
+        console.log(chalk.gray('Try adjusting your filters or run without filters.'));
       }
     } else {
-      output.forEach((line) => this.logger.info(line));
-      this.logger.info(chalk.gray(`\nShowing ${output.length} log entries`));
+      output.forEach((line) => console.log(line));
+      console.log(chalk.gray(`\nShowing ${output.length} log entries`));
     }
   }
 
   private async followLogs(logPath: string, options: LogsOptions, pretty: boolean): Promise<void> {
-    this.logger.info(chalk.cyan('Following log file... (Ctrl+C to stop)\n'));
+    console.log(chalk.cyan('Following log file... (Ctrl+C to stop)\n'));
 
     // First, show existing logs with tail
     const tailOptions = { ...options, tail: options.tail ?? 10 };
     await this.viewLogs(logPath, tailOptions, pretty);
-    this.logger.info(chalk.gray('\n--- Following new entries ---\n'));
+    console.log(chalk.gray('\n--- Following new entries ---\n'));
 
     // Watch for new lines
     const watcher = fs.watch(logPath, { persistent: true });
@@ -150,7 +151,7 @@ export class LogsCommand {
           for await (const line of rl) {
             const formatted = this.formatLogLine(line, options, pretty);
             if (formatted) {
-              this.logger.info(formatted);
+              console.log(formatted);
             }
           }
 
@@ -172,7 +173,8 @@ export class LogsCommand {
 
       // Apply filters
       if (options.level && log.level !== options.level.toLowerCase()) return null;
-      if (options.command && log.command !== options.command) return null;
+      if (options.command && log.command !== options.command && log.name !== options.command)
+        return null;
 
       if (!pretty) {
         return line;
@@ -181,7 +183,14 @@ export class LogsCommand {
       // Pretty print format
       const timestamp = new Date(log.time).toLocaleString();
       const level = (log.level ?? 'info').toUpperCase().padEnd(5);
-      const command = log.command ? chalk.blue(`[${log.command}]`) : '';
+
+      // Capitalize command name and format as [Command]
+      // Use 'command' field first, fall back to 'name' field
+      const rawCommand = log.command ?? log.name;
+      const commandName = rawCommand
+        ? rawCommand.charAt(0).toUpperCase() + rawCommand.slice(1)
+        : '';
+      const command = commandName ? chalk.blue(`[${commandName}]`) : '';
       const msg = log.msg ?? '';
 
       // Color coding for levels
@@ -205,18 +214,35 @@ export class LogsCommand {
 
       let output = `${chalk.gray(timestamp)} ${levelStr} ${command} ${msg}`;
 
-      // Add extra data if present
+      // Filter out pino/logger internal fields
+      const pinoInternals = [
+        'time',
+        'level',
+        'pid',
+        'msg',
+        'command',
+        'timestamp',
+        'hodgeVersion',
+        'hostname',
+        'name',
+        'enableConsole',
+        'v', // pino version field
+      ];
+
+      // Add extra user data if present (exclude logger internals)
       const extras: Record<string, unknown> = {};
       for (const [key, value] of Object.entries(log)) {
-        if (
-          !['time', 'level', 'pid', 'msg', 'command', 'timestamp', 'hodgeVersion'].includes(key)
-        ) {
+        if (!pinoInternals.includes(key)) {
           extras[key] = value;
         }
       }
 
+      // Format extra data line-by-line, indented
       if (Object.keys(extras).length > 0) {
-        output += ' ' + chalk.dim(JSON.stringify(extras, null, 2));
+        for (const [key, value] of Object.entries(extras)) {
+          const valueStr = typeof value === 'string' ? value : JSON.stringify(value);
+          output += `\n  ${chalk.dim(key)}: ${valueStr}`;
+        }
       }
 
       return output;
