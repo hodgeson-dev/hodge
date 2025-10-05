@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import fs from 'fs/promises';
 import path from 'path';
 import { existsSync } from 'fs';
+import { createCommandLogger } from '../lib/logger.js';
 
 export interface DecideOptions {
   feature?: string;
@@ -9,13 +10,14 @@ export interface DecideOptions {
 
 export class DecideCommand {
   private basePath: string;
+  private logger = createCommandLogger('decide', { enableConsole: true });
 
   constructor(basePath?: string) {
     this.basePath = basePath || process.cwd();
   }
 
   async execute(decision: string, options: DecideOptions = {}): Promise<void> {
-    console.log(chalk.yellow('📝 Recording Decision'));
+    this.logger.info(chalk.yellow('📝 Recording Decision'));
 
     // Ensure decisions file exists
     const decisionsFile = path.join(this.basePath, '.hodge', 'decisions.md');
@@ -111,10 +113,13 @@ To be determined based on implementation.
 
       // Validate that feature directory exists
       if (!existsSync(featureDir)) {
-        console.log(chalk.red('\n✗ Error: Feature directory does not exist'));
-        console.log(chalk.gray(`  Expected: ${featureDir}`));
-        console.log(chalk.yellow('\n  Please run /explore first to create the feature structure.'));
-        throw new Error(`Feature directory not found: ${options.feature}`);
+        const error = new Error(`Feature directory not found: ${options.feature}`);
+        this.logger.error(chalk.red('\n✗ Error: Feature directory does not exist'), { error });
+        this.logger.error(chalk.gray(`  Expected: ${featureDir}`));
+        this.logger.error(
+          chalk.yellow('\n  Please run /explore first to create the feature structure.')
+        );
+        throw error;
       }
 
       const featureDecisionFile = path.join(featureDir, 'decisions.md');
@@ -154,20 +159,20 @@ This file tracks decisions specific to ${options.feature}.
     // Decisions are now purely about recording technical choices
 
     // AI Context Update
-    console.log('\n' + chalk.bold('═'.repeat(60)));
-    console.log(chalk.yellow.bold('DECISION RECORDED:'));
-    console.log(chalk.bold('═'.repeat(60)));
-    console.log(`Decision: ${chalk.white.bold(decision)}`);
-    console.log(`Date: ${date} ${timestamp}`);
+    this.logger.info('\n' + chalk.bold('═'.repeat(60)));
+    this.logger.info(chalk.yellow.bold('DECISION RECORDED:'));
+    this.logger.info(chalk.bold('═'.repeat(60)));
+    this.logger.info(`Decision: ${chalk.white.bold(decision)}`);
+    this.logger.info(`Date: ${date} ${timestamp}`);
     if (options.feature) {
-      console.log(`Feature: ${options.feature}`);
+      this.logger.info(`Feature: ${options.feature}`);
     }
-    console.log('\nThis decision is now part of the project context and should be');
-    console.log('considered in all future implementations.');
-    console.log(chalk.bold('═'.repeat(60)));
+    this.logger.info('\nThis decision is now part of the project context and should be');
+    this.logger.info('considered in all future implementations.');
+    this.logger.info(chalk.bold('═'.repeat(60)));
 
     // Success message
-    console.log('\n' + chalk.green('✓ Decision recorded successfully'));
+    this.logger.info('\n' + chalk.green('✓ Decision recorded successfully'));
     if (options.feature) {
       const featureDecisionFile = path.join(
         this.basePath,
@@ -176,21 +181,21 @@ This file tracks decisions specific to ${options.feature}.
         options.feature,
         'decisions.md'
       );
-      console.log(chalk.gray(`  Location: ${featureDecisionFile}`));
-      console.log(chalk.gray(`  Feature: ${options.feature}`));
+      this.logger.info(chalk.gray(`  Location: ${featureDecisionFile}`));
+      this.logger.info(chalk.gray(`  Feature: ${options.feature}`));
 
       // Show decision count for feature file
       if (existsSync(featureDecisionFile)) {
         const featureContent = await fs.readFile(featureDecisionFile, 'utf-8');
         const allDecisions = featureContent.match(/^### \d{4}-/gm) || [];
-        console.log(chalk.gray(`  Total decisions: ${allDecisions.length}`));
+        this.logger.info(chalk.gray(`  Total decisions: ${allDecisions.length}`));
       }
     } else {
-      console.log(chalk.gray(`  Location: ${decisionsFile}`));
+      this.logger.info(chalk.gray(`  Location: ${decisionsFile}`));
 
       // Show decision count for global file
       const allDecisions = content.match(/^### \d{4}-/gm) || [];
-      console.log(chalk.gray(`  Total decisions: ${allDecisions.length}`));
+      this.logger.info(chalk.gray(`  Total decisions: ${allDecisions.length}`));
     }
   }
 }

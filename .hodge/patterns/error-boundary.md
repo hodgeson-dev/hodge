@@ -1,8 +1,8 @@
 # Error Boundary
 
 **Category**: error-handling
-**Frequency**: Used 4 times
-**Confidence**: 80%
+**Frequency**: Used 5 times
+**Confidence**: 100%
 
 ## Description
 Consistent error handling with logging
@@ -27,18 +27,14 @@ try {
 ```
 
 
-### src/lib/logger.ts
+### src/commands/explore.ts
 ```typescript
-try {
-    fs.ensureDirSync(projectLogDir, { mode: 0o755 });
-    return projectLogDir;
-  } catch {
-    fs.ensureDirSync(fallbackLogDir, { mode: 0o755 });
-    return fallbackLogDir;
-  }
-}
-
-// Detect if 
+.catch(() => {
+          // Silently handle PM update failures
+        });
+      } else if (!featureID) {
+        // It looks like an ID but we couldn't find it
+        // Create a new feature and lin
 ```
 
 
@@ -48,5 +44,5 @@ try {
 - 
 
 ---
-*First seen: 2025-10-05T01:29:00.178Z*
-*Last used: 2025-10-05T01:29:00.179Z*
+*First seen: 2025-10-05T05:58:26.880Z*
+*Last used: 2025-10-05T05:58:26.903Z*

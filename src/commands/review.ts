@@ -10,8 +10,10 @@ import { existsSync, readFileSync } from 'fs';
 import { ProfileLoader } from '../lib/profile-loader.js';
 import { ContextAggregator } from '../lib/context-aggregator.js';
 import type { ReviewProfile, ProjectContext } from '../types/review-profile.js';
+import { createCommandLogger } from '../lib/logger.js';
 
 export class ReviewCommand {
+  private logger = createCommandLogger('review', { enableConsole: true });
   execute(scope: string, filePath: string): void {
     // Validate scope (only 'file' supported in HODGE-327.1)
     if (scope !== 'file') {
@@ -27,8 +29,8 @@ export class ReviewCommand {
       try {
         profile = profileLoader.loadProfile('default');
       } catch (error) {
-        console.error(`❌ ${error instanceof Error ? error.message : String(error)}`);
-        console.log('\nPlease ensure .hodge/review-profiles/default.yml exists.');
+        this.logger.error(`❌ ${error instanceof Error ? error.message : String(error)}`);
+        this.logger.info('\nPlease ensure .hodge/review-profiles/default.yml exists.');
         process.exit(1);
       }
 
@@ -38,8 +40,8 @@ export class ReviewCommand {
 
       // Validate target file exists
       if (!existsSync(filePath)) {
-        console.error(`❌ Error: File not found: ${filePath}`);
-        console.log('\nPlease check the file path and try again.');
+        this.logger.error(`❌ Error: File not found: ${filePath}`);
+        this.logger.info('\nPlease check the file path and try again.');
         process.exit(1);
       }
 
@@ -48,24 +50,24 @@ export class ReviewCommand {
       void _fileContent; // Suppress unused warning - placeholder for HODGE-327.2+
 
       // Output review context for AI (slash command template will process this)
-      console.log('🔍 Performing AI-driven code review...\n');
-      console.log(`**File**: ${filePath}`);
-      console.log(`**Profile**: ${profile.name}`);
-      console.log(`**Standards Loaded**: ${context.standards ? '✓' : '⚠️ Missing'}`);
-      console.log(`**Principles Loaded**: ${context.principles ? '✓' : '⚠️ Missing'}`);
-      console.log(`**Patterns**: ${context.patterns.length} files`);
-      console.log(`**Lessons**: ${context.lessons.length} files`);
-      console.log('\n---\n');
+      this.logger.info('🔍 Performing AI-driven code review...\n');
+      this.logger.info(`**File**: ${filePath}`);
+      this.logger.info(`**Profile**: ${profile.name}`);
+      this.logger.info(`**Standards Loaded**: ${context.standards ? '✓' : '⚠️ Missing'}`);
+      this.logger.info(`**Principles Loaded**: ${context.principles ? '✓' : '⚠️ Missing'}`);
+      this.logger.info(`**Patterns**: ${context.patterns.length} files`);
+      this.logger.info(`**Lessons**: ${context.lessons.length} files`);
+      this.logger.info('\n---\n');
 
       // TODO: In HODGE-327.1, this is a placeholder
       // The actual AI analysis happens via the slash command template
       // For now, just output the context that would be passed to AI
-      console.log('📋 Review Context Prepared');
-      console.log(`\nTo complete the review, the slash command template will:`);
-      console.log(`1. Analyze ${filePath} using ${profile.name} profile`);
-      console.log(`2. Check against ${context.lessons.length} lessons learned`);
-      console.log(`3. Apply ${profile.criteria.length} review criteria`);
-      console.log(`4. Generate markdown report with findings\n`);
+      this.logger.info('📋 Review Context Prepared');
+      this.logger.info(`\nTo complete the review, the slash command template will:`);
+      this.logger.info(`1. Analyze ${filePath} using ${profile.name} profile`);
+      this.logger.info(`2. Check against ${context.lessons.length} lessons learned`);
+      this.logger.info(`3. Apply ${profile.criteria.length} review criteria`);
+      this.logger.info(`4. Generate markdown report with findings\n`);
 
       // In a complete implementation, we would:
       // 1. Format all context into a structured payload
@@ -76,10 +78,12 @@ export class ReviewCommand {
       // For HODGE-327.1 story, the integration with slash commands
       // is pending - focusing on core infrastructure first.
 
-      console.log('✅ Review infrastructure ready');
-      console.log('\nNote: Full AI analysis integration coming in build completion.');
+      this.logger.info('✅ Review infrastructure ready');
+      this.logger.info('\nNote: Full AI analysis integration coming in build completion.');
     } catch (error) {
-      console.error(`❌ Review failed: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.error(
+        `❌ Review failed: ${error instanceof Error ? error.message : String(error)}`
+      );
       process.exit(1);
     }
   }

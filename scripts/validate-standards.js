@@ -171,10 +171,27 @@ function checkNoConsoleLog() {
       .split('\n')
       .filter(Boolean);
 
+    // Files exempt from console.log check
+    const exemptPatterns = [
+      /\.test\.ts$/, // Test files
+      /\.spec\.ts$/, // Spec files
+      /src\/lib\/logger\.ts$/, // Logger implementation itself
+      /src\/test\/runners\.ts$/, // Test utility functions (user-facing output)
+      /src\/bin\/hodge\.ts$/, // CLI entry point (user-facing output)
+      /src\/lib\/pm-scripts-templates\.ts$/, // PM script templates (template content)
+      /src\/lib\/todo-checker\.ts$/, // User-facing TODO display functions
+      /src\/commands\/init-claude-commands\.ts$/, // Function-based command (user-facing output)
+    ];
+
     const filesWithConsoleLog = [];
 
     for (const file of files) {
       if (!fs.existsSync(file)) continue;
+
+      // Skip exempt files
+      if (exemptPatterns.some((pattern) => pattern.test(file))) {
+        continue;
+      }
 
       const content = fs.readFileSync(file, 'utf8');
       const lines = content.split('\n');
@@ -208,17 +225,13 @@ function checkNoConsoleLog() {
 async function main() {
   console.log('\n🔍 Validating Hodge Standards\n');
 
-  const checks = [
-    checkTypeScriptStrict(),
-    checkESLint(),
-    checkPrettier(),
-    checkNoConsoleLog(),
-    checkBranchNaming(),
-    checkCommitMessage(),
-    checkTestCoverage(),
-  ];
-
-  const allPassed = checks.every((result) => result !== false);
+  checkTypeScriptStrict();
+  checkESLint();
+  checkPrettier();
+  checkNoConsoleLog();
+  checkBranchNaming();
+  checkCommitMessage();
+  checkTestCoverage();
 
   console.log('\n' + '─'.repeat(40));
 

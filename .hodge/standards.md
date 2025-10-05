@@ -47,6 +47,138 @@ This project follows the Hodge development philosophy:
 - ESLint rules enforced
 - Prettier formatting
 
+## Logging Standards (HODGE-330)
+**Enforcement: ALL PHASES (mandatory)**
+**⚠️ CRITICAL**: Hodge uses dual logging (console + pino) for commands and pino-only for libraries.
+
+### Command Logging Pattern
+**Applies to**: All files in `src/commands/**`
+
+Commands must use dual logging (both console output and persistent pino logs):
+
+```typescript
+import { createCommandLogger } from '../lib/logger.js';
+
+const logger = createCommandLogger('commandName', { enableConsole: true });
+
+// Use logger methods (NOT console.log directly)
+logger.info('Command started');
+logger.warn('Warning message');
+logger.error('Error occurred');
+```
+
+**Why dual logging for commands**:
+- Console output provides immediate user feedback
+- Pino logs enable persistent debugging and troubleshooting
+- Works for both user-executed commands (init, logs) and AI-orchestrated commands (explore, build, ship)
+
+### Library Logging Pattern
+**Applies to**: All files in `src/lib/**`
+
+Libraries must use pino-only logging (no console output):
+
+```typescript
+import { createCommandLogger } from './logger.js';
+
+const logger = createCommandLogger('libName', { enableConsole: false });
+
+// Or omit the flag (defaults to false)
+const logger = createCommandLogger('libName');
+
+// Use logger methods (NOT console.log)
+logger.info('Library operation');
+logger.debug('Debug info');
+logger.error('Error in library');
+```
+
+**Why pino-only for libraries**:
+- Library operations are internal implementation details
+- Console output from libraries creates noise without value
+- All logging still captured in pino logs for debugging
+
+### Direct console Usage Rules
+
+**NEVER use direct console.log/warn/error** in production code. Use logger methods instead.
+
+**Exemptions** (where direct console is allowed):
+- Test files (`*.test.ts`, `*.spec.ts`) - for test debugging
+- Scripts directory (`scripts/**`) - for tooling output
+- Logger implementation (`src/lib/logger.ts`) - implements the console wrapper
+
+### Logger API
+
+**Named exports** (TypeScript-friendly):
+```typescript
+import { logger, createCommandLogger, type CommandLoggerOptions } from './logger.js';
+```
+
+**Available methods**:
+- `logger.info(message, context?)` - General information
+- `logger.warn(message, context?)` - Warnings
+- `logger.error(message, context?)` - Errors
+- `logger.debug(message, context?)` - Debug info (only shown with DEBUG env var)
+
+### Pattern Consistency (HODGE-330)
+
+**All command classes MUST use instance logger, NOT static classes**:
+
+```typescript
+// ✅ CORRECT: Instance logger in command class
+export class MyCommand {
+  private logger = createCommandLogger('mycommand', { enableConsole: true });
+
+  async execute(): Promise<void> {
+    this.logger.info('Command started');
+  }
+}
+
+// ❌ INCORRECT: Static logger class
+class MyLogger {
+  static info(message: string) {
+    console.log(message);
+  }
+}
+```
+
+**Why instance logger pattern**:
+- Consistent with existing command patterns (logs.ts established the pattern)
+- Proper encapsulation and testability
+- Avoids static class proliferation
+- Enables proper logger lifecycle management
+
+### Error Object Passing (HODGE-330)
+
+**Errors MUST be passed as structured objects for pino logging**:
+
+```typescript
+// ✅ CORRECT: Pass error object to pino
+try {
+  await doSomething();
+} catch (error) {
+  this.logger.error('Operation failed', { error: error as Error });
+}
+
+// ❌ INCORRECT: Error only in message string
+try {
+  await doSomething();
+} catch (error) {
+  this.logger.error(`Operation failed: ${error}`); // Lost stack trace!
+}
+```
+
+**Why structured error logging**:
+- Preserves full error stack trace in pino JSON logs
+- Enables better debugging and troubleshooting
+- Maintains structured log format for analysis
+- Error details searchable in log files
+
+### Validation
+
+The `validate-standards.js` script checks for direct console usage:
+- **Warning level** during transition period (non-blocking)
+- Automatically exempts test files, scripts, and logger.ts
+- Will be upgraded to **error level** after migration completes
+
 ## CLI Architecture Standards
 **Enforcement: ALL PHASES (mandatory)**
 

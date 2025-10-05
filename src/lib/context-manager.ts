@@ -3,6 +3,7 @@ import { join } from 'path';
 import { existsSync } from 'fs';
 import { saveManager } from './save-manager.js';
 import { SaveManifest } from '../types/save-manifest.js';
+import { createCommandLogger } from './logger.js';
 
 export interface WorkflowContext {
   feature?: string;
@@ -38,6 +39,8 @@ export interface LoadedSession {
  * Implements HODGE-054: Context-Aware Workflow Commands
  */
 export class ContextManager {
+  private logger = createCommandLogger('context-manager', { enableConsole: false });
+
   private readonly basePath: string;
   private readonly contextPath: string;
 
@@ -59,7 +62,7 @@ export class ContextManager {
       return JSON.parse(content) as WorkflowContext;
     } catch (error) {
       // Handle corrupted context gracefully
-      console.warn('Warning: Failed to load context.json:', error);
+      this.logger.warn('Warning: Failed to load context.json:', error);
       return null;
     }
   }
@@ -110,7 +113,7 @@ export class ContextManager {
         };
       }
     } catch (error) {
-      console.warn('Warning: Failed to load session:', error);
+      this.logger.warn('Warning: Failed to load session:', error);
       return { context: null };
     }
   }
@@ -143,7 +146,7 @@ export class ContextManager {
 
       return this.loadSession(mostRecent, { lazy: options.lazy });
     } catch (error) {
-      console.warn('Warning: Failed to load recent save:', error);
+      this.logger.warn('Warning: Failed to load recent save:', error);
       return { context: null };
     }
   }
@@ -171,7 +174,7 @@ export class ContextManager {
       await fs.writeFile(this.contextPath, JSON.stringify(updated, null, 2));
     } catch (error) {
       // Non-blocking - don't fail the command if context save fails
-      console.warn('Warning: Failed to save context:', error);
+      this.logger.warn('Warning: Failed to save context:', error);
     }
   }
 
@@ -184,7 +187,7 @@ export class ContextManager {
         await fs.unlink(this.contextPath);
       }
     } catch (error) {
-      console.warn('Warning: Failed to clear context:', error);
+      this.logger.warn('Warning: Failed to clear context:', error);
     }
   }
 

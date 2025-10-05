@@ -2,6 +2,7 @@ import { promises as fs } from 'fs';
 import { join } from 'path';
 import { existsSync } from 'fs';
 
+import { createCommandLogger } from './logger.js';
 /**
  * Represents the state of an interactive command session
  * Used for file-based communication between portable commands and UI layers
@@ -53,6 +54,7 @@ export interface ShipInteractionData {
  * Implements the file-based protocol for Progressive Enhancement
  */
 export class InteractionStateManager<T = unknown> {
+  private logger = createCommandLogger('interaction-state-manager', { enableConsole: false });
   private baseDir: string;
   private stateFile: string;
   private command: string;
@@ -103,7 +105,7 @@ export class InteractionStateManager<T = unknown> {
       const content = await fs.readFile(this.stateFile, 'utf-8');
       return JSON.parse(content) as InteractionState<T>;
     } catch (error) {
-      console.error('Failed to load interaction state:', error);
+      this.logger.error('Failed to load interaction state:', error);
       return null;
     }
   }

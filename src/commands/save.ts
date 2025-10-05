@@ -3,6 +3,7 @@ import { saveManager } from '../lib/save-manager.js';
 import { SaveOptions } from '../types/save-manifest.js';
 import { ContextManager } from '../lib/context-manager.js';
 import { SaveService } from '../lib/save-service.js';
+import { createCommandLogger } from '../lib/logger.js';
 
 export interface SaveCommandOptions extends SaveOptions {
   name?: string;
@@ -16,6 +17,7 @@ export interface SaveCommandOptions extends SaveOptions {
  * @note Refactored in HODGE-321 to use SaveService for testable business logic
  */
 export class SaveCommand {
+  private logger = createCommandLogger('save', { enableConsole: true });
   private _contextManager?: ContextManager;
   private saveService: SaveService;
 
@@ -44,7 +46,7 @@ export class SaveCommand {
 
       // Show what type of save we're doing (delegate to SaveService for description)
       const saveType = this.saveService.getSaveTypeDescription(saveOptions);
-      console.log(chalk.blue(`📝 Creating ${saveType.toLowerCase()}...`));
+      this.logger.info(chalk.blue(`📝 Creating ${saveType.toLowerCase()}...`));
 
       // Perform the save using SaveManager
       const startTime = Date.now();
@@ -52,11 +54,11 @@ export class SaveCommand {
       const elapsed = Date.now() - startTime;
 
       // Show success with performance info
-      console.log(chalk.green(`✓ Session saved successfully`));
-      console.log(chalk.gray(`  Name: ${saveName}`));
-      console.log(chalk.gray(`  Location: ${savePath}`));
-      console.log(chalk.gray(`  Time: ${elapsed}ms`));
-      console.log(chalk.gray(`  Type: ${saveType}`));
+      this.logger.info(chalk.green(`✓ Session saved successfully`));
+      this.logger.info(chalk.gray(`  Name: ${saveName}`));
+      this.logger.info(chalk.gray(`  Location: ${savePath}`));
+      this.logger.info(chalk.gray(`  Time: ${elapsed}ms`));
+      this.logger.info(chalk.gray(`  Type: ${saveType}`));
 
       // Update context timestamp
       await this.contextManager.save({
@@ -65,10 +67,10 @@ export class SaveCommand {
       });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      console.error(chalk.red(`❌ Save failed: ${errorMessage}`));
+      this.logger.error(chalk.red(`❌ Save failed: ${errorMessage}`));
 
       if (error instanceof Error && error.stack) {
-        console.error(chalk.gray(error.stack));
+        this.logger.error(chalk.gray(error.stack));
       }
 
       throw error;

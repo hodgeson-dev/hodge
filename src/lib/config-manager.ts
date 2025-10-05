@@ -3,6 +3,7 @@ import { existsSync } from 'fs';
 import path from 'path';
 import chalk from 'chalk';
 
+import { createCommandLogger } from './logger.js';
 /**
  * Configuration management for Hodge
  * Implements layered configuration:
@@ -70,6 +71,8 @@ export interface GeneratedConfig {
  * Manages Hodge configuration with layered approach
  */
 export class ConfigManager {
+  private logger = createCommandLogger('config-manager', { enableConsole: false });
+
   private userConfigPath: string;
   private generatedConfigPath: string;
   private userConfig: HodgeConfig | null = null;
@@ -112,7 +115,7 @@ export class ConfigManager {
       this.validateNoSecrets(this.userConfig);
     } catch (error) {
       if (process.env.DEBUG) {
-        console.warn(chalk.yellow('Failed to load hodge.json:', String(error)));
+        this.logger.warn(chalk.yellow('Failed to load hodge.json:', String(error)));
       }
     }
   }
@@ -130,7 +133,7 @@ export class ConfigManager {
       this.generatedConfig = JSON.parse(content) as GeneratedConfig;
     } catch (error) {
       if (process.env.DEBUG) {
-        console.warn(chalk.yellow('Failed to load .hodge/config.json:', String(error)));
+        this.logger.warn(chalk.yellow('Failed to load .hodge/config.json:', String(error)));
       }
     }
   }

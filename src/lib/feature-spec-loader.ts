@@ -2,6 +2,7 @@ import { promises as fs } from 'fs';
 import * as yaml from 'js-yaml';
 import chalk from 'chalk';
 
+import { createCommandLogger } from './logger.js';
 /**
  * Feature specification structure
  */
@@ -39,6 +40,8 @@ export interface FeatureSpec {
  * Loads and validates feature specifications from YAML files
  */
 export class FeatureSpecLoader {
+  private logger = createCommandLogger('feature-spec-loader', { enableConsole: false });
+
   /**
    * Load a feature specification from a YAML file
    */
@@ -53,7 +56,7 @@ export class FeatureSpecLoader {
       // Validate structure
       this.validateSpec(spec);
 
-      console.log(chalk.gray(`✓ Loaded feature spec from ${filePath}`));
+      this.logger.info(chalk.gray(`✓ Loaded feature spec from ${filePath}`));
       return spec;
     } catch (error) {
       if (error instanceof Error) {

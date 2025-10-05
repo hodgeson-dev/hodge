@@ -1,3 +1,4 @@
+import { createCommandLogger } from './logger.js';
 /**
  * @module cache-manager
  * @description High-performance caching layer for Hodge CLI commands
@@ -69,6 +70,8 @@ interface CacheOptions {
  * ```
  */
 export class CacheManager {
+  private logger = createCommandLogger('cache-manager', { enableConsole: false });
+
   private static instance: CacheManager;
   private cache = new Map<string, CacheEntry<unknown>>();
   private hits = 0;
@@ -133,7 +136,7 @@ export class CacheManager {
               }
             } catch (error) {
               // If hash validation fails, proceed to reload
-              console.warn(`Cache validation failed for ${key}:`, error);
+              this.logger.warn(`Cache validation failed for ${key}:`, error);
             }
           }
         } else {
@@ -162,7 +165,7 @@ export class CacheManager {
             hash = await this.getFileHash(filePath);
           } catch (error) {
             // Log but don't fail if hash calculation fails
-            console.warn(`Failed to calculate hash for ${filePath}:`, error);
+            this.logger.warn(`Failed to calculate hash for ${filePath}:`, error);
           }
         }
       }

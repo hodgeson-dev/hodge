@@ -10,6 +10,7 @@ import {
   type ValidationResult,
   type ValidationResults,
 } from '../lib/harden-service.js';
+import { createCommandLogger } from '../lib/logger.js';
 
 export interface HardenOptions {
   skipTests?: boolean;
@@ -28,6 +29,7 @@ export interface HardenOptions {
 export class HardenCommand {
   private pmHooks = new PMHooks();
   private hardenService = new HardenService();
+  private logger = createCommandLogger('harden', { enableConsole: true });
 
   /**
    * Execute the harden command for a feature
@@ -63,8 +65,8 @@ export class HardenCommand {
         throw new Error('Feature name is required and must be a string');
       }
 
-      console.log(chalk.magenta('🛡️  Entering Harden Mode'));
-      console.log(chalk.gray(`Feature: ${feature}\n`));
+      this.logger.info(chalk.magenta('🛡️  Entering Harden Mode'));
+      this.logger.info(chalk.gray(`Feature: ${feature}\n`));
 
       // Update PM tracking - mark as hardening at START of phase
       await this.pmHooks.onHarden(feature);
@@ -79,9 +81,10 @@ export class HardenCommand {
 
       // Check for build completion
       if (!existsSync(buildDir)) {
-        console.log(chalk.red('❌ No build found for this feature.'));
-        console.log(chalk.gray('   Build the feature first with:'));
-        console.log(chalk.cyan(`   hodge build ${feature}\n`));
+        const error = new Error('No build found for this feature');
+        this.logger.error(chalk.red('❌ No build found for this feature.'), { error });
+        this.logger.error(chalk.gray('   Build the feature first with:'));
+        this.logger.error(chalk.cyan(`   hodge build ${feature}\n`));
         return;
       }
 
@@ -96,24 +99,24 @@ export class HardenCommand {
       if (existsSync(issueIdFile)) {
         issueId = (await fs.readFile(issueIdFile, 'utf-8')).trim();
         if (pmTool && issueId) {
-          console.log(chalk.blue(`📋 Linked to ${pmTool} issue: ${issueId}`));
+          this.logger.info(chalk.blue(`📋 Linked to ${pmTool} issue: ${issueId}`));
         }
       }
 
       // Create harden context
-      console.log(chalk.bold('In Harden Mode:'));
-      console.log('  • Standards are ' + chalk.red('strictly enforced'));
-      console.log('  • All tests must ' + chalk.red('pass'));
-      console.log('  • Code must be ' + chalk.red('production-ready'));
-      console.log('  • No warnings or errors ' + chalk.red('allowed') + '\n');
+      this.logger.info(chalk.bold('In Harden Mode:'));
+      this.logger.info('  • Standards are ' + chalk.red('strictly enforced'));
+      this.logger.info('  • All tests must ' + chalk.red('pass'));
+      this.logger.info('  • Code must be ' + chalk.red('production-ready'));
+      this.logger.info('  • No warnings or errors ' + chalk.red('allowed') + '\n');
 
       // Run validation checks using HardenService
-      console.log(chalk.bold('Running validation checks...\n'));
+      this.logger.info(chalk.bold('Running validation checks...\n'));
 
       if (options.sequential) {
-        console.log(chalk.cyan('📝 Running validations sequentially (debug mode)...'));
+        this.logger.info(chalk.cyan('📝 Running validations sequentially (debug mode)...'));
       } else {
-        console.log(chalk.cyan('🚀 Running validations in parallel...'));
+        this.logger.info(chalk.cyan('🚀 Running validations in parallel...'));
       }
 
       const parallelStartTime = Date.now();
@@ -123,7 +126,7 @@ export class HardenCommand {
 
       const parallelEndTime = Date.now();
       if (!options.sequential) {
-        console.log(
+        this.logger.info(
           chalk.dim(
             `   Parallel validations completed in ${parallelEndTime - parallelStartTime}ms\n`
           )
@@ -149,16 +152,17 @@ export class HardenCommand {
       // Performance metrics (in development)
       if (process.env.NODE_ENV === 'development' || process.env.HODGE_DEBUG) {
         const elapsed = Date.now() - startTime;
-        console.log(chalk.dim(`\nTotal execution time: ${elapsed}ms`));
+        this.logger.info(chalk.dim(`\nTotal execution time: ${elapsed}ms`));
       }
     } catch (error) {
       // Comprehensive error handling
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      console.error(chalk.red(`\n❌ Harden command failed: ${errorMessage}`));
+      this.logger.error(chalk.red(`\n❌ Harden command failed: ${errorMessage}`), {
+        error: error as Error,
+      });
 
       if (process.env.HODGE_DEBUG) {
-        console.error(chalk.dim('Stack trace:'));
-        console.error(error);
+        this.logger.error(chalk.dim('Stack trace:'), { error: error as Error });
       }
 
       throw error;
@@ -170,18 +174,18 @@ export class HardenCommand {
    * @private
    */
   private displayAIContext(feature: string): void {
-    console.log(chalk.bold('═'.repeat(60)));
-    console.log(chalk.red.bold('AI CONTEXT UPDATE:'));
-    console.log(chalk.bold('═'.repeat(60)));
-    console.log(`You are now in ${chalk.red.bold('HARDEN MODE')} for: ${feature}`);
-    console.log('\n' + chalk.red.bold('STRICT REQUIREMENTS for AI assistance:'));
-    console.log('• ALL standards MUST be followed - NO exceptions');
-    console.log('• Use ONLY established patterns');
-    console.log('• Include COMPREHENSIVE error handling');
-    console.log('• Code MUST be production-ready');
-    console.log('• ALL tests MUST pass');
-    console.log('• NO warnings or errors allowed');
-    console.log(chalk.bold('═'.repeat(60)) + '\n');
+    this.logger.info(chalk.bold('═'.repeat(60)));
+    this.logger.info(chalk.red.bold('AI CONTEXT UPDATE:'));
+    this.logger.info(chalk.bold('═'.repeat(60)));
+    this.logger.info(`You are now in ${chalk.red.bold('HARDEN MODE')} for: ${feature}`);
+    this.logger.info('\n' + chalk.red.bold('STRICT REQUIREMENTS for AI assistance:'));
+    this.logger.info('• ALL standards MUST be followed - NO exceptions');
+    this.logger.info('• Use ONLY established patterns');
+    this.logger.info('• Include COMPREHENSIVE error handling');
+    this.logger.info('• Code MUST be production-ready');
+    this.logger.info('• ALL tests MUST pass');
+    this.logger.info('• NO warnings or errors allowed');
+    this.logger.info(chalk.bold('═'.repeat(60)) + '\n');
   }
 
   /**
@@ -189,25 +193,25 @@ export class HardenCommand {
    * @private
    */
   private displayValidationStatus(results: ValidationResults, options: HardenOptions): void {
-    console.log(
+    this.logger.info(
       results.tests.passed
         ? chalk.green('   ✓ Tests passed')
         : options.skipTests
           ? chalk.yellow('   ⚠️  Tests skipped')
           : chalk.red('   ✗ Tests failed')
     );
-    console.log(
+    this.logger.info(
       results.lint.passed ? chalk.green('   ✓ Linting passed') : chalk.red('   ✗ Linting failed')
     );
-    console.log(
+    this.logger.info(
       results.typecheck.passed
         ? chalk.green('   ✓ Type check passed')
         : chalk.red('   ✗ Type check failed')
     );
-    console.log(
+    this.logger.info(
       results.build.passed ? chalk.green('   ✓ Build succeeded') : chalk.red('   ✗ Build failed')
     );
-    console.log();
+    this.logger.info('');
   }
 
   /**
@@ -287,33 +291,39 @@ ${results.build.output || 'No build output'}
   ): void {
     const allPassed = Object.values(results).every((r: ValidationResult) => r.passed);
 
-    console.log('\n' + chalk.bold('Harden Summary:'));
+    this.logger.info('\n' + chalk.bold('Harden Summary:'));
 
     if (allPassed) {
-      console.log(chalk.green.bold('\n✅ All validation checks passed!'));
-      console.log(chalk.green('Feature is production-ready.\n'));
+      this.logger.info(chalk.green.bold('\n✅ All validation checks passed!'));
+      this.logger.info(chalk.green('Feature is production-ready.\n'));
 
-      console.log(chalk.bold('Next steps:'));
-      console.log('  1. Review ' + chalk.yellow(`${path.join(hardenDir, 'harden-report.md')}`));
-      console.log('  2. Use ' + chalk.cyan(`\`/ship ${feature}\``) + ' to deploy');
-      console.log('  3. Update PM issue status to "Done"');
+      this.logger.info(chalk.bold('Next steps:'));
+      this.logger.info(
+        '  1. Review ' + chalk.yellow(`${path.join(hardenDir, 'harden-report.md')}`)
+      );
+      this.logger.info('  2. Use ' + chalk.cyan(`\`/ship ${feature}\``) + ' to deploy');
+      this.logger.info('  3. Update PM issue status to "Done"');
     } else {
-      console.log(chalk.red.bold('\n❌ Validation checks failed.'));
-      console.log(chalk.red('Please fix issues before shipping.\n'));
+      this.logger.info(chalk.red.bold('\n❌ Validation checks failed.'));
+      this.logger.info(chalk.red('Please fix issues before shipping.\n'));
 
-      console.log(chalk.bold('Required actions:'));
-      console.log('  1. Review ' + chalk.yellow(`${path.join(hardenDir, 'harden-report.md')}`));
-      console.log('  2. Fix identified issues');
-      console.log('  3. Run ' + chalk.cyan(`\`hodge harden ${feature}\``) + ' again');
+      this.logger.info(chalk.bold('Required actions:'));
+      this.logger.info(
+        '  1. Review ' + chalk.yellow(`${path.join(hardenDir, 'harden-report.md')}`)
+      );
+      this.logger.info('  2. Fix identified issues');
+      this.logger.info('  3. Run ' + chalk.cyan(`\`hodge harden ${feature}\``) + ' again');
 
       if (options.autoFix) {
-        console.log(
+        this.logger.info(
           '\n' +
             chalk.yellow('💡 Tip: Some issues may have been auto-fixed. Review and commit changes.')
         );
       }
     }
 
-    console.log('\n' + chalk.dim('Report saved to: ' + path.join(hardenDir, 'harden-report.md')));
+    this.logger.info(
+      '\n' + chalk.dim('Report saved to: ' + path.join(hardenDir, 'harden-report.md'))
+    );
   }
 }

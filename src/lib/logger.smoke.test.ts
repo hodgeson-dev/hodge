@@ -3,15 +3,14 @@
  * Quick sanity checks to ensure logging works without crashing
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { smokeTest } from '../test/helpers';
 import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
 
 // Import logger components
-import { logger, createCommandLogger, LogRotator } from './logger';
-import defaultLogger from './logger';
+import { logger, createCommandLogger, LogRotator, type CommandLoggerOptions } from './logger';
 
 describe('[smoke] Logger', () => {
   const testLogDir = path.join(os.tmpdir(), 'hodge-logger-test', Date.now().toString());
@@ -56,13 +55,27 @@ describe('[smoke] Logger', () => {
     }).not.toThrow();
   });
 
-  smokeTest('should handle default logger wrapper without crashing', () => {
+  smokeTest('should create logger with enableConsole: true (dual logging)', () => {
+    const cmdLogger = createCommandLogger('test-command', { enableConsole: true });
+    expect(cmdLogger).toBeDefined();
     expect(() => {
-      defaultLogger.info('Info via wrapper');
-      defaultLogger.warn('Warning via wrapper');
-      defaultLogger.error('Error via wrapper');
-      defaultLogger.debug('Debug via wrapper');
-      defaultLogger.log('Log via wrapper');
+      cmdLogger.info('Test dual logging');
+    }).not.toThrow();
+  });
+
+  smokeTest('should create logger with enableConsole: false (pino only)', () => {
+    const libLogger = createCommandLogger('test-lib', { enableConsole: false });
+    expect(libLogger).toBeDefined();
+    expect(() => {
+      libLogger.info('Test pino-only logging');
+    }).not.toThrow();
+  });
+
+  smokeTest('should default to enableConsole: false when no options provided', () => {
+    const defaultLogger = createCommandLogger('test-default');
+    expect(defaultLogger).toBeDefined();
+    expect(() => {
+      defaultLogger.info('Test default logging');
     }).not.toThrow();
   });
 
@@ -110,22 +123,40 @@ describe('[smoke] Logger', () => {
     await expect(Promise.all(promises)).resolves.not.toThrow();
   });
 
-  smokeTest('should not output to console for non-init commands', () => {
-    // Save original argv
-    const originalArgv = process.argv;
-
-    // Simulate non-init command
-    process.argv = ['node', 'hodge', 'build', 'test'];
-
-    // Spy on console.log to ensure it's not called
+  smokeTest('should write to console when enableConsole: true', () => {
     const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
-    logger.info('Should not appear in console');
+    const cmdLogger = createCommandLogger('test-cmd', { enableConsole: true });
+    cmdLogger.info('Test message');
+
+    expect(consoleSpy).toHaveBeenCalled();
+
+    consoleSpy.mockRestore();
+  });
+
+  smokeTest('should NOT write to console when enableConsole: false', () => {
+    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+    const libLogger = createCommandLogger('test-lib', { enableConsole: false });
+    libLogger.info('Test message');
 
     expect(consoleSpy).not.toHaveBeenCalled();
 
-    // Restore
     consoleSpy.mockRestore();
-    process.argv = originalArgv;
+  });
+
+  smokeTest('should respect HODGE_SILENT environment variable', () => {
+    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+    process.env.HODGE_SILENT = 'true';
+
+    const cmdLogger = createCommandLogger('test-cmd', { enableConsole: true });
+    cmdLogger.info('Test message');
+
+    // Should not write to console even with enableConsole: true
+    expect(consoleSpy).not.toHaveBeenCalled();
+
+    delete process.env.HODGE_SILENT;
+    consoleSpy.mockRestore();
   });
 });

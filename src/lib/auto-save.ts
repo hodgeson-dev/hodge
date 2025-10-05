@@ -4,11 +4,14 @@ import { readFile, writeFile, mkdir, copyFile } from 'fs/promises';
 import path from 'path';
 import { SaveManager } from './save-manager.js';
 
+import { createCommandLogger } from './logger.js';
 /**
  * Auto-save utility for preserving context when switching features
  * Now uses optimized incremental saves for speed
  */
 export class AutoSave {
+  private logger = createCommandLogger('auto-save', { enableConsole: false });
+
   private basePath: string;
   private contextPath: string;
   private savesPath: string;
@@ -56,7 +59,7 @@ export class AutoSave {
       return true;
     } catch (error) {
       // Log error but don't block command execution
-      console.error(
+      this.logger.error(
         chalk.gray(
           `Auto-save check failed: ${error instanceof Error ? error.message : 'Unknown error'}`
         )
@@ -109,14 +112,14 @@ export class AutoSave {
       this.lastSaveTime.set(feature, Date.now());
 
       const elapsed = Date.now() - startTime;
-      console.log(
+      this.logger.info(
         chalk.blue(
           `📦 Auto-saved: ${feature} → ${path.join(this.savesPath, saveName)} (${elapsed}ms)`
         )
       );
     } catch (error) {
       // Don't let auto-save errors block the workflow
-      console.error(
+      this.logger.error(
         chalk.gray(
           `Auto-save failed for ${feature}: ${error instanceof Error ? error.message : 'Unknown'}`
         )
@@ -155,10 +158,10 @@ export class AutoSave {
       }
 
       // Display notification
-      console.log(chalk.yellow(`📦 Auto-saved: ${feature} → .hodge/saves/${saveName}`));
+      this.logger.warn(chalk.yellow(`📦 Auto-saved: ${feature} → .hodge/saves/${saveName}`));
     } catch (error) {
       // Log error but don't throw - auto-save should not block operations
-      console.error(
+      this.logger.error(
         chalk.red(
           `Auto-save failed for ${feature}: ${error instanceof Error ? error.message : 'Unknown error'}`
         )

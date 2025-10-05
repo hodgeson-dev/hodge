@@ -2,33 +2,38 @@ import inquirer from 'inquirer';
 import chalk from 'chalk';
 import { type ShipInteractionData } from './interaction-state.js';
 
+import { createCommandLogger } from './logger.js';
 /**
  * Interactive prompts for terminal environments
  * Provides rich terminal UI for commands when TTY is available
  */
 export class InteractivePrompts {
+  private logger = createCommandLogger('interactive-prompts', { enableConsole: false });
+
   /**
    * Prompt for ship commit message in terminal
    */
   async promptShipCommit(data: ShipInteractionData): Promise<string> {
-    console.log(chalk.bold('\n📝 Commit Message Generator\n'));
+    this.logger.info(chalk.bold('\n📝 Commit Message Generator\n'));
 
     // Show file changes
     if (data.analysis.files.length > 0) {
-      console.log(chalk.gray('Changed files:'));
+      this.logger.info(chalk.gray('Changed files:'));
       data.analysis.files.forEach((f) => {
         const statusIcon = f.status === 'added' ? '✚' : f.status === 'deleted' ? '✖' : '✎';
-        console.log(chalk.gray(`  ${statusIcon} ${f.path} (+${f.insertions}, -${f.deletions})`));
+        this.logger.info(
+          chalk.gray(`  ${statusIcon} ${f.path} (+${f.insertions}, -${f.deletions})`)
+        );
       });
-      console.log();
+      this.logger.info('');
     }
 
     // Show suggested message
-    console.log(chalk.gray('Suggested commit message:'));
-    console.log(chalk.gray('─'.repeat(60)));
-    console.log(data.suggested);
-    console.log(chalk.gray('─'.repeat(60)));
-    console.log();
+    this.logger.info(chalk.gray('Suggested commit message:'));
+    this.logger.info(chalk.gray('─'.repeat(60)));
+    this.logger.info(data.suggested);
+    this.logger.info(chalk.gray('─'.repeat(60)));
+    this.logger.info('');
 
     // Prompt for action
     const { action } = await inquirer.prompt<{ action: string }>([
@@ -158,12 +163,12 @@ export class InteractivePrompts {
    * Prompt for explore mode confirmation
    */
   async promptExploreStart(feature: string, description?: string): Promise<boolean> {
-    console.log(chalk.bold('\n🔍 Explore Mode\n'));
-    console.log(`Feature: ${chalk.cyan(feature)}`);
+    this.logger.info(chalk.bold('\n🔍 Explore Mode\n'));
+    this.logger.info(`Feature: ${chalk.cyan(feature)}`);
     if (description) {
-      console.log(`Description: ${description}`);
+      this.logger.info(`Description: ${description}`);
     }
-    console.log();
+    this.logger.info('');
 
     const { confirm } = await inquirer.prompt<{ confirm: boolean }>([
       {
@@ -181,15 +186,15 @@ export class InteractivePrompts {
    * Prompt for build mode confirmation with exploration review
    */
   async promptBuildStart(feature: string, hasExploration: boolean): Promise<boolean> {
-    console.log(chalk.bold('\n🔨 Build Mode\n'));
-    console.log(`Feature: ${chalk.cyan(feature)}`);
+    this.logger.info(chalk.bold('\n🔨 Build Mode\n'));
+    this.logger.info(`Feature: ${chalk.cyan(feature)}`);
 
     if (hasExploration) {
-      console.log(chalk.green('✓ Exploration phase completed'));
+      this.logger.info(chalk.green('✓ Exploration phase completed'));
     } else {
-      console.log(chalk.yellow('⚠ No exploration found for this feature'));
+      this.logger.warn(chalk.yellow('⚠ No exploration found for this feature'));
     }
-    console.log();
+    this.logger.info('');
 
     const { confirm } = await inquirer.prompt<{ confirm: boolean }>([
       {
@@ -211,7 +216,7 @@ export class InteractivePrompts {
     skipLint?: boolean;
     skipTypecheck?: boolean;
   }> {
-    console.log(chalk.bold('\n🛡️ Harden Mode - Quality Checks\n'));
+    this.logger.info(chalk.bold('\n🛡️ Harden Mode - Quality Checks\n'));
 
     const { checks } = await inquirer.prompt<{ checks: string[] }>([
       {
@@ -237,10 +242,10 @@ export class InteractivePrompts {
    * Prompt for protected branch push confirmation
    */
   async promptProtectedBranchPush(branch: string): Promise<boolean> {
-    console.log(chalk.bold('\n⚠️  Protected Branch Warning\n'));
-    console.log(chalk.yellow(`You are about to push to '${branch}'`));
-    console.log(chalk.yellow('This is a protected branch typically used for production.'));
-    console.log();
+    this.logger.info(chalk.bold('\n⚠️  Protected Branch Warning\n'));
+    this.logger.warn(chalk.yellow(`You are about to push to '${branch}'`));
+    this.logger.warn(chalk.yellow('This is a protected branch typically used for production.'));
+    this.logger.info('');
 
     const { action } = await inquirer.prompt<{ action: string }>([
       {
@@ -275,7 +280,7 @@ export class InteractivePrompts {
         },
       ]);
 
-      console.log(chalk.cyan(`\nCreating branch: ${branchName}`));
+      this.logger.info(chalk.cyan(`\nCreating branch: ${branchName}`));
       // The actual branch creation will be handled by the caller
       throw new Error(`CREATE_BRANCH:${branchName}`);
     }
@@ -319,10 +324,10 @@ export class InteractivePrompts {
       return { proceed: true };
     }
 
-    console.log(chalk.bold('\n📋 Pre-Push Check\n'));
-    console.log(chalk.yellow('Issues detected:'));
-    issues.forEach((issue) => console.log(chalk.yellow(`  • ${issue}`)));
-    console.log();
+    this.logger.info(chalk.bold('\n📋 Pre-Push Check\n'));
+    this.logger.warn(chalk.yellow('Issues detected:'));
+    issues.forEach((issue) => this.logger.warn(chalk.yellow(`  • ${issue}`)));
+    this.logger.info('');
 
     const choices: Array<{ name: string; value: string }> = [];
 
@@ -366,7 +371,7 @@ export class InteractivePrompts {
     rationale: string;
     alternatives?: string;
   }> {
-    console.log(chalk.bold('\n📋 Record Decision\n'));
+    this.logger.info(chalk.bold('\n📋 Record Decision\n'));
 
     const answers = await inquirer.prompt<{
       title: string;

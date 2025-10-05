@@ -10,9 +10,7 @@ import type { LoggerOptions } from 'pino';
 import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
-
-// Determine if we're running the init command (needs console output)
-const isInitCommand = process.argv.includes('init');
+import stripAnsi from 'strip-ansi';
 
 // Get log directory - use project-specific location
 function getLogDir(): string {
@@ -89,14 +87,98 @@ const errorLoggerOptions: LoggerOptions = {
 export const errorLogger = pino(errorLoggerOptions, errorDestination);
 
 /**
- * Create a child logger for a specific command
- * This provides command-specific context for all logs
+ * Options for creating a command logger
  */
-export function createCommandLogger(command: string): pino.Logger {
-  return logger.child({
-    command,
+export interface CommandLoggerOptions {
+  /** Enable console output in addition to file logging */
+  enableConsole?: boolean;
+}
+
+/**
+ * Strip ANSI color codes from a value for clean pino logging
+ * Handles strings, objects with message properties, and passes through other types
+ */
+function stripAnsiFromValue(value: unknown): unknown {
+  if (typeof value === 'string') {
+    return stripAnsi(value);
+  }
+  if (typeof value === 'object' && value !== null) {
+    // Handle objects that might have message/msg properties with ANSI codes
+    const obj = value as Record<string, unknown>;
+    const cleaned: Record<string, unknown> = {};
+    for (const [key, val] of Object.entries(obj)) {
+      cleaned[key] = typeof val === 'string' ? stripAnsi(val) : val;
+    }
+    return cleaned;
+  }
+  return value;
+}
+
+/**
+ * Create a child logger for a specific command or library
+ * This provides command-specific context for all logs
+ *
+ * @param name - Command or library name
+ * @param options - Logger configuration options
+ * @returns A configured pino logger instance
+ */
+export function createCommandLogger(name: string, options: CommandLoggerOptions = {}): pino.Logger {
+  const childLogger = logger.child({
+    name,
     timestamp: new Date().toISOString(),
+    enableConsole: options.enableConsole ?? false,
   });
+
+  // Wrap logger methods to support dual logging
+  if (options.enableConsole && !process.env.HODGE_SILENT) {
+    const originalInfo = childLogger.info.bind(childLogger);
+    const originalWarn = childLogger.warn.bind(childLogger);
+    const originalError = childLogger.error.bind(childLogger);
+    const originalDebug = childLogger.debug.bind(childLogger);
+
+    // Type-safe wrapper that preserves pino.LogFn signature
+    // Strips ANSI color codes for pino while preserving them for console
+    childLogger.info = Object.assign((msgOrObj: string | object, ...args: unknown[]) => {
+      // Console: preserve colors
+      console.log(msgOrObj, ...args);
+      // Pino: strip ANSI codes for clean JSON logging
+      const cleanMsg = stripAnsiFromValue(msgOrObj);
+      const cleanArgs = args.map(stripAnsiFromValue);
+      return originalInfo(cleanMsg as string, ...cleanArgs);
+    }, originalInfo) as pino.LogFn;
+
+    childLogger.warn = Object.assign((msgOrObj: string | object, ...args: unknown[]) => {
+      // Console: preserve colors
+      console.warn(msgOrObj, ...args);
+      // Pino: strip ANSI codes for clean JSON logging
+      const cleanMsg = stripAnsiFromValue(msgOrObj);
+      const cleanArgs = args.map(stripAnsiFromValue);
+      return originalWarn(cleanMsg as string, ...cleanArgs);
+    }, originalWarn) as pino.LogFn;
+
+    childLogger.error = Object.assign((msgOrObj: string | object, ...args: unknown[]) => {
+      // Console: preserve colors
+      console.error(msgOrObj, ...args);
+      // Pino: strip ANSI codes for clean JSON logging
+      const cleanMsg = stripAnsiFromValue(msgOrObj);
+      const cleanArgs = args.map(stripAnsiFromValue);
+      errorLogger.error(cleanMsg as string, ...cleanArgs);
+      return originalError(cleanMsg as string, ...cleanArgs);
+    }, originalError) as pino.LogFn;
+
+    childLogger.debug = Object.assign((msgOrObj: string | object, ...args: unknown[]) => {
+      if (process.env.DEBUG) {
+        // Console: preserve colors
+        console.debug(msgOrObj, ...args);
+      }
+      // Pino: strip ANSI codes for clean JSON logging
+      const cleanMsg = stripAnsiFromValue(msgOrObj);
+      const cleanArgs = args.map(stripAnsiFromValue);
+      return originalDebug(cleanMsg as string, ...cleanArgs);
+    }, originalDebug) as pino.LogFn;
+  }
+
+  return childLogger;
 }
 
 /**
@@ -229,40 +311,3 @@ process.on('SIGTERM', () => {
   logger.info('Process terminated');
   process.exit(0);
 });
-
-// Export convenience methods that maintain console.log compatibility
-export default {
-  info: (message: string, ...args: unknown[]) => {
-    logger.info({ args }, message);
-    if (isInitCommand && !process.env.HODGE_SILENT) {
-      console.log(message, ...args);
-    }
-  },
-  warn: (message: string, ...args: unknown[]) => {
-    logger.warn({ args }, message);
-    if (isInitCommand && !process.env.HODGE_SILENT) {
-      console.warn(message, ...args);
-    }
-  },
-  error: (message: string, ...args: unknown[]) => {
-    logger.error({ args }, message);
-    errorLogger.error({ args }, message);
-    if (isInitCommand && !process.env.HODGE_SILENT) {
-      console.error(message, ...args);
-    }
-  },
-  debug: (message: string, ...args: unknown[]) => {
-    logger.debug({ args }, message);
-    if (isInitCommand && !process.env.HODGE_SILENT && process.env.DEBUG) {
-      console.debug(message, ...args);
-    }
-  },
-
-  // For gradual migration from console.log
-  log: (message: string, ...args: unknown[]) => {
-    logger.info({ args }, message);
-    if (isInitCommand && !process.env.HODGE_SILENT) {
-      console.log(message, ...args);
-    }
-  },
-};

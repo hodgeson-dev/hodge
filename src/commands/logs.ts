@@ -27,7 +27,7 @@ interface LogEntry {
 }
 
 export class LogsCommand {
-  private logger = createCommandLogger('logs');
+  private logger = createCommandLogger('logs', { enableConsole: true });
 
   async execute(options: LogsOptions = {}): Promise<void> {
     // Find log file
@@ -40,9 +40,9 @@ export class LogsCommand {
     }
 
     if (!(await fs.pathExists(logPath))) {
-      console.log(chalk.yellow('No log file found.'));
-      console.log(chalk.gray('Logs will be created when hodge commands are executed.'));
-      console.log(chalk.gray(`Expected location: ${logPath}`));
+      this.logger.info(chalk.yellow('No log file found.'));
+      this.logger.info(chalk.gray('Logs will be created when hodge commands are executed.'));
+      this.logger.info(chalk.gray(`Expected location: ${logPath}`));
       return;
     }
 
@@ -80,13 +80,13 @@ export class LogsCommand {
           await fs.remove(path.join(logDir, file));
         }
 
-        console.log(chalk.green('✓ Logs cleared successfully'));
+        this.logger.info(chalk.green('✓ Logs cleared successfully'));
         this.logger.info('Logs cleared by user');
       } else {
-        console.log(chalk.yellow('No logs to clear'));
+        this.logger.info(chalk.yellow('No logs to clear'));
       }
     } catch (error) {
-      console.log(chalk.red('Failed to clear logs:', error));
+      this.logger.error(chalk.red('Failed to clear logs:', error));
       this.logger.error('Failed to clear logs', { error });
     }
   }
@@ -111,23 +111,23 @@ export class LogsCommand {
     const output = options.tail ? lines.slice(-options.tail) : lines;
 
     if (output.length === 0) {
-      console.log(chalk.yellow('No matching log entries found.'));
+      this.logger.info(chalk.yellow('No matching log entries found.'));
       if (options.level ?? options.command) {
-        console.log(chalk.gray('Try adjusting your filters or run without filters.'));
+        this.logger.info(chalk.gray('Try adjusting your filters or run without filters.'));
       }
     } else {
-      output.forEach((line) => console.log(line));
-      console.log(chalk.gray(`\nShowing ${output.length} log entries`));
+      output.forEach((line) => this.logger.info(line));
+      this.logger.info(chalk.gray(`\nShowing ${output.length} log entries`));
     }
   }
 
   private async followLogs(logPath: string, options: LogsOptions, pretty: boolean): Promise<void> {
-    console.log(chalk.cyan('Following log file... (Ctrl+C to stop)\n'));
+    this.logger.info(chalk.cyan('Following log file... (Ctrl+C to stop)\n'));
 
     // First, show existing logs with tail
     const tailOptions = { ...options, tail: options.tail ?? 10 };
     await this.viewLogs(logPath, tailOptions, pretty);
-    console.log(chalk.gray('\n--- Following new entries ---\n'));
+    this.logger.info(chalk.gray('\n--- Following new entries ---\n'));
 
     // Watch for new lines
     const watcher = fs.watch(logPath, { persistent: true });
@@ -150,7 +150,7 @@ export class LogsCommand {
           for await (const line of rl) {
             const formatted = this.formatLogLine(line, options, pretty);
             if (formatted) {
-              console.log(formatted);
+              this.logger.info(formatted);
             }
           }
 

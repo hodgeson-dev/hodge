@@ -1,3 +1,4 @@
+import { createCommandLogger } from './logger.js';
 /**
  * @module pattern-learner
  * @description Intelligent pattern extraction and learning system
@@ -12,8 +13,8 @@
  * const learner = new PatternLearner();
  * const result = await learner.analyzeShippedCode('my-feature');
  *
- * console.log(`Found ${result.patterns.length} patterns`);
- * console.log(`Detected ${result.standards.length} standards`);
+ * this.logger.info(`Found ${result.patterns.length} patterns`);
+ * this.logger.info(`Detected ${result.standards.length} standards`);
  * ```
  *
  * @since 1.0.0
@@ -107,6 +108,8 @@ interface PatternRule {
  * ```
  */
 export class PatternLearner {
+  private logger = createCommandLogger('pattern-learner', { enableConsole: false });
+
   private patterns: Map<string, CodePattern> = new Map();
   private standards: Map<string, CodingStandard> = new Map();
   private readonly patternsDir = '.hodge/patterns';
@@ -178,7 +181,7 @@ export class PatternLearner {
    * @example
    * ```typescript
    * const result = await learner.analyzeShippedCode('user-authentication');
-   * console.log(`Found ${result.statistics.patternsFound} patterns`);
+   * this.logger.info(`Found ${result.statistics.patternsFound} patterns`);
    * ```
    */
   async analyzeShippedCode(feature: string): Promise<LearningResult> {
@@ -291,7 +294,7 @@ export class PatternLearner {
       // Detect coding standards
       this.detectStandardsInFile(content, filePath);
     } catch (error) {
-      console.warn(`Failed to analyze ${filePath}:`, error);
+      this.logger.warn(`Failed to analyze ${filePath}:`, error);
     }
   }
 

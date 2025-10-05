@@ -10,6 +10,7 @@ import { contextManager } from '../lib/context-manager.js';
 import { PMHooks } from '../lib/pm/pm-hooks.js';
 import { ShipService } from '../lib/ship-service.js';
 import type { LearningResult } from '../lib/pattern-learner.js';
+import { createCommandLogger } from '../lib/logger.js';
 
 const execAsync = promisify(exec);
 
@@ -24,6 +25,7 @@ export interface ShipOptions {
 }
 
 export class ShipCommand {
+  private logger = createCommandLogger('ship', { enableConsole: true });
   private pmHooks = new PMHooks();
   private shipService = new ShipService();
 
@@ -46,21 +48,21 @@ export class ShipCommand {
     // Update context for this command
     await contextManager.updateForCommand('ship', feature, 'ship');
 
-    console.log(chalk.green('🚀 Entering Ship Mode'));
-    console.log(chalk.gray(`Feature: ${feature}\n`));
+    this.logger.info(chalk.green('🚀 Entering Ship Mode'));
+    this.logger.info(chalk.gray(`Feature: ${feature}\n`));
 
     // AI Context Injection (for Claude Code)
-    console.log(chalk.bold('═'.repeat(60)));
-    console.log(chalk.green.bold('AI CONTEXT UPDATE:'));
-    console.log(chalk.bold('═'.repeat(60)));
-    console.log(`You are now in ${chalk.green.bold('SHIP MODE')} for: ${feature}`);
-    console.log('\n' + chalk.green.bold('SHIPPING REQUIREMENTS:'));
-    console.log('• Feature MUST be production-ready');
-    console.log('• ALL tests MUST pass');
-    console.log('• Documentation MUST be complete');
-    console.log('• Code review SHOULD be done');
-    console.log('• PM issue will be marked as Done');
-    console.log(chalk.bold('═'.repeat(60)) + '\n');
+    this.logger.info(chalk.bold('═'.repeat(60)));
+    this.logger.info(chalk.green.bold('AI CONTEXT UPDATE:'));
+    this.logger.info(chalk.bold('═'.repeat(60)));
+    this.logger.info(`You are now in ${chalk.green.bold('SHIP MODE')} for: ${feature}`);
+    this.logger.info('\n' + chalk.green.bold('SHIPPING REQUIREMENTS:'));
+    this.logger.info('• Feature MUST be production-ready');
+    this.logger.info('• ALL tests MUST pass');
+    this.logger.info('• Documentation MUST be complete');
+    this.logger.info('• Code review SHOULD be done');
+    this.logger.info('• PM issue will be marked as Done');
+    this.logger.info(chalk.bold('═'.repeat(60)) + '\n');
 
     const featureDir = path.join('.hodge', 'features', feature);
     const hardenDir = path.join(featureDir, 'harden');
@@ -68,25 +70,27 @@ export class ShipCommand {
 
     // Check if feature has been hardened
     if (!existsSync(hardenDir)) {
-      console.log(chalk.yellow('⚠️  Feature has not been hardened.'));
+      this.logger.warn(chalk.yellow('⚠️  Feature has not been hardened.'));
 
       if (existsSync(buildDir)) {
-        console.log(chalk.gray('   Feature has been built but not hardened.'));
-        console.log(chalk.gray('   Consider hardening first with:'));
-        console.log(chalk.cyan(`   hodge harden ${feature}\n`));
+        this.logger.info(chalk.gray('   Feature has been built but not hardened.'));
+        this.logger.info(chalk.gray('   Consider hardening first with:'));
+        this.logger.info(chalk.cyan(`   hodge harden ${feature}\n`));
       } else {
-        console.log(chalk.red('❌ Feature has not been built or hardened.'));
-        console.log(chalk.gray('   Follow the proper flow:'));
-        console.log(chalk.cyan(`   hodge explore ${feature}`));
-        console.log(chalk.cyan(`   hodge build ${feature}`));
-        console.log(chalk.cyan(`   hodge harden ${feature}`));
-        console.log(chalk.cyan(`   hodge ship ${feature}\n`));
+        this.logger.error(chalk.red('❌ Feature has not been built or hardened.'));
+        this.logger.info(chalk.gray('   Follow the proper flow:'));
+        this.logger.info(chalk.cyan(`   hodge explore ${feature}`));
+        this.logger.info(chalk.cyan(`   hodge build ${feature}`));
+        this.logger.info(chalk.cyan(`   hodge harden ${feature}`));
+        this.logger.info(chalk.cyan(`   hodge ship ${feature}\n`));
         return;
       }
 
       // Ask if they want to ship without hardening
-      console.log(chalk.yellow('Ship without hardening? This is not recommended for production.'));
-      console.log(chalk.gray('Use --skip-tests to bypass this check at your own risk.\n'));
+      this.logger.warn(
+        chalk.yellow('Ship without hardening? This is not recommended for production.')
+      );
+      this.logger.info(chalk.gray('Use --skip-tests to bypass this check at your own risk.\n'));
 
       if (!options.skipTests) {
         return;
@@ -106,13 +110,13 @@ export class ShipCommand {
         validationPassed = Object.values(results).every((r) => r.passed);
 
         if (!validationPassed && !options.skipTests) {
-          console.log(chalk.red('❌ Validation checks from hardening have not passed.'));
-          console.log(chalk.gray('   Review and fix issues, then run:'));
-          console.log(chalk.cyan(`   hodge harden ${feature}\n`));
+          this.logger.error(chalk.red('❌ Validation checks from hardening have not passed.'));
+          this.logger.info(chalk.gray('   Review and fix issues, then run:'));
+          this.logger.info(chalk.cyan(`   hodge harden ${feature}\n`));
           return;
         }
       } catch {
-        console.log(chalk.yellow('⚠️  Could not read validation results.'));
+        this.logger.warn(chalk.yellow('⚠️  Could not read validation results.'));
       }
     }
 
@@ -124,40 +128,40 @@ export class ShipCommand {
     if (existsSync(issueIdFile)) {
       issueId = (await fs.readFile(issueIdFile, 'utf-8')).trim();
       if (pmTool && issueId) {
-        console.log(chalk.blue(`📋 Linked to ${pmTool} issue: ${issueId}`));
-        console.log(chalk.gray('   Issue will be transitioned to Done after shipping.'));
+        this.logger.info(chalk.blue(`📋 Linked to ${pmTool} issue: ${issueId}`));
+        this.logger.info(chalk.gray('   Issue will be transitioned to Done after shipping.'));
       }
     }
 
     // Run final quality checks using ShipService
-    console.log('\n' + chalk.bold('Running Ship Quality Gates...\n'));
+    this.logger.info('\n' + chalk.bold('Running Ship Quality Gates...\n'));
 
     const qualityResults = await this.shipService.runQualityGates({ skipTests: options.skipTests });
 
     // Display results
     if (!options.skipTests) {
-      console.log(chalk.cyan('📝 Running final test suite...'));
-      console.log(
+      this.logger.info(chalk.cyan('📝 Running final test suite...'));
+      this.logger.info(
         qualityResults.tests
           ? chalk.green('   ✓ All tests passing')
           : chalk.red('   ✗ Tests failed')
       );
     } else {
-      console.log(chalk.yellow('   ⚠️  Tests skipped'));
+      this.logger.warn(chalk.yellow('   ⚠️  Tests skipped'));
     }
 
-    console.log(chalk.cyan('📊 Checking code coverage...'));
-    console.log(chalk.green('   ✓ Coverage meets requirements'));
+    this.logger.info(chalk.cyan('📊 Checking code coverage...'));
+    this.logger.info(chalk.green('   ✓ Coverage meets requirements'));
 
-    console.log(chalk.cyan('📚 Verifying documentation...'));
-    console.log(
+    this.logger.info(chalk.cyan('📚 Verifying documentation...'));
+    this.logger.info(
       qualityResults.docs
         ? chalk.green('   ✓ Documentation found')
         : chalk.yellow('   ⚠️  No README.md found')
     );
 
-    console.log(chalk.cyan('📋 Checking changelog...'));
-    console.log(
+    this.logger.info(chalk.cyan('📋 Checking changelog...'));
+    this.logger.info(
       qualityResults.changelog
         ? chalk.green('   ✓ Changelog found')
         : chalk.yellow('   ⚠️  No CHANGELOG.md found')
@@ -165,8 +169,8 @@ export class ShipCommand {
 
     // Determine if ready to ship
     if (!qualityResults.allPassed && !options.skipTests) {
-      console.log('\n' + chalk.red('❌ Not all quality gates passed.'));
-      console.log(chalk.gray('   Fix the issues above and try again.'));
+      this.logger.info('\n' + chalk.red('❌ Not all quality gates passed.'));
+      this.logger.info(chalk.gray('   Fix the issues above and try again.'));
       return;
     }
 
@@ -187,7 +191,7 @@ export class ShipCommand {
 
       if (existingState?.data && 'edited' in existingState.data && existingState.data.edited) {
         commitMessage = existingState.data.edited;
-        console.log(chalk.green('   ✓ Using edited commit message from slash command'));
+        this.logger.info(chalk.green('   ✓ Using edited commit message from slash command'));
         // Clean up interaction files after use
         await interactionManager.cleanup();
       }
@@ -201,7 +205,9 @@ export class ShipCommand {
         `- Tests passing\n` +
         `- Documentation updated` +
         (issueId ? `\n- Closes ${issueId}` : '');
-      console.log(chalk.yellow('⚠️  Using default commit message (no message from slash command)'));
+      this.logger.warn(
+        chalk.yellow('⚠️  Using default commit message (no message from slash command)')
+      );
     }
 
     // Create ship record using ShipService
@@ -228,71 +234,75 @@ export class ShipCommand {
     await fs.writeFile(path.join(shipDir, 'release-notes.md'), releaseNotes);
 
     // Display ship summary
-    console.log('\n' + chalk.bold('═'.repeat(60)));
-    console.log(chalk.green.bold('🚀 SHIP SUMMARY'));
-    console.log(chalk.bold('═'.repeat(60)));
-    console.log(`Feature: ${chalk.white.bold(feature)}`);
+    this.logger.info('\n' + chalk.bold('═'.repeat(60)));
+    this.logger.info(chalk.green.bold('🚀 SHIP SUMMARY'));
+    this.logger.info(chalk.bold('═'.repeat(60)));
+    this.logger.info(`Feature: ${chalk.white.bold(feature)}`);
     if (issueId) {
-      console.log(`PM Issue: ${issueId} → Will be marked as Done`);
+      this.logger.info(`PM Issue: ${issueId} → Will be marked as Done`);
     }
-    console.log(`\nQuality Gates:`);
-    console.log(`  Tests: ${shipChecks.tests ? '✅' : '❌'}`);
-    console.log(`  Coverage: ${shipChecks.coverage ? '✅' : '❌'}`);
-    console.log(`  Documentation: ${shipChecks.docs ? '✅' : '❌'}`);
-    console.log(`  Changelog: ${shipChecks.changelog ? '✅' : '❌'}`);
-    console.log(chalk.bold('═'.repeat(60)));
+    this.logger.info(`\nQuality Gates:`);
+    this.logger.info(`  Tests: ${shipChecks.tests ? '✅' : '❌'}`);
+    this.logger.info(`  Coverage: ${shipChecks.coverage ? '✅' : '❌'}`);
+    this.logger.info(`  Documentation: ${shipChecks.docs ? '✅' : '❌'}`);
+    this.logger.info(`  Changelog: ${shipChecks.changelog ? '✅' : '❌'}`);
+    this.logger.info(chalk.bold('═'.repeat(60)));
 
     // Success message
-    console.log('\n' + chalk.green.bold('✅ Feature Shipped Successfully!'));
+    this.logger.info('\n' + chalk.green.bold('✅ Feature Shipped Successfully!'));
 
     // Update PM tracking - ONLY on successful ship completion
     await this.pmHooks.onShip(feature);
 
-    console.log();
-    console.log(chalk.bold('Commit Message:'));
-    console.log(chalk.gray('─'.repeat(40)));
-    console.log(commitMessage);
-    console.log(chalk.gray('─'.repeat(40)));
-    console.log();
+    this.logger.info('');
+    this.logger.info(chalk.bold('Commit Message:'));
+    this.logger.info(chalk.gray('─'.repeat(40)));
+    this.logger.info(commitMessage);
+    this.logger.info(chalk.gray('─'.repeat(40)));
+    this.logger.info('');
 
     // Learn patterns from shipped code
-    console.log(chalk.cyan.bold('\n🧠 Learning from shipped code...'));
+    this.logger.info(chalk.cyan.bold('\n🧠 Learning from shipped code...'));
     let learningResult: LearningResult | null = null;
     try {
       const { PatternLearner } = await import('../lib/pattern-learner.js');
       const learner = new PatternLearner();
       learningResult = await learner.analyzeShippedCode(feature);
 
-      console.log(chalk.green(`   ✓ Analyzed ${learningResult.statistics.filesAnalyzed} files`));
-      console.log(chalk.green(`   ✓ Found ${learningResult.statistics.patternsFound} patterns`));
-      console.log(
+      this.logger.info(
+        chalk.green(`   ✓ Analyzed ${learningResult.statistics.filesAnalyzed} files`)
+      );
+      this.logger.info(
+        chalk.green(`   ✓ Found ${learningResult.statistics.patternsFound} patterns`)
+      );
+      this.logger.info(
         chalk.green(`   ✓ Detected ${learningResult.statistics.standardsDetected} standards`)
       );
 
       if (learningResult.patterns.length > 0) {
-        console.log(chalk.dim('\n   Top patterns:'));
+        this.logger.info(chalk.dim('\n   Top patterns:'));
         learningResult.patterns
           .sort((a, b) => b.frequency - a.frequency)
           .slice(0, 3)
           .forEach((p) => {
-            console.log(
+            this.logger.info(
               chalk.dim(`   • ${p.name} (${p.frequency}x, ${p.metadata.confidence}% confidence)`)
             );
           });
       }
 
       if (learningResult.recommendations.length > 0) {
-        console.log(chalk.dim('\n   Recommendations:'));
+        this.logger.info(chalk.dim('\n   Recommendations:'));
         learningResult.recommendations.slice(0, 3).forEach((r) => {
-          console.log(chalk.dim(`   • ${r}`));
+          this.logger.info(chalk.dim(`   • ${r}`));
         });
       }
 
-      console.log(chalk.green('\n   ✓ Patterns saved to .hodge/patterns/'));
+      this.logger.info(chalk.green('\n   ✓ Patterns saved to .hodge/patterns/'));
     } catch (error) {
-      console.log(chalk.yellow('   ⚠️  Pattern learning skipped (optional feature)'));
+      this.logger.warn(chalk.yellow('   ⚠️  Pattern learning skipped (optional feature)'));
       if (process.env.DEBUG) {
-        console.error('Pattern learning error:', error);
+        this.logger.error('Pattern learning error:', error);
       }
     }
 
@@ -301,7 +311,7 @@ export class ShipCommand {
 
     // Update PM issue to Done
     if (pmTool && issueId) {
-      console.log(chalk.blue(`\n📋 Updating ${pmTool} issue ${issueId} to Done...`));
+      this.logger.info(chalk.blue(`\n📋 Updating ${pmTool} issue ${issueId} to Done...`));
       // TODO: [ship] Update PM issue to "Done" status via PM adapter
     }
 
@@ -313,7 +323,7 @@ export class ShipCommand {
 
       // Create git commit (unless --no-commit flag is used)
       if (!options.noCommit) {
-        console.log(chalk.bold('\n📝 Creating git commit...'));
+        this.logger.info(chalk.bold('\n📝 Creating git commit...'));
         try {
           // Stage all changes including metadata updates
           await execAsync('git add -A');
@@ -322,54 +332,54 @@ export class ShipCommand {
           await execAsync(
             `git commit -m "${commitMessage.replace(/"/g, '\\"').replace(/\n/g, '\\n')}"`
           );
-          console.log(chalk.green('   ✓ Commit created successfully'));
+          this.logger.info(chalk.green('   ✓ Commit created successfully'));
 
           // Show next steps
-          console.log(chalk.bold('\nNext Steps:'));
-          console.log('  1. Push to remote: git push');
-          console.log('  2. Create pull request if needed');
-          console.log('  3. Create release tag if needed');
-          console.log('  4. Monitor production metrics');
-          console.log('  5. Gather user feedback');
+          this.logger.info(chalk.bold('\nNext Steps:'));
+          this.logger.info('  1. Push to remote: git push');
+          this.logger.info('  2. Create pull request if needed');
+          this.logger.info('  3. Create release tag if needed');
+          this.logger.info('  4. Monitor production metrics');
+          this.logger.info('  5. Gather user feedback');
         } catch (error) {
           // Inner catch for git commit failure
-          console.log(chalk.yellow('   ⚠️  Could not create commit automatically'));
-          console.log(
+          this.logger.warn(chalk.yellow('   ⚠️  Could not create commit automatically'));
+          this.logger.info(
             chalk.gray(`   Error: ${error instanceof Error ? error.message : String(error)}`)
           );
 
           // Rollback metadata changes on commit failure
-          console.log(chalk.yellow('   ⚠️  Rolling back metadata changes...'));
+          this.logger.warn(chalk.yellow('   ⚠️  Rolling back metadata changes...'));
           await this.shipService.restoreMetadata(feature, metadataBackup);
-          console.log(chalk.green('   ✓ Metadata rolled back successfully'));
+          this.logger.info(chalk.green('   ✓ Metadata rolled back successfully'));
 
-          console.log(chalk.bold('\nManual Steps Required:'));
-          console.log('  1. Stage changes: git add .');
-          console.log('  2. Commit with the message above');
-          console.log('  3. Push to main branch');
-          console.log('  4. Create release tag if needed');
-          console.log('  5. Monitor production metrics');
-          console.log('  6. Gather user feedback');
+          this.logger.info(chalk.bold('\nManual Steps Required:'));
+          this.logger.info('  1. Stage changes: git add .');
+          this.logger.info('  2. Commit with the message above');
+          this.logger.info('  3. Push to main branch');
+          this.logger.info('  4. Create release tag if needed');
+          this.logger.info('  5. Monitor production metrics');
+          this.logger.info('  6. Gather user feedback');
 
           // Re-throw to be caught by outer catch
           throw error;
         }
       } else {
-        console.log(chalk.bold('\nNext Steps:'));
-        console.log('  1. Stage changes: git add .');
-        console.log(`  2. Commit: git commit -m "${commitMessage.split('\n')[0]}"`);
-        console.log('  3. Push to remote: git push');
-        console.log('  4. Create release tag if needed');
-        console.log('  5. Monitor production metrics');
+        this.logger.info(chalk.bold('\nNext Steps:'));
+        this.logger.info('  1. Stage changes: git add .');
+        this.logger.info(`  2. Commit: git commit -m "${commitMessage.split('\n')[0]}"`);
+        this.logger.info('  3. Push to remote: git push');
+        this.logger.info('  4. Create release tag if needed');
+        this.logger.info('  5. Monitor production metrics');
       }
 
-      console.log();
-      console.log(chalk.gray('Ship record saved to: ' + shipDir));
+      this.logger.info('');
+      this.logger.info(chalk.gray('Ship record saved to: ' + shipDir));
     } catch (error) {
       // Outer catch for any failures during the ship process
-      console.log(chalk.red('\n❌ Ship process failed'));
+      this.logger.error(chalk.red('\n❌ Ship process failed'));
       if (error instanceof Error) {
-        console.log(chalk.gray(`   Error: ${error.message}`));
+        this.logger.info(chalk.gray(`   Error: ${error.message}`));
       }
       // Metadata has already been rolled back if needed
       return;

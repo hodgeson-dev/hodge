@@ -71,7 +71,7 @@ export class ExploreCommand {
   private patternLearner = new PatternLearner();
   private idManager: IDManager;
   private pmHooks = new PMHooks();
-  private logger = createCommandLogger('explore');
+  private logger = createCommandLogger('explore', { enableConsole: true });
 
   constructor(idManager?: IDManager) {
     this.idManager = idManager || new IDManager();
@@ -87,14 +87,14 @@ export class ExploreCommand {
     const inputType = this.detectInputType(feature);
 
     if (options.verbose || process.env.DEBUG) {
-      console.log(chalk.gray(`Input detection: "${feature}" → ${inputType}`));
+      this.logger.info(chalk.gray(`Input detection: "${feature}" → ${inputType}`));
       this.logger.debug('Input detection', { feature, inputType });
     }
 
     if (inputType === 'topic') {
       // Handle as topic exploration (future implementation)
-      console.log(chalk.cyan('🔍 Exploring Topic: ' + feature));
-      console.log(
+      this.logger.info(chalk.cyan('🔍 Exploring Topic: ' + feature));
+      this.logger.info(
         chalk.yellow('Topic exploration not yet implemented. Treating as feature for now.\n')
       );
       this.logger.info('Topic exploration requested', { topic: feature });
@@ -113,7 +113,7 @@ export class ExploreCommand {
         // It's a new feature name, create it
         featureID = await this.idManager.createFeature(feature);
         featureName = featureID.localID;
-        console.log(chalk.green(`✓ Created new feature: ${featureID.localID}`));
+        this.logger.info(chalk.green(`✓ Created new feature: ${featureID.localID}`));
         this.logger.info('Created new feature', { featureID: featureID.localID, name: feature });
         // Update PM tracking - mark as exploring at START of phase (fire-and-forget for performance)
         this.pmHooks.onExplore(featureID.localID, feature).catch(() => {
@@ -123,15 +123,16 @@ export class ExploreCommand {
         // It looks like an ID but we couldn't find it
         // Create a new feature and link it if it's an external ID
         if (feature.startsWith('HODGE-')) {
-          this.logger.error('Feature not found', { feature });
-          console.log(chalk.red(`❌ Feature ${feature} not found`));
+          const error = new Error(`Feature not found: ${feature}`);
+          this.logger.error('Feature not found', { error, feature });
+          this.logger.error(chalk.red(`❌ Feature ${feature} not found`));
           return;
         } else {
           // External ID - create new feature and link it
           const newFeature = await this.idManager.createFeature(feature);
           featureID = await this.idManager.linkExternalID(newFeature.localID, feature);
           featureName = featureID.localID;
-          console.log(
+          this.logger.info(
             chalk.green(`✓ Created new feature ${featureID.localID} linked to ${feature}`)
           );
           this.logger.info('Created linked feature', {
@@ -155,25 +156,25 @@ export class ExploreCommand {
             localID: featureID.localID,
             externalID: featureID.externalID,
           });
-          console.log(
+          this.logger.info(
             chalk.blue(`ℹ️  Using existing feature ${featureID.localID} (${featureID.externalID})`)
           );
         } else {
-          console.log(chalk.blue(`ℹ️  Using existing feature ${featureID.localID}`));
+          this.logger.info(chalk.blue(`ℹ️  Using existing feature ${featureID.localID}`));
         }
       }
     }
 
     // Handle from-spec mode (new approach)
     if (options.fromSpec) {
-      console.log(chalk.cyan('🔍 Creating feature from specification'));
+      this.logger.info(chalk.cyan('🔍 Creating feature from specification'));
 
       const specLoader = new FeatureSpecLoader();
       const spec = await specLoader.loadSpec(options.fromSpec);
 
       // Override feature name from spec if provided
       if (spec.feature.name && spec.feature.name !== featureName) {
-        console.log(chalk.yellow(`Note: Using feature name from spec: ${spec.feature.name}`));
+        this.logger.info(chalk.yellow(`Note: Using feature name from spec: ${spec.feature.name}`));
         featureName = spec.feature.name;
       }
 
@@ -187,15 +188,17 @@ export class ExploreCommand {
       await sessionManager.updateContext(featureName, 'explore');
       await sessionManager.suggestNext('Complete exploration and make decisions');
 
-      console.log(chalk.green('\n✓ Feature created from specification'));
-      console.log(chalk.gray(`  Spec file retained: ${options.fromSpec}`));
-      console.log(chalk.gray(`  Review: .hodge/features/${featureName}/explore/exploration.md`));
+      this.logger.info(chalk.green('\n✓ Feature created from specification'));
+      this.logger.info(chalk.gray(`  Spec file retained: ${options.fromSpec}`));
+      this.logger.info(
+        chalk.gray(`  Review: .hodge/features/${featureName}/explore/exploration.md`)
+      );
       return;
     }
 
     // Handle pre-populate mode (legacy approach)
     if (options.prePopulate) {
-      console.log(chalk.cyan('🔍 Pre-populating feature from decisions'));
+      this.logger.info(chalk.cyan('🔍 Pre-populating feature from decisions'));
       const populator = new FeaturePopulator();
       await populator.populateFromDecisions(featureName, options.decisions || []);
 
@@ -203,13 +206,15 @@ export class ExploreCommand {
       await sessionManager.updateContext(featureName, 'explore');
       await sessionManager.suggestNext('Complete exploration and make decisions');
 
-      console.log(chalk.green('\n✓ Feature pre-populated and ready for exploration'));
-      console.log(chalk.gray(`  Review: .hodge/features/${featureName}/explore/exploration.md`));
+      this.logger.info(chalk.green('\n✓ Feature pre-populated and ready for exploration'));
+      this.logger.info(
+        chalk.gray(`  Review: .hodge/features/${featureName}/explore/exploration.md`)
+      );
       return;
     }
 
-    console.log(chalk.cyan('🔍 Entering Explore Mode (Enhanced)'));
-    console.log(chalk.gray(`Feature: ${featureName}\n`));
+    this.logger.info(chalk.cyan('🔍 Entering Explore Mode (Enhanced)'));
+    this.logger.info(chalk.gray(`Feature: ${featureName}\n`));
 
     // Display AI context
     this.displayAIContext(featureName);
@@ -296,9 +301,9 @@ export class ExploreCommand {
     const executionTime = endTime - startTime;
 
     if (process.env.DEBUG || options.verbose) {
-      console.log(chalk.gray(`\n⚡ Execution time: ${executionTime}ms`));
+      this.logger.info(chalk.gray(`\n⚡ Execution time: ${executionTime}ms`));
       const stats = this.cache.getStats();
-      console.log(
+      this.logger.info(
         chalk.gray(
           `📊 Cache: ${stats.hits} hits, ${stats.misses} misses (${(stats.hitRate * 100).toFixed(1)}% hit rate)`
         )
@@ -345,16 +350,16 @@ export class ExploreCommand {
    * Display AI context header
    */
   private displayAIContext(feature: string): void {
-    console.log(chalk.bold('═'.repeat(60)));
-    console.log(chalk.cyan.bold('AI CONTEXT UPDATE:'));
-    console.log(chalk.bold('═'.repeat(60)));
-    console.log(`You are now in ${chalk.cyan.bold('EXPLORATION MODE')} for: ${feature}`);
-    console.log('\nGuidelines for AI assistance:');
-    console.log('• Suggest multiple approaches and alternatives');
-    console.log('• Standards are suggestions only, not requirements');
-    console.log('• Encourage experimentation and learning');
-    console.log('• Focus on discovery over perfection');
-    console.log(chalk.bold('═'.repeat(60)) + '\n');
+    this.logger.info(chalk.bold('═'.repeat(60)));
+    this.logger.info(chalk.cyan.bold('AI CONTEXT UPDATE:'));
+    this.logger.info(chalk.bold('═'.repeat(60)));
+    this.logger.info(`You are now in ${chalk.cyan.bold('EXPLORATION MODE')} for: ${feature}`);
+    this.logger.info('\nGuidelines for AI assistance:');
+    this.logger.info('• Suggest multiple approaches and alternatives');
+    this.logger.info('• Standards are suggestions only, not requirements');
+    this.logger.info('• Encourage experimentation and learning');
+    this.logger.info('• Focus on discovery over perfection');
+    this.logger.info(chalk.bold('═'.repeat(60)) + '\n');
   }
 
   /**
@@ -371,9 +376,11 @@ export class ExploreCommand {
     );
 
     if (exists && !force) {
-      console.log(chalk.yellow('⚠️  Exploration already exists for this feature.'));
-      console.log(chalk.gray(`   Use --force to overwrite or review existing exploration at:`));
-      console.log(chalk.gray(`   ${exploreDir}\n`));
+      this.logger.info(chalk.yellow('⚠️  Exploration already exists for this feature.'));
+      this.logger.info(
+        chalk.gray(`   Use --force to overwrite or review existing exploration at:`)
+      );
+      this.logger.info(chalk.gray(`   ${exploreDir}\n`));
 
       const explorationPath = path.join(exploreDir, 'exploration.md');
       const content = await this.cache.getOrLoad(`file:${explorationPath}`, async () => {
@@ -386,9 +393,9 @@ export class ExploreCommand {
 
       if (content && typeof content === 'string') {
         const lines = content.split('\n').slice(0, 10);
-        console.log(chalk.dim('--- Existing Exploration Preview ---'));
-        console.log(chalk.dim(lines.join('\n')));
-        console.log(chalk.dim('...\n'));
+        this.logger.info(chalk.dim('--- Existing Exploration Preview ---'));
+        this.logger.info(chalk.dim(lines.join('\n')));
+        this.logger.info(chalk.dim('...\n'));
       }
 
       return { exists: true, content: content || undefined };
@@ -527,14 +534,14 @@ export class ExploreCommand {
       return null;
     }
 
-    console.log(chalk.blue(`📋 Checking ${pmTool} for issue ${feature}...`));
+    this.logger.info(chalk.blue(`📋 Checking ${pmTool} for issue ${feature}...`));
 
     // Save issue ID for future reference
     const issueIdFile = path.join('.hodge', 'features', feature, 'issue-id.txt');
     await fs.mkdir(path.dirname(issueIdFile), { recursive: true });
     await fs.writeFile(issueIdFile, feature);
 
-    console.log(chalk.green(`✓ Linked to ${pmTool} issue: ${feature}`));
+    this.logger.info(chalk.green(`✓ Linked to ${pmTool} issue: ${feature}`));
 
     return { id: feature, title: `${pmTool} issue`, url: '#' };
   }
@@ -773,35 +780,37 @@ Add any specific test scenarios or edge cases discovered during exploration:
     similarFeatures: string[],
     _patterns: Array<{ name: string; description: string; confidence: number }>
   ): void {
-    console.log(chalk.green('✓ Enhanced exploration environment created\n'));
+    this.logger.info(chalk.green('✓ Enhanced exploration environment created\n'));
 
-    console.log(chalk.bold('AI Analysis:'));
-    console.log(`  • Feature: ${chalk.cyan(feature)}`);
-    console.log(`  • Template ready for AI to generate approaches`);
+    this.logger.info(chalk.bold('AI Analysis:'));
+    this.logger.info(`  • Feature: ${chalk.cyan(feature)}`);
+    this.logger.info(`  • Template ready for AI to generate approaches`);
 
     if (similarFeatures.length > 0) {
-      console.log(`  • Similar features found: ${chalk.cyan(similarFeatures.length)}`);
-      similarFeatures.forEach((f) => console.log(chalk.gray(`    - ${f}`)));
+      this.logger.info(`  • Similar features found: ${chalk.cyan(similarFeatures.length)}`);
+      similarFeatures.forEach((f) => this.logger.info(chalk.gray(`    - ${f}`)));
     }
 
     if (template.suggestedPatterns.length > 0) {
-      console.log(`  • Suggested patterns: ${chalk.green(template.suggestedPatterns.length)}`);
-      template.suggestedPatterns.slice(0, 3).forEach((p) => console.log(chalk.gray(`    - ${p}`)));
+      this.logger.info(`  • Suggested patterns: ${chalk.green(template.suggestedPatterns.length)}`);
+      template.suggestedPatterns
+        .slice(0, 3)
+        .forEach((p) => this.logger.info(chalk.gray(`    - ${p}`)));
     }
 
-    console.log('\n' + chalk.bold('Exploration Structure Created:'));
-    console.log(chalk.cyan('  Template ready for AI exploration'));
+    this.logger.info('\n' + chalk.bold('Exploration Structure Created:'));
+    this.logger.info(chalk.cyan('  Template ready for AI exploration'));
 
-    console.log('\n' + chalk.bold('Files created:'));
-    console.log(chalk.gray(`  • .hodge/features/${feature}/explore/exploration.md`));
+    this.logger.info('\n' + chalk.bold('Files created:'));
+    this.logger.info(chalk.gray(`  • .hodge/features/${feature}/explore/exploration.md`));
 
-    console.log('\n' + chalk.bold('Next steps:'));
-    console.log(`  1. Review the AI-generated exploration`);
-    console.log('  2. Generate and review implementation approaches');
-    console.log('  3. Use ' + chalk.cyan('`/decide`') + ' to choose an approach');
-    console.log('  4. Then ' + chalk.cyan(`\`/build ${feature}\``) + ' to implement\n');
+    this.logger.info('\n' + chalk.bold('Next steps:'));
+    this.logger.info(`  1. Review the AI-generated exploration`);
+    this.logger.info('  2. Generate and review implementation approaches');
+    this.logger.info('  3. Use ' + chalk.cyan('`/decide`') + ' to choose an approach');
+    this.logger.info('  4. Then ' + chalk.cyan(`\`/build ${feature}\``) + ' to implement\n');
 
-    console.log(chalk.dim(`Exploration saved to: .hodge/features/${feature}/explore`));
+    this.logger.info(chalk.dim(`Exploration saved to: .hodge/features/${feature}/explore`));
   }
 }
 

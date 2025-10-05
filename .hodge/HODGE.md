@@ -3,16 +3,16 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: HODGE-327
-**Mode**: explore
-**PM Issue**: HODGE-327
-**Last Updated**: 2025-10-04T15:16:31.896Z
+**Feature**: HODGE-330
+**Mode**: build
+**PM Issue**: HODGE-330
+**Last Updated**: 2025-10-05T04:32:06.395Z
 ## Current Session
-**Resumed**: 10 hours ago
-**Progress**: Explored HODGE-327 - template ready for AI approach generation
-**Working on**: HODGE-327 (explore mode)
+**Resumed**: 3 hours ago
+**Progress**: Explored HODGE-330 - template ready for AI approach generation
+**Working on**: HODGE-330 (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-327. Explored HODGE-327 - template ready for AI approach generation
+You were helping with HODGE-330. Explored HODGE-330 - template ready for AI approach generation
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
@@ -56,6 +56,32 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - ESLint rules enforced
 - Prettier formatting
 
+### Logging Standards (HODGE-330)
+- Console output provides immediate user feedback
+- Pino logs enable persistent debugging and troubleshooting
+- Works for both user-executed commands (init, logs) and AI-orchestrated commands (explore, build, ship)
+- Library operations are internal implementation details
+- Console output from libraries creates noise without value
+- All logging still captured in pino logs for debugging
+- Test files (`*.test.ts`, `*.spec.ts`) - for test debugging
+- Scripts directory (`scripts/**`) - for tooling output
+- Logger implementation (`src/lib/logger.ts`) - implements the console wrapper
+- `logger.info(message, context?)` - General information
+- `logger.warn(message, context?)` - Warnings
+- `logger.error(message, context?)` - Errors
+- `logger.debug(message, context?)` - Debug info (only shown with DEBUG env var)
+- Consistent with existing command patterns (logs.ts established the pattern)
+- Proper encapsulation and testability
+- Avoids static class proliferation
+- Enables proper logger lifecycle management
+- Preserves full error stack trace in pino JSON logs
+- Enables better debugging and troubleshooting
+- Maintains structured log format for analysis
+- Error details searchable in log files
+- **Warning level** during transition period (non-blocking)
+- Automatically exempts test files, scripts, and logger.ts
+- Will be upgraded to **error level** after migration completes
+
 ### CLI Architecture Standards
 - **AI-Orchestrated** (explore, decide, build, harden, ship, save, load, plan, status, link): Called exclusively by Claude Code slash commands
 - **User-Facing Exceptions** (init, logs): Interactive CLI tools called directly by developers
@@ -68,6 +94,16 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - CLI command classes remain thin orchestration wrappers (presentation layer)
 - Test business outcomes through Service classes, not CLI orchestration
 - User-facing commands (init, logs) may accept lower test coverage due to interactive nature
+- **AI (via slash commands)** writes: exploration.md, decisions.md, lessons learned, review reports
+- **hodge CLI** creates: directory structures, PM integration, status tracking
+- **Never**: Service classes should NOT handle file writing for slash command workflows
+- `/explore` → AI writes `exploration.md` using Write tool
+- `/ship` → AI writes `.hodge/lessons/HODGE-XXX-slug.md` using Write tool
+- `/review` → AI writes `.hodge/reviews/{filename}.md` using Write tool
+- Maintains clean separation: CLI = orchestration, AI = content generation
+- Avoids Service class proliferation for simple file operations
+- Consistent with existing workflow patterns (explore, ship, decide)
+- Write tool automatically handles parent directory creation
 
 ### Testing Requirements
 - Test what users see, not how it works
@@ -131,14 +167,15 @@ Suggested next: Review exploration and decide with 'hodge decide'
 
 ## Working Files
 
-- `.hodge/features/HODGE-327/explore/exploration.md`
-- `.hodge/features/HODGE-327/explore/test-intentions.md`
+- `.hodge/features/HODGE-330/explore/exploration.md`
+- `.hodge/features/HODGE-330/explore/test-intentions.md`
+- `.hodge/features/HODGE-330/build/build-plan.md`
 
 ## Next Steps
 
-1. Review exploration approaches
-2. Make decision with `hodge decide`
-3. Start building with `hodge build HODGE-327`
+1. Complete implementation
+2. Run tests with `npm test`
+3. Harden with `hodge harden HODGE-330`
 
 
 ---

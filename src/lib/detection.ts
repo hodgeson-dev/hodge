@@ -1,3 +1,4 @@
+import { createCommandLogger } from './logger.js';
 /**
  * Project Detection Engine
  * Detects project properties for smart initialization
@@ -86,6 +87,8 @@ export interface DetectedTools {
  * Main project detection class that analyzes a directory to extract project information
  */
 export class ProjectDetector {
+  private logger = createCommandLogger('detection-error', { enableConsole: false });
+
   /**
    * Creates a new ProjectDetector instance
    * @param rootPath - The root path to analyze (defaults to current working directory)
@@ -175,7 +178,7 @@ export class ProjectDetector {
         }
       } catch (error) {
         // Continue to fallback methods but log the error
-        console.warn(
+        this.logger.warn(
           `Warning: Failed to read package.json: ${error instanceof Error ? error.message : 'Unknown error'}`
         );
       }
@@ -404,7 +407,7 @@ export class ProjectDetector {
           }
         }
       } catch (error) {
-        console.warn(
+        this.logger.warn(
           `Warning: Failed to read package.json for test framework detection: ${error instanceof Error ? error.message : 'Unknown error'}`
         );
       }

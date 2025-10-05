@@ -4,6 +4,7 @@ import { LoadOptions } from '../types/save-manifest.js';
 import { ContextManager } from '../lib/context-manager.js';
 import { promises as fs } from 'fs';
 import path from 'path';
+import { createCommandLogger } from '../lib/logger.js';
 
 export interface LoadCommandOptions extends LoadOptions {
   recent?: boolean;
@@ -16,6 +17,7 @@ export interface LoadCommandOptions extends LoadOptions {
  * This command handles the mechanics (what code does best)
  */
 export class LoadCommand {
+  private logger = createCommandLogger('load', { enableConsole: true });
   private _contextManager?: ContextManager;
 
   private get contextManager(): ContextManager {
@@ -41,11 +43,11 @@ export class LoadCommand {
       if (options.recent || !saveName) {
         const mostRecent = await this.findMostRecentSave();
         if (!mostRecent) {
-          console.log(chalk.yellow('No saved sessions found'));
+          this.logger.info(chalk.yellow('No saved sessions found'));
           return;
         }
         saveName = mostRecent;
-        console.log(chalk.blue(`Loading most recent save: ${saveName}`));
+        this.logger.info(chalk.blue(`Loading most recent save: ${saveName}`));
       }
 
       // Load the save using SaveManager
@@ -57,26 +59,28 @@ export class LoadCommand {
         includeGenerated: options.includeGenerated || false,
       };
 
-      console.log(chalk.blue('📂 Loading session...'));
+      this.logger.info(chalk.blue('📂 Loading session...'));
 
       const session = await saveManager.load(saveName, loadOptions);
       const elapsed = Date.now() - startTime;
 
       // Present the loaded session info
       if (session.manifest) {
-        console.log(chalk.green(`✓ Session loaded successfully (${elapsed}ms)`));
-        console.log();
-        console.log(chalk.bold('Session Overview:'));
-        console.log(`  Feature: ${chalk.cyan(session.manifest.session.feature)}`);
-        console.log(`  Phase: ${chalk.cyan(session.manifest.session.phase)}`);
-        console.log(`  Last Action: ${session.manifest.session.lastAction}`);
-        console.log(`  Duration: ${session.manifest.session.elapsedMinutes} minutes`);
-        console.log();
-        console.log(chalk.bold('Current State:'));
-        console.log(`  Test Status: ${this.formatTestStatus(session.manifest.state.testStatus)}`);
-        console.log(`  Completed Tasks: ${session.manifest.state.completedTasks.length}`);
-        console.log(`  Pending Tasks: ${session.manifest.state.pendingTasks.length}`);
-        console.log(`  Modified Files: ${session.manifest.state.modifiedFiles.length}`);
+        this.logger.info(chalk.green(`✓ Session loaded successfully (${elapsed}ms)`));
+        this.logger.info('');
+        this.logger.info(chalk.bold('Session Overview:'));
+        this.logger.info(`  Feature: ${chalk.cyan(session.manifest.session.feature)}`);
+        this.logger.info(`  Phase: ${chalk.cyan(session.manifest.session.phase)}`);
+        this.logger.info(`  Last Action: ${session.manifest.session.lastAction}`);
+        this.logger.info(`  Duration: ${session.manifest.session.elapsedMinutes} minutes`);
+        this.logger.info('');
+        this.logger.info(chalk.bold('Current State:'));
+        this.logger.info(
+          `  Test Status: ${this.formatTestStatus(session.manifest.state.testStatus)}`
+        );
+        this.logger.info(`  Completed Tasks: ${session.manifest.state.completedTasks.length}`);
+        this.logger.info(`  Pending Tasks: ${session.manifest.state.pendingTasks.length}`);
+        this.logger.info(`  Modified Files: ${session.manifest.state.modifiedFiles.length}`);
 
         // Update context with loaded session
         await this.contextManager.save({
@@ -87,19 +91,19 @@ export class LoadCommand {
         });
 
         // Show quick actions based on phase
-        console.log();
-        console.log(chalk.bold('Quick Actions:'));
+        this.logger.info('');
+        this.logger.info(chalk.bold('Quick Actions:'));
         this.showQuickActions(session.manifest.session.phase, session.manifest.session.feature);
       } else {
-        console.log(chalk.green(`✓ Session loaded (${elapsed}ms)`));
-        console.log(chalk.gray('Note: This save uses legacy format'));
+        this.logger.info(chalk.green(`✓ Session loaded (${elapsed}ms)`));
+        this.logger.info(chalk.gray('Note: This save uses legacy format'));
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      console.error(chalk.red(`❌ Load failed: ${errorMessage}`));
+      this.logger.error(chalk.red(`❌ Load failed: ${errorMessage}`));
 
       if (error instanceof Error && error.stack) {
-        console.error(chalk.gray(error.stack));
+        this.logger.error(chalk.gray(error.stack));
       }
 
       throw error;
@@ -114,12 +118,12 @@ export class LoadCommand {
       const saves = await fs.readdir(this.savesDir);
 
       if (saves.length === 0) {
-        console.log(chalk.yellow('No saved sessions found'));
+        this.logger.info(chalk.yellow('No saved sessions found'));
         return;
       }
 
-      console.log(chalk.bold(`Found ${saves.length} saved sessions:`));
-      console.log();
+      this.logger.info(chalk.bold(`Found ${saves.length} saved sessions:`));
+      this.logger.info('');
 
       // Get details for each save
       const saveDetails = await Promise.all(
@@ -160,16 +164,16 @@ export class LoadCommand {
       // Display saves
       for (const save of saveDetails) {
         const age = this.formatAge(save.timestamp);
-        console.log(`  ${chalk.cyan(save.name)}`);
-        console.log(`    Feature: ${save.feature}, Phase: ${save.phase}`);
-        console.log(`    Type: ${save.type}, Age: ${age}`);
-        console.log();
+        this.logger.info(`  ${chalk.cyan(save.name)}`);
+        this.logger.info(`    Feature: ${save.feature}, Phase: ${save.phase}`);
+        this.logger.info(`    Type: ${save.type}, Age: ${age}`);
+        this.logger.info('');
       }
 
-      console.log(chalk.gray(`To load a specific save: hodge load <name>`));
-      console.log(chalk.gray(`To load most recent: hodge load --recent`));
+      this.logger.info(chalk.gray(`To load a specific save: hodge load <name>`));
+      this.logger.info(chalk.gray(`To load most recent: hodge load --recent`));
     } catch (error) {
-      console.error(chalk.red('Failed to list saves:', error));
+      this.logger.error(chalk.red('Failed to list saves:', error));
     }
   }
 
@@ -219,20 +223,20 @@ export class LoadCommand {
   private showQuickActions(phase: string, feature: string): void {
     switch (phase) {
       case 'explore':
-        console.log(`  • Continue exploring: ${chalk.cyan(`/explore ${feature}`)}`);
-        console.log(`  • Make decision: ${chalk.cyan('/decide')}`);
+        this.logger.info(`  • Continue exploring: ${chalk.cyan(`/explore ${feature}`)}`);
+        this.logger.info(`  • Make decision: ${chalk.cyan('/decide')}`);
         break;
       case 'build':
-        console.log(`  • Continue building: ${chalk.cyan(`/build ${feature}`)}`);
-        console.log(`  • Run tests: ${chalk.cyan('npm test')}`);
+        this.logger.info(`  • Continue building: ${chalk.cyan(`/build ${feature}`)}`);
+        this.logger.info(`  • Run tests: ${chalk.cyan('npm test')}`);
         break;
       case 'harden':
-        console.log(`  • Continue hardening: ${chalk.cyan(`/harden ${feature}`)}`);
-        console.log(`  • Run integration tests: ${chalk.cyan('npm run test:integration')}`);
+        this.logger.info(`  • Continue hardening: ${chalk.cyan(`/harden ${feature}`)}`);
+        this.logger.info(`  • Run integration tests: ${chalk.cyan('npm run test:integration')}`);
         break;
       case 'ship':
-        console.log(`  • Continue shipping: ${chalk.cyan(`/ship ${feature}`)}`);
-        console.log(`  • Check quality: ${chalk.cyan('npm run quality')}`);
+        this.logger.info(`  • Continue shipping: ${chalk.cyan(`/ship ${feature}`)}`);
+        this.logger.info(`  • Check quality: ${chalk.cyan('npm run quality')}`);
         break;
     }
   }

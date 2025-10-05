@@ -5,6 +5,7 @@ import { CacheManager } from '../lib/cache-manager.js';
 import { autoSave } from '../lib/auto-save.js';
 import { contextManager } from '../lib/context-manager.js';
 import { PMHooks } from '../lib/pm/pm-hooks.js';
+import { createCommandLogger } from '../lib/logger.js';
 
 export interface BuildOptions {
   skipChecks?: boolean;
@@ -21,6 +22,7 @@ export interface BuildOptions {
 export class BuildCommand {
   private cache = CacheManager.getInstance();
   private pmHooks = new PMHooks();
+  private logger = createCommandLogger('build', { enableConsole: true });
 
   /**
    * Execute the build command for a feature
@@ -57,8 +59,8 @@ export class BuildCommand {
       }
 
       // Display immediate feedback
-      console.log(chalk.blue('🔨 Entering Build Mode'));
-      console.log(chalk.gray(`Feature: ${feature}\n`));
+      this.logger.info(chalk.blue('🔨 Entering Build Mode'));
+      this.logger.info(chalk.gray(`Feature: ${feature}\n`));
 
       // Display AI context immediately (no I/O)
       this.displayAIContext(feature);
@@ -100,17 +102,17 @@ export class BuildCommand {
       // Early return if checks fail
       if (!options.skipChecks) {
         if (!hasExploration) {
-          console.log(chalk.yellow('⚠️  No exploration found for this feature.'));
-          console.log(chalk.gray('   Consider exploring first with:'));
-          console.log(chalk.cyan(`   hodge explore ${feature}\n`));
-          console.log(chalk.gray('   Or use --skip-checks to proceed anyway.\n'));
+          this.logger.info(chalk.yellow('⚠️  No exploration found for this feature.'));
+          this.logger.info(chalk.gray('   Consider exploring first with:'));
+          this.logger.info(chalk.cyan(`   hodge explore ${feature}\n`));
+          this.logger.info(chalk.gray('   Or use --skip-checks to proceed anyway.\n'));
           return;
         }
 
         if (!hasDecision) {
-          console.log(chalk.yellow('⚠️  No decision recorded for this feature.'));
-          console.log(chalk.gray('   Review exploration and make a decision first.'));
-          console.log(chalk.gray('   Or use --skip-checks to proceed anyway.\n'));
+          this.logger.info(chalk.yellow('⚠️  No decision recorded for this feature.'));
+          this.logger.info(chalk.gray('   Review exploration and make a decision first.'));
+          this.logger.info(chalk.gray('   Or use --skip-checks to proceed anyway.\n'));
         }
       }
 
@@ -127,7 +129,7 @@ export class BuildCommand {
           async () => {
             if (hasStandards) {
               const content = await fs.readFile(standardsFile, 'utf-8');
-              console.log(chalk.green('✓ Loaded project standards'));
+              this.logger.info(chalk.green('✓ Loaded project standards'));
               return content;
             }
             return null;
@@ -162,7 +164,7 @@ export class BuildCommand {
       // Display PM integration if available
       const pmTool = process.env.HODGE_PM_TOOL;
       if (pmTool && issueId) {
-        console.log(chalk.blue(`📋 Linked to ${pmTool} issue: ${issueId}`));
+        this.logger.info(chalk.blue(`📋 Linked to ${pmTool} issue: ${issueId}`));
       }
 
       // Phase 3: Parallel directory creation and file writes
@@ -178,45 +180,45 @@ export class BuildCommand {
       );
 
       // Display results
-      console.log(chalk.green('✓ Build environment prepared\n'));
+      this.logger.info(chalk.green('✓ Build environment prepared\n'));
 
-      console.log(chalk.bold('In Build Mode:'));
-      console.log('  • Standards are ' + chalk.blue('recommended'));
-      console.log('  • Patterns should be ' + chalk.blue('reused'));
-      console.log('  • Focus on ' + chalk.blue('structured implementation'));
-      console.log('  • Balance ' + chalk.blue('quality and speed') + '\n');
+      this.logger.info(chalk.bold('In Build Mode:'));
+      this.logger.info('  • Standards are ' + chalk.blue('recommended'));
+      this.logger.info('  • Patterns should be ' + chalk.blue('reused'));
+      this.logger.info('  • Focus on ' + chalk.blue('structured implementation'));
+      this.logger.info('  • Balance ' + chalk.blue('quality and speed') + '\n');
 
       if (patterns && patterns.length > 0) {
-        console.log(chalk.bold('Available patterns:'));
+        this.logger.info(chalk.bold('Available patterns:'));
         patterns.forEach((p: string) => {
-          console.log(chalk.gray(`  • ${p.replace('.md', '')}`));
+          this.logger.info(chalk.gray(`  • ${p.replace('.md', '')}`));
         });
-        console.log();
+        this.logger.info('');
       }
 
-      console.log(chalk.bold('Files created:'));
-      console.log(chalk.gray(`  • ${path.join(buildDir, 'build-plan.md')}`));
+      this.logger.info(chalk.bold('Files created:'));
+      this.logger.info(chalk.gray(`  • ${path.join(buildDir, 'build-plan.md')}`));
 
-      console.log('\n' + chalk.bold('Build guidelines:'));
-      console.log('  ✓ ' + chalk.green('SHOULD') + ' follow coding standards');
-      console.log('  ✓ ' + chalk.green('SHOULD') + ' use established patterns');
-      console.log('  ✓ ' + chalk.green('SHOULD') + ' include error handling');
-      console.log('  ✓ ' + chalk.yellow('CONSIDER') + ' adding tests\n');
+      this.logger.info('\n' + chalk.bold('Build guidelines:'));
+      this.logger.info('  ✓ ' + chalk.green('SHOULD') + ' follow coding standards');
+      this.logger.info('  ✓ ' + chalk.green('SHOULD') + ' use established patterns');
+      this.logger.info('  ✓ ' + chalk.green('SHOULD') + ' include error handling');
+      this.logger.info('  ✓ ' + chalk.yellow('CONSIDER') + ' adding tests\n');
 
-      console.log(chalk.bold('Next steps:'));
-      console.log('  1. Implement the feature');
-      console.log('  2. Update ' + chalk.yellow(`${path.join(buildDir, 'build-plan.md')}`));
-      console.log('  3. Run ' + chalk.cyan('`npm test`') + ' to verify');
-      console.log(
+      this.logger.info(chalk.bold('Next steps:'));
+      this.logger.info('  1. Implement the feature');
+      this.logger.info('  2. Update ' + chalk.yellow(`${path.join(buildDir, 'build-plan.md')}`));
+      this.logger.info('  3. Run ' + chalk.cyan('`npm test`') + ' to verify');
+      this.logger.info(
         '  4. Use ' + chalk.cyan(`\`/harden ${feature}\``) + ' for production readiness\n'
       );
 
-      console.log(chalk.dim('Build context saved to: ' + buildDir));
+      this.logger.info(chalk.dim('Build context saved to: ' + buildDir));
 
       // Performance metrics (only in development)
       if (process.env.NODE_ENV === 'development' || process.env.HODGE_DEBUG) {
         const elapsed = Date.now() - startTime;
-        console.log(
+        this.logger.info(
           chalk.dim(
             `\nPerformance: ${elapsed}ms (cache hit rate: ${this.cache.getStats().hitRate.toFixed(1)}%)`
           )
@@ -225,11 +227,13 @@ export class BuildCommand {
     } catch (error) {
       // Comprehensive error handling
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      console.error(chalk.red(`\n❌ Build command failed: ${errorMessage}`));
+      this.logger.error(chalk.red(`\n❌ Build command failed: ${errorMessage}`), {
+        error: error as Error,
+      });
 
       if (process.env.HODGE_DEBUG) {
-        console.error(chalk.dim('Stack trace:'));
-        console.error(error);
+        this.logger.error(chalk.dim('Stack trace:'));
+        this.logger.error(error as Error);
       }
 
       throw error; // Re-throw for caller to handle
@@ -242,17 +246,17 @@ export class BuildCommand {
    * @private
    */
   private displayAIContext(feature: string): void {
-    console.log(chalk.bold('═'.repeat(60)));
-    console.log(chalk.blue.bold('AI CONTEXT UPDATE:'));
-    console.log(chalk.bold('═'.repeat(60)));
-    console.log(`You are now in ${chalk.blue.bold('BUILD MODE')} for: ${feature}`);
-    console.log('\nRequirements for AI assistance:');
-    console.log('• Standards SHOULD be followed (recommended)');
-    console.log('• Use established patterns where applicable');
-    console.log('• Include basic error handling');
-    console.log('• Balance quality with development speed');
-    console.log('• Add helpful comments for complex logic');
-    console.log(chalk.bold('═'.repeat(60)) + '\n');
+    this.logger.info(chalk.bold('═'.repeat(60)));
+    this.logger.info(chalk.blue.bold('AI CONTEXT UPDATE:'));
+    this.logger.info(chalk.bold('═'.repeat(60)));
+    this.logger.info(`You are now in ${chalk.blue.bold('BUILD MODE')} for: ${feature}`);
+    this.logger.info('\nRequirements for AI assistance:');
+    this.logger.info('• Standards SHOULD be followed (recommended)');
+    this.logger.info('• Use established patterns where applicable');
+    this.logger.info('• Include basic error handling');
+    this.logger.info('• Balance quality with development speed');
+    this.logger.info('• Add helpful comments for complex logic');
+    this.logger.info(chalk.bold('═'.repeat(60)) + '\n');
   }
 
   /**

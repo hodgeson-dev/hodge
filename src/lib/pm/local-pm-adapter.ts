@@ -3,7 +3,7 @@ import * as path from 'path';
 import chalk from 'chalk';
 import { BasePMAdapter } from './base-adapter.js';
 import { PMIssue, PMState, StateType } from './types.js';
-
+import { createCommandLogger } from '../logger.js';
 // Reserved for future use when we implement full project plan parsing
 // interface ProjectPlan {
 //   phases: Phase[];
@@ -32,6 +32,7 @@ import { PMIssue, PMState, StateType } from './types.js';
  * special always-on behavior and local file management.
  */
 export class LocalPMAdapter extends BasePMAdapter {
+  private logger = createCommandLogger('local-p-m-adapter', { enableConsole: false });
   private pmPath: string;
   private operationQueue: Promise<void> = Promise.resolve();
   private basePath: string;
@@ -85,7 +86,7 @@ export class LocalPMAdapter extends BasePMAdapter {
       const template = this.getTemplate();
       await fs.mkdir(path.dirname(this.pmPath), { recursive: true });
       await fs.writeFile(this.pmPath, template, 'utf-8');
-      console.log(chalk.blue('ℹ️  Created project_management.md with project plan'));
+      this.logger.info(chalk.blue('ℹ️  Created project_management.md with project plan'));
     }
   }
 
@@ -137,7 +138,7 @@ export class LocalPMAdapter extends BasePMAdapter {
       }
 
       await fs.writeFile(this.pmPath, updated, 'utf-8');
-      console.log(chalk.green(`✓ Updated ${feature} status to: ${status}`));
+      this.logger.info(chalk.green(`✓ Updated ${feature} status to: ${status}`));
     });
   }
 
@@ -154,7 +155,7 @@ export class LocalPMAdapter extends BasePMAdapter {
 
       // Check if already exists
       if (content.includes(`### ${feature}`)) {
-        console.log(chalk.yellow(`⚠️  Feature ${feature} already exists`));
+        this.logger.warn(chalk.yellow(`⚠️  Feature ${feature} already exists`));
         return;
       }
 
@@ -194,7 +195,7 @@ export class LocalPMAdapter extends BasePMAdapter {
         content.substring(0, nextSectionIndex) + entry + '\n' + content.substring(nextSectionIndex);
 
       await fs.writeFile(this.pmPath, updated, 'utf-8');
-      console.log(chalk.green(`✓ Added ${feature} to project management tracking`));
+      this.logger.info(chalk.green(`✓ Added ${feature} to project management tracking`));
     });
   }
 
@@ -286,7 +287,7 @@ export class LocalPMAdapter extends BasePMAdapter {
 
     if (content !== updated) {
       await fs.writeFile(this.pmPath, updated, 'utf-8');
-      console.log(chalk.green('✓ Updated project plan phase progress'));
+      this.logger.info(chalk.green('✓ Updated project plan phase progress'));
     }
   }
 

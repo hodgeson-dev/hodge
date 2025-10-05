@@ -1,3 +1,4 @@
+import { createCommandLogger } from './logger.js';
 /**
  * Context Aggregator
  *
@@ -10,6 +11,8 @@ import { join } from 'path';
 import type { ProjectContext } from '../types/review-profile.js';
 
 export class ContextAggregator {
+  private logger = createCommandLogger('context-aggregator', { enableConsole: false });
+
   private basePath: string;
 
   constructor(basePath: string = process.cwd()) {
@@ -36,7 +39,7 @@ export class ContextAggregator {
   private loadStandards(): string {
     const standardsPath = join(this.basePath, '.hodge', 'standards.md');
     if (!existsSync(standardsPath)) {
-      console.warn('⚠️  Warning: .hodge/standards.md not found');
+      this.logger.warn('⚠️  Warning: .hodge/standards.md not found');
       return '';
     }
     return readFileSync(standardsPath, 'utf-8');
@@ -49,7 +52,7 @@ export class ContextAggregator {
   private loadPrinciples(): string {
     const principlesPath = join(this.basePath, '.hodge', 'principles.md');
     if (!existsSync(principlesPath)) {
-      console.warn('⚠️  Warning: .hodge/principles.md not found');
+      this.logger.warn('⚠️  Warning: .hodge/principles.md not found');
       return '';
     }
     return readFileSync(principlesPath, 'utf-8');
@@ -62,7 +65,7 @@ export class ContextAggregator {
   private loadPatterns(): string[] {
     const patternsDir = join(this.basePath, '.hodge', 'patterns');
     if (!existsSync(patternsDir)) {
-      console.warn('⚠️  Warning: .hodge/patterns/ directory not found');
+      this.logger.warn('⚠️  Warning: .hodge/patterns/ directory not found');
       return [];
     }
 
@@ -79,7 +82,7 @@ export class ContextAggregator {
           }
         });
     } catch (error) {
-      console.warn(
+      this.logger.warn(
         `⚠️  Warning: Could not read .hodge/patterns/ directory: ${error instanceof Error ? error.message : String(error)}`
       );
       return [];
@@ -93,7 +96,7 @@ export class ContextAggregator {
   private loadLessons(): string[] {
     const lessonsDir = join(this.basePath, '.hodge', 'lessons');
     if (!existsSync(lessonsDir)) {
-      console.warn('⚠️  Warning: .hodge/lessons/ directory not found');
+      this.logger.warn('⚠️  Warning: .hodge/lessons/ directory not found');
       return [];
     }
 
@@ -110,7 +113,7 @@ export class ContextAggregator {
           }
         });
     } catch (error) {
-      console.warn(
+      this.logger.warn(
         `⚠️  Warning: Could not read .hodge/lessons/ directory: ${error instanceof Error ? error.message : String(error)}`
       );
       return [];

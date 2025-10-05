@@ -3,6 +3,7 @@ import * as path from 'path';
 import chalk from 'chalk';
 import { LocalPMAdapter } from './pm/local-pm-adapter.js';
 
+import { createCommandLogger } from './logger.js';
 interface FeatureConfig {
   status: string;
   description: string;
@@ -16,6 +17,8 @@ interface FeatureConfig {
  * Handles both local project_management.md and external PM tool integration
  */
 export class PMManager {
+  private logger = createCommandLogger('p-m-manager', { enableConsole: false });
+
   private pmPath = path.join('.hodge', 'project_management.md');
   private localAdapter: LocalPMAdapter;
 
@@ -43,7 +46,7 @@ export class PMManager {
 
       // Check if feature already exists
       if (content.includes(`### ${feature}`)) {
-        console.log(chalk.yellow(`⚠️  Feature ${feature} already exists in PM tracking`));
+        this.logger.warn(chalk.yellow(`⚠️  Feature ${feature} already exists in PM tracking`));
         return;
       }
 
@@ -56,13 +59,13 @@ export class PMManager {
       // Write updated content
       await fs.writeFile(this.pmPath, updated, 'utf-8');
 
-      console.log(chalk.green(`✓ Added ${feature} to project management tracking`));
+      this.logger.info(chalk.green(`✓ Added ${feature} to project management tracking`));
 
       // TODO: Add external PM integration here when configured
       await this.syncExternalPM(feature, config);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      console.error(chalk.red(`Failed to update PM tracking: ${errorMessage}`));
+      this.logger.error(chalk.red(`Failed to update PM tracking: ${errorMessage}`));
       // Non-fatal error - don't block feature creation
     }
   }
@@ -78,17 +81,17 @@ export class PMManager {
       const featureRegex = new RegExp(`(### ${feature}.*?\\n- \\*\\*Status\\*\\*:) [^\\n]+`, 's');
 
       if (!featureRegex.test(content)) {
-        console.log(chalk.yellow(`⚠️  Feature ${feature} not found in PM tracking`));
+        this.logger.warn(chalk.yellow(`⚠️  Feature ${feature} not found in PM tracking`));
         return;
       }
 
       const updated = content.replace(featureRegex, `$1 ${newStatus}`);
       await fs.writeFile(this.pmPath, updated, 'utf-8');
 
-      console.log(chalk.green(`✓ Updated ${feature} status to: ${newStatus}`));
+      this.logger.info(chalk.green(`✓ Updated ${feature} status to: ${newStatus}`));
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      console.error(chalk.red(`Failed to update feature status: ${errorMessage}`));
+      this.logger.error(chalk.red(`Failed to update feature status: ${errorMessage}`));
     }
   }
 
@@ -178,7 +181,7 @@ This file tracks all Hodge features and their implementation status.
 `;
       await fs.mkdir(path.dirname(this.pmPath), { recursive: true });
       await fs.writeFile(this.pmPath, template, 'utf-8');
-      console.log(chalk.blue('ℹ️  Created project_management.md'));
+      this.logger.info(chalk.blue('ℹ️  Created project_management.md'));
     }
   }
 
@@ -196,7 +199,7 @@ This file tracks all Hodge features and their implementation status.
       if (hodgeConfig.pmTool) {
         // TODO: Implement actual PM tool integration
         // For now, just log that we would sync
-        console.log(chalk.gray(`  Would sync ${feature} to ${hodgeConfig.pmTool}`));
+        this.logger.info(chalk.gray(`  Would sync ${feature} to ${hodgeConfig.pmTool}`));
 
         // Example for Linear integration:
         // if (hodgeConfig.pmTool === 'linear' && hodgeConfig.linearApiKey) {

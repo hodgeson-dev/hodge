@@ -12,6 +12,7 @@ import { ProjectDetector, ProjectInfo, DetectionError, ValidationError } from '.
 import { StructureGenerator, StructureGenerationError } from '../lib/structure-generator.js';
 import { PMTool } from '../lib/pm/types.js';
 import { installClaudeSlashCommands } from './init-claude-commands.js';
+import { createCommandLogger } from '../lib/logger.js';
 
 /**
  * Valid PM tool values that can be selected by users
@@ -36,58 +37,6 @@ interface ExtendedProjectInfo extends ProjectInfo {
 /**
  * Logger for init command operations
  */
-class InitLogger {
-  /**
-   * Logs debug information (only in development/verbose mode)
-   * @param message - The debug message
-   * @param context - Optional context object
-   */
-  static debug(message: string, context?: Record<string, unknown>): void {
-    if (process.env.NODE_ENV === 'development' || process.env.HODGE_DEBUG) {
-      console.log(chalk.gray(`[DEBUG] ${message}`));
-      if (context) {
-        console.log(chalk.gray('Context:'), context);
-      }
-    }
-  }
-
-  /**
-   * Logs informational messages
-   * @param message - The info message
-   */
-  static info(message: string): void {
-    console.log(chalk.blue(`ℹ️  ${message}`));
-  }
-
-  /**
-   * Logs warning messages
-   * @param message - The warning message
-   */
-  static warn(message: string): void {
-    console.log(chalk.yellow(`⚠️  ${message}`));
-  }
-
-  /**
-   * Logs error messages
-   * @param message - The error message
-   * @param error - Optional error object
-   */
-  static error(message: string, error?: Error): void {
-    console.error(chalk.red(`❌ ${message}`));
-    if (error && (process.env.NODE_ENV === 'development' || process.env.HODGE_DEBUG)) {
-      console.error(chalk.gray('Stack trace:'), error.stack);
-    }
-  }
-
-  /**
-   * Logs success messages
-   * @param message - The success message
-   */
-  static success(message: string): void {
-    console.log(chalk.green(`✅ ${message}`));
-  }
-}
-
 /**
  * Options for the init command
  */
@@ -106,6 +55,7 @@ export interface InitOptions {
 export class InitCommand {
   private detector: ProjectDetector;
   private generator: StructureGenerator;
+  private logger = createCommandLogger('init', { enableConsole: true });
 
   /**
    * Creates a new InitCommand instance
@@ -137,17 +87,17 @@ export class InitCommand {
     let spinner: ReturnType<typeof ora> | null = null;
 
     try {
-      InitLogger.debug('Starting init command execution', { options, rootPath: this.rootPath });
+      this.logger.debug('Starting init command execution', { options, rootPath: this.rootPath });
 
       // Validate options
       this.validateOptions(options);
-      InitLogger.debug('Options validated successfully');
+      this.logger.debug('Options validated successfully');
 
       // Start with a spinner for detection
       spinner = ora('Detecting project configuration...').start();
 
       const projectInfo = await this.detector.detectProject();
-      InitLogger.debug('Project detection completed', { projectInfo });
+      this.logger.debug('Project detection completed', { projectInfo });
 
       spinner.succeed('Project detection complete');
       spinner = null;
@@ -157,20 +107,20 @@ export class InitCommand {
 
       // Smart question flow based on context
       const shouldProceed = await this.smartQuestionFlow(projectInfo, options);
-      InitLogger.debug('Question flow completed', { shouldProceed });
+      this.logger.debug('Question flow completed', { shouldProceed });
 
       if (!shouldProceed) {
-        InitLogger.info('Initialization cancelled by user');
-        console.log(chalk.yellow('Initialization cancelled.'));
+        this.logger.info('Initialization cancelled by user');
+        this.logger.info(chalk.yellow('Initialization cancelled.'));
         return;
       }
 
       // Generate the Hodge structure
-      InitLogger.debug('Starting structure generation');
+      this.logger.debug('Starting structure generation');
       spinner = ora('Creating Hodge structure...').start();
 
       await this.generator.generateStructure(projectInfo, options.force);
-      InitLogger.debug('Structure generation completed');
+      this.logger.debug('Structure generation completed');
 
       spinner.succeed('Hodge structure created successfully');
       spinner = null;
@@ -187,7 +137,7 @@ export class InitCommand {
       );
 
       // Show completion message
-      InitLogger.success('Hodge initialization completed successfully');
+      this.logger.info('Hodge initialization completed successfully');
       this.displayCompletionMessage(projectInfo as ExtendedProjectInfo);
     } catch (error) {
       // Stop spinner if it's still running
@@ -197,27 +147,29 @@ export class InitCommand {
 
       // Handle different error types appropriately
       if (error instanceof ValidationError) {
-        InitLogger.error('Validation failed', error);
-        console.error(chalk.red(`Validation Error: ${error.message}`));
+        this.logger.error(chalk.red('Validation failed'), { error });
+        this.logger.error(chalk.red(`Validation Error: ${error.message}`));
         if (error.field) {
-          console.error(chalk.gray(`Field: ${error.field}`));
+          this.logger.error(chalk.gray(`Field: ${error.field}`));
         }
       } else if (error instanceof DetectionError) {
-        InitLogger.error('Project detection failed', error);
-        console.error(chalk.red(`Detection Error: ${error.message}`));
+        this.logger.error(chalk.red('Project detection failed'), { error });
+        this.logger.error(chalk.red(`Detection Error: ${error.message}`));
         if (error.cause) {
-          console.error(chalk.gray(`Cause: ${error.cause.message}`));
+          this.logger.error(chalk.gray(`Cause: ${error.cause.message}`));
         }
       } else if (error instanceof StructureGenerationError) {
-        InitLogger.error('Structure generation failed', error);
-        console.error(chalk.red(`Generation Error: ${error.message}`));
+        this.logger.error(chalk.red('Structure generation failed'), { error });
+        this.logger.error(chalk.red(`Generation Error: ${error.message}`));
         if (error.cause) {
-          console.error(chalk.gray(`Cause: ${error.cause.message}`));
+          this.logger.error(chalk.gray(`Cause: ${error.cause.message}`));
         }
       } else {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-        InitLogger.error(`Initialization failed: ${errorMessage}`, error as Error);
-        console.error(chalk.red(`Error during initialization: ${errorMessage}`));
+        this.logger.error(chalk.red(`Initialization failed: ${errorMessage}`), {
+          error: error as Error,
+        });
+        this.logger.error(chalk.red(`Error during initialization: ${errorMessage}`));
       }
 
       process.exit(1);
@@ -396,7 +348,7 @@ export class InitCommand {
     const spinner = ora('Analyzing codebase for patterns...').start();
 
     try {
-      InitLogger.debug('Starting pattern learning analysis');
+      this.logger.debug('Starting pattern learning analysis');
 
       // TODO: Implement actual pattern learning to analyze the codebase
       // TODO: Implement actual pattern analysis logic
@@ -461,14 +413,16 @@ ${
       await fs.writeFile(patternsPath, patternsContent, 'utf8');
 
       spinner.succeed('Pattern analysis complete');
-      console.log(chalk.green('✓ Learned patterns saved to .hodge/patterns/learned-patterns.md'));
+      this.logger.info(
+        chalk.green('✓ Learned patterns saved to .hodge/patterns/learned-patterns.md')
+      );
 
-      InitLogger.debug('Pattern learning completed successfully');
+      this.logger.debug('Pattern learning completed successfully');
     } catch (error) {
       spinner.fail('Pattern learning failed');
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      InitLogger.error(`Pattern learning failed: ${errorMessage}`, error as Error);
-      console.log(
+      this.logger.error(`Pattern learning failed: ${errorMessage}`, { error: error as Error });
+      this.logger.info(
         chalk.yellow('  Pattern learning encountered an error but initialization will continue')
       );
     }
@@ -479,35 +433,35 @@ ${
    * @param projectInfo - The detected project information
    */
   private displayDetectedConfig(projectInfo: ProjectInfo): void {
-    console.log(chalk.blue('\\n📋 Detected Configuration:'));
-    console.log(`   Name: ${chalk.white(projectInfo.name)}`);
-    console.log(`   Type: ${chalk.white(projectInfo.type)}`);
-    console.log(`   PM Tool: ${chalk.white(projectInfo.pmTool || 'None detected')}`);
+    this.logger.info(chalk.blue('\\n📋 Detected Configuration:'));
+    this.logger.info(`   Name: ${chalk.white(projectInfo.name)}`);
+    this.logger.info(`   Type: ${chalk.white(projectInfo.type)}`);
+    this.logger.info(`   PM Tool: ${chalk.white(projectInfo.pmTool || 'None detected')}`);
 
     const tools = projectInfo.detectedTools;
     if (tools.packageManager) {
-      console.log(`   Package Manager: ${chalk.white(tools.packageManager)}`);
+      this.logger.info(`   Package Manager: ${chalk.white(tools.packageManager)}`);
     }
 
     if (tools.testFramework.length > 0) {
-      console.log(`   Test Frameworks: ${chalk.white(tools.testFramework.join(', '))}`);
+      this.logger.info(`   Test Frameworks: ${chalk.white(tools.testFramework.join(', '))}`);
     }
 
     if (tools.linting.length > 0) {
-      console.log(`   Linting: ${chalk.white(tools.linting.join(', '))}`);
+      this.logger.info(`   Linting: ${chalk.white(tools.linting.join(', '))}`);
     }
 
     if (tools.buildTools.length > 0) {
-      console.log(`   Build Tools: ${chalk.white(tools.buildTools.join(', '))}`);
+      this.logger.info(`   Build Tools: ${chalk.white(tools.buildTools.join(', '))}`);
     }
 
     if (tools.hasGit) {
-      console.log(
+      this.logger.info(
         `   Git: ${chalk.white('Yes')}${tools.gitRemote ? ` (${this.formatGitRemote(tools.gitRemote)})` : ''}`
       );
     }
 
-    console.log(); // Empty line for spacing
+    this.logger.info(''); // Empty line for spacing
   }
 
   /**
@@ -526,7 +480,7 @@ ${
       // If force mode, skip questions
       if (options.force) {
         if (projectInfo.hasExistingConfig) {
-          console.log(chalk.yellow('⚠️  Overwriting existing Hodge configuration (--force)'));
+          this.logger.info(chalk.yellow('⚠️  Overwriting existing Hodge configuration (--force)'));
         }
         return true;
       }
@@ -537,18 +491,18 @@ ${
       // If --yes flag is used, accept all defaults without prompts
       if (options.yes) {
         if (projectInfo.hasExistingConfig) {
-          console.log(
+          this.logger.info(
             chalk.yellow('⚠️  Existing Hodge configuration detected. Use --force to overwrite.')
           );
           return false; // Don't overwrite without explicit force
         }
-        console.log(chalk.gray('Using all defaults (--yes flag)'));
+        this.logger.info(chalk.gray('Using all defaults (--yes flag)'));
         return true;
       }
 
       // Interactive mode - comprehensive prompts with PM tool selection
       if (isInteractiveMode) {
-        console.log(
+        this.logger.info(
           chalk.cyan('Interactive mode: Full setup with PM tool selection and pattern learning')
         );
         (projectInfo as ExtendedProjectInfo).interactive = true;
@@ -556,7 +510,7 @@ ${
       } else {
         // Default quick mode - minimal prompts
         if (projectInfo.hasExistingConfig) {
-          console.log(
+          this.logger.info(
             chalk.yellow('⚠️  Existing Hodge configuration detected. Use --force to overwrite.')
           );
           return false; // Don't overwrite without explicit force
@@ -593,7 +547,7 @@ ${
           (projectInfo as ExtendedProjectInfo).shouldLearnPatterns = shouldLearn;
         }
 
-        console.log(chalk.gray('Initialization with selected configuration'));
+        this.logger.info(chalk.gray('Initialization with selected configuration'));
         return true;
       }
 
@@ -634,13 +588,13 @@ ${
 
       // PM tool selection if not detected
       if (!projectInfo.pmTool) {
-        InitLogger.debug('PM tool not detected, prompting user');
+        this.logger.debug('PM tool not detected, prompting user');
         await this.promptForPMTool(projectInfo);
       }
 
       // Pattern learning prompt for existing codebases
       if (!isEmpty && (projectInfo.type !== 'unknown' || projectInfo.detectedTools.hasGit)) {
-        InitLogger.debug('Existing codebase detected, prompting for pattern learning');
+        this.logger.debug('Existing codebase detected, prompting for pattern learning');
         await this.promptForPatternLearning(projectInfo as ExtendedProjectInfo);
       }
 
@@ -659,7 +613,7 @@ ${
       return shouldProceed;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      InitLogger.error(`Smart question flow failed: ${errorMessage}`, error as Error);
+      this.logger.error(`Smart question flow failed: ${errorMessage}`, { error: error as Error });
       throw new ValidationError(
         `Failed to complete question flow: ${errorMessage}`,
         'questionFlow'
@@ -679,11 +633,11 @@ ${
       // Consider hidden files except .git
       const meaningfulFiles = files.filter((file) => !file.startsWith('.') || file === '.git');
       const isEmpty = meaningfulFiles.length === 0;
-      InitLogger.debug(`Directory empty check: ${isEmpty}`, { files: meaningfulFiles });
+      this.logger.debug(`Directory empty check: ${isEmpty}`, { files: meaningfulFiles });
       return isEmpty;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      InitLogger.warn(`Cannot read directory for empty check: ${errorMessage}`);
+      this.logger.warn(`Cannot read directory for empty check: ${errorMessage}`);
       // If it's a permissions error, throw it; otherwise assume empty
       if (error instanceof Error && error.message.includes('EACCES')) {
         throw new ValidationError(`Cannot read directory: ${errorMessage}`, 'directory');
@@ -699,12 +653,12 @@ ${
    */
   private async promptForPMTool(projectInfo: ProjectInfo): Promise<void> {
     try {
-      InitLogger.debug('Starting PM tool selection prompt');
-      console.log(chalk.blue('\n🔧 Project Management Tool Setup'));
+      this.logger.debug('Starting PM tool selection prompt');
+      this.logger.info(chalk.blue('\n🔧 Project Management Tool Setup'));
 
       // Show detected tool if any
       if (projectInfo.pmTool) {
-        console.log(
+        this.logger.info(
           chalk.gray(
             `Detected: ${projectInfo.pmTool} (from ${projectInfo.pmTool === 'github' ? 'git remote' : 'environment'})`
           )
@@ -738,21 +692,23 @@ ${
         }
 
         projectInfo.pmTool = pmChoice;
-        InitLogger.debug(`PM tool selected: ${pmChoice}`);
-        console.log(chalk.gray(`Selected: ${pmChoice}`));
+        this.logger.debug(`PM tool selected: ${pmChoice}`);
+        this.logger.info(chalk.gray(`Selected: ${pmChoice}`));
 
         // Check environment configuration
         const envStatus = this.checkPMToolEnvironment(pmChoice);
-        InitLogger.debug('PM tool environment status', envStatus);
+        this.logger.debug('PM tool environment status', envStatus);
         if (envStatus.configured) {
-          console.log(chalk.green(`✓ Environment configured for ${pmChoice}`));
+          this.logger.info(chalk.green(`✓ Environment configured for ${pmChoice}`));
         } else {
-          console.log(
+          this.logger.info(
             chalk.yellow(
               `⚠️  Missing environment variables for ${pmChoice}: ${envStatus.missing.join(', ')}`
             )
           );
-          console.log(chalk.gray(`   Set these variables to enable full ${pmChoice} integration`));
+          this.logger.info(
+            chalk.gray(`   Set these variables to enable full ${pmChoice} integration`)
+          );
 
           // Offer to update .env file with placeholders
           const { updateEnv } = await inquirer.prompt<{ updateEnv: boolean }>([
@@ -766,17 +722,17 @@ ${
 
           if (updateEnv) {
             await this.updateEnvFile(pmChoice, envStatus.missing);
-            console.log(chalk.green('✓ Added placeholder values to .env file'));
-            console.log(chalk.gray('   Edit .env to add your actual API keys'));
+            this.logger.info(chalk.green('✓ Added placeholder values to .env file'));
+            this.logger.info(chalk.gray('   Edit .env to add your actual API keys'));
           }
         }
       } else {
-        InitLogger.debug('User skipped PM tool setup');
-        console.log(chalk.gray('Skipped PM tool setup - you can configure this later'));
+        this.logger.debug('User skipped PM tool setup');
+        this.logger.info(chalk.gray('Skipped PM tool setup - you can configure this later'));
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      InitLogger.error(`PM tool selection failed: ${errorMessage}`, error as Error);
+      this.logger.error(`PM tool selection failed: ${errorMessage}`, { error: error as Error });
       throw new ValidationError(`Failed to select PM tool: ${errorMessage}`, 'pmTool');
     }
   }
@@ -863,9 +819,11 @@ ${
    */
   private async promptForPatternLearning(projectInfo: ExtendedProjectInfo): Promise<void> {
     try {
-      InitLogger.debug('Starting pattern learning prompt');
-      console.log(chalk.blue('\n📚 Pattern Learning'));
-      console.log(chalk.gray('This appears to be an existing codebase with development history.'));
+      this.logger.debug('Starting pattern learning prompt');
+      this.logger.info(chalk.blue('\n📚 Pattern Learning'));
+      this.logger.info(
+        chalk.gray('This appears to be an existing codebase with development history.')
+      );
 
       const { shouldLearnPatterns } = await inquirer.prompt<{ shouldLearnPatterns: boolean }>([
         {
@@ -878,20 +836,24 @@ ${
       ]);
 
       if (shouldLearnPatterns) {
-        console.log(chalk.green('✓ Pattern learning will execute after initialization'));
+        this.logger.info(chalk.green('✓ Pattern learning will execute after initialization'));
 
         // Store this preference in project info for later use
         // This will trigger pattern learning after structure generation
         projectInfo.shouldLearnPatterns = true;
       } else {
-        InitLogger.debug('User skipped pattern learning');
-        console.log(chalk.gray('Pattern learning skipped - you can run "hodge learn" anytime'));
+        this.logger.debug('User skipped pattern learning');
+        this.logger.info(
+          chalk.gray('Pattern learning skipped - you can run "hodge learn" anytime')
+        );
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      InitLogger.error(`Pattern learning prompt failed: ${errorMessage}`, error as Error);
+      this.logger.error(`Pattern learning prompt failed: ${errorMessage}`, {
+        error: error as Error,
+      });
       // Don't throw here - pattern learning is optional
-      console.log(
+      this.logger.info(
         chalk.yellow('⚠️  Pattern learning prompt failed - you can run "hodge learn" later')
       );
     }
@@ -913,59 +875,69 @@ ${
    * @param projectInfo - The project information
    */
   private displayCompletionMessage(projectInfo: ExtendedProjectInfo): void {
-    console.log(chalk.green('\n🎉 Hodge initialized successfully!'));
-    console.log(chalk.blue('\n📁 Created structure:'));
-    console.log(`   ${chalk.dim('.hodge/')}`);
-    console.log(`   ${chalk.dim('├── config.json')}     ${chalk.gray('# Project configuration')}`);
-    console.log(`   ${chalk.dim('├── standards.md')}    ${chalk.gray('# Development standards')}`);
-    console.log(`   ${chalk.dim('├── decisions.md')}    ${chalk.gray('# Architecture decisions')}`);
-    console.log(`   ${chalk.dim('├── patterns/')}       ${chalk.gray('# Extracted patterns')}`);
-    console.log(`   ${chalk.dim('└── features/')}       ${chalk.gray('# Feature development')}`);
+    this.logger.info(chalk.green('\n🎉 Hodge initialized successfully!'));
+    this.logger.info(chalk.blue('\n📁 Created structure:'));
+    this.logger.info(`   ${chalk.dim('.hodge/')}`);
+    this.logger.info(
+      `   ${chalk.dim('├── config.json')}     ${chalk.gray('# Project configuration')}`
+    );
+    this.logger.info(
+      `   ${chalk.dim('├── standards.md')}    ${chalk.gray('# Development standards')}`
+    );
+    this.logger.info(
+      `   ${chalk.dim('├── decisions.md')}    ${chalk.gray('# Architecture decisions')}`
+    );
+    this.logger.info(
+      `   ${chalk.dim('├── patterns/')}       ${chalk.gray('# Extracted patterns')}`
+    );
+    this.logger.info(
+      `   ${chalk.dim('└── features/')}       ${chalk.gray('# Feature development')}`
+    );
 
     // Add Claude Code detection message
     if (projectInfo.detectedTools.hasClaudeCode) {
-      console.log(chalk.yellow('\n📝 Claude Code detected!'));
-      console.log(
+      this.logger.info(chalk.yellow('\n📝 Claude Code detected!'));
+      this.logger.info(
         `   ${chalk.gray('CLAUDE.md found. Hodge context files in .hodge/ are available to Claude.')}`
       );
-      console.log(
+      this.logger.info(
         `   ${chalk.gray('Consider adding a reference to .hodge/ in your CLAUDE.md if desired.')}`
       );
     } else {
-      console.log(
+      this.logger.info(
         chalk.gray('\n💡 Tip: Run `claude project init` to set up Claude Code for this project')
       );
     }
 
     // Add PM-specific suggestions
     if (projectInfo.pmTool) {
-      console.log(chalk.blue(`\n🔧 PM Integration (${projectInfo.pmTool}):`));
-      console.log(`   ${chalk.green('✓')} Automatic status updates on workflow progression`);
-      console.log(`   ${chalk.green('✓')} Local tracking in .hodge/project_management.md`);
-      console.log(`   ${chalk.dim('Configure in hodge.json for custom workflow mappings')}`);
+      this.logger.info(chalk.blue(`\n🔧 PM Integration (${projectInfo.pmTool}):`));
+      this.logger.info(`   ${chalk.green('✓')} Automatic status updates on workflow progression`);
+      this.logger.info(`   ${chalk.green('✓')} Local tracking in .hodge/project_management.md`);
+      this.logger.info(`   ${chalk.dim('Configure in hodge.json for custom workflow mappings')}`);
     } else {
-      console.log(chalk.blue('\n🔧 PM Integration:'));
-      console.log(
+      this.logger.info(chalk.blue('\n🔧 PM Integration:'));
+      this.logger.info(
         `   ${chalk.gray('No PM tool configured - set up environment variables and run init again')}`
       );
-      console.log(`   ${chalk.gray('Supported: Linear, GitHub Issues (coming soon)')}`);
+      this.logger.info(`   ${chalk.gray('Supported: Linear, GitHub Issues (coming soon)')}`);
     }
 
     // Add pattern learning status if it was executed
     const shouldLearnPatterns = projectInfo.shouldLearnPatterns;
     if (shouldLearnPatterns) {
-      console.log(chalk.blue('\\n📚 Pattern Learning:'));
-      console.log(
+      this.logger.info(chalk.blue('\\n📚 Pattern Learning:'));
+      this.logger.info(
         `   ${chalk.green('✓')} Patterns analyzed and saved to ${chalk.white('.hodge/patterns/')}`
       );
-      console.log(
+      this.logger.info(
         `   ${chalk.gray('   Review learned-patterns.md for insights about your codebase')}`
       );
     }
 
     // Tip for interactive mode
     if (!projectInfo.interactive) {
-      console.log(
+      this.logger.info(
         chalk.gray(
           '\\n💡 Tip: Use --interactive for full setup with PM tool selection and pattern learning'
         )
@@ -973,15 +945,15 @@ ${
     }
 
     // Next steps - always shown last
-    console.log(chalk.blue('\n🚀 Next steps:'));
-    console.log(
+    this.logger.info(chalk.blue('\n🚀 Next steps:'));
+    this.logger.info(
       `   ${chalk.white('hodge explore <feature>')}  ${chalk.gray('# Start exploring a new feature')}`
     );
-    console.log(
+    this.logger.info(
       `   ${chalk.white('hodge status')}              ${chalk.gray('# Check current status')}`
     );
 
-    console.log(); // Empty line for spacing
+    this.logger.info(''); // Empty line for spacing
   }
 
   /**
@@ -1003,13 +975,13 @@ ${
     const hasIntegration = await fs.pathExists(integrationPath);
 
     if (hasIntegration) {
-      InitLogger.debug('Claude integration already installed');
+      this.logger.debug('Claude integration already installed');
       return;
     }
 
     // Ask user if they want to install the integration
-    console.log(chalk.yellow('\n🤖 AI Tool Integration Available:'));
-    console.log(
+    this.logger.info(chalk.yellow('\n🤖 AI Tool Integration Available:'));
+    this.logger.info(
       `   ${chalk.gray('Claude Code detected. Hodge can install enhanced integration.')}`
     );
 
@@ -1023,7 +995,7 @@ ${
     ]);
 
     if (!shouldInstall) {
-      console.log(
+      this.logger.info(
         chalk.gray('   Skipped integration (install later with: hodge integrations add claude)')
       );
       return;
@@ -1035,19 +1007,21 @@ ${
     try {
       await this.installClaudeIntegration(hodgePath, projectInfo.rootPath);
       spinner.succeed('Claude integration installed successfully');
-      console.log(
+      this.logger.info(
         chalk.gray(`   ✓ Documentation: ${chalk.white('.hodge/integrations/claude/README.md')}`)
       );
-      console.log(
+      this.logger.info(
         chalk.gray(`   ✓ Slash commands: ${chalk.white('.claude/commands/*.md')} (9 commands)`)
       );
-      console.log(
+      this.logger.info(
         chalk.gray(`   Try: ${chalk.white('/explore <feature>')} in Claude Code to start`)
       );
     } catch (error) {
       spinner.fail('Failed to install Claude integration');
-      InitLogger.error('Claude integration installation failed', error as Error);
-      console.error(chalk.gray('   You can try again later with: hodge integrations add claude'));
+      this.logger.error('Claude integration installation failed', { error: error as Error });
+      this.logger.error(
+        chalk.gray('   You can try again later with: hodge integrations add claude')
+      );
     }
   }
 
@@ -1183,7 +1157,7 @@ This project uses Hodge for development workflow management. Key resources:
 When assisting with code, please follow Hodge standards and check architectural decisions.
 `;
         await fs.appendFile(claudeMdPath, appendContent, 'utf8');
-        InitLogger.debug('Updated CLAUDE.md with Hodge reference');
+        this.logger.debug('Updated CLAUDE.md with Hodge reference');
       }
     }
   }

@@ -4,6 +4,7 @@ import path from 'path';
 import { existsSync } from 'fs';
 import { PMHooks } from '../lib/pm/pm-hooks.js';
 import { getConfigManager } from '../lib/config-manager.js';
+import { createCommandLogger } from '../lib/logger.js';
 
 export interface PlanOptions {
   lanes?: number;
@@ -48,6 +49,7 @@ interface DevelopmentPlanJSON {
 }
 
 export class PlanCommand {
+  private logger = createCommandLogger('plan', { enableConsole: true });
   private pmHooks: PMHooks;
   private basePath: string;
   private configManager = getConfigManager();
@@ -58,7 +60,7 @@ export class PlanCommand {
   }
 
   async execute(options: PlanOptions = {}): Promise<void> {
-    console.log(chalk.blue('📋 Planning Work Structure'));
+    this.logger.info(chalk.blue('📋 Planning Work Structure'));
 
     // Load configuration
     await this.configManager.load();
@@ -72,14 +74,14 @@ export class PlanCommand {
     // Determine feature to plan
     const feature = options.feature || (await this.getCurrentFeature());
     if (!feature) {
-      console.log(chalk.yellow('No feature specified. Use: hodge plan <feature>'));
+      this.logger.warn(chalk.yellow('No feature specified. Use: hodge plan <feature>'));
       return;
     }
 
     // Analyze decisions for this feature
     const decisions = await this.analyzeDecisions(feature);
     if (decisions.length === 0) {
-      console.log(chalk.yellow(`No decisions found for ${feature}. Run /decide first.`));
+      this.logger.warn(chalk.yellow(`No decisions found for ${feature}. Run /decide first.`));
       return;
     }
 
@@ -96,12 +98,12 @@ export class PlanCommand {
     if (options.createPm) {
       await this.createPMStructure(plan);
     } else {
-      console.log(
+      this.logger.info(
         chalk.yellow('\n💾 Plan saved locally. Use --create-pm to create PM issues in Linear.')
       );
     }
 
-    console.log(chalk.green(`\n✓ Plan created for ${feature}`));
+    this.logger.info(chalk.green(`\n✓ Plan created for ${feature}`));
     this.showNextSteps(plan);
   }
 
@@ -239,8 +241,8 @@ export class PlanCommand {
     });
 
     if (uncoveredDecisions.length > 0) {
-      console.log(chalk.yellow('\n⚠️  Uncovered Decisions Detected:'));
-      console.log(
+      this.logger.warn(chalk.yellow('\n⚠️  Uncovered Decisions Detected:'));
+      this.logger.info(
         chalk.yellow(
           `The Recommendation doesn't address ${uncoveredDecisions.length} decision(s) from Decisions Needed:`
         )
@@ -248,13 +250,13 @@ export class PlanCommand {
       uncoveredDecisions.forEach((decision, index) => {
         const match = decision.match(/### Decision \d+: (.+)/);
         if (match) {
-          console.log(chalk.yellow(`  ${index + 1}. ${match[1]}`));
+          this.logger.warn(chalk.yellow(`  ${index + 1}. ${match[1]}`));
         }
       });
-      console.log(
+      this.logger.info(
         chalk.yellow('\nNote: You may want to revisit /decide to address these before proceeding.')
       );
-      console.log(chalk.yellow('Continuing with plan generation...\n'));
+      this.logger.warn(chalk.yellow('Continuing with plan generation...\n'));
     }
   }
 
@@ -329,7 +331,7 @@ export class PlanCommand {
         const aiPlanContent = await fs.readFile(aiPlanPath, 'utf-8');
         const aiPlan = JSON.parse(aiPlanContent) as DevelopmentPlanJSON;
 
-        console.log(chalk.green('✓ Using AI-generated plan from slash command'));
+        this.logger.info(chalk.green('✓ Using AI-generated plan from slash command'));
 
         // Convert plain objects to Maps for lanes and dependencies
         const convertedLanes = aiPlan.lanes
@@ -354,7 +356,7 @@ export class PlanCommand {
         // Validate and return the AI-generated plan
         return convertedPlan;
       } catch (error) {
-        console.log(
+        this.logger.info(
           chalk.yellow('⚠️  AI plan file exists but is invalid, falling back to keyword matching')
         );
         // Fall through to keyword-based generation
@@ -362,7 +364,9 @@ export class PlanCommand {
     }
 
     // Fallback: keyword-based plan generation (legacy behavior)
-    console.log(chalk.yellow('ℹ️  No AI plan found, using keyword matching (legacy behavior)'));
+    this.logger.warn(
+      chalk.yellow('ℹ️  No AI plan found, using keyword matching (legacy behavior)')
+    );
 
     // Analyze complexity based on decisions
     const isComplex = this.determineComplexity(decisions);
@@ -658,33 +662,33 @@ export class PlanCommand {
   }
 
   private displayPlan(plan: DevelopmentPlan): void {
-    console.log('\n' + chalk.bold('📋 Development Plan'));
-    console.log(chalk.bold('='.repeat(50)));
+    this.logger.info('\n' + chalk.bold('📋 Development Plan'));
+    this.logger.info(chalk.bold('='.repeat(50)));
 
-    console.log(`Feature: ${chalk.cyan(plan.feature)}`);
-    console.log(`Type: ${chalk.yellow(plan.type)}`);
+    this.logger.info(`Feature: ${chalk.cyan(plan.feature)}`);
+    this.logger.info(`Type: ${chalk.yellow(plan.type)}`);
 
     if (plan.type === 'epic' && plan.stories) {
-      console.log(`\n${chalk.bold('Stories')} (${plan.stories.length}):`);
+      this.logger.info(`\n${chalk.bold('Stories')} (${plan.stories.length}):`);
       for (const story of plan.stories) {
         const deps = story.dependencies?.length
           ? ` [depends on: ${story.dependencies.join(', ')}]`
           : '';
         const lane = story.lane !== undefined ? ` (Lane ${story.lane + 1})` : '';
-        console.log(`  ${chalk.green(story.id)}: ${story.title}${deps}${lane}`);
+        this.logger.info(`  ${chalk.green(story.id)}: ${story.title}${deps}${lane}`);
       }
 
       if (plan.lanes) {
-        console.log(`\n${chalk.bold('Lane Allocation')} (${plan.lanes.count} lanes):`);
+        this.logger.info(`\n${chalk.bold('Lane Allocation')} (${plan.lanes.count} lanes):`);
         for (let i = 0; i < plan.lanes.count; i++) {
           const storyIds = plan.lanes.assignments.get(i) || [];
-          console.log(`  Lane ${i + 1}: ${storyIds.join(', ')}`);
+          this.logger.info(`  Lane ${i + 1}: ${storyIds.join(', ')}`);
         }
       }
     }
 
-    console.log(`\nEstimated Timeline: ${chalk.yellow(plan.estimatedDays)} days`);
-    console.log(chalk.bold('='.repeat(50)));
+    this.logger.info(`\nEstimated Timeline: ${chalk.yellow(plan.estimatedDays)} days`);
+    this.logger.info(chalk.bold('='.repeat(50)));
   }
 
   private async savePlan(plan: DevelopmentPlan): Promise<void> {
@@ -717,7 +721,7 @@ export class PlanCommand {
       // Create single issue with full title format
       const result = await this.pmHooks.createPMIssue(epicTitle, decisions, false);
       if (result.created) {
-        console.log(chalk.green(`✓ Created PM issue: ${result.issueId}`));
+        this.logger.info(chalk.green(`✓ Created PM issue: ${result.issueId}`));
       }
     } else if (plan.stories) {
       // Create epic with stories - format story titles with ID prefix
@@ -734,26 +738,26 @@ export class PlanCommand {
       );
 
       if (result.created) {
-        console.log(chalk.green(`✓ Created epic with ${plan.stories.length} stories`));
+        this.logger.info(chalk.green(`✓ Created epic with ${plan.stories.length} stories`));
       }
     }
   }
 
   private showNextSteps(plan: DevelopmentPlan): void {
-    console.log('\n' + chalk.bold('Next Steps:'));
+    this.logger.info('\n' + chalk.bold('Next Steps:'));
 
     if (plan.type === 'single') {
-      console.log(`  Start building: ${chalk.cyan(`hodge build ${plan.feature}`)}`);
+      this.logger.info(`  Start building: ${chalk.cyan(`hodge build ${plan.feature}`)}`);
     } else if (plan.lanes && plan.lanes.count > 1) {
-      console.log('\nParallel development ready:');
+      this.logger.info('\nParallel development ready:');
       for (let i = 0; i < plan.lanes.count; i++) {
         const stories = plan.lanes.assignments.get(i) || [];
         if (stories.length > 0) {
-          console.log(`  Lane ${i + 1}: ${chalk.cyan(`hodge build ${stories[0]}`)}`);
+          this.logger.info(`  Lane ${i + 1}: ${chalk.cyan(`hodge build ${stories[0]}`)}`);
         }
       }
     } else if (plan.stories && plan.stories.length > 0) {
-      console.log(`  Start with: ${chalk.cyan(`hodge build ${plan.stories[0].id}`)}`);
+      this.logger.info(`  Start with: ${chalk.cyan(`hodge build ${plan.stories[0].id}`)}`);
     }
   }
 }

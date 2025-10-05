@@ -8,7 +8,7 @@ import { GitHubAdapter } from './github-adapter.js';
 import fs from 'fs/promises';
 import path from 'path';
 import { existsSync } from 'fs';
-
+import { createCommandLogger } from '../logger.js';
 type WorkflowPhase = 'explore' | 'build' | 'harden' | 'ship';
 
 interface QueuedOperation {
@@ -28,6 +28,8 @@ interface QueuedOperation {
  * - Hooks for critical workflow commands only
  */
 export class PMHooks {
+  private logger = createCommandLogger('p-m-hooks', { enableConsole: false });
+
   private localAdapter: LocalPMAdapter;
   private configManager = getConfigManager();
   private shipContext?: ShipContext;
@@ -94,7 +96,7 @@ export class PMHooks {
     await this.localAdapter.updatePhaseProgress();
     this.updateExternalPMSilently(feature, 'ship');
 
-    console.log(chalk.green('✓ Updated project management tracking'));
+    this.logger.info(chalk.green('✓ Updated project management tracking'));
   }
 
   /**
@@ -117,7 +119,7 @@ export class PMHooks {
         // Log attempt if in debug mode
         const isDebug = await this.configManager.isDebugMode();
         if (isDebug) {
-          console.log(chalk.blue(`📋 Updating ${pmTool} issue: ${feature}`));
+          this.logger.info(chalk.blue(`📋 Updating ${pmTool} issue: ${feature}`));
         }
 
         // Get status from configuration (includes defaults)
@@ -125,7 +127,7 @@ export class PMHooks {
         const status = pmConfig?.statusMap?.[phase];
 
         if (!status) {
-          console.error(`No status mapping found for phase: ${phase}`);
+          this.logger.error(`No status mapping found for phase: ${phase}`);
           return;
         }
 
@@ -135,16 +137,18 @@ export class PMHooks {
         // Silent success - only log in debug mode
         const debugMode = await this.configManager.isDebugMode();
         if (debugMode) {
-          console.log(chalk.green(`   ✓ Updated to status: ${status}`));
+          this.logger.info(chalk.green(`   ✓ Updated to status: ${status}`));
         }
       } catch (error) {
         // Silent failure with optional logging
         const debugMode = await this.configManager.isDebugMode();
         const pmTool = await this.configManager.getPMTool();
         if (debugMode || process.env.HODGE_PM_DEBUG) {
-          console.log(chalk.gray(`   ℹ️ Could not update ${String(pmTool)} issue (non-blocking)`));
+          this.logger.info(
+            chalk.gray(`   ℹ️ Could not update ${String(pmTool)} issue (non-blocking)`)
+          );
           if (process.env.HODGE_PM_DEBUG) {
-            console.log(chalk.gray(`   Error: ${String(error)}`));
+            this.logger.info(chalk.gray(`   Error: ${String(error)}`));
           }
         }
         // Never throw - PM updates should never block workflow
@@ -192,7 +196,7 @@ export class PMHooks {
             await adapter.addComment(issue.id, comment);
             const isDebug = await this.configManager.isDebugMode();
             if (isDebug) {
-              console.log(chalk.gray('   Added rich comment to Linear issue'));
+              this.logger.info(chalk.gray('   Added rich comment to Linear issue'));
             }
           }
         }
@@ -445,7 +449,9 @@ export class PMHooks {
 
       const debugMode = await this.configManager.isDebugMode();
       if (debugMode) {
-        console.log(chalk.yellow(`   ⚠️  Queued PM issue creation for later (${String(error)})`));
+        this.logger.warn(
+          chalk.yellow(`   ⚠️  Queued PM issue creation for later (${String(error)})`)
+        );
       }
 
       return { created: false, error: String(error) };
@@ -542,7 +548,7 @@ export class PMHooks {
       // Silently fail - queue is best effort
       const debugMode = await this.configManager.isDebugMode();
       if (debugMode) {
-        console.log(chalk.gray(`   Could not queue operation: ${String(error)}`));
+        this.logger.info(chalk.gray(`   Could not queue operation: ${String(error)}`));
       }
     }
   }
@@ -565,7 +571,7 @@ export class PMHooks {
 
       const debugMode = await this.configManager.isDebugMode();
       if (debugMode) {
-        console.log(chalk.blue(`📋 Processing ${queue.length} queued PM operations...`));
+        this.logger.info(chalk.blue(`📋 Processing ${queue.length} queued PM operations...`));
       }
 
       const remaining: QueuedOperation[] = [];
@@ -598,7 +604,7 @@ export class PMHooks {
       // Silently fail
       const debugMode = await this.configManager.isDebugMode();
       if (debugMode) {
-        console.log(chalk.gray(`   Could not process queue: ${String(error)}`));
+        this.logger.info(chalk.gray(`   Could not process queue: ${String(error)}`));
       }
     }
   }

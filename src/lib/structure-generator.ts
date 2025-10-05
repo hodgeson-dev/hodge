@@ -1,3 +1,4 @@
+import { createCommandLogger } from './logger.js';
 /**
  * Hodge Structure Generator
  * Creates .hodge directory and initial configuration files
@@ -120,6 +121,8 @@ export interface HodgeConfig {
  * Generates the .hodge directory structure and configuration files
  */
 export class StructureGenerator {
+  private logger = createCommandLogger('structure-generation-error', { enableConsole: false });
+
   /**
    * Creates a new StructureGenerator instance
    * @param rootPath - The root path where .hodge should be created
@@ -510,7 +513,7 @@ Scripts will be generated here once a PM tool is configured.
 'use strict';
 
 // Add your custom PM tool integration here
-console.log('Custom PM integration - customize this script for your needs');
+this.logger.info('Custom PM integration - customize this script for your needs');
 
 // Example structure:
 // 1. Read Hodge feature status from .hodge/features/
@@ -633,7 +636,7 @@ These scripts are designed to work out of the box, but you can customize them ba
       }
     } catch (error) {
       // Don't fail the entire init process if gitignore update fails
-      console.warn(
+      this.logger.warn(
         `Warning: Failed to update .gitignore: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
     }

@@ -1,34 +1,34 @@
 # Caching Strategy
 
 **Category**: performance
-**Frequency**: Used 3 times
-**Confidence**: 60%
+**Frequency**: Used 6 times
+**Confidence**: 100%
 
 ## Description
 Caching for performance optimization
 
 ## Examples
 
-### src/commands/explore-enhanced.ts
+### src/commands/explore.ts
 ```typescript
 memoize
 ```
 
 
-### src/lib/pattern-learner.ts
+### src/lib/auto-save.ts
 ```typescript
 new Map();
-  private standards: Map<string, CodingStandard> = new Map();
-  private readonly patternsDir = '.hodge/patterns';
-  private readonly patternRules: PatternRule[] = [
-    {
-      name: 'Singl
+  private FULL_SAVE_INTERVAL = 30 * 60 * 1000; // Full save every 30 minutes
+
+  constructor(basePath: string = '.') {
+    this.basePath = basePath;
+    this.contextPath = path.join(basePath
 ```
 
 
-### src/lib/pattern-learner.ts
+### src/lib/cache-manager.ts
 ```typescript
-memoize
+cache.get(
 ```
 
 
@@ -38,5 +38,5 @@ memoize
 - 
 
 ---
-*First seen: 2025-09-15T06:42:32.813Z*
-*Last used: 2025-09-15T06:42:32.815Z*
+*First seen: 2025-10-05T05:58:26.885Z*
+*Last used: 2025-10-05T05:58:26.902Z*

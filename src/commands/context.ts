@@ -3,6 +3,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { HodgeMDGenerator } from '../lib/hodge-md-generator.js';
 import { sessionManager } from '../lib/session-manager.js';
+import { createCommandLogger } from '../lib/logger.js';
 
 export interface ContextOptions {
   list?: boolean;
@@ -34,6 +35,7 @@ interface SavedContext {
 export class ContextCommand {
   private hodgeMDGenerator: HodgeMDGenerator;
   private basePath: string;
+  private logger = createCommandLogger('context', { enableConsole: true });
 
   constructor(basePath?: string) {
     this.basePath = basePath || process.cwd();
@@ -53,7 +55,9 @@ export class ContextCommand {
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      console.error(chalk.red(`Context command failed: ${errorMessage}`));
+      this.logger.error(chalk.red(`Context command failed: ${errorMessage}`), {
+        error: error as Error,
+      });
       throw error;
     }
   }
@@ -62,8 +66,8 @@ export class ContextCommand {
    * Load default context (HODGE.md + save discovery)
    */
   private async loadDefaultContext(): Promise<void> {
-    console.log(chalk.cyan('📚 Loading Hodge Context'));
-    console.log();
+    this.logger.info(chalk.cyan('📚 Loading Hodge Context'));
+    this.logger.info('');
 
     // Load session first to get actual feature for accurate mode detection (HODGE-313)
     const session = await sessionManager.load();
@@ -71,7 +75,7 @@ export class ContextCommand {
 
     // Generate fresh HODGE.md with actual feature for accurate mode detection
     await this.hodgeMDGenerator.saveToFile(featureToCheck);
-    console.log(chalk.green('✓ Generated fresh HODGE.md'));
+    this.logger.info(chalk.green('✓ Generated fresh HODGE.md'));
 
     // Load and display principles if they exist
     await this.displayPrinciples();
@@ -79,105 +83,107 @@ export class ContextCommand {
     // Discover recent saves
     const saves = await this.discoverSaves();
     if (saves.length > 0) {
-      console.log();
-      console.log(chalk.bold('Recent Saved Sessions:'));
+      this.logger.info('');
+      this.logger.info(chalk.bold('Recent Saved Sessions:'));
 
       saves.slice(0, 5).forEach((save, index) => {
-        console.log(
+        this.logger.info(
           chalk.gray(`${index + 1}. `) +
             chalk.yellow(save.name) +
             chalk.gray(` (${this.formatTimeAgo(save.timestamp)})`)
         );
         if (save.feature) {
-          console.log(chalk.gray(`   Feature: ${save.feature}, Mode: ${save.mode || 'unknown'}`));
+          this.logger.info(
+            chalk.gray(`   Feature: ${save.feature}, Mode: ${save.mode || 'unknown'}`)
+          );
         }
         if (save.summary) {
-          console.log(chalk.gray(`   ${save.summary}`));
+          this.logger.info(chalk.gray(`   ${save.summary}`));
         }
       });
 
-      console.log();
-      console.log(chalk.gray('To load a save: ') + chalk.cyan('hodge context --recent'));
-      console.log(chalk.gray('To list all saves: ') + chalk.cyan('hodge context --list'));
+      this.logger.info('');
+      this.logger.info(chalk.gray('To load a save: ') + chalk.cyan('hodge context --recent'));
+      this.logger.info(chalk.gray('To list all saves: ') + chalk.cyan('hodge context --list'));
     } else {
-      console.log(chalk.gray('No saved sessions found.'));
+      this.logger.info(chalk.gray('No saved sessions found.'));
     }
 
-    console.log();
-    console.log(chalk.bold('Context loaded. Ready to work!'));
+    this.logger.info('');
+    this.logger.info(chalk.bold('Context loaded. Ready to work!'));
   }
 
   /**
    * List all available saves
    */
   private async listSaves(): Promise<void> {
-    console.log(chalk.cyan('📋 Available Saved Sessions'));
-    console.log();
+    this.logger.info(chalk.cyan('📋 Available Saved Sessions'));
+    this.logger.info('');
 
     const saves = await this.discoverSaves();
 
     if (saves.length === 0) {
-      console.log(chalk.gray('No saved sessions found.'));
+      this.logger.info(chalk.gray('No saved sessions found.'));
       return;
     }
 
     saves.forEach((save, index) => {
-      console.log(chalk.bold(`${index + 1}. ${save.name}`));
-      console.log(chalk.gray(`   Path: ${save.path}`));
-      console.log(
+      this.logger.info(chalk.bold(`${index + 1}. ${save.name}`));
+      this.logger.info(chalk.gray(`   Path: ${save.path}`));
+      this.logger.info(
         chalk.gray(`   Saved: ${save.timestamp} (${this.formatTimeAgo(save.timestamp)})`)
       );
 
       if (save.feature) {
-        console.log(chalk.gray(`   Feature: ${save.feature}`));
+        this.logger.info(chalk.gray(`   Feature: ${save.feature}`));
       }
 
       if (save.mode) {
-        console.log(chalk.gray(`   Mode: ${save.mode}`));
+        this.logger.info(chalk.gray(`   Mode: ${save.mode}`));
       }
 
       if (save.summary) {
-        console.log(chalk.gray(`   Summary: ${save.summary}`));
+        this.logger.info(chalk.gray(`   Summary: ${save.summary}`));
       }
 
-      console.log();
+      this.logger.info('');
     });
 
-    console.log(chalk.gray(`Total: ${saves.length} saved sessions`));
+    this.logger.info(chalk.gray(`Total: ${saves.length} saved sessions`));
   }
 
   /**
    * Load the most recent save
    */
   private async loadRecentSave(): Promise<void> {
-    console.log(chalk.cyan('🔄 Loading Most Recent Save'));
-    console.log();
+    this.logger.info(chalk.cyan('🔄 Loading Most Recent Save'));
+    this.logger.info('');
 
     const saves = await this.discoverSaves();
 
     if (saves.length === 0) {
-      console.log(chalk.yellow('No saved sessions found.'));
+      this.logger.info(chalk.yellow('No saved sessions found.'));
       return;
     }
 
     const mostRecent = saves[0];
-    console.log(chalk.green(`✓ Loading: ${mostRecent.name}`));
-    console.log();
+    this.logger.info(chalk.green(`✓ Loading: ${mostRecent.name}`));
+    this.logger.info('');
 
     // Display the snapshot
     const snapshotPath = path.join(mostRecent.path, 'snapshot.md');
     try {
       const snapshot = await fs.readFile(snapshotPath, 'utf-8');
-      console.log(snapshot);
+      this.logger.info(snapshot);
     } catch (error) {
-      console.log(chalk.yellow('Could not load snapshot.md'));
+      this.logger.info(chalk.yellow('Could not load snapshot.md'));
     }
 
-    console.log();
-    console.log(chalk.bold('Session restored!'));
+    this.logger.info('');
+    this.logger.info(chalk.bold('Session restored!'));
 
     if (mostRecent.feature) {
-      console.log(
+      this.logger.info(
         chalk.gray(`Continue with: `) +
           chalk.cyan(`/${mostRecent.mode || 'explore'} ${mostRecent.feature}`)
       );
@@ -188,40 +194,40 @@ export class ContextCommand {
    * Load context for a specific feature
    */
   private async loadFeatureContext(feature: string): Promise<void> {
-    console.log(chalk.cyan(`📂 Loading Context for: ${feature}`));
-    console.log();
+    this.logger.info(chalk.cyan(`📂 Loading Context for: ${feature}`));
+    this.logger.info('');
 
     // Generate HODGE.md with feature focus
     await this.hodgeMDGenerator.saveToFile(feature);
-    console.log(chalk.green('✓ Generated feature-specific HODGE.md'));
+    this.logger.info(chalk.green('✓ Generated feature-specific HODGE.md'));
 
     // Check for feature directory
     const featureDir = path.join('.hodge', 'features', feature);
     const featureExists = await this.fileExists(featureDir);
 
     if (featureExists) {
-      console.log(chalk.green(`✓ Found feature directory`));
+      this.logger.info(chalk.green(`✓ Found feature directory`));
 
       // List key files
       const exploreFile = path.join(featureDir, 'explore', 'exploration.md');
       const buildFile = path.join(featureDir, 'build', 'build-plan.md');
       const decisionsFile = path.join(featureDir, 'linked-decisions.md');
 
-      console.log();
-      console.log(chalk.bold('Feature Files:'));
+      this.logger.info('');
+      this.logger.info(chalk.bold('Feature Files:'));
 
       if (await this.fileExists(exploreFile)) {
-        console.log(chalk.gray('• ') + 'exploration.md');
+        this.logger.info(chalk.gray('• ') + 'exploration.md');
       }
       if (await this.fileExists(buildFile)) {
-        console.log(chalk.gray('• ') + 'build-plan.md');
+        this.logger.info(chalk.gray('• ') + 'build-plan.md');
       }
       if (await this.fileExists(decisionsFile)) {
-        console.log(chalk.gray('• ') + 'linked-decisions.md');
+        this.logger.info(chalk.gray('• ') + 'linked-decisions.md');
       }
     } else {
-      console.log(chalk.yellow(`Feature directory not found: ${feature}`));
-      console.log(chalk.gray('Start with: ') + chalk.cyan(`/explore ${feature}`));
+      this.logger.info(chalk.yellow(`Feature directory not found: ${feature}`));
+      this.logger.info(chalk.gray('Start with: ') + chalk.cyan(`/explore ${feature}`));
     }
 
     // Find feature-specific saves
@@ -229,11 +235,11 @@ export class ContextCommand {
     const featureSaves = saves.filter((s) => s.feature === feature);
 
     if (featureSaves.length > 0) {
-      console.log();
-      console.log(chalk.bold('Feature-Specific Saves:'));
+      this.logger.info('');
+      this.logger.info(chalk.bold('Feature-Specific Saves:'));
 
       featureSaves.slice(0, 3).forEach((save, index) => {
-        console.log(
+        this.logger.info(
           chalk.gray(`${index + 1}. `) +
             chalk.yellow(save.name) +
             chalk.gray(` (${this.formatTimeAgo(save.timestamp)})`)
@@ -241,8 +247,8 @@ export class ContextCommand {
       });
     }
 
-    console.log();
-    console.log(chalk.bold(`Context loaded for ${feature}!`));
+    this.logger.info('');
+    this.logger.info(chalk.bold(`Context loaded for ${feature}!`));
   }
 
   /**
@@ -258,14 +264,14 @@ export class ContextCommand {
       const coreMatch = principles.match(/## Core Principles\n\n([\s\S]*?)(?=\n##|$)/);
 
       if (coreMatch) {
-        console.log();
-        console.log(chalk.bold('Core Principles:'));
+        this.logger.info('');
+        this.logger.info(chalk.bold('Core Principles:'));
 
         // Extract and display just the principle titles
         const lines = coreMatch[1].split('\n');
         lines.forEach((line) => {
           if (line.startsWith('### ')) {
-            console.log(chalk.yellow(`  ${line.substring(4)}`));
+            this.logger.info(chalk.yellow(`  ${line.substring(4)}`));
           }
         });
       }

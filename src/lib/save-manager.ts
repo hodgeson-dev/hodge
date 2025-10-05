@@ -1,3 +1,4 @@
+import { createCommandLogger } from './logger.js';
 /**
  * Optimized save/load system for fast session management
  * Implements incremental saves, lazy loading, and manifest-based tracking
@@ -19,6 +20,8 @@ import chalk from 'chalk';
 const execAsync = promisify(exec);
 
 export class SaveManager {
+  private logger = createCommandLogger('save-manager', { enableConsole: false });
+
   private basePathOverride?: string;
 
   constructor(basePath?: string) {
@@ -54,7 +57,7 @@ export class SaveManager {
     // For minimal saves, we're done!
     if (options.minimal) {
       const elapsed = Date.now() - startTime;
-      console.log(chalk.green(`✓ Minimal save complete in ${elapsed}ms`));
+      this.logger.info(chalk.green(`✓ Minimal save complete in ${elapsed}ms`));
       return savePath;
     }
 
@@ -67,7 +70,7 @@ export class SaveManager {
     }
 
     const elapsed = Date.now() - startTime;
-    console.log(chalk.green(`✓ Save complete in ${elapsed}ms`));
+    this.logger.info(chalk.green(`✓ Save complete in ${elapsed}ms`));
     return savePath;
   }
 
@@ -85,7 +88,7 @@ export class SaveManager {
     // For lazy loading, return proxy object
     if (options.lazy || options.priority === 'speed') {
       const elapsed = Date.now() - startTime;
-      console.log(chalk.green(`✓ Manifest loaded in ${elapsed}ms`));
+      this.logger.info(chalk.green(`✓ Manifest loaded in ${elapsed}ms`));
 
       return this.createLazyProxy(savePath, manifest);
     }
@@ -94,7 +97,7 @@ export class SaveManager {
     const data = await this.loadEssentials(savePath, manifest);
 
     const elapsed = Date.now() - startTime;
-    console.log(chalk.green(`✓ Full load complete in ${elapsed}ms`));
+    this.logger.info(chalk.green(`✓ Full load complete in ${elapsed}ms`));
     return data;
   }
 

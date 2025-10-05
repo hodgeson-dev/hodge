@@ -2,6 +2,7 @@ import { promises as fs } from 'fs';
 import { join } from 'path';
 import { existsSync } from 'fs';
 
+import { createCommandLogger } from './logger.js';
 /**
  * Lightweight session format for quick persistence
  * Follows the Hybrid with HODGE.md Enhancement approach
@@ -22,6 +23,8 @@ export interface LightSession {
  * Implements lightweight checkpoints that enhance HODGE.md
  */
 export class SessionManager {
+  private logger = createCommandLogger('session-manager', { enableConsole: false });
+
   private readonly sessionFile: string;
   private readonly maxCommands = 10;
   private readonly maxDecisions = 5;
@@ -61,7 +64,7 @@ export class SessionManager {
       await fs.writeFile(this.sessionFile, JSON.stringify(updated, null, 2), 'utf-8');
     } catch (error) {
       // Don't fail commands if session save fails
-      console.warn('Session save failed:', error);
+      this.logger.warn('Session save failed:', error);
     }
   }
 
@@ -195,8 +198,8 @@ ${
       return false;
     }
 
-    console.log(this.formatForDisplay(session));
-    console.log('\nContinue from previous session? (y/n)');
+    this.logger.info(this.formatForDisplay(session));
+    this.logger.info('\nContinue from previous session? (y/n)');
 
     // Note: In real implementation, this would use inquirer or similar
     // For now, we'll return true to indicate a session exists

@@ -3,11 +3,14 @@ import * as path from 'path';
 import chalk from 'chalk';
 import { PMManager } from './pm-manager.js';
 
+import { createCommandLogger } from './logger.js';
 /**
  * Populates feature directories with context from decisions
  * Used by explore command with --pre-populate flag
  */
 export class FeaturePopulator {
+  private logger = createCommandLogger('feature-populator', { enableConsole: false });
+
   private pmManager = new PMManager();
 
   /**
@@ -55,7 +58,7 @@ export class FeaturePopulator {
       priority: metadata?.dependencies?.length ? 2 : 3, // Higher priority if has dependencies
     });
 
-    console.log(
+    this.logger.info(
       chalk.green(`✓ Feature ${featureName} pre-populated from ${decisions.length} decisions`)
     );
   }
