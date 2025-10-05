@@ -3,16 +3,16 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: HODGE-326
-**Mode**: shipped
-**PM Issue**: HODGE-326
-**Last Updated**: 2025-10-04T03:02:20.260Z
+**Feature**: HODGE-327
+**Mode**: explore
+**PM Issue**: HODGE-327
+**Last Updated**: 2025-10-04T15:16:31.896Z
 ## Current Session
-**Resumed**: 40 minutes ago
-**Progress**: Explored HODGE-326 - template ready for AI approach generation
-**Working on**: HODGE-326 (explore mode)
+**Resumed**: 10 hours ago
+**Progress**: Explored HODGE-327 - template ready for AI approach generation
+**Working on**: HODGE-327 (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-326. Explored HODGE-326 - template ready for AI approach generation
+You were helping with HODGE-327. Explored HODGE-327 - template ready for AI approach generation
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
@@ -131,15 +131,14 @@ Suggested next: Review exploration and decide with 'hodge decide'
 
 ## Working Files
 
-- `.hodge/features/HODGE-326/explore/exploration.md`
-- `.hodge/features/HODGE-326/explore/test-intentions.md`
-- `.hodge/features/HODGE-326/build/build-plan.md`
-- `.hodge/features/HODGE-326/ship/release-notes.md`
-- `.hodge/features/HODGE-326/ship/ship-record.json`
+- `.hodge/features/HODGE-327/explore/exploration.md`
+- `.hodge/features/HODGE-327/explore/test-intentions.md`
 
 ## Next Steps
 
-1. Feature completed. Start new work with `hodge explore <feature>`
+1. Review exploration approaches
+2. Make decision with `hodge decide`
+3. Start building with `hodge build HODGE-327`
 
 
 ---

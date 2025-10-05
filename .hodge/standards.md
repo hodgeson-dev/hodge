@@ -70,6 +70,40 @@ This project follows the Hodge development philosophy:
 - Test business outcomes through Service classes, not CLI orchestration
 - User-facing commands (init, logs) may accept lower test coverage due to interactive nature
 
+### Slash Command File Creation Pattern (HODGE-327.1)
+**Enforcement: ALL PHASES (mandatory)**
+**⚠️ CRITICAL**: Slash command templates use the Write tool for file creation, NOT Service classes or CLI commands.
+
+**File Creation Responsibility**:
+- **AI (via slash commands)** writes: exploration.md, decisions.md, lessons learned, review reports
+- **hodge CLI** creates: directory structures, PM integration, status tracking
+- **Never**: Service classes should NOT handle file writing for slash command workflows
+
+**Standard Pattern**:
+```typescript
+// ❌ BAD: Service class writing files for slash commands
+class ReviewPersistenceService {
+  saveReport(report: string): void {
+    writeFileSync('.hodge/reviews/...', report);
+  }
+}
+
+// ✅ GOOD: Slash command template using Write tool
+// In .claude/commands/review.md:
+// Use Write tool to save report with YAML frontmatter
+```
+
+**Examples**:
+- `/explore` → AI writes `exploration.md` using Write tool
+- `/ship` → AI writes `.hodge/lessons/HODGE-XXX-slug.md` using Write tool
+- `/review` → AI writes `.hodge/reviews/{filename}.md` using Write tool
+
+**Why This Matters**:
+- Maintains clean separation: CLI = orchestration, AI = content generation
+- Avoids Service class proliferation for simple file operations
+- Consistent with existing workflow patterns (explore, ship, decide)
+- Write tool automatically handles parent directory creation
+
 ## Testing Requirements
 **Enforcement: Progressive per phase (see table below)**
 

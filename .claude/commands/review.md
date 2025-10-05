@@ -225,18 +225,100 @@ Please check the YAML syntax and required fields.
 3. Generate markdown report
 4. Return to CLI for output
 
-## Next Steps
+## Step 6: Save Review Report (Optional)
 
-After review complete:
+After displaying the review report, prompt the user:
+
 ```
-### What would you like to do?
-a) Fix blockers → Work on highest priority issues
-b) Review another file → `/review file <path>`
-c) Create feature to address finding → Use suggested `/explore` command
-d) Continue development
-e) Done for now
+Would you like to save this review report? (s/d)
+  s) Save report to .hodge/reviews/
+  d) Discard (exit without saving)
 
 Your choice:
+```
+
+### If user chooses 's' (Save):
+
+1. **Generate filename** from file path and timestamp:
+```bash
+# Convert file path to slug (replace slashes and special chars with dashes)
+FILE_SLUG=$(echo "{{file_path}}" | sed 's|^\./||' | sed 's|/|-|g' | sed 's|\\|-|g' | sed 's|[^a-zA-Z0-9._-]|-|g' | sed 's|-\+|-|g' | sed 's|^-||' | sed 's|-$||')
+
+# Generate ISO timestamp for filename (replace colons with dashes)
+TIMESTAMP=$(date -u +"%Y-%m-%dT%H-%M-%S")
+
+# Construct filename (omit "file-" prefix for file scope)
+FILENAME="${FILE_SLUG}-${TIMESTAMP}.md"
+
+echo "Saving to: .hodge/reviews/${FILENAME}"
+```
+
+2. **Detect feature context** (optional, best-effort):
+```bash
+# Attempt to detect HODGE-XXX feature from git blame
+FEATURE=$(git blame --line-porcelain "{{file_path}}" 2>/dev/null | grep "^summary" | grep -oE "HODGE-[0-9]+(\.[0-9]+)?" | sort | uniq -c | sort -rn | head -1 | awk '{print $2}')
+
+# If no feature detected, leave empty
+if [ -z "$FEATURE" ]; then
+  FEATURE_LINE=""
+else
+  FEATURE_LINE="feature: $FEATURE"
+fi
+```
+
+3. **Extract finding counts** from generated report:
+```bash
+# Count findings by severity from the markdown report
+BLOCKERS=$(echo "$REPORT" | grep -oE "## Blockers \(([0-9]+)\)" | grep -oE "[0-9]+")
+WARNINGS=$(echo "$REPORT" | grep -oE "## Warnings \(([0-9]+)\)" | grep -oE "[0-9]+")
+SUGGESTIONS=$(echo "$REPORT" | grep -oE "## Suggestions \(([0-9]+)\)" | grep -oE "[0-9]+")
+
+# Default to 0 if not found
+BLOCKERS=${BLOCKERS:-0}
+WARNINGS=${WARNINGS:-0}
+SUGGESTIONS=${SUGGESTIONS:-0}
+```
+
+4. **Use Write tool to save report** with YAML frontmatter:
+
+Create the full report content with metadata header, then use the Write tool:
+
+**File path**: `.hodge/reviews/{{filename}}`
+
+**Content structure**:
+```markdown
+---
+reviewed_at: {{iso_timestamp}}
+scope: file
+target: {{file_path}}
+profile: default.yml
+{{feature_line}}
+findings:
+  blockers: {{blocker_count}}
+  warnings: {{warning_count}}
+  suggestions: {{suggestion_count}}
+---
+
+{{full_report_content}}
+```
+
+After writing, confirm to user:
+```
+✅ Review saved to: .hodge/reviews/{{filename}}
+```
+
+### If user chooses 'd' (Discard):
+
+Exit silently with no output. User can regenerate the review if needed later.
+
+## Next Steps
+
+After review complete (whether saved or discarded):
+```
+Review complete. You can now:
+- Fix issues using suggested `/explore` commands from the report
+- Review another file with `/review file <path>`
+- Continue development
 ```
 
 ## Future Enhancements (Later Stories)

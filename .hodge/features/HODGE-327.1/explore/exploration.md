@@ -364,3 +364,326 @@ All technical decisions were resolved during conversational exploration.
 
 *Exploration completed: 2025-10-04T23:15:00.000Z*
 *AI exploration: Claude Code (Conversational Mode)*
+
+---
+
+# Exploration: HODGE-327.1 (Revisited - Review Persistence)
+
+## Title
+Save review reports with user choice and contextual metadata
+
+## Problem Statement
+
+The `/review` command currently displays analysis reports but they vanish after the user responds to the menu. This creates friction - users must manually copy findings or lose valuable architectural insights. We need persistent review storage in `.hodge/reviews/` with metadata (timestamp, scope, profile, feature context) so users can reference findings when fixing issues.
+
+## Conversation Summary
+
+### Scope Confirmation
+
+This enhancement modifies the existing HODGE-327.1 `/review file` command to add persistence:
+- After generating the review report, prompt user: "Save report (s)" or "Discard (d)"
+- If saved, write to `.hodge/reviews/{file-path-slug}-{timestamp}.md` with metadata header
+- If discarded, exit silently (no files created, user can regenerate if needed)
+- Both choices implicitly mean "done for now" and "continue development"
+
+### Simplified User Choice Model
+
+The original 5-option menu (a: fix blockers, b: review another file, c: create feature, d: continue, e: done) is replaced with 2 simple choices:
+
+**Why This Works**:
+- Users follow report suggestions directly (fix blockers → use `/explore` command from report)
+- Multiple file reviews = multiple separate `/review` executions (no session state)
+- The saved report itself is the complete artifact (no complex tracking needed)
+- Streamlined UX - binary choice instead of 5 options that overlap
+
+### Naming Convention Design
+
+**Current Scope** (file review):
+```
+.hodge/reviews/src-commands-review-ts-2025-10-04T23-05-10.md
+```
+
+**Future Scope Expansion** (directory/pattern/recent/all from stories 327.3+):
+```
+.hodge/reviews/directory-src-commands-2025-10-04T23-05-10.md
+.hodge/reviews/pattern-src-**-test-ts-2025-10-04T23-05-10.md
+.hodge/reviews/recent-last-5-commits-2025-10-04T23-05-10.md
+.hodge/reviews/all-2025-10-04T23-05-10.md
+```
+
+This naming pattern:
+- Starts with scope type (file/directory/pattern/recent/all) for future expansion
+- For file scope, omits redundant "file-" prefix (just use file path slug)
+- Includes slugified path or pattern for discoverability
+- Ends with ISO timestamp for uniqueness and chronological sorting
+
+### Metadata Header Format
+
+Saved reports include YAML frontmatter with review context:
+
+```markdown
+---
+reviewed_at: 2025-10-04T23:05:10.000Z
+scope: file
+target: src/commands/review.ts
+profile: default.yml
+feature: HODGE-327.1 (if detected)
+findings:
+  blockers: 0
+  warnings: 3
+  suggestions: 2
+---
+
+# Code Review Report: src/commands/review.ts
+...rest of report...
+```
+
+**Feature Detection** (optional):
+AI attempts to identify which feature work (HODGE-XXX) most significantly impacted the reviewed file by:
+- Checking git blame for recent commits with HODGE-XXX references
+- Checking `.hodge/features/` for feature directories with matching file references
+- Including in `feature:` field only if confidence is high
+
+### Integration Points
+
+**Review Command Flow**:
+1. `hodge review file src/example.ts` (existing logic)
+2. Generate report via slash command template (existing)
+3. Display report to user (existing)
+4. **NEW**: Prompt "Save report (s) or Discard (d)?"
+5. **NEW**: If save → write to `.hodge/reviews/` with metadata header
+6. **NEW**: If discard → exit silently
+
+**Service Class Architecture**:
+Following HODGE-322 pattern (Service class for business logic, thin CLI wrapper):
+- `ReviewPersistenceService` handles report saving, filename generation, metadata extraction
+- `ReviewCommand` delegates to service after report generation
+- Testable without CLI orchestration
+
+## Implementation Approaches
+
+### Approach 1: Template Enhancement with Service-Based Persistence (Recommended)
+
+**Description**: Enhance the existing `.claude/commands/review.md` slash command template to prompt for save/discard after generating the report. Add a `ReviewPersistenceService` class to handle filename generation, metadata extraction, and file writing. The CLI command remains thin - just orchestration.
+
+**Architecture**:
+```
+Slash Command Template (.claude/commands/review.md):
+1. Generate review report (existing logic)
+2. Display report to user
+3. Prompt: "Save report (s) or Discard (d)?"
+4. If save: Call ReviewPersistenceService.save()
+5. If discard: Exit
+
+ReviewPersistenceService (src/lib/review-persistence-service.ts):
+- generateFilename(scope, target, timestamp): string
+  → Converts file path to slug, adds timestamp
+- extractMetadata(scope, target, profile, findings): ReviewMetadata
+  → Detects feature context, counts findings by severity
+- saveReport(report, metadata, filename): void
+  → Writes markdown with YAML frontmatter to .hodge/reviews/
+- detectFeatureContext(target): string | null
+  → Attempts git blame + feature directory detection (optional)
+
+ReviewCommand (src/commands/review.ts):
+- Thin wrapper, delegates to ReviewPersistenceService
+- No business logic in CLI class
+```
+
+**Report Format**:
+```markdown
+---
+reviewed_at: 2025-10-04T23:05:10.000Z
+scope: file
+target: src/commands/review.ts
+profile: default.yml
+feature: HODGE-327.1
+findings:
+  blockers: 0
+  warnings: 3
+  suggestions: 2
+---
+
+# Code Review Report: src/commands/review.ts
+
+**Profile**: Default Code Quality
+**Reviewed**: October 4, 2025
+
+## Blockers (0)
+
+No blocker-level issues found.
+
+## Warnings (3)
+
+### 1. Single Responsibility Violation
+...
+```
+
+**Pros**:
+- Follows established HODGE-322 Service pattern (testable business logic)
+- Minimal changes to existing review.md template (just add prompt + save call)
+- Service class can be unit tested independently (filename generation, metadata extraction)
+- Feature detection is isolated and optional (can enhance later)
+- Future-proof naming convention ready for directory/pattern/recent scopes
+
+**Cons**:
+- Adds new Service class (more code)
+- Feature detection might not always be accurate (git blame could be ambiguous)
+- Requires updating template sync script to include new prompt logic
+
+**When to use**: This approach is ideal when following Hodge's established CLI architecture patterns and prioritizing testability.
+
+---
+
+### Approach 2: Pure Template Implementation (No Service Class)
+
+**Description**: Handle all persistence logic directly in the slash command template using bash commands. No new TypeScript service class - just template enhancements with file operations.
+
+**Architecture**:
+```
+Slash Command Template (.claude/commands/review.md):
+1. Generate review report (existing logic)
+2. Display report to user
+3. Prompt: "Save report (s) or Discard (d)?"
+4. If save:
+   - Generate filename using bash: echo "src/commands/review.ts" | sed 's/\//-/g'
+   - Create metadata header with bash template
+   - Write to .hodge/reviews/ using cat or echo
+5. If discard: Exit
+```
+
+**Pros**:
+- Zero new TypeScript code (pure template)
+- Faster implementation (no Service class to write/test)
+- All logic visible in one template file
+
+**Cons**:
+- Complex bash scripting in template (harder to read/maintain)
+- Not testable (bash logic embedded in template)
+- Feature detection via git blame would be very complex in bash
+- Violates HODGE-322 pattern (business logic should be in Service classes)
+- Harder to extend for future scope types (directory/pattern/recent)
+
+**When to use**: Only for rapid prototyping or if explicitly avoiding TypeScript changes.
+
+---
+
+### Approach 3: CLI-Driven Persistence (Inline in ReviewCommand)
+
+**Description**: Add persistence logic directly in the `ReviewCommand.execute()` method. Prompt user after displaying report, handle file writing inline.
+
+**Architecture**:
+```
+ReviewCommand.execute():
+1. Load profile and context (existing)
+2. Generate and display report (existing)
+3. Prompt user: "Save report (s) or Discard (d)?"
+4. If save:
+   - Generate filename inline
+   - Extract metadata inline
+   - Write file inline
+5. If discard: Exit
+```
+
+**Pros**:
+- Self-contained in one file
+- No new classes needed
+- Simple to understand for small enhancements
+
+**Cons**:
+- Violates CLI Architecture Standards (business logic in CLI command)
+- Not testable (CLI commands are AI-orchestrated, can't test via subprocess)
+- Mixed concerns (orchestration + business logic + presentation)
+- HODGE-322 lesson explicitly discourages this pattern
+- Hard to test filename generation and metadata extraction
+
+**When to use**: Not recommended. This violates established standards and lessons learned.
+
+## Recommendation
+
+**Use Approach 1: Template Enhancement with Service-Based Persistence**
+
+This approach best aligns with Hodge's architecture and lessons learned:
+
+1. **Follows HODGE-322 Pattern**: Service class extracts testable business logic, CLI stays thin
+2. **CLI Architecture Compliance**: Separates orchestration (CLI) from business logic (Service)
+3. **Future-Proof**: Service methods easily extend to directory/pattern/recent scopes in stories 327.3+
+4. **Testable**: Can unit test filename generation, metadata extraction, feature detection independently
+5. **Maintainable**: Template remains readable, complex logic lives in typed TypeScript
+6. **Minimal Template Changes**: Just add prompt and service call to review.md
+
+**Implementation Priority**:
+1. Create `ReviewPersistenceService` class with methods:
+   - `generateFilename(scope, target, timestamp)`
+   - `extractMetadata(scope, target, profile, findings)`
+   - `detectFeatureContext(target)` (optional, best-effort)
+   - `saveReport(report, metadata, filename)`
+2. Add smoke tests for service methods (filename format, metadata structure)
+3. Enhance `.claude/commands/review.md` template with save/discard prompt
+4. Update CLI command to instantiate service (if needed)
+5. Integration test: Generate review → save → verify file exists with correct format
+
+## Decisions Decided During Exploration
+
+1. ✓ **Two-choice menu** - "Save report (s)" or "Discard (d)" replaces original 5-option menu for simplicity
+2. ✓ **File-path-based naming** - `src-commands-review-ts-2025-10-04T23-05-10.md` format without redundant "file-" prefix
+3. ✓ **Future-proof naming convention** - Pattern extends to `directory-{path}`, `pattern-{glob}`, `recent-{desc}`, `all` for scope expansion
+4. ✓ **Metadata header in saved reports** - YAML frontmatter includes timestamp, scope, target, profile, feature (if detected), findings counts
+5. ✓ **Discard means exit silently** - No confirmation message, no files created, user can regenerate if needed
+6. ✓ **Feature detection is optional** - AI attempts to identify related HODGE-XXX work via git blame and feature directories, includes only if high confidence
+
+## Decisions Needed
+
+**No Decisions Needed**
+
+All technical decisions were resolved during conversational exploration.
+
+## Test Intentions
+
+**Filename Generation**:
+- Can convert file path to slug format (e.g., `src/commands/review.ts` → `src-commands-review-ts`)
+- Appends ISO timestamp for uniqueness
+- Future scopes: Can generate `directory-{slug}-{timestamp}`, `pattern-{slug}-{timestamp}`, etc.
+
+**Metadata Extraction**:
+- Extracts reviewed_at timestamp (ISO format)
+- Captures scope type (file/directory/pattern/recent/all)
+- Records target path or pattern
+- Identifies profile name used
+- Counts findings by severity (blockers/warnings/suggestions)
+- Optionally detects related feature (HODGE-XXX) if confident
+
+**Report Saving**:
+- Creates `.hodge/reviews/` directory if it doesn't exist
+- Writes markdown file with YAML frontmatter
+- Preserves full report content below metadata header
+- File is valid markdown parseable by standard tools
+
+**User Interaction**:
+- Displays "Save report (s) or Discard (d)?" prompt after review
+- Saves report when user chooses "s"
+- Exits silently when user chooses "d" (no files created)
+- Both choices implicitly mean "done for now"
+
+**Feature Detection** (optional):
+- Attempts git blame on reviewed file for HODGE-XXX commit references
+- Checks `.hodge/features/HODGE-XXX/` directories for file references
+- Includes feature in metadata only if detection confidence is high
+- Gracefully omits feature field if detection fails or is ambiguous
+
+**Service Architecture**:
+- `ReviewPersistenceService` class handles all persistence logic
+- Methods are testable without CLI orchestration
+- Filename generation can be unit tested with various inputs
+- Metadata extraction can be verified with mock findings
+
+**Integration with Existing Flow**:
+- Review generation and display remain unchanged
+- Save/discard prompt added after report display
+- No changes to profile loading, context aggregation, or analysis logic
+- Backward compatible (can discard to preserve original behavior)
+
+---
+
+*Exploration revisited: 2025-10-04T23:35:00.000Z*
+*AI exploration: Claude Code (Conversational Mode - Enhancement)*
