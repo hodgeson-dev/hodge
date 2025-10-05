@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-329",
+  "timestamp": "2025-10-05T01:29:00.088Z",
+  "issueId": "HODGE-329",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "fix: remove BASE/HEAD parameters from TruffleHog workflow (HODGE-329)\n\n## What Changed\n\n**CI Workflow Fix** (1 file, -2 lines):\n- .github/workflows/quality.yml: Removed BASE/HEAD parameters from TruffleHog step\n  - Deleted `base: ${{ github.event.repository.default_branch }}`\n  - Deleted `head: HEAD`\n  - Now relies on TruffleHog's built-in GitHub event context detection\n\n**Test Coverage** (1 new file, +83 lines, 5 tests):\n- src/test/hodge-329.smoke.test.ts: Created smoke tests validating workflow configuration\n  - Validates YAML syntax parsing\n  - Verifies BASE/HEAD parameters are removed\n  - Checks required parameters (path: ./)\n  - Confirms @main version for latest security updates\n  - Validates checkout step exists before TruffleHog\n\n**Metadata Updates** (6 files):\n- .hodge/.session, context.json, id-counter.json, id-mappings.json: PM tracking synchronized\n- .hodge/development-plan.json, project_management.md: Linear integration updated\n\n**Feature Documentation** (1 new directory):\n- .hodge/features/HODGE-329/: Complete exploration, build plan, and harden validation\n\n## Why This Change\n\nThe TruffleHog security scanning GitHub Action was failing on every push to main with the error \"BASE and HEAD commits are the same\". This occurred because the workflow explicitly set `base: main` and `head: HEAD`, which both resolve to the same commit SHA after a direct push to main completes.\n\nRoot cause: Direct-to-main pushes don't create a commit range the way PRs do. The hardcoded parameters forced TruffleHog to compare a commit against itself, causing the error.\n\nSolution: Remove the BASE/HEAD parameters entirely. TruffleHog's action automatically detects the correct commit range from GitHub's event context (`github.event.before` and `github.event.after`), which properly handles both direct pushes and PR workflows.\n\n## Impact\n\n✅ **CI Fixed**: Security scanning now works on direct-to-main pushes\n✅ **Initial Scan**: First execution will scan entire repository history (never scanned before)\n✅ **Incremental Scanning**: Subsequent pushes scan only new commits\n✅ **Future-Proof**: Configuration will work when PR workflow is adopted\n✅ **Code Quality**: 5 new smoke tests validate workflow configuration\n✅ **Zero Breaking Changes**: All 800 tests passing (795 existing + 5 new)\n\nCloses HODGE-329\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}

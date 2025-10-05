@@ -1248,9 +1248,9 @@
   "TEST-006: Test PM creation": {
     "localID": "TEST-006: Test PM creation",
     "created": "2025-09-30T03:44:33.069Z",
-    "externalID": "549ca660-0dac-482a-98c6-888e1b867bcd",
+    "externalID": "5ee1c3ee-5d63-42f1-955f-5baed2d0e8e5",
     "pmTool": "linear",
-    "lastSynced": "2025-10-05T01:01:19.302Z"
+    "lastSynced": "2025-10-05T01:28:53.727Z"
   },
   "HODGE-301": {
     "localID": "HODGE-301",
@@ -1525,5 +1525,15 @@
   "HODGE-328": {
     "localID": "HODGE-328",
     "created": "2025-10-05T00:35:46.339Z"
+  },
+  "HODGE-329": {
+    "localID": "HODGE-329",
+    "created": "2025-10-05T01:05:54.967Z"
+  },
+  "HODGE-329: The TruffleHog security scanning GitHub Action fails on every push to main with the error \"BASE and...": {
+    "localID": "HODGE-329: The TruffleHog security scanning GitHub Action fails on every push to main with the error \"BASE and...",
+    "created": "2025-10-05T01:15:41.850Z",
+    "externalID": "29f90b39-f9ff-4e12-b80d-fa6dd83f13c3",
+    "pmTool": "linear"
   }
 }
