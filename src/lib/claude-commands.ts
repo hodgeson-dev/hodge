@@ -2647,6 +2647,96 @@ _Documented: {{current_date}}_
    - Impact assessment
    - Related decisions
 
+### Elevation Analysis (After Lesson Creation)
+
+After creating the lesson, analyze whether any insights should be elevated to project-level artifacts:
+
+**Ask yourself (AI):**
+1. **Is this an architectural principle?** → Should it be a STANDARD?
+   - Does it define fundamental system architecture?
+   - Would violating it break the architecture?
+   - Should it be enforced at all phases?
+   - Examples: CLI/AI separation, non-interactive commands, test isolation
+
+2. **Is this a reusable implementation?** → Should it be a PATTERN?
+   - Is it a proven solution to a recurring problem?
+   - Can it be applied in multiple contexts?
+   - Does it have clear usage guidelines?
+   - Examples: async resource pattern, error context pattern
+
+3. **Is this a project-wide decision?** → Should it be a DECISION?
+   - Does it constrain future feature development?
+   - Should all developers know about it?
+   - Is it a trade-off or architectural choice?
+   - Examples: "Use pino for logging", "Prefer integration tests"
+
+4. **Is this a philosophical guideline?** → Should it be a PRINCIPLE?
+   - Does it guide thinking and approach?
+   - Is it aspirational rather than enforceable?
+   - Does it shape the project's character?
+   - Examples: "Freedom to explore, discipline to ship"
+
+**Present Recommendation to User:**
+
+\`\`\`
+════════════════════════════════════════════════════════════
+📊 LESSON ELEVATION ANALYSIS
+════════════════════════════════════════════════════════════
+
+I've analyzed the lesson and identified the following recommendation:
+
+[Recommendation Type]: STANDARD | PATTERN | DECISION | PRINCIPLE | NONE
+
+**What to Elevate**:
+[Specific insight from the lesson]
+
+**Why**:
+[Reasoning - why this should be elevated]
+
+**Where**:
+[Target file - .hodge/standards.md, .hodge/patterns/, .hodge/decisions.md, .hodge/principles.md]
+
+**Proposed Addition**:
+[Show the exact text that would be added]
+
+════════════════════════════════════════════════════════════
+
+Would you like to:
+(a) ✅ Approve - Add this to {{target_file}}
+(b) ✏️ Modify - Let me adjust the recommendation
+(c) ⏭️ Skip - Keep it as a lesson only
+(d) 💭 Discuss - I have questions or want to explore this more
+
+Your choice [a/b/c/d]:
+\`\`\`
+
+**Based on User Choice:**
+
+**If (a) Approve:**
+- Use Edit or Write tool to add the content to the appropriate file
+- Commit the change immediately (separate commit from feature)
+- Confirm: "✅ Elevated to {{type}} in {{file}}"
+
+**If (b) Modify:**
+- Ask: "What would you like to change about the recommendation?"
+- Iterate on the proposed text
+- Present again for approval
+
+**If (c) Skip:**
+- Confirm: "Keeping as lesson only. You can elevate it later if needed."
+- Proceed to ship
+
+**If (d) Discuss:**
+- Engage in conversation about the recommendation
+- Answer questions, explore alternatives
+- Eventually circle back to approve/modify/skip
+
+**Important Notes**:
+- Not every lesson needs elevation - most are feature-specific insights
+- Elevation should happen when the insight has **project-wide applicability**
+- Standards are mandatory (enforced), patterns are guidance (suggested)
+- Multiple elevations possible (e.g., both a standard AND a pattern)
+
 ## Step 4: Ship Quality Checks & Commit
 
 The ship command will:
