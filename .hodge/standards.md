@@ -236,6 +236,65 @@ class ReviewPersistenceService {
 - Consistent with existing workflow patterns (explore, ship, decide)
 - Write tool automatically handles parent directory creation
 
+### CLI/AI Separation of Concerns (HODGE-334)
+**Enforcement: ALL PHASES (mandatory)**
+**⚠️ CRITICAL**: CLI uses codified rules to identify resources; AI reads and interprets content.
+
+**Separation Principle**:
+- **CLI Responsibility**: Structure discovery, validation, and manifest building
+  - Detect patterns (e.g., HODGE-333.1 is sub-feature of HODGE-333)
+  - Validate state (e.g., ship-record.json has validationPassed: true)
+  - Identify relevant files (e.g., exploration.md exists, decisions.md exists)
+  - Assign metadata (precedence, timestamps, types)
+  - Return file manifest (paths + metadata, NO content reading)
+
+- **AI Responsibility**: Content reading, interpretation, and synthesis
+  - Read files based on CLI manifest
+  - Extract relevant information for current context
+  - Synthesize across multiple sources
+  - Adapt to conversation needs
+  - Reference naturally during interaction
+
+**File Manifest Pattern**:
+```typescript
+// ✅ CORRECT: CLI builds manifest with paths and metadata
+interface FileManifest {
+  items: Array<{
+    path: string;           // Where to find it
+    type: string;           // What kind it is
+    metadata: object;       // Context-specific data
+    precedence: number;     // Suggested reading order
+  }>;
+  suggestedAction: string;
+}
+
+// CLI outputs manifest to stdout
+console.log('📚 Context Available');
+console.log('Files:');
+manifest.items.forEach(item => console.log(`  - ${item.path}`));
+
+// ❌ INCORRECT: CLI reads and parses content
+interface ContextSummary {
+  problemStatement: string;   // Extracted from markdown
+  decisions: string[];        // Parsed from file
+  recommendations: string;    // Interpreted content
+}
+```
+
+**Why This Matters**:
+- Maintains clean separation: CLI = structure discovery, AI = content interpretation
+- Enables AI flexibility (dig deeper, skip irrelevant parts, adapt to conversation)
+- Simplifies CLI logic (file existence checks, not content parsing)
+- Testable with codified rules (validate patterns, not content interpretation)
+- Aligns with "AI writes content, CLI creates structure" principle
+
+**Examples**:
+- ✅ `/explore` sub-feature context: CLI identifies parent/sibling files, AI reads and synthesizes
+- 🔄 `/review` (needs audit): Should follow same pattern
+- 🔄 Future context-loading features: Must use file manifest approach
+
+**Related Standard**: Slash Command File Creation Pattern (above) - AI writes, CLI structures
+
 ## Testing Requirements
 **Enforcement: Progressive per phase (see table below)**
 
