@@ -32,7 +32,26 @@ The CLI will output:
 
 ## Review Relevant Context
 
-### 1. Check Lessons from Similar Features
+### 1. Sub-Feature Context (Auto-Loaded)
+**IMPORTANT**: If the CLI output shows "📚 Sub-Feature Context Available", you MUST:
+
+1. **Read all listed files** in the suggested order:
+   - Parent exploration.md (understand the epic)
+   - Parent decisions.md (know what was decided)
+   - Sibling ship records (see what worked)
+   - Sibling lessons (learn from experience)
+
+2. **Synthesize context naturally** during exploration conversation:
+   - Reference parent problem statement when discussing requirements
+   - Mention sibling decisions when exploring approaches
+   - Cite lessons learned when identifying gotchas
+   - Leverage infrastructure created by siblings
+
+3. **Ask user about exclusions** before deep exploration:
+   - "I see HODGE-333.1 and HODGE-333.2 were shipped. Should I exclude any sibling context?"
+   - Accept format: "333.1" or "HODGE-333.1" or "skip 333.2"
+
+### 2. Check Lessons from Similar Features
 ```bash
 # Search for relevant lessons
 ls -la .hodge/lessons/ | grep -i "{{feature-keyword}}"
@@ -42,7 +61,7 @@ cat .hodge/lessons/SIMILAR-FEATURE.md
 ```
 Consider what worked well and what to avoid based on past experience.
 
-### 2. Review Applicable Patterns
+### 3. Review Applicable Patterns
 ```bash
 # List available patterns
 ls -la .hodge/patterns/
@@ -52,7 +71,7 @@ cat .hodge/patterns/relevant-pattern.md
 ```
 Consider which patterns might guide your exploration.
 
-### 3. Check Related Principles
+### 4. Check Related Principles
 ```bash
 # Review principles for exploration phase guidance
 grep -A 5 "Explore" .hodge/principles.md

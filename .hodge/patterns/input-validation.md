@@ -1,31 +1,30 @@
 # Input Validation
 
 **Category**: security
-**Frequency**: Used 8 times
-**Confidence**: 100%
+**Frequency**: Used 3 times
+**Confidence**: 60%
 
 ## Description
 Input validation before processing
 
 ## Examples
 
-### src/commands/build.ts
+### src/lib/frontmatter-parser.ts
 ```typescript
-if (!resolvedFeature) {
-      throw new Error
+if (!data.frontmatter_version) {
+    throw new Error
 ```
 
 
-### src/commands/harden.ts
+### src/lib/frontmatter-parser.ts
 ```typescript
-if (!resolvedFeature) {
-      throw new Error
+function validateFrontmatter
 ```
 
 
-### src/commands/ship.ts
+### src/lib/review-profile-loader.ts
 ```typescript
-if (!resolvedFeature) {
+if (!data.description) {
       throw new Error
 ```
 
@@ -36,5 +35,5 @@ if (!resolvedFeature) {
 - 
 
 ---
-*First seen: 2025-10-05T06:33:49.960Z*
-*Last used: 2025-10-05T06:33:49.980Z*
+*First seen: 2025-10-07T16:10:18.285Z*
+*Last used: 2025-10-07T16:10:18.286Z*

@@ -17,6 +17,7 @@ import { FeatureSpecLoader } from '../lib/feature-spec-loader.js';
 import { autoSave } from '../lib/auto-save.js';
 import { contextManager } from '../lib/context-manager.js';
 import { PMHooks } from '../lib/pm/pm-hooks.js';
+import { SubFeatureContextService } from '../lib/sub-feature-context-service.js';
 
 export interface ExploreOptions {
   force?: boolean;
@@ -72,6 +73,7 @@ export class ExploreCommand {
   private idManager: IDManager;
   private pmHooks = new PMHooks();
   private logger = createCommandLogger('explore', { enableConsole: true });
+  private subFeatureContext = new SubFeatureContextService();
 
   constructor(idManager?: IDManager) {
     this.idManager = idManager || new IDManager();
@@ -218,6 +220,9 @@ export class ExploreCommand {
 
     // Display AI context
     this.displayAIContext(featureName);
+
+    // Check for sub-feature context and display summary
+    this.loadSubFeatureContext(featureName);
 
     const exploreDir = path.join('.hodge', 'features', featureName, 'explore');
 
@@ -811,6 +816,52 @@ Add any specific test scenarios or edge cases discovered during exploration:
     this.logger.info('  4. Then ' + chalk.cyan(`\`/build ${feature}\``) + ' to implement\n');
 
     this.logger.info(chalk.dim(`Exploration saved to: .hodge/features/${feature}/explore`));
+  }
+
+  /**
+   * Load sub-feature context if applicable (HODGE-334)
+   * Outputs file manifest to stdout for AI to consume
+   */
+  private loadSubFeatureContext(feature: string): { isSubFeature: boolean } {
+    const detection = this.subFeatureContext.detectSubFeature(feature);
+
+    if (!detection.isSubFeature || !detection.parent) {
+      return { isSubFeature: false };
+    }
+
+    // Build file manifest (just paths + metadata, no reading)
+    const manifest = this.subFeatureContext.buildFileManifest(detection.parent, [feature]);
+
+    if (!manifest) {
+      return { isSubFeature: true };
+    }
+
+    // Output manifest to stdout for AI
+    this.logger.info(chalk.cyan('\n📚 Sub-Feature Context Available'));
+    this.logger.info(chalk.gray(`Feature: ${feature} (child of ${detection.parent})\n`));
+
+    if (manifest.parent) {
+      this.logger.info(chalk.bold(`Parent: ${manifest.parent.feature}`));
+      for (const file of manifest.parent.files) {
+        this.logger.info(chalk.gray(`  - ${file.path}`));
+      }
+      this.logger.info('');
+    }
+
+    if (manifest.siblings.length > 0) {
+      this.logger.info(chalk.bold(`Shipped Siblings (${manifest.siblings.length}):`));
+      for (const sibling of manifest.siblings) {
+        this.logger.info(chalk.cyan(`  ${sibling.feature} (shipped ${sibling.shippedAt}):`));
+        for (const file of sibling.files) {
+          this.logger.info(chalk.gray(`    - ${file.path}`));
+        }
+      }
+      this.logger.info('');
+    }
+
+    this.logger.info(chalk.dim(`Suggested reading order: ${manifest.suggestedReadingOrder}\n`));
+
+    return { isSubFeature: true };
   }
 }
 
