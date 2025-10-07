@@ -36,20 +36,23 @@ describe('Review Command [integration]', () => {
 
     // Create test profile
     await fs.writeFile(
-      join(reviewProfilesDir, 'default.yml'),
-      `
+      join(reviewProfilesDir, 'general-coding-standards.md'),
+      `---
+frontmatter_version: "1.0.0"
+scope: reusable
+type: universal
+version: "1.0.0"
 name: "Test Quality Profile"
 description: "Profile for integration tests"
 applies_to:
   - "**/*.ts"
   - "**/*.js"
-criteria:
-  - name: "Test Criterion"
-    severity: blocker
-    patterns:
-      - "console.log"
-      - "debugger"
-    reference: ".hodge/lessons/test-lesson.md"
+---
+
+## Test Criterion
+**Enforcement: MANDATORY** | **Severity: BLOCKER**
+
+Check for console.log and debugger statements.
 `.trim()
     );
 
@@ -141,14 +144,23 @@ criteria:
     await fs.mkdir(minimalDir, { recursive: true });
     await fs.mkdir(join(minimalDir, '.hodge', 'review-profiles'), { recursive: true });
 
-    // Copy default profile
+    // Create minimal profile
     await fs.writeFile(
-      join(minimalDir, '.hodge', 'review-profiles', 'default.yml'),
-      `
+      join(minimalDir, '.hodge', 'review-profiles', 'general-coding-standards.md'),
+      `---
+frontmatter_version: "1.0.0"
+scope: reusable
+type: universal
+version: "1.0.0"
 name: "Minimal Profile"
 description: "Test"
 applies_to: ["**/*.ts"]
-criteria:
+---
+
+## Test Criterion
+**Enforcement: MANDATORY** | **Severity: BLOCKER**
+
+Test criteria:
   - name: "Test"
     severity: warning
     patterns: ["test"]

@@ -8,71 +8,75 @@ import { describe, it, expect } from 'vitest';
 import { existsSync, mkdirSync, writeFileSync, rmSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
-import { ProfileLoader } from '../lib/profile-loader.js';
+import { ReviewProfileLoader } from '../lib/review-profile-loader.js';
 import { ContextAggregator } from '../lib/context-aggregator.js';
 import { ReviewCommand } from './review.js';
 import { smokeTest } from '../test/helpers.js';
 
 describe('Review Command - Smoke Tests', () => {
-  smokeTest('ProfileLoader can load and validate default.yml profile', () => {
-    const loader = new ProfileLoader();
-    const profile = loader.loadProfile('default');
+  smokeTest('ReviewProfileLoader can load and validate general-coding-standards.md profile', () => {
+    const loader = new ReviewProfileLoader();
+    const profile = loader.loadProfile('general-coding-standards');
 
-    expect(profile.name).toBe('Default Code Quality');
+    expect(profile.name).toBe('General Coding Standards');
     expect(profile.description).toBeTruthy();
-    expect(profile.criteria.length).toBeGreaterThan(0);
+    expect(profile.criteria_count).toBeGreaterThan(0);
     expect(profile.applies_to).toContain('**/*.ts');
     expect(profile.applies_to).toContain('**/*.kt'); // Kotlin support
   });
 
-  smokeTest('ProfileLoader validates required fields', () => {
+  smokeTest('ReviewProfileLoader validates required fields', () => {
     const testDir = join(tmpdir(), `hodge-test-${Date.now()}`);
     mkdirSync(join(testDir, '.hodge', 'review-profiles'), { recursive: true });
 
     try {
-      // Create invalid profile (missing required field)
-      const invalidProfile = join(testDir, '.hodge', 'review-profiles', 'invalid.yml');
+      // Create invalid profile (missing required frontmatter field)
+      const invalidProfile = join(testDir, '.hodge', 'review-profiles', 'invalid.md');
       writeFileSync(
         invalidProfile,
-        `
+        `---
+frontmatter_version: "1.0.0"
+scope: reusable
+type: universal
+version: "1.0.0"
 name: "Invalid Profile"
-# Missing description and criteria
-applies_to:
-  - "**/*.ts"
-`.trim()
+# Missing description
+---
+
+## Some Criteria
+`
       );
 
-      const loader = new ProfileLoader(testDir);
+      const loader = new ReviewProfileLoader(testDir);
       expect(() => loader.loadProfile('invalid')).toThrow(/missing.*field/i);
     } finally {
       rmSync(testDir, { recursive: true, force: true });
     }
   });
 
-  smokeTest('ProfileLoader validates severity levels', () => {
+  smokeTest('ReviewProfileLoader validates frontmatter version', () => {
     const testDir = join(tmpdir(), `hodge-test-${Date.now()}`);
     mkdirSync(join(testDir, '.hodge', 'review-profiles'), { recursive: true });
 
     try {
-      // Create profile with invalid severity
-      const badProfile = join(testDir, '.hodge', 'review-profiles', 'badseverity.yml');
+      // Create profile with invalid frontmatter version
+      const badProfile = join(testDir, '.hodge', 'review-profiles', 'badversion.md');
       writeFileSync(
         badProfile,
-        `
-name: "Bad Severity"
-description: "Test"
-applies_to:
-  - "**/*.ts"
-criteria:
-  - name: "Test"
-    severity: invalid_severity
-    patterns:
-      - "Test pattern"
-`.trim()
+        `---
+frontmatter_version: "2.0.0"
+scope: reusable
+type: universal
+version: "1.0.0"
+description: "Profile with unsupported frontmatter version"
+---
+
+## Some Criteria
+`
       );
 
-      const loader = new ProfileLoader(testDir);
-      expect(() => loader.loadProfile('badseverity')).toThrow(/invalid severity/i);
+      const loader = new ReviewProfileLoader(testDir);
+      expect(() => loader.loadProfile('badversion')).toThrow(/frontmatter_version/i);
     } finally {
       rmSync(testDir, { recursive: true, force: true });
     }

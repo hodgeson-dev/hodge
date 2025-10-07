@@ -7,9 +7,9 @@
 
 import { Command } from 'commander';
 import { existsSync, readFileSync } from 'fs';
-import { ProfileLoader } from '../lib/profile-loader.js';
+import { ReviewProfileLoader, type ReviewProfile } from '../lib/review-profile-loader.js';
 import { ContextAggregator } from '../lib/context-aggregator.js';
-import type { ReviewProfile, ProjectContext } from '../types/review-profile.js';
+import type { ProjectContext } from '../types/review-profile.js';
 import { createCommandLogger } from '../lib/logger.js';
 
 export class ReviewCommand {
@@ -23,14 +23,16 @@ export class ReviewCommand {
     }
 
     try {
-      // Load profile
-      const profileLoader = new ProfileLoader();
+      // Load profile (try new markdown format, fall back to 'default' if 'general-coding-standards' not found)
+      const profileLoader = new ReviewProfileLoader();
       let profile: ReviewProfile;
       try {
-        profile = profileLoader.loadProfile('default');
+        profile = profileLoader.loadProfile('general-coding-standards');
       } catch (error) {
         this.logger.error(`❌ ${error instanceof Error ? error.message : String(error)}`);
-        this.logger.info('\nPlease ensure .hodge/review-profiles/default.yml exists.');
+        this.logger.info(
+          '\nPlease ensure .hodge/review-profiles/general-coding-standards.md exists.'
+        );
         process.exit(1);
       }
 
@@ -66,7 +68,7 @@ export class ReviewCommand {
       this.logger.info(`\nTo complete the review, the slash command template will:`);
       this.logger.info(`1. Analyze ${filePath} using ${profile.name} profile`);
       this.logger.info(`2. Check against ${context.lessons.length} lessons learned`);
-      this.logger.info(`3. Apply ${profile.criteria.length} review criteria`);
+      this.logger.info(`3. Apply ${profile.criteria_count} review criteria`);
       this.logger.info(`4. Generate markdown report with findings\n`);
 
       // In a complete implementation, we would:
