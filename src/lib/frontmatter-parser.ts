@@ -8,6 +8,20 @@
 import matter from 'gray-matter';
 
 /**
+ * Detection rules for auto-detecting when a profile applies
+ */
+export interface DetectionRules {
+  /** File paths to check for existence (e.g., ["tsconfig.json"]) */
+  files?: string[];
+
+  /** Dependencies to check in package.json (e.g., ["typescript"]) */
+  dependencies?: string[];
+
+  /** How to combine rules: "any" (OR) or "all" (AND) */
+  match?: 'any' | 'all';
+}
+
+/**
  * Frontmatter data for review profiles
  */
 export interface FrontmatterData {
@@ -34,6 +48,9 @@ export interface FrontmatterData {
 
   /** Profile description (optional) */
   description?: string;
+
+  /** Detection rules for auto-detection (optional) */
+  detection?: DetectionRules;
 }
 
 /**
@@ -127,5 +144,51 @@ function validateFrontmatter(data: FrontmatterData): void {
     throw new Error(
       `Invalid version format: ${data.version} (expected semver format like "1.0.0")`
     );
+  }
+
+  // Validate detection rules if present
+  if (data.detection) {
+    validateDetectionRules(data.detection);
+  }
+}
+
+/**
+ * Validate detection rules schema
+ *
+ * @param rules - Detection rules to validate
+ * @throws Error if validation fails
+ */
+function validateDetectionRules(rules: DetectionRules): void {
+  // At least one detection method must be specified (if detection rules are provided)
+  if (!rules.files && !rules.dependencies) {
+    throw new Error('Detection rules must specify at least one of: files, dependencies');
+  }
+
+  // Validate files array
+  if (rules.files !== undefined) {
+    if (!Array.isArray(rules.files)) {
+      throw new Error('Detection.files must be an array of strings');
+    }
+    if (rules.files.some((f) => typeof f !== 'string')) {
+      throw new Error('All elements in detection.files must be strings');
+    }
+  }
+
+  // Validate dependencies array
+  if (rules.dependencies !== undefined) {
+    if (!Array.isArray(rules.dependencies)) {
+      throw new Error('Detection.dependencies must be an array of strings');
+    }
+    if (rules.dependencies.some((d) => typeof d !== 'string')) {
+      throw new Error('All elements in detection.dependencies must be strings');
+    }
+  }
+
+  // Validate match field
+  if (rules.match !== undefined) {
+    const validMatches: Array<'any' | 'all'> = ['any', 'all'];
+    if (!validMatches.includes(rules.match)) {
+      throw new Error(`Invalid detection.match: ${String(rules.match)} (must be "any" or "all")`);
+    }
   }
 }

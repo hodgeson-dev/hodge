@@ -123,12 +123,18 @@ export class ExploreCommand {
         });
       } else if (!featureID) {
         // It looks like an ID but we couldn't find it
-        // Create a new feature and link it if it's an external ID
+        // Create a new feature with the specified ID
         if (feature.startsWith('HODGE-')) {
-          const error = new Error(`Feature not found: ${feature}`);
-          this.logger.error('Feature not found', { error, feature });
-          this.logger.error(chalk.red(`❌ Feature ${feature} not found`));
-          return;
+          // HODGE-prefixed ID that doesn't exist yet - create it directly
+          // This enables exploring new sub-features like HODGE-333.2
+          featureID = await this.idManager.createFeature(feature);
+          featureName = featureID.localID;
+          this.logger.info(chalk.green(`✓ Created new feature: ${featureID.localID}`));
+          this.logger.info('Created new feature', { featureID: featureID.localID, name: feature });
+          // Update PM tracking - mark as exploring at START of phase (fire-and-forget for performance)
+          this.pmHooks.onExplore(featureID.localID, feature).catch(() => {
+            // Silently handle PM update failures
+          });
         } else {
           // External ID - create new feature and link it
           const newFeature = await this.idManager.createFeature(feature);
@@ -321,6 +327,7 @@ export class ExploreCommand {
    * Rules:
    * - Quoted strings → topic
    * - Pattern: any-chars-123 (non-space chars, hyphen, numbers) → feature
+   * - Pattern: any-chars-123.456 (sub-features with decimal notation) → feature
    * - Natural language (contains spaces, no pattern match) → topic
    */
   private detectInputType(input: string): 'feature' | 'topic' {
@@ -337,7 +344,8 @@ export class ExploreCommand {
 
     // Rule 2: Feature pattern - any non-space chars, hyphen, numbers
     // Examples: HODGE-053, auth-123, feature-1, ABC-999
-    const featurePattern = /^[^\s]+-\d+$/;
+    // Also supports sub-features: HODGE-333.1, HODGE-333.2
+    const featurePattern = /^[^\s]+-\d+(\.\d+)?$/;
     if (featurePattern.test(trimmed)) {
       return 'feature';
     }

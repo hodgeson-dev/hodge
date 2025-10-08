@@ -22,9 +22,9 @@ function validateFrontmatter
 ```
 
 
-### src/lib/review-profile-loader.ts
+### src/lib/id-manager.ts
 ```typescript
-if (!data.description) {
+if (!feature) {
       throw new Error
 ```
 
@@ -35,5 +35,5 @@ if (!data.description) {
 - 
 
 ---
-*First seen: 2025-10-07T16:10:18.285Z*
-*Last used: 2025-10-07T16:10:18.286Z*
+*First seen: 2025-10-08T04:46:31.630Z*
+*Last used: 2025-10-08T04:46:31.631Z*

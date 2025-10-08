@@ -173,10 +173,9 @@ export class StructureGenerator {
   /**
    * Generates the complete .hodge directory structure
    * @param projectInfo - The detected project information
-   * @param force - Whether to overwrite existing .hodge directory
    * @throws {StructureGenerationError} If generation fails
    */
-  async generateStructure(projectInfo: ProjectInfo, force = false): Promise<void> {
+  async generateStructure(projectInfo: ProjectInfo): Promise<void> {
     if (!projectInfo) {
       throw new StructureGenerationError('Project information is required');
     }
@@ -187,12 +186,8 @@ export class StructureGenerator {
     }
 
     try {
-      // Check if .hodge already exists and force is not set
-      if (!force && (await fs.pathExists(hodgePath))) {
-        throw new StructureGenerationError(
-          '.hodge directory already exists. Use --force to overwrite.'
-        );
-      }
+      // Note: Existence check moved to InitCommand.smartQuestionFlow()
+      // This ensures clean error messaging to users
 
       // Create .hodge directory structure
       await fs.ensureDir(hodgePath);

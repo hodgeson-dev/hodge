@@ -62,12 +62,12 @@ export class IDManager {
 
   /**
    * Creates a new feature with local ID and optional external ID.
-   * @param {string} _name - The feature name (currently unused, reserved for future use)
+   * @param {string} name - The feature name or explicit HODGE ID (e.g., "HODGE-333.2")
    * @param {string} [externalID] - Optional external PM tool ID
    * @returns {Promise<FeatureID>} The created feature ID object
    * @throws {Error} If unable to save mappings or counter
    */
-  async createFeature(_name: string, externalID?: string): Promise<FeatureID> {
+  async createFeature(name: string, externalID?: string): Promise<FeatureID> {
     // Validate external ID if provided
     if (externalID !== undefined) {
       if (typeof externalID !== 'string') {
@@ -77,7 +77,16 @@ export class IDManager {
         throw new Error('External ID cannot be empty');
       }
     }
-    const localID = await this.generateLocalID();
+
+    // Check if name is already a HODGE-prefixed ID (e.g., HODGE-333.2)
+    // If so, use it directly instead of generating a new sequential ID
+    let localID: string;
+    if (name.match(/^HODGE-\d+(\.\d+)?$/)) {
+      localID = name;
+    } else {
+      localID = await this.generateLocalID();
+    }
+
     const featureID: FeatureID = {
       localID,
       externalID,

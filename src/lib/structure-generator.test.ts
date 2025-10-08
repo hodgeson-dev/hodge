@@ -141,18 +141,12 @@ describe('StructureGenerator', () => {
       );
     });
 
-    it('should throw error when .hodge exists without force', async () => {
+    // Note: Existence check moved to InitCommand.smartQuestionFlow() in HODGE-333.2
+    // StructureGenerator no longer checks for existing .hodge directory
+    it('should create structure even when .hodge exists (existence check moved to InitCommand)', async () => {
       mockFs.pathExists.mockResolvedValue(true);
 
-      await expect(generator.generateStructure(mockProjectInfo)).rejects.toThrow(
-        StructureGenerationError
-      );
-    });
-
-    it('should overwrite when force is true', async () => {
-      mockFs.pathExists.mockResolvedValue(true);
-
-      await generator.generateStructure(mockProjectInfo, true);
+      await generator.generateStructure(mockProjectInfo);
 
       expect(mockFs.ensureDir).toHaveBeenCalled();
     });

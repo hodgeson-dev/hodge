@@ -13,6 +13,9 @@ import { StructureGenerator, StructureGenerationError } from '../lib/structure-g
 import { PMTool } from '../lib/pm/types.js';
 import { installClaudeSlashCommands } from './init-claude-commands.js';
 import { createCommandLogger } from '../lib/logger.js';
+import { ProfileDiscoveryService } from '../lib/profile-discovery-service.js';
+import { AutoDetectionService } from '../lib/auto-detection-service.js';
+import { ReviewConfigGenerator } from '../lib/review-config-generator.js';
 
 /**
  * Valid PM tool values that can be selected by users
@@ -41,8 +44,6 @@ interface ExtendedProjectInfo extends ProjectInfo {
  * Options for the init command
  */
 export interface InitOptions {
-  /** Force initialization even if .hodge directory exists */
-  force?: boolean;
   /** Skip all prompts and use defaults */
   yes?: boolean;
   /** Interactive setup with PM tool selection and pattern learning */
@@ -119,11 +120,14 @@ export class InitCommand {
       this.logger.debug('Starting structure generation');
       spinner = ora('Creating Hodge structure...').start();
 
-      await this.generator.generateStructure(projectInfo, options.force);
+      await this.generator.generateStructure(projectInfo);
       this.logger.debug('Structure generation completed');
 
       spinner.succeed('Hodge structure created successfully');
       spinner = null;
+
+      // Run auto-detection for review profiles
+      await this.runAutoDetection(projectInfo);
 
       // Execute pattern learning if requested
       if ((projectInfo as ExtendedProjectInfo).shouldLearnPatterns) {
@@ -184,10 +188,6 @@ export class InitCommand {
   private validateOptions(options: InitOptions): void {
     if (!options || typeof options !== 'object') {
       throw new ValidationError('Options must be an object', 'options');
-    }
-
-    if (options.force !== undefined && typeof options.force !== 'boolean') {
-      throw new ValidationError('Force option must be a boolean', 'force');
     }
 
     if (options.yes !== undefined && typeof options.yes !== 'boolean') {
@@ -341,6 +341,103 @@ export class InitCommand {
   }
 
   /**
+   * Run auto-detection for review profiles and generate review-config.md
+   * @param projectInfo - The project information
+   */
+  private async runAutoDetection(projectInfo: ProjectInfo): Promise<void> {
+    const spinner = ora('Detecting project technologies...').start();
+
+    try {
+      this.logger.debug('Starting auto-detection for review profiles');
+
+      // Discover all profiles
+      const discoveryService = new ProfileDiscoveryService();
+      const registry = await discoveryService.discoverProfiles();
+
+      this.logger.debug('Profile discovery complete', {
+        total: registry.profiles.length,
+        detectable: registry.detectableProfiles.length,
+      });
+
+      if (registry.detectableProfiles.length === 0) {
+        spinner.warn('No review profiles with detection rules found');
+        this.logger.warn('Skipping auto-detection (no detectable profiles)');
+        return;
+      }
+
+      // Run auto-detection
+      const detectionService = new AutoDetectionService(projectInfo.rootPath);
+      const detectionResults = await detectionService.detectProfiles(registry.detectableProfiles);
+
+      const detectedProfiles = detectionResults.filter((r) => r.detected);
+
+      if (detectedProfiles.length === 0) {
+        spinner.warn('No matching review profiles detected');
+        this.logger.info(chalk.yellow('ℹ️  No technologies detected for review profiles'));
+        this.logger.info(
+          chalk.gray('   You can manually configure profiles in .hodge/review-config.md')
+        );
+        return;
+      }
+
+      // Generate review-config.md
+      const hodgePath = path.join(projectInfo.rootPath, '.hodge');
+      const configGenerator = new ReviewConfigGenerator(hodgePath);
+      await configGenerator.generate(detectionResults);
+
+      spinner.succeed(`Detected ${detectedProfiles.length} technologies for code review`);
+
+      // Show clean detection results
+      this.logger.info(chalk.blue('\n📋 Review Profiles Detected:'));
+      for (const result of detectedProfiles) {
+        const profileName = path.basename(result.profile.path, '.md');
+        this.logger.info(`   ${chalk.green('✓')} ${this.formatProfileNameForDisplay(profileName)}`);
+      }
+      this.logger.info(''); // Empty line for spacing
+
+      this.logger.debug('Auto-detection completed successfully', {
+        detectedCount: detectedProfiles.length,
+      });
+    } catch (error) {
+      spinner.fail('Auto-detection failed');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Auto-detection failed: ${errorMessage}`, { error: error as Error });
+      this.logger.info(
+        chalk.yellow('  Auto-detection encountered an error but initialization will continue')
+      );
+    }
+  }
+
+  /**
+   * Format profile name for display (e.g., "typescript" → "TypeScript")
+   * @param profileName - Profile filename without extension
+   * @returns Formatted name
+   */
+  private formatProfileNameForDisplay(profileName: string): string {
+    const specialCases: Record<string, string> = {
+      typescript: 'TypeScript',
+      javascript: 'JavaScript',
+      graphql: 'GraphQL',
+      mui: 'Material-UI (MUI)',
+      'chakra-ui': 'Chakra UI',
+      tailwind: 'Tailwind CSS',
+      nestjs: 'NestJS',
+      trpc: 'tRPC',
+      eslint: 'ESLint',
+      prettier: 'Prettier',
+    };
+
+    if (specialCases[profileName.toLowerCase()]) {
+      return specialCases[profileName.toLowerCase()];
+    }
+
+    return profileName
+      .split('-')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+
+  /**
    * Executes pattern learning analysis on the codebase
    * @param projectInfo - The project information
    */
@@ -477,12 +574,16 @@ ${
     options: InitOptions
   ): Promise<boolean> {
     try {
-      // If force mode, skip questions
-      if (options.force) {
-        if (projectInfo.hasExistingConfig) {
-          this.logger.info(chalk.yellow('⚠️  Overwriting existing Hodge configuration (--force)'));
-        }
-        return true;
+      // Check if .hodge already exists - fail with clear message
+      if (projectInfo.hasExistingConfig) {
+        this.logger.error(chalk.red('⚠️  Hodge is already initialized in this directory.'));
+        this.logger.error(chalk.gray('   To re-initialize:'));
+        this.logger.error(chalk.gray('   1. Manually remove the .hodge/ directory'));
+        this.logger.error(chalk.gray('   2. Run hodge init again'));
+        this.logger.error(
+          chalk.gray('   (Future: Use hodge init --update to preserve customizations)')
+        );
+        return false;
       }
 
       // Check if interactive mode is explicitly requested
@@ -490,12 +591,6 @@ ${
 
       // If --yes flag is used, accept all defaults without prompts
       if (options.yes) {
-        if (projectInfo.hasExistingConfig) {
-          this.logger.info(
-            chalk.yellow('⚠️  Existing Hodge configuration detected. Use --force to overwrite.')
-          );
-          return false; // Don't overwrite without explicit force
-        }
         this.logger.info(chalk.gray('Using all defaults (--yes flag)'));
         return true;
       }
@@ -509,14 +604,7 @@ ${
         // Interactive flow continues below with all prompts
       } else {
         // Default quick mode - minimal prompts
-        if (projectInfo.hasExistingConfig) {
-          this.logger.info(
-            chalk.yellow('⚠️  Existing Hodge configuration detected. Use --force to overwrite.')
-          );
-          return false; // Don't overwrite without explicit force
-        }
-
-        // For new initialization in quick mode, ask for name if not detected
+        // Ask for name if not detected
         if (!projectInfo.name) {
           const { projectName } = await inquirer.prompt<{ projectName: string }>([
             {
