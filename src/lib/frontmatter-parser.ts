@@ -17,6 +17,9 @@ export interface DetectionRules {
   /** Dependencies to check in package.json (e.g., ["typescript"]) */
   dependencies?: string[];
 
+  /** Semver version range (e.g., ">=5.0.0 <6.0.0") */
+  version_range?: string;
+
   /** How to combine rules: "any" (OR) or "all" (AND) */
   match?: 'any' | 'all';
 }

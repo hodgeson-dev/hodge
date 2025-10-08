@@ -1,27 +1,27 @@
 # Async Parallel Operations
 
 **Category**: performance
-**Frequency**: Used 12 times
-**Confidence**: 100%
+**Frequency**: Used 4 times
+**Confidence**: 80%
 
 ## Description
 Parallel execution for better performance
 
 ## Examples
 
-### src/commands/build.ts
+### src/commands/explore.ts
 ```typescript
 Promise.all(
 ```
 
 
-### src/commands/build.ts
+### src/commands/explore.ts
 ```typescript
 await Promise.all
 ```
 
 
-### src/commands/explore.ts
+### src/lib/auto-detection-service.ts
 ```typescript
 Promise.all(
 ```
@@ -33,5 +33,5 @@ Promise.all(
 - 
 
 ---
-*First seen: 2025-10-05T06:33:49.960Z*
-*Last used: 2025-10-05T06:33:49.977Z*
+*First seen: 2025-10-08T06:36:13.542Z*
+*Last used: 2025-10-08T06:36:13.546Z*
