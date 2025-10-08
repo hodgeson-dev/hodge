@@ -380,6 +380,9 @@ export class InitCommand {
         return;
       }
 
+      // Copy all review profiles to .hodge/review-profiles/
+      await this.copyReviewProfiles(projectInfo.rootPath);
+
       // Generate review-config.md
       const hodgePath = path.join(projectInfo.rootPath, '.hodge');
       const configGenerator = new ReviewConfigGenerator(hodgePath);
@@ -405,6 +408,41 @@ export class InitCommand {
       this.logger.info(
         chalk.yellow('  Auto-detection encountered an error but initialization will continue')
       );
+    }
+  }
+
+  /**
+   * Copy all review profiles from package to .hodge/review-profiles/
+   * Preserves directory structure (languages/, frameworks/, etc.)
+   * @param projectRoot - The project root path
+   */
+  private async copyReviewProfiles(projectRoot: string): Promise<void> {
+    try {
+      this.logger.debug('Copying review profiles to .hodge/review-profiles/');
+
+      // Get source directory (review-profiles/ in package)
+      const packageRoot = path.resolve(__dirname, '..', '..');
+      const sourceDir = path.join(packageRoot, 'review-profiles');
+
+      // Get destination directory (.hodge/review-profiles/ in project)
+      const destDir = path.join(projectRoot, '.hodge', 'review-profiles');
+
+      // Ensure destination exists
+      await fs.ensureDir(destDir);
+
+      // Copy entire directory structure
+      await fs.copy(sourceDir, destDir, {
+        overwrite: true,
+      });
+
+      this.logger.debug('Review profiles copied successfully', {
+        source: sourceDir,
+        dest: destDir,
+      });
+    } catch (error) {
+      this.logger.error('Failed to copy review profiles', { error: error as Error });
+      // Non-fatal error - log but don't fail init
+      this.logger.warn('Review profiles not copied, but init will continue');
     }
   }
 
