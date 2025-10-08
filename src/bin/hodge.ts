@@ -71,13 +71,32 @@ const hardenCmd = program
   .description('[Internal] Harden a feature for production (uses current context if not specified)')
   .option('--skip-tests', 'Skip test execution')
   .option('--auto-fix', 'Attempt to auto-fix linting issues')
+  .option('--review', 'Return review context for AI code review (does not run validations)')
   .action(
-    async (feature: string | undefined, options: { skipTests?: boolean; autoFix?: boolean }) => {
+    async (
+      feature: string | undefined,
+      options: { skipTests?: boolean; autoFix?: boolean; review?: boolean }
+    ) => {
       const { HardenCommand } = await import('../commands/harden.js');
       const hardenCommand = new HardenCommand();
       await hardenCommand.execute(feature, options);
     }
   );
+
+program
+  .command('review <scope> [path]')
+  .description('[Internal] AI-driven code review')
+  .option('--last <count>', 'Number of commits to review (for recent scope)', '1')
+  .action(async (scope: string, path: string | undefined, options: { last: string }) => {
+    const { ReviewCommand } = await import('../commands/review.js');
+    const reviewCommand = new ReviewCommand();
+    const lastCount = scope === 'recent' ? parseInt(options.last, 10) : undefined;
+    const pathOrCount = path || (scope === 'recent' ? options.last : '');
+    if (!pathOrCount && scope !== 'recent') {
+      throw new Error(`Path argument is required for ${scope} scope`);
+    }
+    await reviewCommand.execute(scope, pathOrCount, { last: lastCount });
+  });
 
 const statusCmd = program
   .command('status [feature]')

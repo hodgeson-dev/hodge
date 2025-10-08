@@ -2,6 +2,8 @@ import chalk from 'chalk';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { existsSync } from 'fs';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 import { autoSave } from '../lib/auto-save.js';
 import { contextManager } from '../lib/context-manager.js';
 import { PMHooks } from '../lib/pm/pm-hooks.js';
@@ -10,12 +12,16 @@ import {
   type ValidationResult,
   type ValidationResults,
 } from '../lib/harden-service.js';
+import { ProfileCompositionService } from '../lib/profile-composition-service.js';
 import { createCommandLogger } from '../lib/logger.js';
+
+const execAsync = promisify(exec);
 
 export interface HardenOptions {
   skipTests?: boolean;
   autoFix?: boolean;
   sequential?: boolean; // Run validations sequentially for debugging
+  review?: boolean; // Return review context instead of running validations
 }
 
 /**
@@ -90,6 +96,12 @@ export class HardenCommand {
 
       // Create harden directory
       await fs.mkdir(hardenDir, { recursive: true });
+
+      // Handle --review mode: return review context for AI analysis
+      if (options.review) {
+        await this.handleReviewMode(feature, hardenDir);
+        return;
+      }
 
       // Check for PM integration
       const pmTool = process.env.HODGE_PM_TOOL;
@@ -325,5 +337,92 @@ ${results.build.output || 'No build output'}
     this.logger.info(
       '\n' + chalk.dim('Report saved to: ' + path.join(hardenDir, 'harden-report.md'))
     );
+  }
+
+  /**
+   * Handle review mode: get changed files and compose review context
+   * @private
+   */
+  private async handleReviewMode(_feature: string, hardenDir: string): Promise<void> {
+    this.logger.info(chalk.blue('🔍 Review Mode: Preparing context for AI code review\n'));
+
+    try {
+      // Get changed files via git diff
+      const changedFiles = await this.getChangedFiles();
+
+      if (changedFiles.length === 0) {
+        this.logger.info(chalk.yellow('⚠️  No changed files found in current branch'));
+        this.logger.info(chalk.gray('   Review context will still be provided\n'));
+      } else {
+        this.logger.info(chalk.green(`📄 Found ${changedFiles.length} changed files:`));
+        changedFiles.forEach((file) => {
+          this.logger.info(chalk.gray(`   - ${file}`));
+        });
+        this.logger.info('');
+      }
+
+      // Compose review context using ProfileCompositionService
+      this.logger.info(chalk.blue('📚 Loading review context...'));
+      const compositionService = new ProfileCompositionService();
+      const compositionResult = compositionService.composeReviewContext();
+
+      this.logger.info(chalk.green(`✓ Loaded ${compositionResult.profilesLoaded.length} profiles`));
+      if (compositionResult.profilesMissing.length > 0) {
+        this.logger.warn(
+          chalk.yellow(`⚠️  Missing profiles: ${compositionResult.profilesMissing.join(', ')}`)
+        );
+      }
+      this.logger.info('');
+
+      // Save review context to file for AI to read
+      const reviewContextPath = path.join(hardenDir, 'review-context.md');
+      await fs.writeFile(reviewContextPath, compositionResult.content);
+
+      // Save changed files list
+      const changedFilesPath = path.join(hardenDir, 'changed-files.txt');
+      await fs.writeFile(changedFilesPath, changedFiles.join('\n'));
+
+      // Output summary for AI
+      this.logger.info(chalk.bold('Review Context Ready:'));
+      this.logger.info(chalk.gray(`   Changed files: ${hardenDir}/changed-files.txt`));
+      this.logger.info(chalk.gray(`   Review context: ${hardenDir}/review-context.md`));
+      this.logger.info('');
+      this.logger.info(
+        chalk.green(
+          '✅ AI can now analyze the changed files against standards, principles, and review profiles'
+        )
+      );
+    } catch (error) {
+      this.logger.error(
+        chalk.red(
+          `❌ Failed to prepare review context: ${error instanceof Error ? error.message : String(error)}`
+        ),
+        { error: error as Error }
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Get list of changed files in current branch
+   * @private
+   */
+  private async getChangedFiles(): Promise<string[]> {
+    try {
+      // Get changed files compared to HEAD (uncommitted changes)
+      const { stdout } = await execAsync('git diff --name-only HEAD');
+
+      const files = stdout
+        .trim()
+        .split('\n')
+        .filter((file) => file.length > 0)
+        .filter((file) => !file.startsWith('.hodge/')); // Exclude hodge metadata
+
+      return files;
+    } catch (error) {
+      // If git command fails, return empty array
+      this.logger.warn('Could not get changed files from git', { error: error as Error });
+      return [];
+    }
   }
 }

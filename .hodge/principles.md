@@ -126,6 +126,33 @@ it('should process order and send confirmation email', async () => {
 - Dashboards show phase metrics
 - Stand-ups discuss phase transitions
 
+### 6. Structured Flexibility 🔄
+**Balance framework structure with conversational discovery**
+
+The framework balances structure with conversational discovery:
+
+**Structure Provides**:
+- Standards that define quality gates
+- Progressive phases that build discipline
+- Test requirements that ensure reliability
+- Patterns that guide implementation
+
+**Conversation Enables**:
+- Discovery of missing requirements
+- Course correction during implementation
+- Natural iteration and refinement
+- Flexible response to complexity
+
+**The Balance**: Neither alone is sufficient. Structure without conversation becomes rigid and brittle. Conversation without structure becomes chaotic and inconsistent. Together they create "flexible discipline" - freedom to explore within guardrails that ensure quality.
+
+**In Practice**: When implementing a feature:
+- Start with the structured plan (exploration → decision → build → harden → ship)
+- Allow conversation to discover gaps and opportunities
+- Update the plan based on discoveries
+- Maintain standards throughout
+
+*This principle emerged from HODGE-333.4, where a clear 4-phase plan coexisted with conversational discovery of missing functionality (review report generation). The structure guided without constraining.*
+
 ## Hodge-Specific Architectural Principles
 
 ### 1. AI-Backend Separation

@@ -1,53 +1,43 @@
 # Hodge Harden Mode
 
-## ⚠️ REQUIRED: Pre-Harden Standards Review
+## ⚠️ REQUIRED: Pre-Harden Code Review
 
-**STOP! You MUST complete this AI Standards Review BEFORE running the harden command.**
+**STOP! You MUST complete this AI Code Review BEFORE running the harden command.**
 
-### Step 1: Review Recent Changes
+### Step 1: Load Review Context
+**Get review context (standards, principles, patterns, review profiles):**
+
 ```bash
-# Review all changes in this feature
-git diff main...HEAD -- . ':(exclude).hodge/features/'
-
-# Or if on main branch
-git diff HEAD~5..HEAD -- . ':(exclude).hodge/features/'
+hodge harden {{feature}} --review
 ```
 
-### Step 2: Load Standards for Reference
+This command will:
+1. Get all changed files in the current branch (via git diff)
+2. Load project context (standards.md, principles.md, decisions.md, patterns/, lessons/)
+3. Load review profiles from .hodge/review-config.md
+4. Save everything to `.hodge/features/{{feature}}/harden/review-context.md`
+5. Save changed files list to `.hodge/features/{{feature}}/harden/changed-files.txt`
+
+### Step 2: Read Changed Files
 ```bash
-cat .hodge/standards.md | head -60  # Review key standards
+# See what files changed
+cat .hodge/features/{{feature}}/harden/changed-files.txt
 ```
 
-### Step 3: AI Standards Compliance Checklist
-**You MUST check each item below:**
+### Step 3: Conduct AI Code Review
+**Read the review context and analyze the changed files:**
 
-- [ ] **TypeScript Standards**
-  - Are there any `any` types that should be properly typed?
-  - Are all function return types appropriate?
-  - Is strict mode being followed?
+```bash
+# Read the full review context (contains standards, principles, decisions, patterns, profiles)
+cat .hodge/features/{{feature}}/harden/review-context.md
+```
 
-- [ ] **Testing Requirements**
-  - Are there integration tests (not just smoke tests)?
-  - Do tests verify behavior, not implementation?
-  - Is the Test Isolation Requirement followed (no .hodge modifications)?
+**Review each changed file against the loaded context.**
 
-- [ ] **Code Comments & TODOs**
-  - Are all TODOs in format: `// TODO: [phase] description`?
-  - Are there any naked TODOs without descriptions?
-  - Should any TODOs be resolved before hardening?
+**⚠️ CRITICAL**: The review context has precedence rules built in. Project standards (HIGHEST PRECEDENCE) override review profile recommendations (LOWER PRECEDENCE). Follow the precedence rules in the context.
 
-- [ ] **Performance Standards**
-  - Will CLI commands respond within 500ms?
-  - Are there any synchronous operations that should be async?
-  - Any unnecessary blocking operations?
-
-- [ ] **Error Handling**
-  - Is error handling comprehensive?
-  - Are errors logged appropriately?
-  - Do errors fail gracefully?
-
-### Step 4: Report Standards Assessment
-Based on your review, choose ONE:
+### Step 4: Report Review Findings
+Based on your code review, choose ONE:
 
 **Option A: Ready to Harden ✅**
 ```
@@ -81,7 +71,89 @@ RECOMMENDATION: Fix these issues before running harden.
 Returning to build phase to address issues.
 ```
 
-## Command Execution (After Pre-Check)
+### Step 5: Generate Review Report
+**IMPORTANT**: After conducting your review, you MUST write a review-report.md file documenting your findings.
+
+Use the Write tool to create `.hodge/features/{{feature}}/harden/review-report.md` with this format:
+
+```markdown
+# Code Review Report: {{feature}}
+
+**Reviewed**: [ISO timestamp]
+**Scope**: Feature changes ([N] files)
+**Profiles Used**: [list profiles from review-context.md]
+
+## Summary
+- 🚫 **[N] Blockers** (must fix before proceeding)
+- ⚠️ **[N] Warnings** (should address before ship)
+- 💡 **[N] Suggestions** (optional improvements)
+
+## Critical Issues (BLOCKER)
+[If any blockers found, list them here with file:line references]
+
+### [file path]:[line number]
+**Violation**: [Standard/Rule Name] - BLOCKER
+[Detailed explanation of the issue and why it's blocking]
+
+## Warnings
+[If any warnings found, list them here]
+
+### [file path]:[line number]
+**Violation**: [Standard/Rule Name] - WARNING
+[Detailed explanation]
+
+## Suggestions
+[If any suggestions, list them here]
+
+### [file path]:[line number]
+**Violation**: [Standard/Rule Name] - SUGGESTION
+[Detailed explanation]
+
+## Files Reviewed
+[List all files that were reviewed]
+1. [file path]
+2. [file path]
+...
+
+## Conclusion
+[Overall assessment - ready to proceed, needs fixes, etc.]
+```
+
+**Example for a clean review:**
+```markdown
+# Code Review Report: HODGE-333.4
+
+**Reviewed**: 2025-10-08T17:30:00.000Z
+**Scope**: Feature changes (6 files)
+**Profiles Used**: general-coding-standards, general-test-standards, typescript-5.x
+
+## Summary
+- 🚫 **0 Blockers** (must fix before proceeding)
+- ⚠️ **0 Warnings** (should address before ship)
+- 💡 **0 Suggestions** (optional improvements)
+
+## Critical Issues (BLOCKER)
+None found.
+
+## Warnings
+None found.
+
+## Suggestions
+None found.
+
+## Files Reviewed
+1. src/test/standards-enforcement.smoke.test.ts
+2. src/commands/review.integration.test.ts
+
+## Conclusion
+✅ All files meet project standards. Ready to proceed with harden validation.
+```
+
+**Important**:
+- If you found BLOCKER issues in Step 4 (Option C), document them in the report and STOP - do not proceed to Command Execution
+- If you found only warnings (Option B) or no issues (Option A), generate the report and proceed to Command Execution
+
+## Command Execution (After Pre-Check and Report Generation)
 
 **Only proceed here if you chose Option A or B above!**
 

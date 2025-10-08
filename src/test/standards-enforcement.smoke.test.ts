@@ -78,8 +78,8 @@ describe('Standards Enforcement Clarity (HODGE-283)', () => {
     const hardenPath = path.join(process.cwd(), '.claude', 'commands', 'harden.md');
     const hardenContent = fs.readFileSync(hardenPath, 'utf-8');
 
-    expect(hardenContent).toContain('Pre-Harden Standards Review');
-    expect(hardenContent).toContain('AI Standards Compliance Checklist');
+    expect(hardenContent).toContain('Pre-Harden Code Review');
+    expect(hardenContent).toContain('Conduct AI Code Review');
     expect(hardenContent).toContain('MANDATORY');
 
     // Check that ship.md contains standards review

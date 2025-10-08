@@ -1,0 +1,8 @@
+.claude/commands/harden.md
+src/bin/hodge.ts
+src/commands/harden.ts
+src/commands/review.integration.test.ts
+src/commands/review.smoke.test.ts
+src/commands/review.ts
+src/lib/claude-commands.ts
+src/test/standards-enforcement.smoke.test.ts

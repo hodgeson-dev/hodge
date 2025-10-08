@@ -53,7 +53,7 @@ HODGE-004 (ID Management)
 - **Priority**: TBD
 - **Created**: 2025-10-08
 - **Updated**: 2025-10-08
-- **Description**: real-feature
+- **Description**: auth-feature
 - **Phase**: TBD
 - **Next Steps**:
   - Complete exploration

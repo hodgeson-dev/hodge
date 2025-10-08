@@ -125,12 +125,12 @@ Check for console.log and debugger statements.
         const command = new ReviewCommand();
         command.execute('file', testFile);
 
-        // Verify context was loaded (should see checkmarks in output)
+        // Verify context was loaded (check for new format)
         const output = logs.join('\n');
-        expect(output).toContain('**Standards Loaded**');
-        expect(output).toContain('**Principles Loaded**');
-        expect(output).toContain('**Patterns**:');
-        expect(output).toContain('**Lessons**:');
+        expect(output).toContain('🔍 Performing AI-driven code review');
+        expect(output).toContain('**Profiles Loaded**');
+        expect(output).toContain('**Project Context**');
+        expect(output).toContain('Review Context Prepared');
       } finally {
         process.cwd = originalCwd;
         console.log = originalLog;
@@ -180,10 +180,10 @@ Test criteria:
       const command = new ReviewCommand();
       command.execute('file', testFile);
 
-      // Should warn about missing files but not crash
+      // Should handle missing files but not crash
       const output = logs.join('\n');
-      expect(output).toContain('**Patterns**: 0 files');
-      expect(output).toContain('**Lessons**: 0 files');
+      expect(output).toContain('🔍 Performing AI-driven code review');
+      expect(output).toContain('Review Context Prepared');
     } finally {
       process.cwd = originalCwd;
       console.log = originalLog;
@@ -208,7 +208,9 @@ Test criteria:
 
     try {
       const command = new ReviewCommand();
-      expect(() => command.execute('file', testFile)).toThrow();
+      // Review command now uses default profiles if no review-config.md exists
+      // So it should NOT throw - it should succeed with default profiles
+      await expect(command.execute('file', testFile)).resolves.not.toThrow();
     } finally {
       process.cwd = originalCwd;
       exitSpy.mockRestore();

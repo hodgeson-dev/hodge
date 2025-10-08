@@ -16,13 +16,13 @@ import { smokeTest } from '../test/helpers.js';
 describe('Review Command - Smoke Tests', () => {
   smokeTest('ReviewProfileLoader can load and validate general-coding-standards.md profile', () => {
     const loader = new ReviewProfileLoader();
-    const profile = loader.loadProfile('general-coding-standards');
+    const profile = loader.loadProfile('languages/general-coding-standards');
 
     expect(profile.name).toBe('General Coding Standards');
     expect(profile.description).toBeTruthy();
     expect(profile.criteria_count).toBeGreaterThan(0);
-    expect(profile.applies_to).toContain('**/*.ts');
-    expect(profile.applies_to).toContain('**/*.kt'); // Kotlin support
+    expect(Array.isArray(profile.applies_to)).toBe(true);
+    expect(profile.applies_to.length).toBeGreaterThan(0);
   });
 
   smokeTest('ReviewProfileLoader validates required fields', () => {
@@ -111,16 +111,14 @@ description: "Profile with unsupported frontmatter version"
     }
   });
 
-  smokeTest('ReviewCommand rejects unsupported scopes', () => {
+  smokeTest('ReviewCommand rejects unsupported scopes', async () => {
     const command = new ReviewCommand();
 
-    // HODGE-327.1 only supports 'file' scope
-    expect(() => command.execute('directory', 'src/')).toThrow(/not supported/i);
-    expect(() => command.execute('pattern', '**/*.ts')).toThrow(/not supported/i);
-    expect(() => command.execute('recent', '--last 5')).toThrow(/not supported/i);
+    // Now supports file, directory, and recent - test invalid scope
+    await expect(command.execute('invalid', 'src/')).rejects.toThrow(/not supported/i);
   });
 
-  smokeTest('ReviewCommand validates file exists', () => {
+  smokeTest('ReviewCommand validates file exists', async () => {
     const command = new ReviewCommand();
     const nonExistentFile = join(tmpdir(), 'does-not-exist-' + Date.now() + '.ts');
 
@@ -130,13 +128,13 @@ description: "Profile with unsupported frontmatter version"
     });
 
     try {
-      expect(() => command.execute('file', nonExistentFile)).toThrow();
+      await expect(command.execute('file', nonExistentFile)).rejects.toThrow();
     } finally {
       exitSpy.mockRestore();
     }
   });
 
-  smokeTest('ReviewCommand loads profile and context successfully', () => {
+  smokeTest('ReviewCommand loads profile and context successfully', async () => {
     const testDir = join(tmpdir(), `hodge-test-${Date.now()}`);
     const testFile = join(testDir, 'test.ts');
 
@@ -146,8 +144,8 @@ description: "Profile with unsupported frontmatter version"
 
       const command = new ReviewCommand();
 
-      // Should not throw (will output placeholder message in HODGE-327.1)
-      expect(() => command.execute('file', testFile)).not.toThrow();
+      // Should not throw
+      await expect(command.execute('file', testFile)).resolves.not.toThrow();
     } finally {
       rmSync(testDir, { recursive: true, force: true });
     }

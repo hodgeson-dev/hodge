@@ -3,15 +3,16 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: HODGE-333.1
-**Mode**: explore
-**Last Updated**: 2025-10-06T14:54:50.757Z
+**Feature**: HODGE-333.4
+**Mode**: harden
+**PM Issue**: HODGE-333.4
+**Last Updated**: 2025-10-08T17:28:21.041Z
 ## Current Session
-**Resumed**: 14 hours ago
-**Progress**: Explored HODGE-333 - template ready for AI approach generation
-**Working on**: HODGE-333 (explore mode)
+**Resumed**: 2 hours ago
+**Progress**: Explored HODGE-333.4 - template ready for AI approach generation
+**Working on**: HODGE-333.4 (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-333. Explored HODGE-333 - template ready for AI approach generation
+You were helping with HODGE-333.4. Explored HODGE-333.4 - template ready for AI approach generation
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
@@ -103,6 +104,26 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - Avoids Service class proliferation for simple file operations
 - Consistent with existing workflow patterns (explore, ship, decide)
 - Write tool automatically handles parent directory creation
+- **CLI Responsibility**: Structure discovery, validation, and manifest building
+- - Detect patterns (e.g., HODGE-333.1 is sub-feature of HODGE-333)
+- - Validate state (e.g., ship-record.json has validationPassed: true)
+- - Identify relevant files (e.g., exploration.md exists, decisions.md exists)
+- - Assign metadata (precedence, timestamps, types)
+- - Return file manifest (paths + metadata, NO content reading)
+- **AI Responsibility**: Content reading, interpretation, and synthesis
+- - Read files based on CLI manifest
+- - Extract relevant information for current context
+- - Synthesize across multiple sources
+- - Adapt to conversation needs
+- - Reference naturally during interaction
+- Maintains clean separation: CLI = structure discovery, AI = content interpretation
+- Enables AI flexibility (dig deeper, skip irrelevant parts, adapt to conversation)
+- Simplifies CLI logic (file existence checks, not content parsing)
+- Testable with codified rules (validate patterns, not content interpretation)
+- Aligns with "AI writes content, CLI creates structure" principle
+- ✅ `/explore` sub-feature context: CLI identifies parent/sibling files, AI reads and synthesizes
+- 🔄 `/review` (needs audit): Should follow same pattern
+- 🔄 Future context-loading features: Must use file manifest approach
 
 ### Testing Requirements
 - Test what users see, not how it works
@@ -166,14 +187,15 @@ Suggested next: Review exploration and decide with 'hodge decide'
 
 ## Working Files
 
-- `.hodge/features/HODGE-333.1/explore/exploration.md`
-- `.hodge/features/HODGE-333.1/explore/test-intentions.md`
+- `.hodge/features/HODGE-333.4/explore/exploration.md`
+- `.hodge/features/HODGE-333.4/explore/test-intentions.md`
+- `.hodge/features/HODGE-333.4/build/build-plan.md`
 
 ## Next Steps
 
-1. Review exploration approaches
-2. Make decision with `hodge decide`
-3. Start building with `hodge build HODGE-333.1`
+1. Fix all linting issues
+2. Ensure 100% test coverage
+3. Ship with `hodge ship HODGE-333.4`
 
 
 ---

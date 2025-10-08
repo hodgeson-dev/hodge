@@ -33,7 +33,7 @@
     {
       "id": "HODGE-333.4",
       "title": "Composition System + Future Enablement",
-      "description": "Implement profile dependency resolution (requires: field with optional ? suffix), precedence rules (project overrides profiles), optimize context loading, add composition logging, enable future scope expansion (directory/pattern/recent), document harden integration pattern, add conflict resolution tests. Deliverable: Full composition system, ready for scope expansion.",
+      "description": "Implement precedence rules (project overrides profiles), optimize context loading, add composition logging, enable future scope expansion (directory/pattern/recent), document harden integration pattern, add conflict resolution tests. Deliverable: Full composition system, ready for scope expansion.",
       "effort": "medium",
       "dependencies": [
         "HODGE-333.2",
