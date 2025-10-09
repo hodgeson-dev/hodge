@@ -64,7 +64,6 @@ describe('[smoke] Test Isolation', () => {
     // Read test files to verify they import tmpdir
     const testFiles = [
       'src/lib/session-manager.test.ts',
-      'src/lib/__tests__/auto-save.test.ts',
       'src/test/context-aware-commands.test.ts',
       'src/lib/__tests__/context-manager.test.ts',
     ];

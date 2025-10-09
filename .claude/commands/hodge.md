@@ -18,10 +18,8 @@ Initialize or resume your Hodge development session with appropriate context.
 **Note:** The `/hodge` command shows status for your last worked feature based on the active session. If you have a recent session for a feature, it will show that feature's accurate mode (e.g., "shipped", "build", etc.). If no session exists, it shows general project context.
 
 ## Usage Patterns
-- `/hodge` - Load project context and offer recent saves
+- `/hodge` - Load project context
 - `/hodge {{feature}}` - Load context for specific feature
-- `/hodge --recent` - Auto-load most recent save
-- `/hodge --list` - Show all available saved contexts
 
 ## Command Execution
 
@@ -49,25 +47,7 @@ This provides core context for ALL modes:
 - All decisions (full file)
 - Available patterns (list)
 
-{{#if list}}
-### 2. Handle List Mode - Available Saved Sessions (Fast Listing)
-```bash
-# Use optimized load command to list saves
-hodge load --list
-```
-
-This quickly scans manifests to show all saved sessions (20-30x faster than before).
-
-{{else if recent}}
-### 2. Handle Recent Mode - Loading Most Recent Session (Optimized)
-```bash
-# Use new optimized load command with lazy loading
-hodge load --recent --lazy
-```
-
-This uses the new 20-30x faster loading system to instantly restore your session.
-
-{{else if feature}}
+{{#if feature}}
 ### 2. Handle Feature Mode - Loading Feature-Specific Context
 
 **IMPORTANT: This command ONLY loads context. It does not start any work.**
@@ -119,35 +99,6 @@ Load current project state:
 hodge context
 ```
 
-Check for recent saves (Fast Scan):
-```bash
-# Quick manifest scan to find saves
-hodge load --list
-```
-
-Found saved sessions:
-{{#each saves}}
-**{{name}}**
-- Feature: {{feature}}
-- Mode: {{mode}}
-- Saved: {{timestamp}}
-- Summary: {{summary}}
-{{/each}}
-
-**Restoration Options:**
-
-{{#if saves}}
-Would you like to:
-a) Restore most recent: "{{most_recent_save}}"
-b) Choose a different save
-c) Start fresh without restoring
-d) View more details about saves
-
-Your choice:
-{{else}}
-No saved sessions found. Starting fresh.
-{{/if}}
-
 {{/if}}
 
 ## Core Principles
@@ -155,7 +106,6 @@ Before starting work, remember:
 - **AI analyzes, backend executes** - You design, hodge implements
 - **Complex data through files** - Use .hodge/tmp/ for structured data
 - **Templates guide conversations** - Don't document hodge internals
-- **Preserve context** - Spec files and saves are documentation, not trash
 - **Progressive development** - Explore freely, ship strictly
 
 ## Context Loaded
@@ -169,7 +119,6 @@ Available commands:
 - `/explore {{feature}}` - Continue exploration
 - `/build {{feature}}` - Start/continue building
 - `/decide` - Record decisions
-- `/save` - Save current progress
 
 {{else}}
 ### Available Commands
@@ -178,7 +127,6 @@ Available commands:
 - `/decide {{decision}}` - Record a decision
 - `/ship {{feature}}` - Ship feature to production
 - `/status` - Check current status
-- `/save {{name}}` - Save session context
 - `/review` - Review current work
 
 ### Quick Actions
@@ -188,7 +136,6 @@ Continue with {{current_feature}}:
 {{else}}
 Start with:
 - `/explore {{new_feature}}` for new work
-- `/hodge --list` to see saved sessions
 {{/if}}
 
 {{/if}}
@@ -196,15 +143,13 @@ Start with:
 ## Session Best Practices
 
 1. **Start each session with `/hodge`** to load context
-2. **Use `/save` before breaks** to preserve progress
-3. **Run `/hodge {{feature}}`** when switching features
-4. **Check `/hodge --list`** if you've lost track
+2. **Run `/hodge {{feature}}`** when switching features
+3. **Check `/status`** to see current progress
 
 ## Implementation Note
 
 The `/hodge` command coordinates with the Hodge CLI to:
 - Generate fresh context via `hodge status`
-- Discover saved sessions in `.hodge/saves/`
 - Load feature-specific files from `.hodge/features/`
 - Ensure principles and standards are available
 

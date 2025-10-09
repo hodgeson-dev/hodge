@@ -48,11 +48,10 @@ describe('hodge command context loading', () => {
 
     // Verify core loading is outside the conditional blocks
     const coreLoadingIndex = content.indexOf('### 1. Always Load Core Context First');
-    const ifListIndex = content.indexOf('{{#if list}}');
-    const ifFeatureIndex = content.indexOf('{{else if feature}}');
+    const ifFeatureIndex = content.indexOf('{{#if feature}}');
     const elseIndex = content.indexOf('{{else}}');
 
-    expect(coreLoadingIndex).toBeLessThan(ifListIndex);
+    expect(coreLoadingIndex).toBeGreaterThan(-1);
     expect(coreLoadingIndex).toBeLessThan(ifFeatureIndex);
     expect(coreLoadingIndex).toBeLessThan(elseIndex);
   });
@@ -72,29 +71,12 @@ describe('hodge command context loading', () => {
     expect(coreLoadingIndex).toBeLessThan(featureModeIndex);
   });
 
-  smokeTest('should load core context for list mode', async () => {
-    const templatePath = path.join(process.cwd(), '.claude/commands/hodge.md');
-
-    const content = await fs.readFile(templatePath, 'utf-8');
-
-    // Verify list mode is now "Handle List Mode" not primary
-    expect(content).toContain('### 2. Handle List Mode');
-
-    // Core context should be loaded before list mode
-    const coreLoadingIndex = content.indexOf('### 1. Always Load Core Context First');
-    const listModeIndex = content.indexOf('### 2. Handle List Mode');
-
-    expect(coreLoadingIndex).toBeLessThan(listModeIndex);
-  });
-
   smokeTest('should have consistent section numbering', async () => {
     const templatePath = path.join(process.cwd(), '.claude/commands/hodge.md');
 
     const content = await fs.readFile(templatePath, 'utf-8');
 
     // All mode handlers should be section 2
-    expect(content).toContain('### 2. Handle List Mode');
-    expect(content).toContain('### 2. Handle Recent Mode');
     expect(content).toContain('### 2. Handle Feature Mode');
     expect(content).toContain('### 2. Handle Standard Mode');
   });

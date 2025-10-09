@@ -119,49 +119,6 @@ const contextCmd = program
     await contextCommand.execute(options);
   });
 
-const saveCmd = program
-  .command('save [name]')
-  .description('[Internal] Save current session with optimized performance')
-  .option('--minimal', 'Create minimal save (manifest only, <100ms)')
-  .option('--incremental', 'Create incremental save (changes only)')
-  .option('--type <type>', 'Save type: full, incremental, or auto')
-  .action(
-    async (
-      name: string | undefined,
-      options: { minimal?: boolean; incremental?: boolean; type?: string }
-    ) => {
-      const { SaveCommand } = await import('../commands/save.js');
-      const saveCommand = new SaveCommand();
-      await saveCommand.execute(name, {
-        minimal: options.minimal,
-        type: options.incremental
-          ? 'incremental'
-          : (options.type as 'full' | 'incremental' | 'auto' | undefined),
-      });
-    }
-  );
-
-const loadCmd = program
-  .command('load [name]')
-  .description('[Internal] Load saved session with lazy loading')
-  .option('--recent', 'Load most recent save')
-  .option('--list', 'List all available saves')
-  .option('--no-lazy', 'Load everything immediately (slower)')
-  .action(
-    async (
-      name: string | undefined,
-      options: { recent?: boolean; list?: boolean; lazy?: boolean }
-    ) => {
-      const { LoadCommand } = await import('../commands/load.js');
-      const loadCommand = new LoadCommand();
-      await loadCommand.execute(name, {
-        recent: options.recent,
-        list: options.list,
-        lazy: options.lazy,
-      });
-    }
-  );
-
 const decideCmd = program
   .command('decide <decision>')
   .description('[Internal] Record a project decision')
@@ -279,8 +236,6 @@ if (!showInternal) {
     hardenCmd,
     statusCmd,
     contextCmd,
-    saveCmd,
-    loadCmd,
     decideCmd,
     shipCmd,
     todosCmd,

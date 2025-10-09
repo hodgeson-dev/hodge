@@ -56,28 +56,6 @@ describe('TestWorkspaceGenerator', () => {
   });
 
   describe('Configuration Validation', () => {
-    it.skip('should accept valid configuration - mock-heavy test', async () => {
-      // Mock path validation to succeed
-      mockedPath.resolve.mockReturnValue('/valid/path/test-workspace-123456-abc123');
-
-      const config = {
-        baseDir: '/valid/path',
-        namePrefix: 'test-workspace',
-        includeTypeScript: true,
-        includeJavaScript: true,
-        initGit: false,
-      };
-
-      const result = await generator.createTestWorkspace(config);
-
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.data.path).toBeDefined();
-        expect(result.data.files).toBeDefined();
-        expect(result.data.createdAt).toBeInstanceOf(Date);
-      }
-    });
-
     it('should reject configuration with relative baseDir', async () => {
       const config = {
         baseDir: './relative/path',
@@ -364,17 +342,6 @@ describe('TestWorkspaceGenerator', () => {
       );
     });
 
-    it.skip('should log errors with proper error objects - tests logging implementation', async () => {
-      mockedFs.ensureDir.mockRejectedValue(new Error('Test error'));
-
-      await generator.createTestWorkspace();
-
-      expect(consoleSpy.error).toHaveBeenCalledWith(
-        expect.stringContaining('Failed to create test workspace'),
-        expect.any(String) // Error stack or message
-      );
-    });
-
     it('should log debug information in development mode', async () => {
       const originalEnv = process.env.NODE_ENV;
       process.env.NODE_ENV = 'development';
@@ -551,23 +518,6 @@ describe('Integration Tests', () => {
       );
 
       expect(mockedFs.writeFile).toHaveBeenCalledTimes(4); // JS, TS, README, .gitignore
-    }
-  });
-
-  it.skip('should handle partial failures gracefully - mock-heavy test', async () => {
-    // Simulate failure after some files are created
-    mockedFs.writeFile.mockImplementation((filePath) => {
-      if (filePath.toString().includes('README.md')) {
-        return Promise.reject(new Error('Disk full'));
-      }
-      return Promise.resolve();
-    });
-
-    const result = await createTestWorkspace();
-
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.error.message).toContain('Failed to generate workspace files');
     }
   });
 });

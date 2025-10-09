@@ -2,7 +2,6 @@ import chalk from 'chalk';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { CacheManager } from '../lib/cache-manager.js';
-import { autoSave } from '../lib/auto-save.js';
 import { contextManager } from '../lib/context-manager.js';
 import { PMHooks } from '../lib/pm/pm-hooks.js';
 import { createCommandLogger } from '../lib/logger.js';
@@ -45,9 +44,6 @@ export class BuildCommand {
 
     // Use resolved feature from here on
     feature = resolvedFeature;
-
-    // Auto-save context when switching features
-    await autoSave.checkAndSave(feature);
 
     // Update context for this command
     await contextManager.updateForCommand('build', feature, 'build');

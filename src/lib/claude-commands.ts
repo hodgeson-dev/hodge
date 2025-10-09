@@ -993,10 +993,8 @@ Initialize or resume your Hodge development session with appropriate context.
 **Note:** The \`/hodge\` command shows status for your last worked feature based on the active session. If you have a recent session for a feature, it will show that feature's accurate mode (e.g., "shipped", "build", etc.). If no session exists, it shows general project context.
 
 ## Usage Patterns
-- \`/hodge\` - Load project context and offer recent saves
+- \`/hodge\` - Load project context
 - \`/hodge {{feature}}\` - Load context for specific feature
-- \`/hodge --recent\` - Auto-load most recent save
-- \`/hodge --list\` - Show all available saved contexts
 
 ## Command Execution
 
@@ -1024,25 +1022,7 @@ This provides core context for ALL modes:
 - All decisions (full file)
 - Available patterns (list)
 
-{{#if list}}
-### 2. Handle List Mode - Available Saved Sessions (Fast Listing)
-\`\`\`bash
-# Use optimized load command to list saves
-hodge load --list
-\`\`\`
-
-This quickly scans manifests to show all saved sessions (20-30x faster than before).
-
-{{else if recent}}
-### 2. Handle Recent Mode - Loading Most Recent Session (Optimized)
-\`\`\`bash
-# Use new optimized load command with lazy loading
-hodge load --recent --lazy
-\`\`\`
-
-This uses the new 20-30x faster loading system to instantly restore your session.
-
-{{else if feature}}
+{{#if feature}}
 ### 2. Handle Feature Mode - Loading Feature-Specific Context
 
 **IMPORTANT: This command ONLY loads context. It does not start any work.**
@@ -1094,35 +1074,6 @@ Load current project state:
 hodge context
 \`\`\`
 
-Check for recent saves (Fast Scan):
-\`\`\`bash
-# Quick manifest scan to find saves
-hodge load --list
-\`\`\`
-
-Found saved sessions:
-{{#each saves}}
-**{{name}}**
-- Feature: {{feature}}
-- Mode: {{mode}}
-- Saved: {{timestamp}}
-- Summary: {{summary}}
-{{/each}}
-
-**Restoration Options:**
-
-{{#if saves}}
-Would you like to:
-a) Restore most recent: "{{most_recent_save}}"
-b) Choose a different save
-c) Start fresh without restoring
-d) View more details about saves
-
-Your choice:
-{{else}}
-No saved sessions found. Starting fresh.
-{{/if}}
-
 {{/if}}
 
 ## Core Principles
@@ -1130,7 +1081,6 @@ Before starting work, remember:
 - **AI analyzes, backend executes** - You design, hodge implements
 - **Complex data through files** - Use .hodge/tmp/ for structured data
 - **Templates guide conversations** - Don't document hodge internals
-- **Preserve context** - Spec files and saves are documentation, not trash
 - **Progressive development** - Explore freely, ship strictly
 
 ## Context Loaded
@@ -1144,7 +1094,6 @@ Available commands:
 - \`/explore {{feature}}\` - Continue exploration
 - \`/build {{feature}}\` - Start/continue building
 - \`/decide\` - Record decisions
-- \`/save\` - Save current progress
 
 {{else}}
 ### Available Commands
@@ -1153,7 +1102,6 @@ Available commands:
 - \`/decide {{decision}}\` - Record a decision
 - \`/ship {{feature}}\` - Ship feature to production
 - \`/status\` - Check current status
-- \`/save {{name}}\` - Save session context
 - \`/review\` - Review current work
 
 ### Quick Actions
@@ -1163,7 +1111,6 @@ Continue with {{current_feature}}:
 {{else}}
 Start with:
 - \`/explore {{new_feature}}\` for new work
-- \`/hodge --list\` to see saved sessions
 {{/if}}
 
 {{/if}}
@@ -1171,15 +1118,13 @@ Start with:
 ## Session Best Practices
 
 1. **Start each session with \`/hodge\`** to load context
-2. **Use \`/save\` before breaks** to preserve progress
-3. **Run \`/hodge {{feature}}\`** when switching features
-4. **Check \`/hodge --list\`** if you've lost track
+2. **Run \`/hodge {{feature}}\`** when switching features
+3. **Check \`/status\`** to see current progress
 
 ## Implementation Note
 
 The \`/hodge\` command coordinates with the Hodge CLI to:
 - Generate fresh context via \`hodge status\`
-- Discover saved sessions in \`.hodge/saves/\`
 - Load feature-specific files from \`.hodge/features/\`
 - Ensure principles and standards are available
 
@@ -1188,120 +1133,6 @@ The \`/hodge\` command coordinates with the Hodge CLI to:
 **This command has finished loading context. No actions have been taken.**
 
 What would you like to do next?`,
-    },
-    {
-      name: 'load',
-      content: `# Hodge Load - Fast Session Restoration
-
-Load a previously saved session context using optimized lazy loading.
-
-**✨ NEW: Loading is now 20-30x faster with lazy manifest loading!**
-
-## Command Execution
-
-{{#if name}}
-### Loading Specific Save: {{name}}
-
-\`\`\`bash
-# Use optimized load with lazy loading
-hodge load "{{name}}" --lazy
-\`\`\`
-
-{{else}}
-### Loading Most Recent Save
-
-\`\`\`bash
-# Load most recent save automatically
-hodge load --recent
-\`\`\`
-
-{{/if}}
-
-## Restoration Process
-
-### 1. Auto-Save Current Work (if needed)
-\`\`\`bash
-# Quick minimal save before switching
-hodge save "auto-$(date +%Y%m%d-%H%M%S)" --minimal
-\`\`\`
-
-### 2. Execute Optimized Load
-
-\`\`\`bash
-{{#if name}}
-hodge load "{{name}}" --lazy
-{{else}}
-hodge load --recent
-{{/if}}
-\`\`\`
-
-**What gets loaded:**
-- Context files from \`.hodge/saves/{{name}}/\`
-- Feature-specific files if present
-- Session metadata and state
-
-**Present restoration summary:**
-\`\`\`
-✅ Session Restored: {{save_name}}
-
-## Key Context
-- Feature: {{feature}}
-- Mode: {{mode}}
-- Timestamp: {{timestamp}}
-
-## Quick Resume Commands
-{{#if mode === 'explore'}}
-- Continue with \`/explore {{feature}}\`
-{{else if mode === 'build'}}
-- Continue with \`/build {{feature}}\`
-{{else if mode === 'harden'}}
-- Continue with \`/harden {{feature}}\`
-{{else}}
-- Continue with \`/ship {{feature}}\`
-{{/if}}
-
----
-Ready to continue where you left off!
-\`\`\`
-
-## Performance Optimization
-
-The new \`hodge load\` command uses optimized \`SaveManager\`:
-- **Manifest-first loading**: <100ms for metadata
-- **Lazy loading**: Files loaded only when accessed
-- **Smart caching**: Recently accessed data kept in memory
-- **Incremental updates**: Apply only changes since last save
-
-### Loading Performance
-
-| What | Old Time | New Time | Improvement |
-|------|----------|----------|-------------|
-| Manifest only | 2-3s | <100ms | 20-30x faster |
-| Full context | 2-3s | 500ms | 4-6x faster |
-| Recent save list | 1-2s | <50ms | 20-40x faster |
-
-## Load Validation
-
-Manifest validation is automatic:
-\`\`\`bash
-# Validates manifest version and structure
-hodge context load {{name}} --validate
-\`\`\`
-
-If manifest is missing or invalid:
-\`\`\`
-⚠️ Save "{{name}}" uses old format or is corrupted.
-Falling back to legacy load method...
-\`\`\`
-
-## Implementation Note
-
-Both \`/load\` and \`/hodge\` commands currently use the same loading mechanism:
-- Both delegate to \`hodge context\` CLI command
-- Both provide session restoration
-- Optimized loading exists in code but awaits CLI integration
-
-Remember: Loading replaces current session context but preserves it in auto-save first.`,
     },
     {
       name: 'plan',
@@ -2168,217 +1999,6 @@ Remember: Review is advisory, not blocking. Users decide which findings to act o
 
 ARGUMENTS: {{file_path}}
 `,
-    },
-    {
-      name: 'save',
-      content: `# 💾 Hodge Save - Optimized Session Management
-
-## Purpose
-Save your current work context for fast resumption later.
-
-**NEW: Saves are now 5-10x faster using manifest-based incremental saves!**
-
-## Usage
-\`\`\`
-/save                     # Quick save with auto-generated name
-/save {{name}}           # Save with custom name
-/save {{name}} --minimal # Ultra-fast manifest-only save (<100ms)
-\`\`\`
-
-## What Gets Saved (AI Context Only)
-
-### Essential Context (Always Saved)
-- 📝 **Your understanding** of the problem
-- 🎯 **Decisions made** and their rationale
-- 💡 **Key insights** discovered
-- 🛤️ **Approach** being taken
-- ⏭️ **Next steps** planned
-- 📊 **Current progress** state
-
-### References (Not Copied)
-- 🔗 Links to exploration files
-- 🔗 Links to build plans
-- 🔗 Links to test results
-- 🔗 Git commit references
-
-## What Does NOT Get Saved
-
-### Never Saved (Regeneratable)
-- ❌ File contents (git has those)
-- ❌ Test outputs (can re-run)
-- ❌ Build artifacts (can rebuild)
-- ❌ Generated documentation
-- ❌ node_modules or dependencies
-- ❌ Coverage reports
-- ❌ Log files
-
-### Why This Is Faster
-Instead of copying entire directories, we now:
-1. Create a lightweight manifest (instant)
-2. Store only changed references (fast)
-3. Use incremental saves when possible
-4. Defer file loading until needed
-
-## Save Types
-
-### Minimal Save (Recommended)
-\`\`\`bash
-hodge save {{name}} --minimal
-\`\`\`
-- **Speed**: <100ms
-- **Size**: ~5KB
-- **Contains**: Manifest only with references
-- **Use when**: Quick checkpoint needed
-
-### Incremental Save (Default for auto-save)
-\`\`\`bash
-hodge save {{name}} --incremental
-\`\`\`
-- **Speed**: <500ms
-- **Size**: ~10-50KB
-- **Contains**: Manifest + changes since last save
-- **Use when**: Regular progress saves
-
-### Full Save (Rarely needed)
-\`\`\`bash
-hodge save {{name}} --full
-\`\`\`
-- **Speed**: 1-2s
-- **Size**: Variable
-- **Contains**: Complete context snapshot
-- **Use when**: Major milestone or before risky changes
-
-## Examples
-
-### Quick checkpoint
-\`\`\`
-/save
-\`\`\`
-Creates: \`checkpoint-HODGE-123-2025-09-20\`
-
-### Named save
-\`\`\`
-/save before-refactor
-\`\`\`
-Creates: \`before-refactor\`
-
-### Ultra-fast save
-\`\`\`
-/save quick --minimal
-\`\`\`
-Creates: \`quick\` (manifest only, <100ms)
-
-## Loading Saves
-
-### Fast Load (Manifest + Summary)
-\`\`\`
-/hodge --recent           # Load most recent (fast)
-/hodge {{feature}}        # Load specific feature (fast)
-\`\`\`
-
-### Full Load (When needed)
-\`\`\`
-/hodge {{save}} --full    # Load everything
-\`\`\`
-
-## Auto-Save Behavior
-
-Auto-saves now use incremental saves:
-- First save: Full snapshot
-- Subsequent saves: Incremental (within 30 min)
-- After 30 minutes: New full snapshot
-- Performance: 50-100ms for incremental
-
-## Command Execution
-
-{{#if name}}
-### Saving with name: {{name}}
-
-\`\`\`bash
-# Execute optimized save
-hodge save "{{name}}" {{#if minimal}}--minimal{{/if}} {{#if incremental}}--incremental{{/if}} {{#if full}}--full{{/if}}
-\`\`\`
-
-{{else}}
-### Creating auto-save
-
-\`\`\`bash
-# Generate timestamp-based name
-SAVE_NAME="save-$(date +%Y%m%d-%H%M%S)"
-hodge save "$SAVE_NAME" --minimal
-\`\`\`
-
-{{/if}}
-
-After the save completes, provide:
-1. Save location and size
-2. Time taken
-3. What was preserved (based on manifest)
-4. How to load it later
-
-## Integration with Hodge CLI
-
-The \`/save\` command works with \`hodge save\`:
-
-**Claude Code (\`/save\`)** saves:
-- AI context and understanding
-- Decision rationale
-- Problem-solving approach
-
-**Hodge CLI (\`hodge save\`)** saves:
-- File modification state
-- Git status
-- Technical markers
-
-Both use the same optimized manifest system.
-
-## Performance Comparison
-
-| Operation | Old System | New System | Improvement |
-|-----------|------------|------------|-------------|
-| Auto-save | 2-3s | 50-100ms | 20-60x faster |
-| Manual save | 2-3s | <500ms | 4-6x faster |
-| Minimal save | N/A | <100ms | New feature |
-| Load manifest | 2-3s | <100ms | 20-30x faster |
-| Full load | 2-3s | 500ms-1s | 2-3x faster |
-
-## Tips
-
-1. **Use minimal saves** for quick checkpoints during exploration
-2. **Let auto-save handle** incremental progress tracking
-3. **Full saves only** before major changes or at milestones
-4. **Load lazily** - start with manifest, load files as needed
-5. **Trust git** for file contents, save only context
-
-## Advanced Options
-
-\`\`\`bash
-# Skip generated files (default behavior)
-hodge save {{name}} --no-generated
-
-# Include everything (slow, not recommended)
-hodge save {{name}} --include-all
-
-# Clean old auto-saves
-hodge save --clean-auto --older-than 7d
-\`\`\`
-
-## Troubleshooting
-
-**Save too slow?**
-- Use \`--minimal\` for quick saves
-- Check if you're accidentally including generated files
-
-**Save too large?**
-- Review excluded patterns in manifest
-- Use incremental saves more often
-
-**Can't resume properly?**
-- Check manifest references are valid
-- Ensure git status is clean
-
----
-*Remember: Saves are for context, not backups. Use git for version control.*`,
     },
     {
       name: 'ship',

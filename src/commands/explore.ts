@@ -14,7 +14,6 @@ import { createCommandLogger } from '../lib/logger.js';
 import { sessionManager } from '../lib/session-manager.js';
 import { FeaturePopulator } from '../lib/feature-populator.js';
 import { FeatureSpecLoader } from '../lib/feature-spec-loader.js';
-import { autoSave } from '../lib/auto-save.js';
 import { contextManager } from '../lib/context-manager.js';
 import { PMHooks } from '../lib/pm/pm-hooks.js';
 import { SubFeatureContextService } from '../lib/sub-feature-context-service.js';
@@ -81,9 +80,6 @@ export class ExploreCommand {
 
   async execute(feature: string, options: ExploreOptions = {}): Promise<void> {
     const startTime = Date.now();
-
-    // Auto-save context when switching features
-    await autoSave.checkAndSave(feature);
 
     // HODGE-053: Detect if input is a feature or topic
     const inputType = this.detectInputType(feature);

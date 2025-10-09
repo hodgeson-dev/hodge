@@ -4,7 +4,6 @@ import * as path from 'path';
 import { existsSync } from 'fs';
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import { autoSave } from '../lib/auto-save.js';
 import { contextManager } from '../lib/context-manager.js';
 import { PMHooks } from '../lib/pm/pm-hooks.js';
 import {
@@ -58,9 +57,6 @@ export class HardenCommand {
 
     // Use resolved feature from here on
     feature = resolvedFeature;
-
-    // Auto-save context when switching features
-    await autoSave.checkAndSave(feature);
 
     // Update context for this command
     await contextManager.updateForCommand('harden', feature, 'harden');

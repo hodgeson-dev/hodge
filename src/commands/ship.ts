@@ -5,7 +5,6 @@ import { existsSync } from 'fs';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { InteractionStateManager, type ShipInteractionData } from '../lib/interaction-state.js';
-import { autoSave } from '../lib/auto-save.js';
 import { contextManager } from '../lib/context-manager.js';
 import { PMHooks } from '../lib/pm/pm-hooks.js';
 import { ShipService } from '../lib/ship-service.js';
@@ -41,9 +40,6 @@ export class ShipCommand {
 
     // Use resolved feature from here on
     feature = resolvedFeature;
-
-    // Auto-save context when switching features
-    await autoSave.checkAndSave(feature);
 
     // Update context for this command
     await contextManager.updateForCommand('ship', feature, 'ship');

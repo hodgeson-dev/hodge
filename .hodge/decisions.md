@@ -26,6 +26,47 @@ List the positive and negative consequences of this decision.
 
 <!-- Add your decisions below -->
 
+### 2025-10-09 - Removal Over Deprecation for Redundant Features
+
+**Status**: Accepted
+
+**Context**:
+Feature: HODGE-336 - Removed save/load commands that duplicated /hodge functionality.
+
+When a feature becomes redundant (equivalent functionality exists elsewhere), should we deprecate it first or remove it completely?
+
+**Decision**:
+When a feature becomes redundant, remove it completely rather than deprecating it.
+
+**Rationale**:
+- Clean deletions prevent maintenance burden
+- Reduces cognitive load (fewer commands to learn)
+- No half-maintained code
+- Faster for internal-only features (no external users to migrate)
+- Pattern established with HODGE-336: removed 3,950 lines cleanly
+
+**When this applies**:
+- Feature is unused (verified via metrics/logs)
+- Equivalent functionality exists elsewhere
+- No external users depend on it
+- Atomic removal is feasible
+
+**When NOT to apply**:
+- Public APIs with external users (use deprecation cycle)
+- Complex dependencies requiring phased removal
+- Uncertain impact (deprecate first to observe)
+
+**Consequences**:
+- **Positive**: Simpler codebase, faster development, clearer architecture
+- **Positive**: No deprecation warnings cluttering code
+- **Negative**: Requires confidence in removal (good test coverage essential)
+- **Negative**: No grace period if edge cases discovered
+
+**Example**: HODGE-336 removed save/load because /hodge HODGE-XXX provides same context loading.
+
+---
+
+
 ### 2025-10-02 - Error if --feature directory doesn't exist - provides clear feedback to user, prevents typos in feature names, encourages proper workflow (run /explore before /decide), aligns with discipline principle
 
 **Status**: Accepted
