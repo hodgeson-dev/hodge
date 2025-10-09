@@ -1,0 +1,157 @@
+version: '1.0'
+feature: HODGE-337
+generated_at: '2025-10-09T18:02:28.118Z'
+recommended_tier: full
+change_analysis:
+  total_files: 32
+  total_lines: 6800
+  breakdown:
+    implementation: 15
+    test: 3
+    documentation: 13
+    config: 1
+changed_files:
+  - path: .claude/commands/build.md
+    lines_changed: 10
+    change_type: documentation
+  - path: .claude/commands/harden.md
+    lines_changed: 176
+    change_type: documentation
+  - path: .hodge/.pm-queue.json
+    lines_changed: 22
+    change_type: implementation
+  - path: .hodge/.session
+    lines_changed: 20
+    change_type: implementation
+  - path: .hodge/HODGE.md
+    lines_changed: 60
+    change_type: documentation
+  - path: .hodge/context.json
+    lines_changed: 12
+    change_type: implementation
+  - path: .hodge/features/HODGE-337/build/build-plan.md
+    lines_changed: 204
+    change_type: documentation
+  - path: .hodge/features/HODGE-337/decisions.md
+    lines_changed: 282
+    change_type: documentation
+  - path: .hodge/features/HODGE-337/explore/exploration.md
+    lines_changed: 944
+    change_type: documentation
+  - path: .hodge/features/HODGE-337/harden/review-manifest.yaml
+    lines_changed: 308
+    change_type: implementation
+  - path: .hodge/features/HODGE-337/harden/review-report.md
+    lines_changed: 574
+    change_type: documentation
+  - path: .hodge/features/HODGE-339/explore/exploration.md
+    lines_changed: 186
+    change_type: documentation
+  - path: .hodge/id-counter.json
+    lines_changed: 8
+    change_type: implementation
+  - path: .hodge/id-mappings.json
+    lines_changed: 16
+    change_type: implementation
+  - path: .hodge/project_management.md
+    lines_changed: 52
+    change_type: documentation
+  - path: .hodge/review-profiles/frameworks/nextjs-12.x.md
+    lines_changed: 50
+    change_type: documentation
+  - path: .hodge/review-profiles/frameworks/nextjs-13.x.md
+    lines_changed: 50
+    change_type: documentation
+  - path: .hodge/review-profiles/frameworks/nextjs-14.x.md
+    lines_changed: 50
+    change_type: documentation
+  - path: .hodge/review-profiles/testing/vitest-3.x.md
+    lines_changed: 280
+    change_type: documentation
+  - path: .hodge/review-tier-config.yaml
+    lines_changed: 46
+    change_type: implementation
+  - path: package-lock.json
+    lines_changed: 60
+    change_type: implementation
+  - path: package.json
+    lines_changed: 12
+    change_type: config
+  - path: src/commands/explore.ts
+    lines_changed: 20
+    change_type: implementation
+  - path: src/commands/harden.smoke.test.ts
+    lines_changed: 408
+    change_type: test
+  - path: src/commands/harden.ts
+    lines_changed: 198
+    change_type: implementation
+  - path: src/lib/claude-commands.ts
+    lines_changed: 186
+    change_type: implementation
+  - path: src/lib/git-diff-analyzer.ts
+    lines_changed: 302
+    change_type: implementation
+  - path: src/lib/review-manifest-generator.smoke.test.ts
+    lines_changed: 352
+    change_type: test
+  - path: src/lib/review-manifest-generator.ts
+    lines_changed: 718
+    change_type: implementation
+  - path: src/lib/review-tier-classifier.smoke.test.ts
+    lines_changed: 144
+    change_type: test
+  - path: src/lib/review-tier-classifier.ts
+    lines_changed: 808
+    change_type: implementation
+  - path: src/types/review-manifest.ts
+    lines_changed: 242
+    change_type: implementation
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - test-pattern.md
+      - error-boundary.md
+      - input-validation.md
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - testing/vitest-3.x.md
+      - testing/general-test-standards.md
+      - languages/typescript-5.x.md
+      - languages/general-coding-standards.md
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed

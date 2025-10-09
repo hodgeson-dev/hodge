@@ -1,0 +1,23 @@
+version: "1.0"
+
+# Critical paths that always trigger FULL tier review
+# These are glob patterns matched against changed file paths
+critical_paths:
+  - "src/lib/core/**"
+  - "src/commands/**"
+  - ".hodge/standards.md"
+  - ".hodge/principles.md"
+  - ".claude/commands/**"
+
+# Tier classification thresholds
+tier_thresholds:
+  quick:
+    max_files: 3
+    max_lines: 50
+    allowed_types: ["test", "config"]
+  standard:
+    max_files: 10
+    max_lines: 200
+  full:
+    min_files: 11      # >10 files triggers FULL
+    min_lines: 201     # >200 lines triggers FULL

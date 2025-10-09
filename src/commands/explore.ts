@@ -84,6 +84,9 @@ export class ExploreCommand {
     // HODGE-053: Detect if input is a feature or topic
     const inputType = this.detectInputType(feature);
 
+    // Store original input as user description if it's a topic (natural language)
+    const userDescription = inputType === 'topic' ? feature : undefined;
+
     if (options.verbose || process.env.DEBUG) {
       this.logger.info(chalk.gray(`Input detection: "${feature}" → ${inputType}`));
       this.logger.debug('Input detection', { feature, inputType });
@@ -267,7 +270,8 @@ export class ExploreCommand {
         confidence: p.frequency / 100,
       })),
       projectContext,
-      pmIssue
+      pmIssue,
+      userDescription
     );
 
     // Create exploration structure in parallel
@@ -569,7 +573,8 @@ export class ExploreCommand {
       patterns: string[];
       config: Record<string, unknown> | null;
     },
-    pmIssue: { id: string; title: string; url: string } | null
+    pmIssue: { id: string; title: string; url: string } | null,
+    userDescription?: string
   ): SmartTemplate {
     // CLI does not generate approaches - that's the AI's job
     const approaches: Approach[] = [];
@@ -587,6 +592,7 @@ ${pmIssue ? `**PM Issue**: ${pmIssue.id}` : ''}
 **Type**: ${intent.type}
 **Created**: ${new Date().toISOString()}
 
+${userDescription ? `## Problem Statement (User-Provided)\n\n${userDescription}\n` : ''}
 ## Context
 - **Standards**: ${projectContext.hasStandards ? 'Loaded (suggested only)' : 'Not enforced'}
 - **Available Patterns**: ${projectContext.patternCount}

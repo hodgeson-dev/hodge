@@ -4,39 +4,73 @@
 
 **STOP! You MUST complete this AI Code Review BEFORE running the harden command.**
 
-### Step 1: Load Review Context
-**Get review context (standards, principles, patterns, review profiles):**
+### Step 1: Generate Review Manifest
+**Analyze changes and generate tiered review manifest:**
 
 ```bash
 hodge harden {{feature}} --review
 ```
 
 This command will:
-1. Get all changed files in the current branch (via git diff)
-2. Load project context (standards.md, principles.md, decisions.md, patterns/, lessons/)
-3. Load review profiles from .hodge/review-config.md
-4. Save everything to `.hodge/features/{{feature}}/harden/review-context.md`
-5. Save changed files list to `.hodge/features/{{feature}}/harden/changed-files.txt`
+1. Analyze changed files (via git diff with line counts)
+2. Classify changes into review tier (SKIP/QUICK/STANDARD/FULL)
+3. Filter relevant patterns and review profiles
+4. Generate review-manifest.yaml with:
+   - Recommended tier and reason
+   - Changed files list with line counts
+   - Context files to load (organized by precedence)
+   - Matched patterns and profiles
 
-### Step 2: Read Changed Files
+### Step 2: Read Review Manifest
 ```bash
-# See what files changed
-cat .hodge/features/{{feature}}/harden/changed-files.txt
+# Read the generated manifest
+cat .hodge/features/{{feature}}/harden/review-manifest.yaml
 ```
 
-### Step 3: Conduct AI Code Review
-**Read the review context and analyze the changed files:**
+The manifest shows:
+- `recommended_tier`: SKIP | QUICK | STANDARD | FULL
+- `change_analysis`: File counts and line counts
+- `changed_files`: List of files with (+added/-deleted) counts
+- `context`: Files to load for review (organized by precedence)
 
-```bash
-# Read the full review context (contains standards, principles, decisions, patterns, profiles)
-cat .hodge/features/{{feature}}/harden/review-context.md
-```
+### Step 3: Choose Review Tier
+Based on the manifest's `recommended_tier`, choose your review tier:
 
-**Review each changed file against the loaded context.**
+**Tier Options:**
+- **SKIP**: Pure documentation changes (no code review needed)
+- **QUICK**: Test/config only, ≤3 files, ≤50 lines (~1K lines of context)
+- **STANDARD**: Implementation changes, ≤10 files, ≤200 lines (~3K lines of context)
+- **FULL**: Major changes or critical paths (~8K lines of context)
 
-**⚠️ CRITICAL**: The review context has precedence rules built in. Project standards (HIGHEST PRECEDENCE) override review profile recommendations (LOWER PRECEDENCE). Follow the precedence rules in the context.
+**Default**: Use the recommended tier unless you have a reason to override.
 
-### Step 4: Report Review Findings
+### Step 4: Load Context Files
+**Based on your chosen tier**, load the context files listed in the manifest's `context` section in precedence order:
+
+**Precedence Rules** (CRITICAL - higher precedence = more authority):
+1. **project_standards** (.hodge/standards.md) - HIGHEST PRECEDENCE
+2. **project_principles** (.hodge/principles.md)
+3. **project_decisions** (.hodge/decisions.md) - FULL tier only
+4. **matched_patterns** (.hodge/patterns/*.md)
+5. **matched_profiles** (.hodge/review-profiles/**/*.md)
+6. **lessons_learned** (.hodge/lessons/*.md) - FULL tier only
+
+**Read files using the Read tool based on your chosen tier:**
+- All tiers: Load standards, principles, matched patterns, matched profiles
+- FULL tier only: Also load decisions and lessons
+
+**⚠️ CRITICAL**: Project standards override review profiles. If a standard conflicts with a profile recommendation, the standard takes precedence.
+
+### Step 5: Conduct AI Code Review
+**Review each changed file (from manifest) against the loaded context.**
+
+Focus areas:
+- Changed files are listed in manifest with line counts
+- Review only the changed files, not entire codebase
+- Apply precedence rules when standards conflict
+- Check for violations categorized as BLOCKER, WARNING, or SUGGESTION
+
+### Step 6: Report Review Findings
 Based on your code review, choose ONE:
 
 **Option A: Ready to Harden ✅**
@@ -71,7 +105,7 @@ RECOMMENDATION: Fix these issues before running harden.
 Returning to build phase to address issues.
 ```
 
-### Step 5: Generate Review Report
+### Step 7: Generate Review Report
 **IMPORTANT**: After conducting your review, you MUST write a review-report.md file documenting your findings.
 
 Use the Write tool to create `.hodge/features/{{feature}}/harden/review-report.md` with this format:
@@ -80,8 +114,9 @@ Use the Write tool to create `.hodge/features/{{feature}}/harden/review-report.m
 # Code Review Report: {{feature}}
 
 **Reviewed**: [ISO timestamp]
-**Scope**: Feature changes ([N] files)
-**Profiles Used**: [list profiles from review-context.md]
+**Tier**: [SKIP | QUICK | STANDARD | FULL]
+**Scope**: Feature changes ([N] files, [N] lines)
+**Profiles Used**: [list profiles from manifest]
 
 ## Summary
 - 🚫 **[N] Blockers** (must fix before proceeding)
@@ -124,8 +159,9 @@ Use the Write tool to create `.hodge/features/{{feature}}/harden/review-report.m
 # Code Review Report: HODGE-333.4
 
 **Reviewed**: 2025-10-08T17:30:00.000Z
-**Scope**: Feature changes (6 files)
-**Profiles Used**: general-coding-standards, general-test-standards, typescript-5.x
+**Tier**: STANDARD
+**Scope**: Feature changes (6 files, 234 lines)
+**Profiles Used**: general-coding-standards, general-test-standards, typescript-5.x, vitest-1.x
 
 ## Summary
 - 🚫 **0 Blockers** (must fix before proceeding)
@@ -150,7 +186,7 @@ None found.
 ```
 
 **Important**:
-- If you found BLOCKER issues in Step 4 (Option C), document them in the report and STOP - do not proceed to Command Execution
+- If you found BLOCKER issues in Step 6 (Option C), document them in the report and STOP - do not proceed to Command Execution
 - If you found only warnings (Option B) or no issues (Option A), generate the report and proceed to Command Execution
 
 ## Command Execution (After Pre-Check and Report Generation)

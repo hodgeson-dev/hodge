@@ -3,19 +3,20 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: HODGE-333.4
-**Mode**: harden
-**PM Issue**: HODGE-333.4
-**Last Updated**: 2025-10-08T17:28:21.041Z
+**Feature**: HODGE-337
+**Mode**: build
+**PM Issue**: HODGE-337
+**Last Updated**: 2025-10-09T16:58:23.871Z
 ## Current Session
-**Resumed**: 2 hours ago
-**Progress**: Explored HODGE-333.4 - template ready for AI approach generation
-**Working on**: HODGE-333.4 (explore mode)
+**Resumed**: 11 hours ago
+**Progress**: Explored HODGE-340 - template ready for AI approach generation
+**Working on**: HODGE-340 (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-333.4. Explored HODGE-333.4 - template ready for AI approach generation
+You were helping with HODGE-340. Explored HODGE-340 - template ready for AI approach generation
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
+- **2025-10-09**: Removal Over Deprecation for Redundant Features
 - **2025-10-02**: Error if --feature directory doesn't exist - provides clear feedback to user, prevents typos in feature names, encourages proper workflow (run /explore before /decide), aligns with discipline principle
 - **2025-10-02**: No migration - leave existing decision
 - **2025-10-02**: Append decisions to accumulate in one file - multiple decisions for same feature build up in decisions
@@ -35,7 +36,6 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - **2025-10-01**: Add 'Shipped' as separate progress line (6th checkbox) - provides clear progression through all stages: Exploration → Decision → Build → Harden → Production Ready → Shipped
 - **2025-10-01**: Use ship-record
 - **2025-10-01**: Check feature root for decision
-- **2025-10-01**: Use 'shipped' as mode name for completed features - matches existing phase terminology and natural past tense of ship phase
 
 ## Active Standards
 
@@ -187,15 +187,15 @@ Suggested next: Review exploration and decide with 'hodge decide'
 
 ## Working Files
 
-- `.hodge/features/HODGE-333.4/explore/exploration.md`
-- `.hodge/features/HODGE-333.4/explore/test-intentions.md`
-- `.hodge/features/HODGE-333.4/build/build-plan.md`
+- `.hodge/features/HODGE-337/explore/exploration.md`
+- `.hodge/features/HODGE-337/explore/test-intentions.md`
+- `.hodge/features/HODGE-337/build/build-plan.md`
 
 ## Next Steps
 
-1. Fix all linting issues
-2. Ensure 100% test coverage
-3. Ship with `hodge ship HODGE-333.4`
+1. Complete implementation
+2. Run tests with `npm test`
+3. Harden with `hodge harden HODGE-337`
 
 
 ---

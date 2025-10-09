@@ -2,8 +2,6 @@ import chalk from 'chalk';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { existsSync } from 'fs';
-import { exec } from 'child_process';
-import { promisify } from 'util';
 import { contextManager } from '../lib/context-manager.js';
 import { PMHooks } from '../lib/pm/pm-hooks.js';
 import {
@@ -11,10 +9,11 @@ import {
   type ValidationResult,
   type ValidationResults,
 } from '../lib/harden-service.js';
-import { ProfileCompositionService } from '../lib/profile-composition-service.js';
 import { createCommandLogger } from '../lib/logger.js';
-
-const execAsync = promisify(exec);
+import { GitDiffAnalyzer } from '../lib/git-diff-analyzer.js';
+import { ReviewTierClassifier } from '../lib/review-tier-classifier.js';
+import { ReviewManifestGenerator } from '../lib/review-manifest-generator.js';
+import * as yaml from 'js-yaml';
 
 export interface HardenOptions {
   skipTests?: boolean;
@@ -336,89 +335,84 @@ ${results.build.output || 'No build output'}
   }
 
   /**
-   * Handle review mode: get changed files and compose review context
+   * Handle review mode - prepare context for AI code review with tiered approach
+   * @param {string} feature - Feature name
+   * @param {string} hardenDir - Directory to save review manifest
    * @private
    */
-  private async handleReviewMode(_feature: string, hardenDir: string): Promise<void> {
-    this.logger.info(chalk.blue('🔍 Review Mode: Preparing context for AI code review\n'));
+  private async handleReviewMode(feature: string, hardenDir: string): Promise<void> {
+    this.logger.info(
+      chalk.blue('🔍 Review Mode: Analyzing changes and generating review manifest\n')
+    );
 
     try {
-      // Get changed files via git diff
-      const changedFiles = await this.getChangedFiles();
+      // 1. Get changed files with line counts using GitDiffAnalyzer
+      const gitAnalyzer = new GitDiffAnalyzer();
+      const changedFiles = await gitAnalyzer.getChangedFiles();
 
       if (changedFiles.length === 0) {
         this.logger.info(chalk.yellow('⚠️  No changed files found in current branch'));
-        this.logger.info(chalk.gray('   Review context will still be provided\n'));
+        this.logger.info(chalk.gray('   Review manifest will still be generated\n'));
       } else {
-        this.logger.info(chalk.green(`📄 Found ${changedFiles.length} changed files:`));
+        const totalLines = changedFiles.reduce((sum, f) => sum + f.linesChanged, 0);
+        this.logger.info(
+          chalk.green(`📄 Found ${changedFiles.length} changed files (${totalLines} lines):`)
+        );
         changedFiles.forEach((file) => {
-          this.logger.info(chalk.gray(`   - ${file}`));
+          this.logger.info(
+            chalk.gray(`   - ${file.path} (+${file.linesAdded}/-${file.linesDeleted})`)
+          );
         });
         this.logger.info('');
       }
 
-      // Compose review context using ProfileCompositionService
-      this.logger.info(chalk.blue('📚 Loading review context...'));
-      const compositionService = new ProfileCompositionService();
-      const compositionResult = compositionService.composeReviewContext();
+      // 2. Classify changes into review tier
+      this.logger.info(chalk.blue('🔍 Analyzing changes...'));
+      const classifier = new ReviewTierClassifier();
+      const recommendation = classifier.classifyChanges(changedFiles);
 
-      this.logger.info(chalk.green(`✓ Loaded ${compositionResult.profilesLoaded.length} profiles`));
-      if (compositionResult.profilesMissing.length > 0) {
-        this.logger.warn(
-          chalk.yellow(`⚠️  Missing profiles: ${compositionResult.profilesMissing.join(', ')}`)
-        );
-      }
+      this.logger.info(chalk.green(`✓ Classification complete`));
+      this.logger.info(chalk.bold(`   Recommended tier: ${recommendation.tier.toUpperCase()}`));
+      this.logger.info(chalk.gray(`   Reason: ${recommendation.reason}`));
       this.logger.info('');
 
-      // Save review context to file for AI to read
-      const reviewContextPath = path.join(hardenDir, 'review-context.md');
-      await fs.writeFile(reviewContextPath, compositionResult.content);
+      // 3. Generate review manifest
+      this.logger.info(chalk.blue('📚 Generating review manifest...'));
+      const manifestGen = new ReviewManifestGenerator();
+      const manifest = manifestGen.generateManifest(feature, changedFiles, recommendation);
 
-      // Save changed files list
-      const changedFilesPath = path.join(hardenDir, 'changed-files.txt');
-      await fs.writeFile(changedFilesPath, changedFiles.join('\n'));
+      // 4. Write manifest YAML
+      const manifestPath = path.join(hardenDir, 'review-manifest.yaml');
+      await fs.writeFile(manifestPath, yaml.dump(manifest, { lineWidth: 120, noRefs: true }));
 
-      // Output summary for AI
-      this.logger.info(chalk.bold('Review Context Ready:'));
-      this.logger.info(chalk.gray(`   Changed files: ${hardenDir}/changed-files.txt`));
-      this.logger.info(chalk.gray(`   Review context: ${hardenDir}/review-context.md`));
+      this.logger.info(chalk.green(`✓ Review manifest generated`));
+      this.logger.info('');
+
+      // 5. Output summary for AI
+      this.logger.info(chalk.bold('Review Manifest Ready:'));
+      this.logger.info(chalk.gray(`   Manifest: ${hardenDir}/review-manifest.yaml`));
+      this.logger.info(chalk.gray(`   Recommended tier: ${recommendation.tier.toUpperCase()}`));
+      this.logger.info(chalk.gray(`   Changed files: ${changedFiles.length}`));
+      this.logger.info(
+        chalk.gray(`   Matched profiles: ${manifest.context.matched_profiles.files.length}`)
+      );
+      this.logger.info(
+        chalk.gray(`   Matched patterns: ${manifest.context.matched_patterns.files.length}`)
+      );
       this.logger.info('');
       this.logger.info(
         chalk.green(
-          '✅ AI can now analyze the changed files against standards, principles, and review profiles'
+          '✅ AI can now load context files based on chosen tier and generate review report'
         )
       );
     } catch (error) {
       this.logger.error(
         chalk.red(
-          `❌ Failed to prepare review context: ${error instanceof Error ? error.message : String(error)}`
+          `❌ Failed to prepare review manifest: ${error instanceof Error ? error.message : String(error)}`
         ),
         { error: error as Error }
       );
       throw error;
-    }
-  }
-
-  /**
-   * Get list of changed files in current branch
-   * @private
-   */
-  private async getChangedFiles(): Promise<string[]> {
-    try {
-      // Get changed files compared to HEAD (uncommitted changes)
-      const { stdout } = await execAsync('git diff --name-only HEAD');
-
-      const files = stdout
-        .trim()
-        .split('\n')
-        .filter((file) => file.length > 0)
-        .filter((file) => !file.startsWith('.hodge/')); // Exclude hodge metadata
-
-      return files;
-    } catch (error) {
-      // If git command fails, return empty array
-      this.logger.warn('Could not get changed files from git', { error: error as Error });
-      return [];
     }
   }
 }

@@ -259,6 +259,11 @@ The CLI will output:
    ```
 4. Update the build plan as you progress
 5. Track files modified and decisions made
+6. **Stage all your work** (REQUIRED - enables /harden review):
+   ```bash
+   git add .
+   ```
+   This stages all files you created/modified during build (implementation, tests, config) so they can be reviewed during `/harden`.
 
 ## Implementation Guidelines
 - Use existing patterns where applicable
