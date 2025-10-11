@@ -6,6 +6,28 @@ This file tracks decisions specific to HODGE-341.
 
 <!-- Add your decisions below -->
 
+### 2025-10-11 - Harden report optimization: Only show detailed output on failures (Phase 2) - current harden-report.md includes full output of all tests/linting/typecheck (3000+ lines when all pass), making it unreadable and exceeding token limits. Phase 2 should modify generateReport() in harden.ts to: (1) When all validations pass: show only summary stats ("466 tests passed"), no detailed output; (2) When validations fail: show only failing test output, error messages, and relevant context; (3) Keep validation-results.json for programmatic access to full data. Benefits: reports become readable, AI can process them within token limits, focus on actionable failures only.
+
+**Status**: Accepted for Phase 2
+
+**Context**:
+Feature: HODGE-341 (Phase 2 - /harden integration)
+Discovered during HODGE-341.1 ship: harden-report.md was 48,239 tokens (exceeded 25K limit)
+
+**Decision**:
+Harden report optimization: Only show detailed output on failures (Phase 2) - current harden-report.md includes full output of all tests/linting/typecheck (3000+ lines when all pass), making it unreadable and exceeding token limits. Phase 2 should modify generateReport() in harden.ts to: (1) When all validations pass: show only summary stats ("466 tests passed"), no detailed output; (2) When validations fail: show only failing test output, error messages, and relevant context; (3) Keep validation-results.json for programmatic access to full data. Benefits: reports become readable, AI can process them within token limits, focus on actionable failures only.
+
+**Rationale**:
+User feedback during HODGE-341.1 ship - report was too large to read, contained unnecessary passing test output. Smart filtering makes reports actionable and AI-processable.
+
+**Consequences**:
+- Phase 2 implementation: Modify harden.ts generateReport() method (lines 228-292)
+- Add conditional logic: if (allPassed) show summary only, else show failures only
+- Update HardenService to track failure-specific output separately from full output
+- Backward compatible: validation-results.json still has full data
+
+---
+
 ### 2025-10-10 - Implementation phase prioritization: Ship all 6 phases (Complete Feature) - Phase 1: Core toolchain infrastructure (ToolchainService, DiagnosticsService, toolchain
 
 **Status**: Accepted
