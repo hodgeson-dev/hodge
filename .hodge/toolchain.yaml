@@ -48,7 +48,7 @@ commands:
     provides:
       - duplication
   dependency-cruiser:
-    command: npx depcruise --config .dependency-cruiser.js ${files}
+    command: npx depcruise --config .dependency-cruiser.cjs ${files}
     provides:
       - architecture
   semgrep:
