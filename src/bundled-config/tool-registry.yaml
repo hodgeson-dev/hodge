@@ -123,6 +123,6 @@ tools:
     installation:
       external: true
       install_instructions: "Install from https://semgrep.dev/docs/getting-started/"
-    default_command: semgrep --config .hodge/semgrep-rules/ ${files}
+    default_command: semgrep --config .hodge/semgrep-rules/ --config auto ${files}
     version_command: semgrep --version
     categories: [security, patterns]

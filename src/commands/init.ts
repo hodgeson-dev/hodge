@@ -16,6 +16,8 @@ import { createCommandLogger } from '../lib/logger.js';
 import { ProfileDiscoveryService } from '../lib/profile-discovery-service.js';
 import { AutoDetectionService } from '../lib/auto-detection-service.js';
 import { ReviewConfigGenerator } from '../lib/review-config-generator.js';
+import { ToolchainService } from '../lib/toolchain-service.js';
+import { ToolchainGenerator } from '../lib/toolchain-generator.js';
 
 /**
  * Valid PM tool values that can be selected by users
@@ -125,6 +127,9 @@ export class InitCommand {
 
       spinner.succeed('Hodge structure created successfully');
       spinner = null;
+
+      // Detect and configure toolchain
+      await this.detectAndConfigureToolchain(projectInfo);
 
       // Run auto-detection for review profiles
       await this.runAutoDetection(projectInfo);
@@ -341,6 +346,60 @@ export class InitCommand {
   }
 
   /**
+   * Detect and configure toolchain using registry-based detection
+   * Part of HODGE-341.2: Two-Layer Configuration Architecture
+   * @param projectInfo - The project information
+   */
+  private async detectAndConfigureToolchain(projectInfo: ProjectInfo): Promise<void> {
+    const spinner = ora('Detecting development tools...').start();
+
+    try {
+      this.logger.debug('Starting toolchain detection');
+
+      const toolchainService = new ToolchainService(projectInfo.rootPath);
+      const detectedTools = await toolchainService.detectTools();
+
+      if (detectedTools.length === 0) {
+        spinner.warn('No development tools detected');
+        this.logger.info(
+          chalk.yellow('ℹ️  No tools detected. You can configure manually in .hodge/toolchain.yaml')
+        );
+        return;
+      }
+
+      spinner.succeed(`Detected ${detectedTools.length} development tools`);
+
+      // Show detected tools
+      this.logger.info(chalk.blue('\n🔧 Development Tools Detected:'));
+      for (const tool of detectedTools) {
+        const versionInfo = tool.version ? ` (${tool.version})` : '';
+        this.logger.info(`   ${chalk.green('✓')} ${tool.name}${versionInfo}`);
+      }
+      this.logger.info(''); // Empty line for spacing
+
+      // Generate toolchain.yaml
+      const toolchainPath = path.join(projectInfo.rootPath, '.hodge', 'toolchain.yaml');
+      const generator = new ToolchainGenerator();
+      await generator.generate(detectedTools, toolchainPath);
+      this.logger.info(chalk.green('✓ Generated toolchain configuration'));
+
+      // Copy bundled Semgrep rules
+      await this.copyBundledSemgrepRules(projectInfo.rootPath);
+
+      this.logger.debug('Toolchain detection completed successfully', {
+        detectedCount: detectedTools.length,
+      });
+    } catch (error) {
+      spinner.fail('Toolchain detection failed');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Toolchain detection failed: ${errorMessage}`, { error: error as Error });
+      this.logger.info(
+        chalk.yellow('  Toolchain detection encountered an error but initialization will continue')
+      );
+    }
+  }
+
+  /**
    * Run auto-detection for review profiles and generate review-config.md
    * @param projectInfo - The project information
    */
@@ -443,6 +502,48 @@ export class InitCommand {
       this.logger.error('Failed to copy review profiles', { error: error as Error });
       // Non-fatal error - log but don't fail init
       this.logger.warn('Review profiles not copied, but init will continue');
+    }
+  }
+
+  /**
+   * Copy bundled Semgrep rules from package to .hodge/semgrep-rules/
+   * Part of HODGE-341.2: Advanced Tool Integration
+   * @param projectRoot - The project root path
+   */
+  private async copyBundledSemgrepRules(projectRoot: string): Promise<void> {
+    try {
+      this.logger.debug('Copying bundled Semgrep rules to .hodge/semgrep-rules/');
+
+      // Get source directory (bundled-config/semgrep-rules/ in package)
+      const packageRoot = path.resolve(__dirname, '..', '..');
+      const sourceDir = path.join(packageRoot, 'src', 'bundled-config', 'semgrep-rules');
+
+      // Check if source exists
+      if (!(await fs.pathExists(sourceDir))) {
+        this.logger.warn('Bundled Semgrep rules not found, skipping');
+        return;
+      }
+
+      // Get destination directory (.hodge/semgrep-rules/ in project)
+      const destDir = path.join(projectRoot, '.hodge', 'semgrep-rules');
+
+      // Ensure destination exists
+      await fs.ensureDir(destDir);
+
+      // Copy entire directory structure
+      await fs.copy(sourceDir, destDir, {
+        overwrite: true,
+      });
+
+      this.logger.info(chalk.green('✓ Copied bundled Semgrep rules'));
+      this.logger.debug('Semgrep rules copied successfully', {
+        source: sourceDir,
+        dest: destDir,
+      });
+    } catch (error) {
+      this.logger.error('Failed to copy Semgrep rules', { error: error as Error });
+      // Non-fatal error - log but don't fail init
+      this.logger.warn('Semgrep rules not copied, but init will continue');
     }
   }
 

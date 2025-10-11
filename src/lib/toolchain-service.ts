@@ -277,7 +277,7 @@ export class ToolchainService {
   ): Promise<RawToolResult[]> {
     const toolNames = config.quality_checks[checkType];
 
-    if (toolNames.length === 0) {
+    if (!toolNames || toolNames.length === 0) {
       return [
         {
           type: checkType,
