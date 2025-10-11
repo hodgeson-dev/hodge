@@ -1,0 +1,84 @@
+# React Anti-Patterns
+# Part of HODGE-341.2: Bundled Semgrep Rules
+# Universal rules that work across React versions (16.8+)
+
+rules:
+  - id: react-missing-hook-dependencies
+    pattern-either:
+      - pattern: |
+          useEffect(() => {
+            ...
+            $FUNC($VAR)
+            ...
+          }, [])
+      - pattern: |
+          useCallback(() => {
+            ...
+            $FUNC($VAR)
+            ...
+          }, [])
+      - pattern: |
+          useMemo(() => {
+            ...
+            $FUNC($VAR)
+            ...
+          }, [])
+    message: |
+      Hook uses external variables but has empty dependency array.
+      This can cause stale closure bugs where the hook references old values.
+      Add all external dependencies to the array or use ESLint's exhaustive-deps rule.
+    severity: WARNING
+    languages: [typescript, javascript, tsx, jsx]
+    metadata:
+      category: correctness
+      react-hooks: exhaustive-deps
+      confidence: MEDIUM
+
+  - id: react-inline-function-in-jsx
+    pattern-either:
+      - pattern: <$COMPONENT ... onClick={() => $FUNC(...)} ... />
+      - pattern: <$COMPONENT ... onChange={() => $FUNC(...)} ... />
+      - pattern: <$COMPONENT ... onSubmit={() => $FUNC(...)} ... />
+    message: |
+      Inline arrow function in JSX prop creates a new function on every render.
+      This can cause unnecessary re-renders of child components.
+      Define the function outside render or use useCallback for event handlers.
+    severity: INFO
+    languages: [typescript, javascript, tsx, jsx]
+    metadata:
+      category: performance
+      confidence: MEDIUM
+
+  - id: react-setstate-in-render
+    pattern-either:
+      - pattern: |
+          function $COMPONENT(...) {
+            ...
+            $SET_STATE(...)
+            ...
+            return ...
+          }
+      - pattern: |
+          const $COMPONENT = (...) => {
+            ...
+            $SET_STATE(...)
+            ...
+            return ...
+          }
+    pattern-not-inside: |
+      useEffect(...)
+    pattern-not-inside: |
+      useLayoutEffect(...)
+    pattern-not-inside: |
+      use$HOOK(...)
+    pattern-not-inside: |
+      $EVENT_HANDLER(...)
+    message: |
+      Calling setState during render can cause infinite render loops.
+      State updates should be inside useEffect, event handlers, or other hooks.
+      If computing derived state, consider useMemo instead.
+    severity: ERROR
+    languages: [typescript, javascript, tsx, jsx]
+    metadata:
+      category: correctness
+      confidence: HIGH

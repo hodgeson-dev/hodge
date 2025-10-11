@@ -1,0 +1,128 @@
+# Tool Registry
+# Universal tool knowledge for Hodge - ships with package, not user-editable
+# Part of HODGE-341.2: Two-Layer Configuration Architecture
+
+tools:
+  # ==================== TypeScript/JavaScript Tools ====================
+
+  typescript:
+    languages: [typescript, javascript]
+    detection:
+      - type: config_file
+        paths: [tsconfig.json]
+      - type: package_json
+        package: typescript
+    installation:
+      package_managers:
+        npm:
+          package: typescript
+          install_command: npm install --save-dev typescript
+    default_command: npx tsc --noEmit
+    version_command: tsc --version
+    categories: [type_checking]
+
+  eslint:
+    languages: [typescript, javascript]
+    detection:
+      - type: config_file
+        paths: [.eslintrc.json, .eslintrc.js, .eslintrc.yaml, .eslintrc.cjs, .eslintrc.yml, eslint.config.js]
+      - type: package_json
+        package: eslint
+    installation:
+      package_managers:
+        npm:
+          package: eslint
+          install_command: npm install --save-dev eslint
+    default_command: npx eslint ${files}
+    version_command: eslint --version
+    categories: [linting]
+
+  prettier:
+    languages: [typescript, javascript, json, yaml, markdown, html, css]
+    detection:
+      - type: config_file
+        paths: [.prettierrc, .prettierrc.json, .prettierrc.js, .prettierrc.yaml, .prettierrc.yml, prettier.config.js]
+      - type: package_json
+        package: prettier
+    installation:
+      package_managers:
+        npm:
+          package: prettier
+          install_command: npm install --save-dev prettier
+    default_command: npx prettier --check ${files}
+    version_command: prettier --version
+    categories: [formatting]
+
+  vitest:
+    languages: [typescript, javascript]
+    detection:
+      - type: config_file
+        paths: [vitest.config.ts, vitest.config.js, vitest.config.mts, vitest.config.mjs]
+      - type: package_json
+        package: vitest
+    installation:
+      package_managers:
+        npm:
+          package: vitest
+          install_command: npm install --save-dev vitest
+    default_command: npx vitest run
+    version_command: vitest --version
+    categories: [testing]
+
+  # ==================== Advanced TypeScript/JavaScript Tools (HODGE-341.2) ====================
+
+  eslint-plugin-sonarjs:
+    languages: [typescript, javascript]
+    detection:
+      - type: eslint_plugin
+        plugin_name: sonarjs
+      - type: package_json
+        package: eslint-plugin-sonarjs
+    installation:
+      package_managers:
+        npm:
+          package: eslint-plugin-sonarjs
+          install_command: npm install --save-dev eslint-plugin-sonarjs
+          post_install: "Add 'plugin:sonarjs/recommended' to your .eslintrc extends array"
+    default_command: null  # Runs via eslint
+    categories: [complexity, code_smells]
+
+  jscpd:
+    languages: [typescript, javascript, python, go, java, ruby, php]
+    detection:
+      - type: package_json
+        package: jscpd
+    installation:
+      package_managers:
+        npm:
+          package: jscpd
+          install_command: npm install --save-dev jscpd
+    default_command: npx jscpd ${files} --min-lines 10
+    version_command: jscpd --version
+    categories: [duplication]
+
+  dependency-cruiser:
+    languages: [typescript, javascript]
+    detection:
+      - type: package_json
+        package: dependency-cruiser
+    installation:
+      package_managers:
+        npm:
+          package: dependency-cruiser
+          install_command: npm install --save-dev dependency-cruiser
+    default_command: npx depcruise src/
+    version_command: depcruise --version
+    categories: [architecture]
+
+  semgrep:
+    languages: [typescript, javascript, python, go, ruby, java, php, c, cpp, rust]
+    detection:
+      - type: command
+        command: semgrep
+    installation:
+      external: true
+      install_instructions: "Install from https://semgrep.dev/docs/getting-started/"
+    default_command: semgrep --config .hodge/semgrep-rules/ ${files}
+    version_command: semgrep --version
+    categories: [security, patterns]

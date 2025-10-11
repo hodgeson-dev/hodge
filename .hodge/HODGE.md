@@ -3,12 +3,12 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: HODGE-341.1
-**Mode**: build
-**PM Issue**: HODGE-341.1
-**Last Updated**: 2025-10-11T03:37:44.147Z
+**Feature**: HODGE-341
+**Mode**: explore
+**PM Issue**: HODGE-341
+**Last Updated**: 2025-10-11T06:08:33.175Z
 ## Current Session
-**Resumed**: 10 hours ago
+**Resumed**: 12 hours ago
 **Progress**: Explored HODGE-341.1 - template ready for AI approach generation
 **Working on**: HODGE-341.1 (explore mode)
 ## AI Context Restoration
@@ -187,15 +187,14 @@ Suggested next: Review exploration and decide with 'hodge decide'
 
 ## Working Files
 
-- `.hodge/features/HODGE-341.1/explore/exploration.md`
-- `.hodge/features/HODGE-341.1/explore/test-intentions.md`
-- `.hodge/features/HODGE-341.1/build/build-plan.md`
+- `.hodge/features/HODGE-341/explore/exploration.md`
+- `.hodge/features/HODGE-341/explore/test-intentions.md`
 
 ## Next Steps
 
-1. Complete implementation
-2. Run tests with `npm test`
-3. Harden with `hodge harden HODGE-341.1`
+1. Review exploration approaches
+2. Make decision with `hodge decide`
+3. Start building with `hodge build HODGE-341`
 
 
 ---

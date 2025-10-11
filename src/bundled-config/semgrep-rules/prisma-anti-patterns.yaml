@@ -1,0 +1,78 @@
+# Prisma Anti-Patterns
+# Part of HODGE-341.2: Bundled Semgrep Rules
+# Universal rules that work across Prisma versions
+
+rules:
+  - id: prisma-n-plus-one-query
+    pattern-either:
+      - pattern: |
+          for (...) {
+            ...
+            await $PRISMA.$MODEL.findMany(...)
+            ...
+          }
+      - pattern: |
+          for (...) {
+            ...
+            await $PRISMA.$MODEL.findUnique(...)
+            ...
+          }
+      - pattern: |
+          $ITEMS.map(async (...) => {
+            ...
+            await $PRISMA.$MODEL.findMany(...)
+            ...
+          })
+    message: |
+      N+1 query detected. This creates a separate database query for each iteration.
+      Use Prisma's `include` or `select` options in the parent query instead.
+      Example: prisma.user.findMany({ include: { posts: true } })
+    severity: ERROR
+    languages: [typescript, javascript]
+    metadata:
+      category: performance
+      cwe: CWE-400
+      confidence: HIGH
+
+  - id: prisma-missing-transaction
+    pattern-either:
+      - pattern: |
+          await $PRISMA.$MODEL1.create(...)
+          ...
+          await $PRISMA.$MODEL2.create(...)
+      - pattern: |
+          await $PRISMA.$MODEL1.update(...)
+          ...
+          await $PRISMA.$MODEL2.create(...)
+      - pattern: |
+          await $PRISMA.$MODEL1.delete(...)
+          ...
+          await $PRISMA.$MODEL2.update(...)
+    pattern-not-inside: |
+      await $PRISMA.$transaction(...)
+    message: |
+      Multiple related database writes should use a transaction to ensure atomicity.
+      If one operation fails, all should roll back.
+      Use: await prisma.$transaction([op1, op2, ...])
+    severity: WARNING
+    languages: [typescript, javascript]
+    metadata:
+      category: correctness
+      cwe: CWE-662
+      confidence: MEDIUM
+
+  - id: prisma-raw-query-sql-injection
+    pattern-either:
+      - pattern: await $PRISMA.$queryRaw`... ${$VAR} ...`
+      - pattern: await $PRISMA.$executeRaw`... ${$VAR} ...`
+    pattern-not: await $PRISMA.$queryRaw`... $${$VAR} ...`
+    message: |
+      Potential SQL injection vulnerability. Variables in raw queries should use parameterized syntax.
+      Use double dollar sign for parameters: $queryRaw`SELECT * FROM User WHERE id = $${userId}`
+    severity: ERROR
+    languages: [typescript, javascript]
+    metadata:
+      category: security
+      cwe: CWE-89
+      owasp: A03:2021 - Injection
+      confidence: HIGH

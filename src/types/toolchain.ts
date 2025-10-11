@@ -1,7 +1,139 @@
 /**
  * Toolchain configuration and tool detection types
  * Part of HODGE-341.1: Build System Detection and Toolchain Infrastructure
+ * Extended in HODGE-341.2: Tool Registry Architecture
  */
+
+// ==================== Tool Registry Types (HODGE-341.2) ====================
+
+/**
+ * Detection rule types for tool registry
+ */
+export type DetectionRuleType = 'config_file' | 'package_json' | 'command' | 'eslint_plugin';
+
+/**
+ * Base detection rule interface
+ */
+export interface DetectionRule {
+  type: DetectionRuleType;
+}
+
+/**
+ * Config file detection rule
+ */
+export interface ConfigFileDetectionRule extends DetectionRule {
+  type: 'config_file';
+  /** List of config file paths to check */
+  paths: string[];
+}
+
+/**
+ * Package.json detection rule
+ */
+export interface PackageJsonDetectionRule extends DetectionRule {
+  type: 'package_json';
+  /** Package name to look for in dependencies/devDependencies */
+  package: string;
+}
+
+/**
+ * Command availability detection rule
+ */
+export interface CommandDetectionRule extends DetectionRule {
+  type: 'command';
+  /** Command name to check in PATH */
+  command: string;
+}
+
+/**
+ * ESLint plugin detection rule
+ */
+export interface EslintPluginDetectionRule extends DetectionRule {
+  type: 'eslint_plugin';
+  /** Plugin name to look for in .eslintrc */
+  plugin_name: string;
+}
+
+/**
+ * Union type for all detection rules
+ */
+export type AnyDetectionRule =
+  | ConfigFileDetectionRule
+  | PackageJsonDetectionRule
+  | CommandDetectionRule
+  | EslintPluginDetectionRule;
+
+/**
+ * Package manager types
+ */
+export type PackageManager = 'npm' | 'pip' | 'poetry' | 'gradle' | 'maven' | 'cargo';
+
+/**
+ * Installation configuration for a specific package manager
+ */
+export interface PackageManagerInstallation {
+  /** Package name */
+  package: string;
+  /** Install command */
+  install_command: string;
+  /** Optional post-install instructions */
+  post_install?: string;
+}
+
+/**
+ * Tool installation configuration
+ */
+export interface ToolInstallation {
+  /** Whether this is an external tool (not installable via package manager) */
+  external?: boolean;
+  /** External installation instructions */
+  install_instructions?: string;
+  /** Installation config per package manager */
+  package_managers?: Partial<Record<PackageManager, PackageManagerInstallation>>;
+}
+
+/**
+ * Quality check category types
+ */
+export type QualityCheckCategory =
+  | 'type_checking'
+  | 'linting'
+  | 'testing'
+  | 'formatting'
+  | 'complexity'
+  | 'code_smells'
+  | 'duplication'
+  | 'architecture'
+  | 'security'
+  | 'patterns';
+
+/**
+ * Tool information in registry
+ */
+export interface ToolRegistryEntry {
+  /** Supported languages for this tool */
+  languages: string[];
+  /** Detection rules (checked in order) */
+  detection: AnyDetectionRule[];
+  /** Installation configuration */
+  installation: ToolInstallation;
+  /** Default command template (null if runs via another tool) */
+  default_command: string | null;
+  /** Command to detect tool version */
+  version_command?: string;
+  /** Quality check categories this tool provides */
+  categories: QualityCheckCategory[];
+}
+
+/**
+ * Complete tool registry structure
+ */
+export interface ToolRegistry {
+  /** Map of tool name to tool information */
+  tools: Record<string, ToolRegistryEntry>;
+}
+
+// ==================== Existing Types (HODGE-341.1) ====================
 
 /**
  * Detected tool information
@@ -18,7 +150,7 @@ export interface DetectedTool {
   version?: string;
 
   /** Method used to detect the tool */
-  detectionMethod?: 'config_file' | 'package_json' | 'path';
+  detectionMethod?: 'config_file' | 'package_json' | 'path' | 'command' | 'eslint_plugin';
 }
 
 /**
@@ -51,6 +183,7 @@ export interface ToolchainConfig {
 
 /**
  * Quality check type to tool name mappings
+ * Extended in HODGE-341.2 with additional check types
  */
 export interface QualityChecksMapping {
   /** Type checking tools (tsc, mypy, etc.) */
@@ -64,6 +197,25 @@ export interface QualityChecksMapping {
 
   /** Code formatting tools (prettier, black, etc.) */
   formatting: string[];
+
+  // HODGE-341.2: Advanced quality checks
+  /** Complexity analysis tools (eslint-plugin-sonarjs, radon, etc.) */
+  complexity?: string[];
+
+  /** Code smell detection tools (eslint-plugin-sonarjs, etc.) */
+  code_smells?: string[];
+
+  /** Code duplication detection tools (jscpd, cpd, etc.) */
+  duplication?: string[];
+
+  /** Architecture validation tools (dependency-cruiser, etc.) */
+  architecture?: string[];
+
+  /** Security pattern detection tools (semgrep, etc.) */
+  security?: string[];
+
+  /** Custom pattern detection tools (semgrep, etc.) */
+  patterns?: string[];
 }
 
 /**

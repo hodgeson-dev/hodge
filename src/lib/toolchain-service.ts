@@ -14,8 +14,10 @@ import type {
   RawToolResult,
   FileScope,
   QualityChecksMapping,
+  AnyDetectionRule,
 } from '../types/toolchain.js';
 import { createCommandLogger } from './logger.js';
+import { ToolRegistryLoader } from './tool-registry-loader.js';
 
 const exec = promisify(execCallback);
 const logger = createCommandLogger('toolchain-service');
@@ -35,12 +37,15 @@ interface ExecError extends Error {
 
 /**
  * Service for detecting and executing quality tools
+ * HODGE-341.2: Refactored to use tool registry for generic detection
  */
 export class ToolchainService {
   private cwd: string;
+  private registryLoader: ToolRegistryLoader;
 
-  constructor(cwd: string = process.cwd()) {
+  constructor(cwd: string = process.cwd(), registryLoader?: ToolRegistryLoader) {
     this.cwd = cwd;
+    this.registryLoader = registryLoader ?? new ToolRegistryLoader();
   }
 
   /**
@@ -64,117 +69,153 @@ export class ToolchainService {
   }
 
   /**
-   * Detect available tools using three-tier detection:
+   * Detect available tools using registry-based detection
+   * HODGE-341.2: Generic detection engine that reads tool registry
+   *
+   * Detection priority (from registry rules):
    * 1. Config files (highest priority)
    * 2. package.json devDependencies
-   * 3. PATH (lowest priority - not implemented in Phase 1)
+   * 3. PATH/command existence (lowest priority)
    */
   async detectTools(): Promise<DetectedTool[]> {
     const tools: DetectedTool[] = [];
+    const registry = await this.registryLoader.load();
 
-    // TypeScript detection
-    const tsConfig = await this.fileExists('tsconfig.json');
-    if (tsConfig) {
-      const version = await this.getToolVersion('typescript', 'tsc --version');
-      tools.push({
-        name: 'typescript',
-        detected: true,
-        version,
-        detectionMethod: 'config_file',
-      });
+    // Iterate through all tools in registry
+    for (const [toolName, toolInfo] of Object.entries(registry.tools)) {
+      // Try each detection rule in order (stops at first match)
+      for (const rule of toolInfo.detection) {
+        const detected = await this.runDetectionRule(rule);
+
+        if (detected) {
+          // Get version if version_command is specified
+          const version = toolInfo.version_command
+            ? await this.getToolVersion(toolName, toolInfo.version_command)
+            : undefined;
+
+          tools.push({
+            name: toolName,
+            detected: true,
+            version,
+            detectionMethod: rule.type,
+          });
+
+          // Stop checking other rules for this tool
+          break;
+        }
+      }
     }
 
-    // ESLint detection
-    const eslintConfig =
-      (await this.fileExists('.eslintrc.json')) ||
-      (await this.fileExists('.eslintrc.js')) ||
-      (await this.fileExists('.eslintrc.yaml'));
-    if (eslintConfig) {
-      const version = await this.getToolVersion('eslint', 'eslint --version');
-      tools.push({
-        name: 'eslint',
-        detected: true,
-        version,
-        detectionMethod: 'config_file',
-      });
-    }
+    logger.info('Tool detection complete', {
+      toolCount: tools.length,
+      tools: tools.map((t) => t.name),
+    });
 
-    // Prettier detection
-    const prettierConfig =
-      (await this.fileExists('.prettierrc')) ||
-      (await this.fileExists('.prettierrc.json')) ||
-      (await this.fileExists('.prettierrc.js')) ||
-      (await this.fileExists('prettier.config.js'));
-    if (prettierConfig) {
-      const version = await this.getToolVersion('prettier', 'prettier --version');
-      tools.push({
-        name: 'prettier',
-        detected: true,
-        version,
-        detectionMethod: 'config_file',
-      });
-    }
-
-    // Vitest detection
-    const vitestConfig =
-      (await this.fileExists('vitest.config.ts')) || (await this.fileExists('vitest.config.js'));
-    if (vitestConfig) {
-      const version = await this.getToolVersion('vitest', 'vitest --version');
-      tools.push({
-        name: 'vitest',
-        detected: true,
-        version,
-        detectionMethod: 'config_file',
-      });
-    }
-
-    // Check package.json for tools not found via config files
-    await this.detectFromPackageJson(tools);
-
-    logger.info('Tool detection complete', { toolCount: tools.length });
     return tools;
   }
 
   /**
-   * Detect tools from package.json devDependencies
+   * Execute a detection rule
+   * HODGE-341.2: Generic detection rule execution
    */
-  private async detectFromPackageJson(existingTools: DetectedTool[]): Promise<void> {
+  private async runDetectionRule(rule: AnyDetectionRule): Promise<boolean> {
+    switch (rule.type) {
+      case 'config_file':
+        return await this.anyFileExists(rule.paths);
+
+      case 'package_json':
+        return await this.hasPackageDependency(rule.package);
+
+      case 'command':
+        return await this.commandExists(rule.command);
+
+      case 'eslint_plugin':
+        return await this.checkEslintPlugin(rule.plugin_name);
+
+      default:
+        logger.warn('Unknown detection rule type', { rule });
+        return false;
+    }
+  }
+
+  /**
+   * Check if any of the specified files exist
+   */
+  private async anyFileExists(paths: string[]): Promise<boolean> {
+    for (const path of paths) {
+      if (await this.fileExists(path)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Check if a package is in dependencies or devDependencies
+   */
+  private async hasPackageDependency(packageName: string): Promise<boolean> {
     try {
       const packageJsonPath = join(this.cwd, 'package.json');
       const content = await fs.readFile(packageJsonPath, 'utf-8');
       const parsed: unknown = JSON.parse(content);
 
-      // Type guard for package.json
       if (typeof parsed !== 'object' || parsed === null) {
-        logger.warn('package.json is not a valid object');
-        return;
+        return false;
       }
 
       const packageJson = parsed as PackageJson;
-      const devDeps = packageJson.devDependencies ?? {};
+      const deps = { ...(packageJson.dependencies ?? {}), ...(packageJson.devDependencies ?? {}) };
 
-      const toolsToCheck = ['typescript', 'eslint', 'prettier', 'vitest'];
-
-      for (const toolName of toolsToCheck) {
-        // Skip if already detected via config file
-        if (existingTools.some((t) => t.name === toolName)) {
-          continue;
-        }
-
-        // Check if tool is in devDependencies
-        if (devDeps[toolName]) {
-          existingTools.push({
-            name: toolName,
-            detected: true,
-            detectionMethod: 'package_json',
-          });
-        }
-      }
-    } catch (error) {
-      logger.warn('Could not read package.json for tool detection', {
-        error: error as Error,
-      });
+      return packageName in deps;
+    } catch {
+      return false;
     }
+  }
+
+  /**
+   * Check if a command exists in PATH
+   */
+  private async commandExists(command: string): Promise<boolean> {
+    try {
+      // Use 'which' on Unix-like systems, 'where' on Windows
+      const whichCommand = process.platform === 'win32' ? 'where' : 'which';
+      await exec(`${whichCommand} ${command}`, { cwd: this.cwd });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Check if an ESLint plugin is configured in .eslintrc
+   */
+  private async checkEslintPlugin(pluginName: string): Promise<boolean> {
+    const eslintConfigFiles = [
+      '.eslintrc.json',
+      '.eslintrc.js',
+      '.eslintrc.cjs',
+      '.eslintrc.yaml',
+      '.eslintrc.yml',
+    ];
+
+    for (const configFile of eslintConfigFiles) {
+      try {
+        const configPath = join(this.cwd, configFile);
+        const content = await fs.readFile(configPath, 'utf-8');
+
+        // Simple string search for plugin name
+        // This handles both "plugins": ["sonarjs"] and "extends": ["plugin:sonarjs/recommended"]
+        if (content.includes(pluginName)) {
+          logger.debug('Found ESLint plugin in config', { pluginName, configFile });
+          return true;
+        }
+      } catch {
+        // File doesn't exist or can't be read, try next one
+        continue;
+      }
+    }
+
+    return false;
   }
 
   /**
