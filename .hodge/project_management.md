@@ -51,8 +51,8 @@ HODGE-004 (ID Management)
 ### HODGE-001
 - **Status**: exploring
 - **Priority**: TBD
-- **Created**: 2025-10-09
-- **Updated**: 2025-10-09
+- **Created**: 2025-10-11
+- **Updated**: 2025-10-11
 - **Description**: auth-feature
 - **Phase**: TBD
 - **Next Steps**:

@@ -1,0 +1,142 @@
+version: '1.0'
+feature: HODGE-341.1
+generated_at: '2025-10-11T04:37:15.207Z'
+recommended_tier: full
+change_analysis:
+  total_files: 27
+  total_lines: 10472
+  breakdown:
+    implementation: 13
+    test: 2
+    documentation: 12
+    config: 0
+changed_files:
+  - path: .claude/commands/explore.md
+    lines_changed: 12
+    change_type: documentation
+  - path: .hodge/.session
+    lines_changed: 28
+    change_type: implementation
+  - path: .hodge/HODGE.md
+    lines_changed: 44
+    change_type: documentation
+  - path: .hodge/context.json
+    lines_changed: 16
+    change_type: implementation
+  - path: .hodge/development-plan.json
+    lines_changed: 126
+    change_type: implementation
+  - path: .hodge/features/HODGE-341.1/build/build-plan.md
+    lines_changed: 132
+    change_type: documentation
+  - path: .hodge/features/HODGE-341.1/decisions.md
+    lines_changed: 168
+    change_type: documentation
+  - path: .hodge/features/HODGE-341.1/explore/exploration.md
+    lines_changed: 908
+    change_type: documentation
+  - path: .hodge/features/HODGE-341.1/explore/test-intentions.md
+    lines_changed: 98
+    change_type: documentation
+  - path: .hodge/features/HODGE-341.1/issue-id.txt
+    lines_changed: 2
+    change_type: implementation
+  - path: .hodge/features/HODGE-341/decisions.md
+    lines_changed: 472
+    change_type: documentation
+  - path: .hodge/features/HODGE-341/explore/exploration.md
+    lines_changed: 4924
+    change_type: documentation
+  - path: .hodge/features/HODGE-341/explore/test-intentions.md
+    lines_changed: 98
+    change_type: documentation
+  - path: .hodge/features/HODGE-341/issue-id.txt
+    lines_changed: 2
+    change_type: implementation
+  - path: .hodge/features/HODGE-341/plan.json
+    lines_changed: 146
+    change_type: implementation
+  - path: .hodge/features/HODGE-342/explore/exploration.md
+    lines_changed: 542
+    change_type: documentation
+  - path: .hodge/features/HODGE-342/explore/test-intentions.md
+    lines_changed: 98
+    change_type: documentation
+  - path: .hodge/features/HODGE-342/issue-id.txt
+    lines_changed: 2
+    change_type: implementation
+  - path: .hodge/id-counter.json
+    lines_changed: 8
+    change_type: implementation
+  - path: .hodge/id-mappings.json
+    lines_changed: 32
+    change_type: implementation
+  - path: .hodge/project_management.md
+    lines_changed: 78
+    change_type: documentation
+  - path: .hodge/temp/plan-interaction/HODGE-341/plan.json
+    lines_changed: 142
+    change_type: implementation
+  - path: src/lib/diagnostics-service.smoke.test.ts
+    lines_changed: 498
+    change_type: test
+  - path: src/lib/diagnostics-service.ts
+    lines_changed: 540
+    change_type: implementation
+  - path: src/lib/toolchain-service.smoke.test.ts
+    lines_changed: 358
+    change_type: test
+  - path: src/lib/toolchain-service.ts
+    lines_changed: 688
+    change_type: implementation
+  - path: src/types/toolchain.ts
+    lines_changed: 310
+    change_type: implementation
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - test-pattern.md
+      - error-boundary.md
+      - input-validation.md
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - testing/vitest-3.x.md
+      - testing/general-test-standards.md
+      - languages/typescript-5.x.md
+      - languages/general-coding-standards.md
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed

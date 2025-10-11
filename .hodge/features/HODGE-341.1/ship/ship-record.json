@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-341.1",
+  "timestamp": "2025-10-11T06:00:11.276Z",
+  "issueId": "HODGE-341.1",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "feat: implement toolchain detection and diagnostics infrastructure (HODGE-341.1)\n\n## What Changed\n\n**Core Infrastructure** (5 new files, 1,274 lines):\n- src/types/toolchain.ts: Type definitions for toolchain config, diagnostics, and reports (155 lines)\n- src/lib/toolchain-service.ts: Tool detection and execution service (368 lines)  \n- src/lib/diagnostics-service.ts: Result aggregation and normalization (323 lines)\n- Added interface definitions for ESLint, Vitest, TypeScript output formats\n- Implemented three-tier tool detection (config files > package.json > PATH)\n\n**Test Coverage** (2 test files, 428 lines - all passing):\n- src/lib/toolchain-service.smoke.test.ts: 8 smoke tests for detection and execution\n- src/lib/diagnostics-service.smoke.test.ts: 9 smoke tests for aggregation and parsing\n\n**Feature Documentation** (3,876 lines):\n- Exploration, decisions, and build plans for HODGE-341.1\n- Parent epic HODGE-341 exploration and planning\n- Related exploration for HODGE-342\n\n**Type Safety Improvements**:\n- Zero unsafe `any` types - all JSON parsing uses `unknown` + type guards\n- Proper error typing with ExecError interface\n- Nullish coalescing (`??`) throughout for safer null handling\n\n## Why This Change\n\nPhase 1 of HODGE-341 hybrid code quality review system. Provides foundational infrastructure to:\n- Detect quality tools (TypeScript, ESLint, Prettier, Vitest) from config files and package.json\n- Execute tools on uncommitted files for scoped code review\n- Normalize diverse tool outputs into universal diagnostic format\n- Calculate pass rates and aggregate results across all quality checks\n\nEnables `/harden` command integration in Phase 2 for automated AI-driven code reviews.\n\n## Impact\n\n✅ **Architecture**:\n- Clean service class design (ToolchainService + DiagnosticsService)\n- CLI discovers structure, AI interprets content (HODGE-334 pattern)\n- Config-driven via `.hodge/toolchain.yaml` (no hard-coded tools)\n\n✅ **Code Quality**:\n- 17/17 smoke tests passing (466/466 total tests passing)\n- TypeScript strict mode compliance\n- Zero ESLint errors (1 acceptable false-positive warning)\n- Comprehensive error handling (tool unavailable = warning, issues found = error)\n\n✅ **Developer Experience**:\n- Git integration for uncommitted file scoping\n- Template substitution (`${files}` placeholder) for flexible commands\n- Version detection with graceful degradation\n- Multiple tool output parsers (TypeScript, ESLint, Prettier, Vitest)\n\n**Pattern**: Service-based architecture with proper type safety enables reliable quality tool integration for automated code review workflows.\n\nCloses HODGE-341.1"
+}

@@ -89,21 +89,6 @@ Code should be self-documenting through clear naming, but comments are valuable 
 
 ---
 
-## File Organization and Length
-**Enforcement: SUGGESTED** | **Severity: SUGGESTION**
-
-Files should be organized around cohesive responsibilities with clear, self-documenting structure. When files exceed **300 lines**, consider extracting related functionality into separate modules or classes.
-
-**Key Principles**:
-- **Self-Documenting Code**: Use descriptive function and class names that eliminate the need for explanatory comments. If extensive comments are required to explain what code does, extract that logic into a well-named function or class.
-- **File Length Threshold**: Files >300 lines often indicate opportunities for extraction. Review for distinct responsibilities that could become separate modules.
-- **Respect Single Responsibility**: Refactoring based on file length must maintain cohesion - extract based on logical boundaries (different concerns), not arbitrary line counts.
-- **Judgment Over Rules**: Some files legitimately exceed 300 lines (template collections, auto-generated code, comprehensive integration modules). Use the threshold as a trigger for review, not an absolute rule.
-
-**Guidance**: Flag files >300 lines and identify extraction candidates (distinct responsibilities, helper utilities, configuration). Suggest meaningful module names that reveal purpose. Don't split files that have genuine cohesion just to meet a line count. Balance extraction with avoiding excessive file proliferation. **Exemptions**: Auto-generated files, template collections, comprehensive integration modules.
-
----
-
 ## Magic Numbers and Constants
 **Enforcement: SUGGESTED** | **Severity: WARNING**
 
