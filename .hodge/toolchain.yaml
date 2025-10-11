@@ -1,0 +1,58 @@
+version: '1.0'
+language: typescript
+
+quality_checks:
+  type_checking:
+    - typescript
+  linting:
+    - eslint
+  testing:
+    - vitest
+  formatting:
+    - prettier
+  complexity:
+    - eslint-plugin-sonarjs
+  code_smells:
+    - eslint-plugin-sonarjs
+  duplication:
+    - jscpd
+  architecture:
+    - dependency-cruiser
+  security:
+    - semgrep
+
+commands:
+  typescript:
+    command: npx tsc -p tsconfig.build.json --noEmit ${files}
+    provides:
+      - type_checking
+  eslint:
+    command: npx eslint ${files}
+    provides:
+      - linting
+  vitest:
+    command: npm test
+    provides:
+      - testing
+  prettier:
+    command: npx prettier --check ${files}
+    provides:
+      - formatting
+  eslint-plugin-sonarjs:
+    command: npx eslint ${files}
+    provides:
+      - complexity
+      - code_smells
+  jscpd:
+    command: npx jscpd ${files}
+    provides:
+      - duplication
+  dependency-cruiser:
+    command: npx depcruise --config .dependency-cruiser.js ${files}
+    provides:
+      - architecture
+  semgrep:
+    command: semgrep --config .hodge/semgrep-rules/ --config auto ${files}
+    provides:
+      - security
+      - patterns

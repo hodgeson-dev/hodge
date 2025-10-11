@@ -1,5 +1,7 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import { ToolchainService } from './toolchain-service.js';
+import type { RawToolResult } from '../types/toolchain.js';
 
 const execAsync = promisify(exec);
 
@@ -27,8 +29,17 @@ export interface QualityGateResults {
  * Extracts testable business logic from HardenCommand per HODGE-321.
  * This service handles validation orchestration and quality gate checks
  * without any console I/O, making it fully testable.
+ *
+ * HODGE-341.2: Refactored to use ToolchainService for toolchain-based validation
  */
 export class HardenService {
+  private toolchainService: ToolchainService;
+  private useToolchain: boolean;
+
+  constructor(cwd: string = process.cwd(), useToolchain: boolean = true) {
+    this.toolchainService = new ToolchainService(cwd);
+    this.useToolchain = useToolchain;
+  }
   /**
    * Run all validation checks in parallel
    * @param options - Validation options
@@ -41,6 +52,17 @@ export class HardenService {
       sequential?: boolean;
     } = {}
   ): Promise<ValidationResults> {
+    // Try to use toolchain-based validation if enabled
+    if (this.useToolchain) {
+      try {
+        return await this.runToolchainValidations(options);
+      } catch (error) {
+        // Fall back to legacy npm commands if toolchain fails
+        console.warn('Toolchain validation failed, falling back to npm commands:', error);
+      }
+    }
+
+    // Legacy npm command execution
     if (options.sequential) {
       // Sequential execution
       const testResult = options.skipTests ? this.skipTests() : await this.runTests();
@@ -72,6 +94,71 @@ export class HardenService {
         build: buildResult,
       };
     }
+  }
+
+  /**
+   * Run validations using toolchain configuration
+   * HODGE-341.2: New method for toolchain-based validation
+   * @private
+   */
+  private async runToolchainValidations(options: {
+    skipTests?: boolean;
+    autoFix?: boolean;
+    sequential?: boolean;
+  }): Promise<ValidationResults> {
+    // Run quality checks using toolchain
+    const rawResults = await this.toolchainService.runQualityChecks('uncommitted');
+
+    // Convert RawToolResult[] to ValidationResults
+    const testResult = this.convertToolResult(
+      rawResults.filter((r) => r.type === 'testing'),
+      options.skipTests
+    );
+    const lintResult = this.convertToolResult(rawResults.filter((r) => r.type === 'linting'));
+    const typecheckResult = this.convertToolResult(
+      rawResults.filter((r) => r.type === 'type_checking')
+    );
+
+    // Build still uses npm command
+    const buildResult = await this.runBuild();
+
+    return {
+      tests: testResult,
+      lint: lintResult,
+      typecheck: typecheckResult,
+      build: buildResult,
+    };
+  }
+
+  /**
+   * Convert RawToolResult[] to ValidationResult
+   * @private
+   */
+  private convertToolResult(results: RawToolResult[], skipTests?: boolean): ValidationResult {
+    if (skipTests) {
+      return this.skipTests();
+    }
+
+    if (results.length === 0) {
+      return {
+        passed: true,
+        output: 'No tools configured for this check',
+      };
+    }
+
+    // Aggregate results from multiple tools
+    const allPassed = results.every((r) => r.skipped || r.success);
+    const outputs = results.map((r) => {
+      if (r.skipped) {
+        return `[${r.tool}] ${r.reason ?? 'Skipped'}`;
+      }
+      return `[${r.tool}]\n${r.stdout ?? ''}\n${r.stderr ?? ''}`;
+    });
+
+    return {
+      passed: allPassed,
+      output: outputs.join('\n\n'),
+    };
   }
 
   /**
@@ -133,7 +220,8 @@ export class HardenService {
       // If execAsync succeeds (no throw), tests passed (exit code 0)
       // Check output for test failures as secondary validation
       const output = stdout + stderr;
-      const hasFailed = output.includes(' FAIL ') || /Test Files.*\d+\s+failed/.test(output);
+      // Check for failure indicators without complex regex to avoid backtracking
+      const hasFailed = output.includes(' FAIL ') || output.includes(' failed');
 
       return {
         passed: !hasFailed,
@@ -143,7 +231,7 @@ export class HardenService {
       // execAsync throws on non-zero exit code = tests failed
       // Error object from child_process.exec contains stdout/stderr properties
       const execError = error as { stdout?: string; stderr?: string; message?: string };
-      const output = execError.stdout || execError.stderr || execError.message || String(error);
+      const output = execError.stdout ?? execError.stderr ?? execError.message ?? String(error);
       return {
         passed: false,
         output,
@@ -176,8 +264,10 @@ export class HardenService {
       // execAsync succeeds = exit code 0 = no linting errors (warnings are OK)
       const output = stdout + stderr;
       // Check for ESLint error summary format: "X problems (Y errors, Z warnings)"
-      const errorMatch = output.match(/\((\d+) errors?,/);
-      const hasErrors = errorMatch && parseInt(errorMatch[1]) > 0;
+      // Use RegExp.exec() instead of String.match() for safer regex execution
+      const errorPattern = /\((\d+) errors?,/;
+      const errorMatch = errorPattern.exec(output);
+      const hasErrors = errorMatch !== null && parseInt(errorMatch[1]) > 0;
 
       // Auto-fix if requested and has errors
       if (hasErrors && autoFix) {

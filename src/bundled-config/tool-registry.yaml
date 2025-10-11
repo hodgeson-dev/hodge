@@ -83,7 +83,10 @@ tools:
         npm:
           package: eslint-plugin-sonarjs
           install_command: npm install --save-dev eslint-plugin-sonarjs
-          post_install: "Add 'plugin:sonarjs/recommended' to your .eslintrc extends array"
+          post_install: |
+            1. Add 'sonarjs' to plugins array in .eslintrc
+            2. Add 'plugin:sonarjs/recommended-legacy' to extends array (ESLint 8.x)
+            3. Recommended: Add rule override: "sonarjs/todo-tag": "warn" (TODOs acceptable in development)
     default_command: null  # Runs via eslint
     categories: [complexity, code_smells]
 

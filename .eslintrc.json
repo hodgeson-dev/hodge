@@ -5,16 +5,20 @@
     "sourceType": "module",
     "project": "./tsconfig.json"
   },
-  "plugins": ["@typescript-eslint"],
+  "plugins": ["@typescript-eslint", "sonarjs"],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:@typescript-eslint/recommended-requiring-type-checking"
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:sonarjs/recommended-legacy"
   ],
   "rules": {
     // Essential Standards (Always Enforced)
     // Allow console for CLI tools, but still catch accidental console usage in lib
     "no-console": "off",
+
+    // SonarJS rule overrides
+    "sonarjs/todo-tag": "warn", // Downgrade from error to warning (TODOs are acceptable in development)
     "@typescript-eslint/no-explicit-any": "error",
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-unsafe-return": "error",
