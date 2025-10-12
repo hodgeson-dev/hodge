@@ -3,16 +3,16 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: HODGE-341
-**Mode**: explore
-**PM Issue**: HODGE-341
-**Last Updated**: 2025-10-12T04:40:24.889Z
+**Feature**: HODGE-341.3
+**Mode**: shipped
+**PM Issue**: HODGE-341.3
+**Last Updated**: 2025-10-12T08:54:36.696Z
 ## Current Session
-**Resumed**: 22 hours ago
-**Progress**: Explored HODGE-341.2 - template ready for AI approach generation
-**Working on**: HODGE-341.2 (explore mode)
+**Resumed**: 3 hours ago
+**Progress**: Explored HODGE-341.3 - template ready for AI approach generation
+**Working on**: HODGE-341.3 (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-341.2. Explored HODGE-341.2 - template ready for AI approach generation
+You were helping with HODGE-341.3. Explored HODGE-341.3 - template ready for AI approach generation
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
@@ -143,6 +143,30 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - HODGE-318 (2025-10-01) inadvertently reintroduced it in commonjs-compatibility tests
 - HODGE-319.1 (2025-10-03) fixed regression and added this standard
 
+### File and Function Length Standards
+- **Cognitive Load**: Files longer than 300 lines are harder to understand and navigate
+- **Testability**: Large files often indicate too many responsibilities, making comprehensive testing difficult
+- **Reviewability**: Code reviews become less effective when files exceed reviewable scope
+- **Maintainability**: Changes to large files have higher risk of unintended side effects
+- Extract service classes for business logic (move to `src/lib/`)
+- Move shared utilities to common libraries
+- Split by responsibility (Single Responsibility Principle)
+- Consider if file is mixing orchestration with business logic
+- Test files (`*.test.ts`, `*.spec.ts`) - automatically excluded
+- Generated code - add to ESLint ignore patterns if needed
+- **Single Responsibility**: Long functions often do too many things
+- **Complexity Management**: Shorter functions are easier to reason about
+- **Reusability**: Smaller functions are more likely to be reusable
+- **Testing**: Functions under 50 lines are easier to test exhaustively
+- Extract helper functions for repeated logic
+- Move complex conditionals to well-named predicates
+- Break sequential operations into pipeline steps
+- Consider if function is mixing levels of abstraction
+- Test files - automatically excluded (test cases may be longer for readability)
+- **Build Phase**: Warnings shown, not blocking
+- **Harden Phase**: Expected to be addressed, review required
+- **Ship Phase**: Must be resolved or explicitly justified
+
 ### Code Comments and TODOs
 - **TODO Convention**: Always use `// TODO:` comments for incomplete work
 - - Format: `// TODO: [phase] description`
@@ -187,14 +211,13 @@ Suggested next: Review exploration and decide with 'hodge decide'
 
 ## Working Files
 
-- `.hodge/features/HODGE-341/explore/exploration.md`
-- `.hodge/features/HODGE-341/explore/test-intentions.md`
+- `.hodge/features/HODGE-341.3/explore/exploration.md`
+- `.hodge/features/HODGE-341.3/explore/test-intentions.md`
+- `.hodge/features/HODGE-341.3/build/build-plan.md`
 
 ## Next Steps
 
-1. Review exploration approaches
-2. Make decision with `hodge decide`
-3. Start building with `hodge build HODGE-341`
+1. Feature completed. Start new work with `hodge explore <feature>`
 
 
 ---

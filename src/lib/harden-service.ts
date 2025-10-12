@@ -146,6 +146,19 @@ export class HardenService {
   }
 
   /**
+   * Run quality checks and return raw tool results
+   * Used by harden --review mode to generate quality-checks.md (HODGE-341.3)
+   * @param feature - Feature name for commit range scoping (optional)
+   * @returns Promise<RawToolResult[]> - Raw results from all quality check tools
+   */
+  async runQualityChecks(feature?: string): Promise<RawToolResult[]> {
+    const scope = feature ? 'feature' : 'all';
+    const results = await this.toolchainService.runQualityChecks(scope, feature);
+    this.lastQualityCheckResults = results;
+    return results;
+  }
+
+  /**
    * Get the last quality check results (all checks including advanced ones)
    * Used by command layer to write quality-checks.md
    */

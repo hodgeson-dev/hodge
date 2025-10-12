@@ -42,6 +42,26 @@ When working in each phase, AI assistants should:
 - Quality gates match development phase
 - Technical debt is temporary, not permanent
 - Refactoring is expected, not exceptional
+- **Boy Scout Rule**: Always leave code better than you found it
+
+**The Boy Scout Rule** (from Robert C. Martin):
+> "Leave the code cleaner than you found it."
+
+When working on a feature, if you encounter pre-existing code that violates current standards:
+- **During Harden/Ship phases**: Fix it as part of your work
+- **Small improvements**: Reduce cognitive complexity, fix TODO format, improve naming
+- **Don't ignore warnings**: If lint/typecheck reports issues in files you touch, address them
+- **Scope appropriately**: Don't refactor the entire codebase, just what you encounter
+
+*Example from HODGE-341.3*:
+```
+User: "Let's fix the cognitive complexity issue. Boy Scout rule."
+
+AI fixed:
+- Feature code: 7 ESLint errors in new files (mandatory)
+- Pre-existing code: Cognitive complexity 19 in harden.ts (Boy Scout)
+- Result: Both feature and touched pre-existing code improved
+```
 
 *In practice:*
 ```typescript

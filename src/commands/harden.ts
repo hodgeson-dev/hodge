@@ -14,6 +14,10 @@ import { createCommandLogger } from '../lib/logger.js';
 import { GitDiffAnalyzer } from '../lib/git-diff-analyzer.js';
 import { ReviewTierClassifier } from '../lib/review-tier-classifier.js';
 import { ReviewManifestGenerator } from '../lib/review-manifest-generator.js';
+import { ImportAnalyzer } from '../lib/import-analyzer.js';
+import { SeverityExtractor } from '../lib/severity-extractor.js';
+import { CriticalFileSelector } from '../lib/critical-file-selector.js';
+import { CriticalFilesReportGenerator } from '../lib/critical-files-report-generator.js';
 import * as yaml from 'js-yaml';
 import { ShipService } from '../lib/ship-service.js';
 import { getCurrentCommitSHA } from '../lib/git-utils.js';
@@ -410,17 +414,35 @@ ${results.build.output || 'No build output'}
    */
   private generateQualityChecksReport(results: RawToolResult[]): string {
     const timestamp = new Date().toISOString();
-    let report = `# Quality Checks Report
+    const header = this.generateReportHeader(timestamp, results.length);
+    const byType = this.groupResultsByType(results);
+    const body = this.generateReportBody(byType);
+    const footer = this.generateReportFooter();
+
+    return header + body + footer;
+  }
+
+  /**
+   * Generate report header
+   * @private
+   */
+  private generateReportHeader(timestamp: string, totalChecks: number): string {
+    return `# Quality Checks Report
 **Generated**: ${timestamp}
-**Total Checks**: ${results.length}
+**Total Checks**: ${totalChecks}
 
 This report contains the raw output from all quality checks run by the toolchain.
 The AI will interpret these results to identify issues that need to be fixed before shipping.
 
 `;
+  }
 
-    // Group results by check type
-    const byType = results.reduce(
+  /**
+   * Group results by check type
+   * @private
+   */
+  private groupResultsByType(results: RawToolResult[]): Record<string, RawToolResult[]> {
+    return results.reduce(
       (acc, result) => {
         if (!acc[result.type]) {
           acc[result.type] = [];
@@ -430,38 +452,55 @@ The AI will interpret these results to identify issues that need to be fixed bef
       },
       {} as Record<string, RawToolResult[]>
     );
+  }
 
-    // Write results by type
+  /**
+   * Generate report body with all check results
+   * @private
+   */
+  private generateReportBody(byType: Record<string, RawToolResult[]>): string {
+    let body = '';
     for (const [type, checks] of Object.entries(byType)) {
-      report += `\n## ${type.replace(/_/g, ' ').toUpperCase()}\n\n`;
+      body += `\n## ${type.replace(/_/g, ' ').toUpperCase()}\n\n`;
+      body += checks.map((check) => this.formatCheckResult(check)).join('');
+    }
+    return body;
+  }
 
-      for (const check of checks) {
-        if (check.skipped) {
-          report += `### ${check.tool} (SKIPPED)\n`;
-          report += `**Reason**: ${check.reason}\n\n`;
-        } else {
-          const status = check.success ? '✅ PASSED' : '❌ FAILED';
-          report += `### ${check.tool} - ${status}\n\n`;
-
-          if (check.stdout) {
-            report += `**Output**:\n\`\`\`\n${check.stdout}\n\`\`\`\n\n`;
-          }
-
-          if (check.stderr) {
-            report += `**Errors**:\n\`\`\`\n${check.stderr}\n\`\`\`\n\n`;
-          }
-        }
-      }
+  /**
+   * Format a single check result
+   * @private
+   */
+  private formatCheckResult(check: RawToolResult): string {
+    if (check.skipped) {
+      return `### ${check.tool} (SKIPPED)\n**Reason**: ${check.reason}\n\n`;
     }
 
-    report += `\n---\n\n`;
-    report += `**Note**: This is a machine-readable report for AI interpretation. The AI will analyze these results and provide actionable feedback in the harden workflow.\n`;
+    const status = check.success ? '✅ PASSED' : '❌ FAILED';
+    let result = `### ${check.tool} - ${status}\n\n`;
 
-    return report;
+    if (check.stdout) {
+      result += `**Output**:\n\`\`\`\n${check.stdout}\n\`\`\`\n\n`;
+    }
+
+    if (check.stderr) {
+      result += `**Errors**:\n\`\`\`\n${check.stderr}\n\`\`\`\n\n`;
+    }
+
+    return result;
+  }
+
+  /**
+   * Generate report footer
+   * @private
+   */
+  private generateReportFooter(): string {
+    return `\n---\n\n**Note**: This is a machine-readable report for AI interpretation. The AI will analyze these results and provide actionable feedback in the harden workflow.\n`;
   }
 
   /**
    * Handle review mode - prepare context for AI code review with tiered approach
+   * HODGE-341.3: Enhanced with quality checks and critical file selection
    * @param {string} feature - Feature name
    * @param {string} hardenDir - Directory to save review manifest
    * @private
@@ -492,7 +531,61 @@ The AI will interpret these results to identify issues that need to be fixed bef
         this.logger.info('');
       }
 
-      // 2. Classify changes into review tier
+      // 2. Run quality checks (HODGE-341.3: Moved to review mode for complete context)
+      this.logger.info(chalk.blue('🔍 Running quality checks...\n'));
+      const qualityCheckResults = await this.hardenService.runQualityChecks(feature);
+
+      // Generate quality-checks.md
+      const qualityChecksReport = this.generateQualityChecksReport(qualityCheckResults);
+      await fs.writeFile(path.join(hardenDir, 'quality-checks.md'), qualityChecksReport);
+      this.logger.info(chalk.green('✓ Quality checks complete\n'));
+
+      // 3. Run critical file selection (HODGE-341.3)
+      if (changedFiles.length > 0) {
+        this.logger.info(chalk.blue('🎯 Selecting critical files...\n'));
+
+        // Load toolchain config for max_critical_files and critical_paths
+        const toolchainConfigPath = path.join(process.cwd(), '.hodge', 'toolchain.yaml');
+        let maxCriticalFiles = 10;
+        let criticalPaths: string[] = [];
+
+        if (existsSync(toolchainConfigPath)) {
+          const toolchainYaml = await fs.readFile(toolchainConfigPath, 'utf-8');
+          const toolchainConfig = yaml.load(toolchainYaml) as Record<string, unknown>;
+          maxCriticalFiles =
+            typeof toolchainConfig.max_critical_files === 'number'
+              ? toolchainConfig.max_critical_files
+              : 10;
+          criticalPaths = Array.isArray(toolchainConfig.critical_paths)
+            ? toolchainConfig.critical_paths.filter((p): p is string => typeof p === 'string')
+            : [];
+        }
+
+        const selector = new CriticalFileSelector(new ImportAnalyzer(), new SeverityExtractor());
+
+        const criticalFilesReport = selector.selectCriticalFiles(
+          changedFiles,
+          qualityCheckResults,
+          {
+            maxFiles: maxCriticalFiles,
+            criticalPaths: criticalPaths,
+          }
+        );
+
+        // Generate critical-files.md
+        const reportGen = new CriticalFilesReportGenerator();
+        const criticalFilesMarkdown = reportGen.generateReport(
+          criticalFilesReport,
+          new Date().toISOString()
+        );
+        await fs.writeFile(path.join(hardenDir, 'critical-files.md'), criticalFilesMarkdown);
+
+        this.logger.info(
+          chalk.green(`✓ Selected ${criticalFilesReport.topFiles.length} critical files\n`)
+        );
+      }
+
+      // 4. Classify changes into review tier
       this.logger.info(chalk.blue('🔍 Analyzing changes...'));
       const classifier = new ReviewTierClassifier();
       const recommendation = classifier.classifyChanges(changedFiles);
@@ -502,39 +595,31 @@ The AI will interpret these results to identify issues that need to be fixed bef
       this.logger.info(chalk.gray(`   Reason: ${recommendation.reason}`));
       this.logger.info('');
 
-      // 3. Generate review manifest
+      // 5. Generate review manifest
       this.logger.info(chalk.blue('📚 Generating review manifest...'));
       const manifestGen = new ReviewManifestGenerator();
       const manifest = manifestGen.generateManifest(feature, changedFiles, recommendation);
 
-      // 4. Write manifest YAML
+      // 6. Write manifest YAML
       const manifestPath = path.join(hardenDir, 'review-manifest.yaml');
       await fs.writeFile(manifestPath, yaml.dump(manifest, { lineWidth: 120, noRefs: true }));
 
       this.logger.info(chalk.green(`✓ Review manifest generated`));
       this.logger.info('');
 
-      // 5. Output summary for AI
-      this.logger.info(chalk.bold('Review Manifest Ready:'));
-      this.logger.info(chalk.gray(`   Manifest: ${hardenDir}/review-manifest.yaml`));
-      this.logger.info(chalk.gray(`   Recommended tier: ${recommendation.tier.toUpperCase()}`));
-      this.logger.info(chalk.gray(`   Changed files: ${changedFiles.length}`));
-      this.logger.info(
-        chalk.gray(`   Matched profiles: ${manifest.context.matched_profiles.files.length}`)
-      );
-      this.logger.info(
-        chalk.gray(`   Matched patterns: ${manifest.context.matched_patterns.files.length}`)
-      );
+      // 7. Output summary for AI
+      this.logger.info(chalk.bold('Review Context Ready:'));
+      this.logger.info(chalk.gray(`   review-manifest.yaml - Context files to load`));
+      this.logger.info(chalk.gray(`   quality-checks.md - Tool diagnostics`));
+      if (changedFiles.length > 0) {
+        this.logger.info(chalk.gray(`   critical-files.md - Top files for deep review`));
+      }
       this.logger.info('');
-      this.logger.info(
-        chalk.green(
-          '✅ AI can now load context files based on chosen tier and generate review report'
-        )
-      );
+      this.logger.info(chalk.green('✅ AI can now conduct comprehensive code review'));
     } catch (error) {
       this.logger.error(
         chalk.red(
-          `❌ Failed to prepare review manifest: ${error instanceof Error ? error.message : String(error)}`
+          `❌ Failed to prepare review context: ${error instanceof Error ? error.message : String(error)}`
         ),
         { error: error as Error }
       );

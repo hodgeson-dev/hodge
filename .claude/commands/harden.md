@@ -4,6 +4,17 @@
 
 **STOP! You MUST complete this AI Code Review BEFORE running the harden command.**
 
+## Critical Workflow Rule
+
+**ERRORS MUST BE FIXED BEFORE VALIDATION**
+
+This workflow has a hard gate at Step 6:
+- If quality checks show ERRORS → STOP, fix them, re-run from Step 1
+- If only WARNINGS → Proceed to validation (address warnings before ship)
+- If clean → Proceed to validation
+
+The CLI validation will fail on errors anyway. Catching them in pre-check saves time.
+
 ### Step 1: Generate Review Manifest
 **Analyze changes and generate tiered review manifest:**
 
@@ -13,9 +24,11 @@ hodge harden {{feature}} --review
 
 This command will:
 1. Analyze changed files (via git diff with line counts)
-2. Classify changes into review tier (SKIP/QUICK/STANDARD/FULL)
-3. Filter relevant patterns and review profiles
-4. Generate review-manifest.yaml with:
+2. Run quality checks (lint, typecheck, tests, etc.) and generate quality-checks.md
+3. Select critical files for deep review and generate critical-files.md
+4. Classify changes into review tier (SKIP/QUICK/STANDARD/FULL)
+5. Filter relevant patterns and review profiles
+6. Generate review-manifest.yaml with:
    - Recommended tier and reason
    - Changed files list with line counts
    - Context files to load (organized by precedence)
@@ -33,6 +46,41 @@ The manifest shows:
 - `changed_files`: List of files with (+added/-deleted) counts
 - `context`: Files to load for review (organized by precedence)
 
+### Step 2.5: Read Quality Checks Report (REQUIRED)
+```bash
+# Read tool diagnostics (optimized for conciseness)
+cat .hodge/features/{{feature}}/harden/quality-checks.md
+```
+
+This contains output from all quality checks. The toolchain has been configured to minimize noise:
+- **Concise formats**: ESLint uses compact format (one issue per line), Vitest uses dot reporter
+- **Minimal verbosity**: Tools suppress progress bars and extra formatting
+- **Organized by check type**: Type checking, linting, testing, formatting, etc.
+
+**Your task**: Parse this output to identify:
+- **ERRORS**: Type errors, failing tests, ESLint errors that must be fixed before proceeding
+- **WARNINGS**: ESLint warnings, code quality issues to address before ship
+
+The file may be ~500 lines with issues, or very short when clean. Read the entire file to assess status.
+
+### Step 2.6: Read Critical Files Manifest (HODGE-341.3)
+```bash
+# Read critical file analysis
+cat .hodge/features/{{feature}}/harden/critical-files.md
+```
+
+This shows which files the algorithm scored as highest risk based on:
+- **Tool diagnostics**: Blockers, warnings, errors from quality checks
+- **Import fan-in**: Architectural impact (how many files import this file)
+- **Change size**: Lines modified
+- **Critical paths**: Configured + inferred critical infrastructure
+
+The report shows:
+- Top N files (default 10) ranked by risk score
+- Risk factors for each file
+- Inferred critical paths (files with >20 imports)
+- Configured critical paths (from .hodge/toolchain.yaml)
+
 ### Step 3: Choose Review Tier
 Based on the manifest's `recommended_tier`, choose your review tier:
 
@@ -44,65 +92,165 @@ Based on the manifest's `recommended_tier`, choose your review tier:
 
 **Default**: Use the recommended tier unless you have a reason to override.
 
-### Step 4: Load Context Files
-**Based on your chosen tier**, load the context files listed in the manifest's `context` section in precedence order:
+### Step 4: Load Context Files (MANDATORY)
 
-**Precedence Rules** (CRITICAL - higher precedence = more authority):
-1. **project_standards** (.hodge/standards.md) - HIGHEST PRECEDENCE
-2. **project_principles** (.hodge/principles.md)
-3. **project_decisions** (.hodge/decisions.md) - FULL tier only
-4. **matched_patterns** (.hodge/patterns/*.md)
-5. **matched_profiles** (.hodge/review-profiles/**/*.md)
-6. **lessons_learned** (.hodge/lessons/*.md) - FULL tier only
+**IMPORTANT**: You MUST load the context files listed in review-manifest.yaml before conducting your review. These files define the standards you're reviewing against.
 
-**Read files using the Read tool based on your chosen tier:**
-- All tiers: Load standards, principles, matched patterns, matched profiles
-- FULL tier only: Also load decisions and lessons
+#### Step 4a: Parse the Manifest
 
-**⚠️ CRITICAL**: Project standards override review profiles. If a standard conflicts with a profile recommendation, the standard takes precedence.
+Identify which files to load from the review-manifest.yaml you read in Step 2.
+
+**For ALL tiers**, load:
+1. `.hodge/standards.md` (from `project_standards.path`)
+2. `.hodge/principles.md` (from `project_principles.path`)
+3. Each file in `matched_patterns.files[]` (prepend `.hodge/patterns/`)
+4. Each file in `matched_profiles.files[]` (prepend `.hodge/review-profiles/`)
+
+**For FULL tier ONLY**, also load:
+5. `.hodge/decisions.md` (from `project_decisions.path`)
+6. Each file in `lessons_learned.files[]` (prepend `.hodge/lessons/`)
+
+#### Step 4b: Load Files Using Read Tool
+
+**Example from HODGE-341.3 manifest** (yours will be different):
+
+The manifest shows:
+```yaml
+matched_patterns:
+  files:
+    - test-pattern.md
+    - error-boundary.md
+matched_profiles:
+  files:
+    - testing/vitest-3.x.md
+    - languages/typescript-5.x.md
+```
+
+So you would load:
+```
+Read: .hodge/standards.md
+Read: .hodge/principles.md
+Read: .hodge/patterns/test-pattern.md
+Read: .hodge/patterns/error-boundary.md
+Read: .hodge/review-profiles/testing/vitest-3.x.md
+Read: .hodge/review-profiles/languages/typescript-5.x.md
+Read: .hodge/decisions.md  # (FULL tier only)
+```
+
+**Note**: Extract the file list from YOUR review-manifest.yaml. Don't hardcode these paths - they change per feature.
+
+#### Step 4c: Verification Checklist
+
+Before proceeding to Step 5, confirm you loaded:
+- [ ] standards.md
+- [ ] principles.md
+- [ ] All files from `matched_patterns.files[]`
+- [ ] All files from `matched_profiles.files[]`
+- [ ] (FULL only) decisions.md
+- [ ] (FULL only) All files from `lessons_learned.files[]`
+
+**Precedence Rules** (when conflicts arise):
+1. **standards.md** = HIGHEST - Always takes precedence
+2. **principles.md** = Guide interpretation of standards
+3. **decisions.md** = Project-specific choices
+4. **patterns/** = Reference implementations
+5. **review-profiles/** = External best practices (lowest precedence)
+
+**Example**: If a review profile suggests "always use async", but standards.md says "only use async when necessary", the standard wins.
 
 ### Step 5: Conduct AI Code Review
-**Review each changed file (from manifest) against the loaded context.**
 
-Focus areas:
-- Changed files are listed in manifest with line counts
-- Review only the changed files, not entire codebase
-- Apply precedence rules when standards conflict
-- Check for violations categorized as BLOCKER, WARNING, or SUGGESTION
+**Review Strategy**: Use the context files you loaded in Step 4 to assess the code.
 
-### Step 6: Report Review Findings
-Based on your code review, choose ONE:
+**How to apply context during review**:
+1. **Check standards.md first** - Does code violate any project standards?
+2. **Apply principles.md** - Does code align with project philosophy?
+3. **Reference patterns/** - Does code follow established patterns?
+4. **Consider profiles/** - Does code follow language/framework best practices?
+5. **Learn from lessons/** (FULL tier) - Have we made this mistake before?
 
-**Option A: Ready to Harden ✅**
+**For HODGE-341.3 Risk-Based Review**:
+- **Critical files** (from critical-files.md): Deep review against ALL loaded context
+- **Files with tool issues** (from quality-checks.md): Check specific violations
+- **Other changed files**: Scan for obvious standards violations
+
+**What to look for**:
+- Standards violations (especially BLOCKER severity)
+- Test isolation violations (CRITICAL - see standards.md)
+- TODO format violations (see standards.md)
+- Cognitive complexity (see standards.md + profiles)
+- File/function length standards
+- Progressive enforcement rules (depends on phase)
+
+**When you find an issue**:
+1. Determine severity using standards.md definitions (BLOCKER/WARNING/SUGGESTION)
+2. Note which standard/principle/profile it violates
+3. Consider precedence if multiple sources conflict
+4. Document in your review report with file:line reference
+
+### Step 5.5: Verify Context Application
+
+Before moving to Step 6, confirm you actually USED the context files:
+
+**Self-Check Questions**:
+- Did I reference specific standards from standards.md in my findings?
+- Did I check for Test Isolation violations (mandatory standard)?
+- Did I apply progressive enforcement rules based on current phase?
+- Did I consider precedence when conflicts arose?
+- Can I cite which standard/profile each issue violates?
+
+**If you can't answer YES to these questions, return to Step 4 and re-load context.**
+
+The purpose of loading context is to APPLY it, not just read it.
+
+### Step 6: Assess Review Findings
+
+After reviewing all files, determine if there are blocking issues.
+
+**Question**: Did you find any ERRORS (not warnings) in quality-checks.md or during code review?
+
+#### If YES (Errors Found) → STOP HERE 🚫
+
+```
+🚫 STANDARDS PRE-CHECK FAILED - Blocking Issues Found
+
+[List all errors with file:line references]
+
+**MANDATORY**: Fix ALL errors before proceeding to harden validation.
+
+Next steps:
+1. Fix each error listed above
+2. Re-run quality checks: `hodge harden {{feature}} --review`
+3. Verify errors are resolved
+4. Return to Step 2 of this workflow
+
+DO NOT proceed to Step 7 until all errors are resolved.
+```
+
+**Why this blocks**: Harden phase is "discipline mode". Errors indicate code that doesn't meet basic standards. The CLI validation will fail anyway, so catching errors early saves time.
+
+#### If NO (Only Warnings or Clean) → Proceed to Step 7 ✅
+
+Choose the appropriate status:
+
+**Option A: No Issues Found**
 ```
 ✅ STANDARDS PRE-CHECK PASSED
 All standards requirements appear to be met.
-Proceeding with harden command...
+No errors or warnings found. Ready to proceed with validation.
 ```
 
-**Option B: Minor Issues (Warnings) ⚠️**
+**Option B: Warnings Only**
 ```
 ⚠️ STANDARDS PRE-CHECK - Warnings Found:
 
-[List specific issues found, e.g.:]
-1. TODO format violations in src/example.ts:45
-2. Could use more comprehensive error handling
-3. Some functions missing explicit return types
+[List specific warnings, e.g.:]
+1. File length warnings in src/commands/harden.ts:445
+2. Cognitive complexity in src/lib/critical-file-selector.ts:127
+3. TODO comments need phase markers
 
-These are WARNINGS. Proceeding with harden, but should address before ship.
-```
-
-**Option C: Blocking Issues 🚫**
-```
-🚫 STANDARDS PRE-CHECK - Blocking Issues:
-
-[List critical issues, e.g.:]
-1. No integration tests found
-2. Test modifies project .hodge directory
-3. Multiple untyped 'any' uses in production code
-
-RECOMMENDATION: Fix these issues before running harden.
-Returning to build phase to address issues.
+These are WARNINGS (not blockers). Proceeding with harden validation.
+Should address before ship phase.
 ```
 
 ### Step 7: Generate Review Report
@@ -186,14 +334,19 @@ None found.
 ```
 
 **Important**:
-- If you found BLOCKER issues in Step 6 (Option C), document them in the report and STOP - do not proceed to Command Execution
+- If you found ERRORS in Step 6, document them in the report and STOP - do not proceed to Command Execution
 - If you found only warnings (Option B) or no issues (Option A), generate the report and proceed to Command Execution
 
-## Command Execution (After Pre-Check and Report Generation)
+## Command Execution (Only After Errors Are Fixed)
 
-**Only proceed here if you chose Option A or B above!**
+**CHECKPOINT**: Before running this command, confirm:
+- [ ] Quality-checks.md shows 0 errors (warnings are OK)
+- [ ] Your Step 6 assessment was "Option A" or "Option B" (no blocking issues)
+- [ ] All error-level issues have been fixed
 
-Execute the portable Hodge CLI command:
+**If you found errors in Step 6, DO NOT PROCEED. Return to fix them first.**
+
+Ready to proceed? Execute the Hodge CLI command:
 ```bash
 hodge harden {{feature}}
 ```

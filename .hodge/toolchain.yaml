@@ -1,19 +1,25 @@
 version: '1.0'
 language: typescript
 
+# Optional: Critical File Selection Settings (HODGE-341.3)
+# Uncomment to customize how critical files are selected for AI review
+# max_critical_files: 10  # Default: 10, increase for larger reviews
+# critical_paths:         # Project-specific critical paths (glob patterns)
+#   - src/payments/       # Business-critical: payment processing
+#   - src/auth/           # Security-critical: authentication
+#   - src/lib/*-service.ts # Core service files
+
 quality_checks:
   type_checking:
     - typescript
   linting:
-    - eslint
+    - eslint  # ESLint with sonarjs plugin checks linting, complexity, and code smells
   testing:
     - vitest
   formatting:
     - prettier
-  complexity:
-    - eslint-plugin-sonarjs
-  code_smells:
-    - eslint-plugin-sonarjs
+  complexity: []
+  code_smells: []
   duplication:
     - jscpd
   architecture:
@@ -23,36 +29,45 @@ quality_checks:
 
 commands:
   typescript:
-    command: npx tsc -p tsconfig.build.json --noEmit ${files}
+    command: npx tsc -p tsconfig.build.json --noEmit --pretty
     provides:
       - type_checking
+    # --pretty: Formatted, colored output for easier reading
+    # Note: TypeScript project mode doesn't accept ${files} - uses tsconfig include/exclude
   eslint:
-    command: npx eslint ${files}
+    command: npx eslint --format compact ${files}
     provides:
       - linting
+      - complexity
+      - code_smells
+    # --format compact: One issue per line (file:line:col: message)
+    # More concise than default 'stylish' format
+    # ESLint with sonarjs plugin provides linting, complexity, and code smell checks
   vitest:
-    command: NODE_ENV=test npx vitest run --reporter=dot
+    command: NODE_ENV=test npx vitest run --reporter=dot --silent=passed-only
     provides:
       - testing
+    # --reporter=dot: Dots for passing tests, 'x' for failures
+    # --silent=passed-only: Only show console output from failing tests
   prettier:
     command: npx prettier --check ${files}
     provides:
       - formatting
-  eslint-plugin-sonarjs:
-    command: npx eslint ${files}
-    provides:
-      - complexity
-      - code_smells
+    # --check: Exit with error if files are not formatted (lists unformatted files)
   jscpd:
-    command: npx jscpd ${files} --min-lines 10
+    command: npx jscpd ${files} --min-lines 10 --silent --reporters json
     provides:
       - duplication
+    # --silent: No progress output
+    # --reporters json: Structured output
   dependency-cruiser:
-    command: npx depcruise --config .dependency-cruiser.cjs ${files}
+    command: npx depcruise --config .dependency-cruiser.cjs --output-type err ${files}
     provides:
       - architecture
+    # --output-type err: Only show violations
   semgrep:
-    command: semgrep --config .hodge/semgrep-rules/ --config auto ${files}
+    command: semgrep --config .hodge/semgrep-rules/ --config auto --quiet ${files}
     provides:
       - security
       - patterns
+    # --quiet: Only show findings, suppress progress

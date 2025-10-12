@@ -35,21 +35,22 @@ rules:
       confidence: HIGH
 
   - id: prisma-missing-transaction
-    pattern-either:
-      - pattern: |
-          await $PRISMA.$MODEL1.create(...)
-          ...
-          await $PRISMA.$MODEL2.create(...)
-      - pattern: |
-          await $PRISMA.$MODEL1.update(...)
-          ...
-          await $PRISMA.$MODEL2.create(...)
-      - pattern: |
-          await $PRISMA.$MODEL1.delete(...)
-          ...
-          await $PRISMA.$MODEL2.update(...)
-    pattern-not-inside: |
-      await $PRISMA.$transaction(...)
+    patterns:
+      - pattern-either:
+          - pattern: |
+              await $PRISMA.$MODEL1.create(...)
+              ...
+              await $PRISMA.$MODEL2.create(...)
+          - pattern: |
+              await $PRISMA.$MODEL1.update(...)
+              ...
+              await $PRISMA.$MODEL2.create(...)
+          - pattern: |
+              await $PRISMA.$MODEL1.delete(...)
+              ...
+              await $PRISMA.$MODEL2.update(...)
+      - pattern-not-inside: |
+          await $PRISMA.$transaction(...)
     message: |
       Multiple related database writes should use a transaction to ensure atomicity.
       If one operation fails, all should roll back.
@@ -62,10 +63,11 @@ rules:
       confidence: MEDIUM
 
   - id: prisma-raw-query-sql-injection
-    pattern-either:
-      - pattern: await $PRISMA.$queryRaw`... ${$VAR} ...`
-      - pattern: await $PRISMA.$executeRaw`... ${$VAR} ...`
-    pattern-not: await $PRISMA.$queryRaw`... $${$VAR} ...`
+    patterns:
+      - pattern-either:
+          - pattern: await $PRISMA.$queryRaw`... ${$VAR} ...`
+          - pattern: await $PRISMA.$executeRaw`... ${$VAR} ...`
+      - pattern-not: await $PRISMA.$queryRaw`... $${$VAR} ...`
     message: |
       Potential SQL injection vulnerability. Variables in raw queries should use parameterized syntax.
       Use double dollar sign for parameters: $queryRaw`SELECT * FROM User WHERE id = $${userId}`

@@ -4,29 +4,30 @@
 
 rules:
   - id: graphql-n-plus-one-without-dataloader
-    pattern-either:
-      - pattern: |
-          $RESOLVER: async ($PARENT, ...) => {
-            ...
-            for (...) {
-              ...
-              await $DB.$MODEL.find(...)
-              ...
-            }
-            ...
-          }
-      - pattern: |
-          $RESOLVER: async ($PARENT, ...) => {
-            ...
-            return $ITEMS.map(async (...) => {
-              ...
-              await $DB.$MODEL.find(...)
-              ...
-            })
-            ...
-          }
-    pattern-not-inside: |
-      $DATALOADER.load(...)
+    patterns:
+      - pattern-either:
+          - pattern: |
+              $RESOLVER: async ($PARENT, ...) => {
+                ...
+                for (...) {
+                  ...
+                  await $DB.$MODEL.find(...)
+                  ...
+                }
+                ...
+              }
+          - pattern: |
+              $RESOLVER: async ($PARENT, ...) => {
+                ...
+                return $ITEMS.map(async (...) => {
+                  ...
+                  await $DB.$MODEL.find(...)
+                  ...
+                })
+                ...
+              }
+      - pattern-not-inside: |
+          $DATALOADER.load(...)
     message: |
       N+1 query in GraphQL resolver without DataLoader.
       Each parent entity triggers a separate database query.
@@ -55,15 +56,16 @@ rules:
       confidence: MEDIUM
 
   - id: graphql-dataloader-without-batch-key
-    pattern-either:
-      - pattern: new DataLoader(async (ids) => { ... return $ITEMS ... })
-      - pattern: new DataLoader(async ($IDS) => { ... return $RESULTS ... })
-    pattern-not: |
-      new DataLoader(async (ids) => {
-        ...
-        return ids.map(...)
-        ...
-      })
+    patterns:
+      - pattern-either:
+          - pattern: new DataLoader(async (ids) => { ... return $ITEMS ... })
+          - pattern: new DataLoader(async ($IDS) => { ... return $RESULTS ... })
+      - pattern-not: |
+          new DataLoader(async (ids) => {
+            ...
+            return ids.map(...)
+            ...
+          })
     message: |
       DataLoader batch function should return results in same order as input keys.
       The returned array must match the order and length of the input IDs array.

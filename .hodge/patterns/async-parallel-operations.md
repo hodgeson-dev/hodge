@@ -9,19 +9,19 @@ Parallel execution for better performance
 
 ## Examples
 
-### src/commands/build.ts
+### src/lib/harden-service.ts
 ```typescript
 Promise.all(
 ```
 
 
-### src/commands/build.ts
+### src/lib/harden-service.ts
 ```typescript
 await Promise.all
 ```
 
 
-### src/commands/explore.ts
+### src/lib/toolchain-service.ts
 ```typescript
 Promise.all(
 ```
@@ -33,5 +33,5 @@ Promise.all(
 - 
 
 ---
-*First seen: 2025-10-09T19:06:40.721Z*
-*Last used: 2025-10-09T19:06:40.722Z*
+*First seen: 2025-10-12T09:38:21.752Z*
+*Last used: 2025-10-12T09:38:21.753Z*

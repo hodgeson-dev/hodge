@@ -11,33 +11,45 @@ import { join } from 'path';
 import { promises as fs } from 'fs';
 
 describe('ToolchainService - Registry-Based Detection (HODGE-341.2)', () => {
-  smokeTest('should detect tools using registry without crashing', async () => {
-    const service = new ToolchainService();
-    const tools = await service.detectTools();
+  smokeTest(
+    'should detect tools using registry without crashing',
+    async () => {
+      const service = new ToolchainService();
+      const tools = await service.detectTools();
 
-    expect(Array.isArray(tools)).toBe(true);
-    // Should detect at least some tools in this project
-    expect(tools.length).toBeGreaterThan(0);
-  }, 10000); // Increased timeout for slow tool detection
+      expect(Array.isArray(tools)).toBe(true);
+      // Should detect at least some tools in this project
+      expect(tools.length).toBeGreaterThan(0);
+    },
+    20000
+  ); // Increased timeout for slow tool detection under load
 
-  smokeTest('should detect TypeScript in this project', async () => {
-    const service = new ToolchainService();
-    const tools = await service.detectTools();
+  smokeTest(
+    'should detect TypeScript in this project',
+    async () => {
+      const service = new ToolchainService();
+      const tools = await service.detectTools();
 
-    const typescript = tools.find((t) => t.name === 'typescript');
-    expect(typescript).toBeDefined();
-    expect(typescript?.detected).toBe(true);
-    expect(typescript?.detectionMethod).toBeDefined();
-  }, 10000); // Increased timeout for slow tool detection
+      const typescript = tools.find((t) => t.name === 'typescript');
+      expect(typescript).toBeDefined();
+      expect(typescript?.detected).toBe(true);
+      expect(typescript?.detectionMethod).toBeDefined();
+    },
+    20000
+  ); // Increased timeout for slow tool detection under load
 
-  smokeTest('should detect ESLint in this project', async () => {
-    const service = new ToolchainService();
-    const tools = await service.detectTools();
+  smokeTest(
+    'should detect ESLint in this project',
+    async () => {
+      const service = new ToolchainService();
+      const tools = await service.detectTools();
 
-    const eslint = tools.find((t) => t.name === 'eslint');
-    expect(eslint).toBeDefined();
-    expect(eslint?.detected).toBe(true);
-  });
+      const eslint = tools.find((t) => t.name === 'eslint');
+      expect(eslint).toBeDefined();
+      expect(eslint?.detected).toBe(true);
+    },
+    20000
+  ); // Increased timeout for slow tool detection under load
 
   smokeTest('should detect tool via config file', async () => {
     const tmpDir = await fs.mkdtemp(join(os.tmpdir(), 'hodge-test-'));

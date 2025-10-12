@@ -226,7 +226,11 @@ export class ToolchainService {
     versionCommand: string
   ): Promise<string | undefined> {
     try {
-      const { stdout } = await exec(`npx ${versionCommand}`, { cwd: this.cwd });
+      // Set timeout to 2 seconds to prevent hanging on npx downloads
+      const { stdout } = await exec(`npx ${versionCommand}`, {
+        cwd: this.cwd,
+        timeout: 2000,
+      });
       // Extract version number from output (e.g., "Version 5.3.3" -> "5.3.3")
       // Use word boundary and non-backtracking pattern to avoid ReDoS
       const versionPattern = /\b(\d{1,3})\.(\d{1,3})\.(\d{1,3})\b/;
@@ -431,16 +435,17 @@ export class ToolchainService {
       const shipRecord = JSON.parse(shipRecordContent) as { buildStartCommit?: string };
 
       if (!shipRecord.buildStartCommit) {
-        logger.warn('No buildStartCommit found in ship-record.json, falling back to uncommitted files');
+        logger.warn(
+          'No buildStartCommit found in ship-record.json, falling back to uncommitted files'
+        );
         return await this.getUncommittedFiles();
       }
 
       // Get all files changed since buildStartCommit (includes working tree)
       // Using single dot (..) to include uncommitted changes
-      const { stdout } = await exec(
-        `git diff ${shipRecord.buildStartCommit} --name-only`,
-        { cwd: this.cwd }
-      );
+      const { stdout } = await exec(`git diff ${shipRecord.buildStartCommit} --name-only`, {
+        cwd: this.cwd,
+      });
 
       const allFiles = stdout.split('\n').filter(Boolean);
 

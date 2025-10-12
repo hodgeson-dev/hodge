@@ -1,0 +1,151 @@
+version: '1.0'
+feature: HODGE-341.3
+generated_at: '2025-10-12T09:11:05.383Z'
+recommended_tier: full
+change_analysis:
+  total_files: 30
+  total_lines: 8996
+  breakdown:
+    implementation: 18
+    test: 1
+    documentation: 10
+    config: 1
+changed_files:
+  - path: .claude/commands/explore.md
+    lines_changed: 26
+    change_type: documentation
+  - path: .claude/commands/harden.md
+    lines_changed: 298
+    change_type: documentation
+  - path: .hodge/.session
+    lines_changed: 20
+    change_type: implementation
+  - path: .hodge/HODGE.md
+    lines_changed: 98
+    change_type: documentation
+  - path: .hodge/context.json
+    lines_changed: 16
+    change_type: implementation
+  - path: .hodge/features/HODGE-341.3/build/build-plan.md
+    lines_changed: 128
+    change_type: documentation
+  - path: .hodge/features/HODGE-341.3/explore/exploration.md
+    lines_changed: 1892
+    change_type: documentation
+  - path: .hodge/features/HODGE-341.3/explore/test-intentions.md
+    lines_changed: 98
+    change_type: documentation
+  - path: .hodge/features/HODGE-341.3/harden/critical-files.md
+    lines_changed: 138
+    change_type: documentation
+  - path: .hodge/features/HODGE-341.3/harden/quality-checks.md
+    lines_changed: 3510
+    change_type: documentation
+  - path: .hodge/features/HODGE-341.3/harden/review-manifest.yaml
+    lines_changed: 266
+    change_type: implementation
+  - path: .hodge/features/HODGE-341.3/harden/review-report.md
+    lines_changed: 156
+    change_type: documentation
+  - path: .hodge/features/HODGE-341.3/issue-id.txt
+    lines_changed: 2
+    change_type: implementation
+  - path: .hodge/features/HODGE-341.3/ship-record.json
+    lines_changed: 32
+    change_type: implementation
+  - path: .hodge/id-mappings.json
+    lines_changed: 16
+    change_type: implementation
+  - path: .hodge/toolchain.yaml
+    lines_changed: 55
+    change_type: implementation
+  - path: src/commands/harden.ts
+    lines_changed: 346
+    change_type: implementation
+  - path: src/lib/claude-commands.ts
+    lines_changed: 124
+    change_type: implementation
+  - path: src/lib/critical-file-selector.smoke.test.ts
+    lines_changed: 334
+    change_type: test
+  - path: src/lib/critical-file-selector.ts
+    lines_changed: 658
+    change_type: implementation
+  - path: src/lib/critical-files-report-generator.ts
+    lines_changed: 184
+    change_type: implementation
+  - path: src/lib/harden-service.ts
+    lines_changed: 26
+    change_type: implementation
+  - path: src/lib/import-analyzer.ts
+    lines_changed: 282
+    change_type: implementation
+  - path: src/lib/severity-extractor.ts
+    lines_changed: 130
+    change_type: implementation
+  - path: .hodge/principles.md
+    lines_changed: 20
+    change_type: documentation
+  - path: .hodge/semgrep-rules/graphql-anti-patterns.yaml
+    lines_changed: 66
+    change_type: implementation
+  - path: .hodge/semgrep-rules/prisma-anti-patterns.yaml
+    lines_changed: 40
+    change_type: implementation
+  - path: package-lock.json
+    lines_changed: 22
+    change_type: implementation
+  - path: package.json
+    lines_changed: 7
+    change_type: config
+  - path: src/lib/toolchain-service.ts
+    lines_changed: 6
+    change_type: implementation
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - test-pattern.md
+      - error-boundary.md
+      - input-validation.md
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - testing/vitest-3.x.md
+      - testing/general-test-standards.md
+      - languages/typescript-5.x.md
+      - languages/general-coding-standards.md
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed
