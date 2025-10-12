@@ -43,6 +43,11 @@ export class ToolchainGenerator {
           linting: [],
           testing: [],
           formatting: [],
+          complexity: [],
+          code_smells: [],
+          duplication: [],
+          architecture: [],
+          security: [],
         },
         commands: {},
       };
@@ -58,14 +63,56 @@ export class ToolchainGenerator {
         // Add tool to appropriate quality check categories
         for (const category of toolInfo.categories) {
           // Map registry categories to toolchain quality_checks
-          if (category === 'type_checking' && toolInfo.default_command) {
-            config.quality_checks.type_checking.push(detectedTool.name);
-          } else if (category === 'linting' && toolInfo.default_command) {
-            config.quality_checks.linting.push(detectedTool.name);
-          } else if (category === 'testing' && toolInfo.default_command) {
-            config.quality_checks.testing.push(detectedTool.name);
-          } else if (category === 'formatting' && toolInfo.default_command) {
-            config.quality_checks.formatting.push(detectedTool.name);
+          // Skip tools without default commands (e.g., eslint plugins that run via eslint)
+          if (!toolInfo.default_command) {
+            continue;
+          }
+
+          switch (category) {
+            case 'type_checking':
+              config.quality_checks.type_checking.push(detectedTool.name);
+              break;
+            case 'linting':
+              config.quality_checks.linting.push(detectedTool.name);
+              break;
+            case 'testing':
+              config.quality_checks.testing.push(detectedTool.name);
+              break;
+            case 'formatting':
+              config.quality_checks.formatting.push(detectedTool.name);
+              break;
+            case 'complexity':
+              // Initialized above, safe to use non-null assertion
+              if (!config.quality_checks.complexity!.includes(detectedTool.name)) {
+                config.quality_checks.complexity!.push(detectedTool.name);
+              }
+              break;
+            case 'code_smells':
+              if (!config.quality_checks.code_smells!.includes(detectedTool.name)) {
+                config.quality_checks.code_smells!.push(detectedTool.name);
+              }
+              break;
+            case 'duplication':
+              if (!config.quality_checks.duplication!.includes(detectedTool.name)) {
+                config.quality_checks.duplication!.push(detectedTool.name);
+              }
+              break;
+            case 'architecture':
+              if (!config.quality_checks.architecture!.includes(detectedTool.name)) {
+                config.quality_checks.architecture!.push(detectedTool.name);
+              }
+              break;
+            case 'security':
+              if (!config.quality_checks.security!.includes(detectedTool.name)) {
+                config.quality_checks.security!.push(detectedTool.name);
+              }
+              break;
+            case 'patterns':
+              // 'patterns' is an alias for security checks (e.g., semgrep)
+              if (!config.quality_checks.security!.includes(detectedTool.name)) {
+                config.quality_checks.security!.push(detectedTool.name);
+              }
+              break;
           }
         }
 
@@ -96,6 +143,11 @@ export class ToolchainGenerator {
         linting: config.quality_checks.linting.length,
         testing: config.quality_checks.testing.length,
         formatting: config.quality_checks.formatting.length,
+        complexity: config.quality_checks.complexity?.length ?? 0,
+        codeSmells: config.quality_checks.code_smells?.length ?? 0,
+        duplication: config.quality_checks.duplication?.length ?? 0,
+        architecture: config.quality_checks.architecture?.length ?? 0,
+        security: config.quality_checks.security?.length ?? 0,
       });
     } catch (error) {
       logger.error('Failed to generate toolchain.yaml', { error: error as Error });

@@ -191,7 +191,7 @@ describe('HodgeMDGenerator', () => {
   describe('shipped mode detection', () => {
     it('should return "shipped" when ship-record.json exists', async () => {
       vi.mocked(fs.access).mockImplementation(async (path) => {
-        if (path.toString().includes('ship/ship-record.json')) {
+        if (path.toString().includes('ship-record.json')) {
           return; // ship-record.json exists
         }
         if (path.toString().includes('/ship')) {
@@ -211,7 +211,7 @@ describe('HodgeMDGenerator', () => {
 
     it('should return "ship" when ship directory exists but no ship-record.json', async () => {
       vi.mocked(fs.access).mockImplementation(async (path) => {
-        if (path.toString().includes('ship/ship-record.json')) {
+        if (path.toString().includes('ship-record.json')) {
           throw new Error('File not found'); // No ship-record.json
         }
         if (path.toString().includes('/ship')) {

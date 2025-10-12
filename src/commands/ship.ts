@@ -216,9 +216,12 @@ export class ShipCommand {
       commitMessage,
     });
 
+    // HODGE-341.2: Write ship-record.json to feature root (not ship/ subdirectory)
+    // This allows BuildCommand and HardenCommand to update it with commit tracking
+    await fs.writeFile(path.join(featureDir, 'ship-record.json'), JSON.stringify(shipRecord, null, 2));
+
     const shipDir = path.join(featureDir, 'ship');
     await fs.mkdir(shipDir, { recursive: true });
-    await fs.writeFile(path.join(shipDir, 'ship-record.json'), JSON.stringify(shipRecord, null, 2));
 
     // Generate release notes using ShipService
     const releaseNotes = this.shipService.generateReleaseNotes({

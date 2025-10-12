@@ -57,10 +57,10 @@ We decided to use gray-matter library for frontmatter parsing.
 
     // Create first shipped sibling
     const sibling1Dir = join(tempDir, '.hodge', 'features', 'HODGE-333.1');
-    mkdirSync(join(sibling1Dir, 'ship'), { recursive: true });
+    mkdirSync(sibling1Dir, { recursive: true });
 
     writeFileSync(
-      join(sibling1Dir, 'ship', 'ship-record.json'),
+      join(sibling1Dir, 'ship-record.json'),
       JSON.stringify({
         feature: 'HODGE-333.1',
         timestamp: '2025-10-05T12:00:00Z',
@@ -84,10 +84,10 @@ Gray-matter is much simpler than AST parsing. Stick with simple solutions.
 
     // Create second shipped sibling
     const sibling2Dir = join(tempDir, '.hodge', 'features', 'HODGE-333.2');
-    mkdirSync(join(sibling2Dir, 'ship'), { recursive: true });
+    mkdirSync(sibling2Dir, { recursive: true });
 
     writeFileSync(
-      join(sibling2Dir, 'ship', 'ship-record.json'),
+      join(sibling2Dir, 'ship-record.json'),
       JSON.stringify({
         feature: 'HODGE-333.2',
         timestamp: '2025-10-06T08:30:00Z',
@@ -144,16 +144,16 @@ Gray-matter is much simpler than AST parsing. Stick with simple solutions.
     writeFileSync(join(parentDir, 'explore', 'exploration.md'), '# Parent');
 
     const sibling1Dir = join(tempDir, '.hodge', 'features', 'HODGE-333.1');
-    mkdirSync(join(sibling1Dir, 'ship'), { recursive: true });
+    mkdirSync(sibling1Dir, { recursive: true });
     writeFileSync(
-      join(sibling1Dir, 'ship', 'ship-record.json'),
+      join(sibling1Dir, 'ship-record.json'),
       JSON.stringify({ feature: 'HODGE-333.1', validationPassed: true, timestamp: '2025-10-05' })
     );
 
     const sibling2Dir = join(tempDir, '.hodge', 'features', 'HODGE-333.2');
-    mkdirSync(join(sibling2Dir, 'ship'), { recursive: true });
+    mkdirSync(sibling2Dir, { recursive: true });
     writeFileSync(
-      join(sibling2Dir, 'ship', 'ship-record.json'),
+      join(sibling2Dir, 'ship-record.json'),
       JSON.stringify({ feature: 'HODGE-333.2', validationPassed: true, timestamp: '2025-10-06' })
     );
 
@@ -182,9 +182,9 @@ Gray-matter is much simpler than AST parsing. Stick with simple solutions.
     writeFileSync(join(parentDir, 'explore', 'exploration.md'), '# Parent');
 
     const siblingDir = join(tempDir, '.hodge', 'features', 'HODGE-333.1');
-    mkdirSync(join(siblingDir, 'ship'), { recursive: true });
+    mkdirSync(siblingDir, { recursive: true });
     writeFileSync(
-      join(siblingDir, 'ship', 'ship-record.json'),
+      join(siblingDir, 'ship-record.json'),
       JSON.stringify({ feature: 'HODGE-333.1', validationPassed: true, timestamp: '2025-10-05' })
     );
 
@@ -205,9 +205,9 @@ Gray-matter is much simpler than AST parsing. Stick with simple solutions.
 
   integrationTest('handles only siblings without parent', () => {
     const siblingDir = join(tempDir, '.hodge', 'features', 'HODGE-333.1');
-    mkdirSync(join(siblingDir, 'ship'), { recursive: true });
+    mkdirSync(siblingDir, { recursive: true });
     writeFileSync(
-      join(siblingDir, 'ship', 'ship-record.json'),
+      join(siblingDir, 'ship-record.json'),
       JSON.stringify({ feature: 'HODGE-333.1', validationPassed: true, timestamp: '2025-10-05' })
     );
 
@@ -225,17 +225,17 @@ Gray-matter is much simpler than AST parsing. Stick with simple solutions.
 
     // Valid sibling
     const sibling1Dir = join(tempDir, '.hodge', 'features', 'HODGE-333.1');
-    mkdirSync(join(sibling1Dir, 'ship'), { recursive: true });
+    mkdirSync(sibling1Dir, { recursive: true });
     writeFileSync(
-      join(sibling1Dir, 'ship', 'ship-record.json'),
+      join(sibling1Dir, 'ship-record.json'),
       JSON.stringify({ feature: 'HODGE-333.1', validationPassed: true, timestamp: '2025-10-05' })
     );
 
     // Invalid sibling (validation failed)
     const sibling2Dir = join(tempDir, '.hodge', 'features', 'HODGE-333.2');
-    mkdirSync(join(sibling2Dir, 'ship'), { recursive: true });
+    mkdirSync(sibling2Dir, { recursive: true });
     writeFileSync(
-      join(sibling2Dir, 'ship', 'ship-record.json'),
+      join(sibling2Dir, 'ship-record.json'),
       JSON.stringify({ feature: 'HODGE-333.2', validationPassed: false, timestamp: '2025-10-06' })
     );
 
@@ -253,9 +253,9 @@ Gray-matter is much simpler than AST parsing. Stick with simple solutions.
     // Create siblings out of order
     for (const num of [3, 1, 2]) {
       const siblingDir = join(tempDir, '.hodge', 'features', `HODGE-333.${num}`);
-      mkdirSync(join(siblingDir, 'ship'), { recursive: true });
+      mkdirSync(siblingDir, { recursive: true });
       writeFileSync(
-        join(siblingDir, 'ship', 'ship-record.json'),
+        join(siblingDir, 'ship-record.json'),
         JSON.stringify({
           feature: `HODGE-333.${num}`,
           validationPassed: true,

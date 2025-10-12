@@ -1,0 +1,17 @@
+{
+  "feature": "HODGE-341.2",
+  "timestamp": "2025-10-11T16:40:00.000Z",
+  "issueId": null,
+  "pmTool": null,
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": false
+  },
+  "commitMessage": "",
+  "buildStartCommit": "95beec8c664cbc8c0d4daa9397b2585e9fed77eb",
+  "hardenStartCommit": "95beec8c664cbc8c0d4daa9397b2585e9fed77eb",
+  "note": "Validation passed for HODGE-341.2 code. Pre-existing ESLint errors documented in KNOWN-ISSUES.md"
+}

@@ -19,6 +19,7 @@ export interface QualityGateResults {
 
 /**
  * Ship record data structure
+ * HODGE-341.2: Added commit tracking for toolchain file scoping
  */
 export interface ShipRecordData {
   feature: string;
@@ -33,6 +34,10 @@ export interface ShipRecordData {
     changelog: boolean;
   };
   commitMessage: string;
+  // Commit tracking for toolchain file scoping (HODGE-341.2)
+  buildStartCommit?: string;  // First commit when build started
+  hardenStartCommit?: string; // First commit when harden started
+  shipCommit?: string;         // Commit SHA when shipped
 }
 
 /**
@@ -212,5 +217,69 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}**Shipped**: ${date}
       const contextPath = path.join('.hodge', 'context.json');
       await fs.writeFile(contextPath, backup.context);
     }
+  }
+
+  /**
+   * Read ship-record.json for a feature
+   * HODGE-341.2: Helper for reading commit tracking data
+   * @param feature - Feature name
+   * @returns ShipRecordData or null if doesn't exist
+   */
+  async readShipRecord(feature: string): Promise<ShipRecordData | null> {
+    const shipRecordPath = path.join('.hodge', 'features', feature, 'ship-record.json');
+
+    if (!existsSync(shipRecordPath)) {
+      return null;
+    }
+
+    try {
+      const content = await fs.readFile(shipRecordPath, 'utf-8');
+      return JSON.parse(content) as ShipRecordData;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Write or update ship-record.json for a feature
+   * HODGE-341.2: Helper for updating commit tracking data
+   * @param feature - Feature name
+   * @param updates - Partial updates to apply
+   */
+  async updateShipRecord(feature: string, updates: Partial<ShipRecordData>): Promise<void> {
+    const featureDir = path.join('.hodge', 'features', feature);
+    const shipRecordPath = path.join(featureDir, 'ship-record.json');
+
+    // Read existing record or create new one
+    let record: ShipRecordData;
+    const existing = await this.readShipRecord(feature);
+
+    if (existing) {
+      // Update existing record
+      record = { ...existing, ...updates };
+    } else {
+      // Create new minimal record (will be fully populated during ship)
+      record = {
+        feature,
+        timestamp: new Date().toISOString(),
+        issueId: null,
+        pmTool: null,
+        validationPassed: false,
+        shipChecks: {
+          tests: false,
+          coverage: false,
+          docs: false,
+          changelog: false,
+        },
+        commitMessage: '',
+        ...updates,
+      };
+    }
+
+    // Ensure feature directory exists
+    await fs.mkdir(featureDir, { recursive: true });
+
+    // Write updated record
+    await fs.writeFile(shipRecordPath, JSON.stringify(record, null, 2));
   }
 }

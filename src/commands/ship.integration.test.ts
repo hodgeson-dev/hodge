@@ -173,7 +173,7 @@ describe('Ship Command - Integration Tests', () => {
 
       // Verify ship record was created
       const shipRecordExists = await workspace.exists(
-        '.hodge/features/test-feature/ship/ship-record.json'
+        '.hodge/features/test-feature/ship-record.json'
       );
       expect(shipRecordExists).toBe(true);
 
@@ -185,7 +185,7 @@ describe('Ship Command - Integration Tests', () => {
 
       // Verify content of ship record
       const shipRecord = JSON.parse(
-        await workspace.readFile('.hodge/features/test-feature/ship/ship-record.json')
+        await workspace.readFile('.hodge/features/test-feature/ship-record.json')
       );
       expect(shipRecord.feature).toBe('test-feature');
       expect(shipRecord.commitMessage).toBeDefined();

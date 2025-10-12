@@ -9,11 +9,14 @@ import {
   type ValidationResult,
   type ValidationResults,
 } from '../lib/harden-service.js';
+import type { RawToolResult } from '../types/toolchain.js';
 import { createCommandLogger } from '../lib/logger.js';
 import { GitDiffAnalyzer } from '../lib/git-diff-analyzer.js';
 import { ReviewTierClassifier } from '../lib/review-tier-classifier.js';
 import { ReviewManifestGenerator } from '../lib/review-manifest-generator.js';
 import * as yaml from 'js-yaml';
+import { ShipService } from '../lib/ship-service.js';
+import { getCurrentCommitSHA } from '../lib/git-utils.js';
 
 export interface HardenOptions {
   skipTests?: boolean;
@@ -34,6 +37,7 @@ export class HardenCommand {
   private pmHooks = new PMHooks();
   private hardenService = new HardenService();
   private logger = createCommandLogger('harden', { enableConsole: true });
+  private shipService = new ShipService();
 
   /**
    * Execute the harden command for a feature
@@ -75,40 +79,13 @@ export class HardenCommand {
       // Display AI context
       this.displayAIContext(feature);
 
-      // Define paths
-      const featureDir = path.join('.hodge', 'features', feature);
-      const hardenDir = path.join(featureDir, 'harden');
-      const buildDir = path.join(featureDir, 'build');
-
-      // Check for build completion
-      if (!existsSync(buildDir)) {
-        const error = new Error('No build found for this feature');
-        this.logger.error(chalk.red('❌ No build found for this feature.'), { error });
-        this.logger.error(chalk.gray('   Build the feature first with:'));
-        this.logger.error(chalk.cyan(`   hodge build ${feature}\n`));
-        return;
+      // Setup and validate
+      const setup = await this.setupHardenEnvironment(feature, options);
+      if (!setup.canProceed) {
+        return; // Setup handled the exit
       }
 
-      // Create harden directory
-      await fs.mkdir(hardenDir, { recursive: true });
-
-      // Handle --review mode: return review context for AI analysis
-      if (options.review) {
-        await this.handleReviewMode(feature, hardenDir);
-        return;
-      }
-
-      // Check for PM integration
-      const pmTool = process.env.HODGE_PM_TOOL;
-      const issueIdFile = path.join(featureDir, 'issue-id.txt');
-      let issueId: string | null = null;
-
-      if (existsSync(issueIdFile)) {
-        issueId = (await fs.readFile(issueIdFile, 'utf-8')).trim();
-        if (pmTool && issueId) {
-          this.logger.info(chalk.blue(`📋 Linked to ${pmTool} issue: ${issueId}`));
-        }
-      }
+      const { hardenDir } = setup;
 
       // Create harden context
       this.logger.info(chalk.bold('In Harden Mode:'));
@@ -129,7 +106,8 @@ export class HardenCommand {
       const parallelStartTime = Date.now();
 
       // Delegate to HardenService for business logic
-      const results: ValidationResults = await this.hardenService.runValidations(options);
+      // HODGE-341.2: Pass feature name for commit range scoping
+      const results: ValidationResults = await this.hardenService.runValidations(feature, options);
 
       const parallelEndTime = Date.now();
       if (!options.sequential) {
@@ -148,6 +126,17 @@ export class HardenCommand {
         path.join(hardenDir, 'validation-results.json'),
         JSON.stringify(results, null, 2)
       );
+
+      // HODGE-341.2: Save ALL quality check results (including advanced checks) for AI review
+      const allQualityChecks = this.hardenService.getLastQualityCheckResults();
+      if (allQualityChecks && allQualityChecks.length > 0) {
+        const qualityChecksReport = this.generateQualityChecksReport(allQualityChecks);
+        await fs.writeFile(path.join(hardenDir, 'quality-checks.md'), qualityChecksReport);
+        this.logger.debug('Wrote quality checks report', {
+          checkCount: allQualityChecks.length,
+          path: path.join(hardenDir, 'quality-checks.md'),
+        });
+      }
 
       // Generate and save report
       const reportContent = this.generateReport(feature, results, options);
@@ -200,13 +189,7 @@ export class HardenCommand {
    * @private
    */
   private displayValidationStatus(results: ValidationResults, options: HardenOptions): void {
-    this.logger.info(
-      results.tests.passed
-        ? chalk.green('   ✓ Tests passed')
-        : options.skipTests
-          ? chalk.yellow('   ⚠️  Tests skipped')
-          : chalk.red('   ✗ Tests failed')
-    );
+    this.logger.info(this.getTestStatusMessage(results.tests.passed, options.skipTests ?? false));
     this.logger.info(
       results.lint.passed ? chalk.green('   ✓ Linting passed') : chalk.red('   ✗ Linting failed')
     );
@@ -219,6 +202,34 @@ export class HardenCommand {
       results.build.passed ? chalk.green('   ✓ Build succeeded') : chalk.red('   ✗ Build failed')
     );
     this.logger.info('');
+  }
+
+  /**
+   * Get test status message
+   * @private
+   */
+  private getTestStatusMessage(passed: boolean, skipped: boolean): string {
+    if (passed) {
+      return chalk.green('   ✓ Tests passed');
+    }
+    if (skipped) {
+      return chalk.yellow('   ⚠️  Tests skipped');
+    }
+    return chalk.red('   ✗ Tests failed');
+  }
+
+  /**
+   * Get test status for report
+   * @private
+   */
+  private getTestStatusForReport(passed: boolean, skipped: boolean): string {
+    if (passed) {
+      return '✅ Passed';
+    }
+    if (skipped) {
+      return '⚠️ Skipped';
+    }
+    return '❌ Failed';
   }
 
   /**
@@ -239,7 +250,7 @@ export class HardenCommand {
 **Overall Status**: ${allPassed ? '✅ PASSED' : '❌ FAILED'}
 
 ### Test Results
-- **Tests**: ${results.tests.passed ? '✅ Passed' : options.skipTests ? '⚠️ Skipped' : '❌ Failed'}
+- **Tests**: ${this.getTestStatusForReport(results.tests.passed, options.skipTests ?? false)}
 - **Linting**: ${results.lint.passed ? '✅ Passed' : '❌ Failed'}
 - **Type Check**: ${results.typecheck.passed ? '✅ Passed' : '❌ Failed'}
 - **Build**: ${results.build.passed ? '✅ Passed' : '❌ Failed'}
@@ -332,6 +343,121 @@ ${results.build.output || 'No build output'}
     this.logger.info(
       '\n' + chalk.dim('Report saved to: ' + path.join(hardenDir, 'harden-report.md'))
     );
+  }
+
+  /**
+   * Setup harden environment and validate prerequisites
+   * @private
+   */
+  private async setupHardenEnvironment(
+    feature: string,
+    options: HardenOptions
+  ): Promise<{
+    canProceed: boolean;
+    hardenDir: string;
+    issueId: string | null;
+  }> {
+    // Define paths
+    const featureDir = path.join('.hodge', 'features', feature);
+    const hardenDir = path.join(featureDir, 'harden');
+    const buildDir = path.join(featureDir, 'build');
+
+    // Validate build directory exists
+    if (!existsSync(buildDir)) {
+      this.logger.info(chalk.yellow('⚠️  No build found for this feature.'));
+      this.logger.info(chalk.gray('   Build the feature first with:'));
+      this.logger.info(chalk.cyan(`   hodge build ${feature}\n`));
+      return { canProceed: false, hardenDir, issueId: null };
+    }
+
+    // Create harden directory
+    await fs.mkdir(hardenDir, { recursive: true });
+
+    // HODGE-341.2: Record hardenStartCommit for toolchain file scoping
+    try {
+      const commitSHA = await getCurrentCommitSHA();
+      await this.shipService.updateShipRecord(feature, {
+        hardenStartCommit: commitSHA,
+      });
+      this.logger.debug('Recorded hardenStartCommit', { feature, commitSHA });
+    } catch (error) {
+      // Non-critical - continue if git is not available
+      this.logger.warn('Could not record hardenStartCommit (git may not be available)', {
+        error: error as Error,
+      });
+    }
+
+    // Handle review mode
+    if (options.review) {
+      await this.handleReviewMode(feature, hardenDir);
+      return { canProceed: false, hardenDir, issueId: null };
+    }
+
+    // Read issue ID if available
+    let issueId: string | null = null;
+    const issueIdPath = path.join(featureDir, 'issue-id.txt');
+    if (existsSync(issueIdPath)) {
+      issueId = (await fs.readFile(issueIdPath, 'utf-8')).trim();
+    }
+
+    return { canProceed: true, hardenDir, issueId };
+  }
+
+  /**
+   * Generate quality checks report from raw tool results
+   * HODGE-341.2: Write ALL quality check results for AI interpretation
+   * @private
+   */
+  private generateQualityChecksReport(results: RawToolResult[]): string {
+    const timestamp = new Date().toISOString();
+    let report = `# Quality Checks Report
+**Generated**: ${timestamp}
+**Total Checks**: ${results.length}
+
+This report contains the raw output from all quality checks run by the toolchain.
+The AI will interpret these results to identify issues that need to be fixed before shipping.
+
+`;
+
+    // Group results by check type
+    const byType = results.reduce(
+      (acc, result) => {
+        if (!acc[result.type]) {
+          acc[result.type] = [];
+        }
+        acc[result.type].push(result);
+        return acc;
+      },
+      {} as Record<string, RawToolResult[]>
+    );
+
+    // Write results by type
+    for (const [type, checks] of Object.entries(byType)) {
+      report += `\n## ${type.replace(/_/g, ' ').toUpperCase()}\n\n`;
+
+      for (const check of checks) {
+        if (check.skipped) {
+          report += `### ${check.tool} (SKIPPED)\n`;
+          report += `**Reason**: ${check.reason}\n\n`;
+        } else {
+          const status = check.success ? '✅ PASSED' : '❌ FAILED';
+          report += `### ${check.tool} - ${status}\n\n`;
+
+          if (check.stdout) {
+            report += `**Output**:\n\`\`\`\n${check.stdout}\n\`\`\`\n\n`;
+          }
+
+          if (check.stderr) {
+            report += `**Errors**:\n\`\`\`\n${check.stderr}\n\`\`\`\n\n`;
+          }
+        }
+      }
+    }
+
+    report += `\n---\n\n`;
+    report += `**Note**: This is a machine-readable report for AI interpretation. The AI will analyze these results and provide actionable feedback in the harden workflow.\n`;
+
+    return report;
   }
 
   /**

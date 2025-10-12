@@ -304,4 +304,4 @@ export interface DiagnosticReport {
 /**
  * File scope for running quality checks
  */
-export type FileScope = 'uncommitted' | 'all';
+export type FileScope = 'uncommitted' | 'feature' | 'all';

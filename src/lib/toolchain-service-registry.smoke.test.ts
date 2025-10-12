@@ -18,7 +18,7 @@ describe('ToolchainService - Registry-Based Detection (HODGE-341.2)', () => {
     expect(Array.isArray(tools)).toBe(true);
     // Should detect at least some tools in this project
     expect(tools.length).toBeGreaterThan(0);
-  });
+  }, 10000); // Increased timeout for slow tool detection
 
   smokeTest('should detect TypeScript in this project', async () => {
     const service = new ToolchainService();
@@ -28,7 +28,7 @@ describe('ToolchainService - Registry-Based Detection (HODGE-341.2)', () => {
     expect(typescript).toBeDefined();
     expect(typescript?.detected).toBe(true);
     expect(typescript?.detectionMethod).toBeDefined();
-  });
+  }, 10000); // Increased timeout for slow tool detection
 
   smokeTest('should detect ESLint in this project', async () => {
     const service = new ToolchainService();

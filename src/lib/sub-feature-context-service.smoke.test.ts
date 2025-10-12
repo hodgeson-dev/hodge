@@ -48,12 +48,12 @@ describe('SubFeatureContextService', () => {
       const sibling1Dir = join(featuresDir, 'HODGE-333.1');
       const sibling2Dir = join(featuresDir, 'HODGE-333.2');
 
-      mkdirSync(join(sibling1Dir, 'ship'), { recursive: true });
-      mkdirSync(join(sibling2Dir, 'ship'), { recursive: true });
+      mkdirSync(sibling1Dir, { recursive: true });
+      mkdirSync(sibling2Dir, { recursive: true });
 
       // Create valid ship records
       writeFileSync(
-        join(sibling1Dir, 'ship', 'ship-record.json'),
+        join(sibling1Dir, 'ship-record.json'),
         JSON.stringify({
           feature: 'HODGE-333.1',
           validationPassed: true,
@@ -63,7 +63,7 @@ describe('SubFeatureContextService', () => {
       );
 
       writeFileSync(
-        join(sibling2Dir, 'ship', 'ship-record.json'),
+        join(sibling2Dir, 'ship-record.json'),
         JSON.stringify({
           feature: 'HODGE-333.2',
           validationPassed: true,
@@ -91,12 +91,12 @@ describe('SubFeatureContextService', () => {
       const sibling1Dir = join(featuresDir, 'HODGE-333.1');
       const sibling2Dir = join(featuresDir, 'HODGE-333.2');
 
-      mkdirSync(join(sibling1Dir, 'ship'), { recursive: true });
-      mkdirSync(join(sibling2Dir, 'ship'), { recursive: true });
+      mkdirSync(sibling1Dir, { recursive: true });
+      mkdirSync(sibling2Dir, { recursive: true });
 
       // Sibling 1: valid
       writeFileSync(
-        join(sibling1Dir, 'ship', 'ship-record.json'),
+        join(sibling1Dir, 'ship-record.json'),
         JSON.stringify({
           feature: 'HODGE-333.1',
           validationPassed: true,
@@ -106,7 +106,7 @@ describe('SubFeatureContextService', () => {
 
       // Sibling 2: validation failed
       writeFileSync(
-        join(sibling2Dir, 'ship', 'ship-record.json'),
+        join(sibling2Dir, 'ship-record.json'),
         JSON.stringify({
           feature: 'HODGE-333.2',
           validationPassed: false,
@@ -132,16 +132,16 @@ describe('SubFeatureContextService', () => {
       const sibling1Dir = join(featuresDir, 'HODGE-333.1');
       const sibling2Dir = join(featuresDir, 'HODGE-333.2');
 
-      mkdirSync(join(sibling1Dir, 'ship'), { recursive: true });
-      mkdirSync(join(sibling2Dir, 'ship'), { recursive: true });
+      mkdirSync(sibling1Dir, { recursive: true });
+      mkdirSync(sibling2Dir, { recursive: true });
 
       writeFileSync(
-        join(sibling1Dir, 'ship', 'ship-record.json'),
+        join(sibling1Dir, 'ship-record.json'),
         JSON.stringify({ feature: 'HODGE-333.1', validationPassed: true, commitMessage: '' })
       );
 
       writeFileSync(
-        join(sibling2Dir, 'ship', 'ship-record.json'),
+        join(sibling2Dir, 'ship-record.json'),
         JSON.stringify({ feature: 'HODGE-333.2', validationPassed: true, commitMessage: '' })
       );
 
@@ -182,9 +182,9 @@ describe('SubFeatureContextService', () => {
 
       // Create sibling with ship record
       const siblingDir = join(tempDir, '.hodge', 'features', 'HODGE-333.1');
-      mkdirSync(join(siblingDir, 'ship'), { recursive: true });
+      mkdirSync(siblingDir, { recursive: true });
       writeFileSync(
-        join(siblingDir, 'ship', 'ship-record.json'),
+        join(siblingDir, 'ship-record.json'),
         JSON.stringify({
           feature: 'HODGE-333.1',
           validationPassed: true,

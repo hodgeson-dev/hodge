@@ -78,7 +78,8 @@ export class HodgeMDGenerator {
     try {
       // Check for mode indicators in order
       // First check if feature has been shipped (has ship-record.json)
-      const shipRecordPath = path.join(featurePath, 'ship', 'ship-record.json');
+      // HODGE-341.2: ship-record.json moved to feature root
+      const shipRecordPath = path.join(featurePath, 'ship-record.json');
       if (await this.fileExists(shipRecordPath)) {
         return 'shipped';
       }

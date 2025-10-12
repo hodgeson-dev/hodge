@@ -17,7 +17,7 @@ tools:
         npm:
           package: typescript
           install_command: npm install --save-dev typescript
-    default_command: npx tsc --noEmit
+    default_command: npx tsc -p tsconfig.build.json --noEmit ${files}
     version_command: tsc --version
     categories: [type_checking]
 
@@ -65,7 +65,7 @@ tools:
         npm:
           package: vitest
           install_command: npm install --save-dev vitest
-    default_command: npx vitest run
+    default_command: NODE_ENV=test npx vitest run --reporter=dot
     version_command: vitest --version
     categories: [testing]
 
@@ -87,7 +87,7 @@ tools:
             1. Add 'sonarjs' to plugins array in .eslintrc
             2. Add 'plugin:sonarjs/recommended-legacy' to extends array (ESLint 8.x)
             3. Recommended: Add rule override: "sonarjs/todo-tag": "warn" (TODOs acceptable in development)
-    default_command: null  # Runs via eslint
+    default_command: npx eslint ${files}
     categories: [complexity, code_smells]
 
   jscpd:
@@ -114,7 +114,7 @@ tools:
         npm:
           package: dependency-cruiser
           install_command: npm install --save-dev dependency-cruiser
-    default_command: npx depcruise src/
+    default_command: npx depcruise --config .dependency-cruiser.cjs ${files}
     version_command: depcruise --version
     categories: [architecture]
 

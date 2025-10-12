@@ -66,7 +66,8 @@ export class StatusCommand {
     }
 
     // Fix Bug 2: Check if feature has been shipped (has ship-record.json)
-    const shipRecordPath = path.join(featureDir, 'ship', 'ship-record.json');
+    // HODGE-341.2: ship-record.json moved to feature root
+    const shipRecordPath = path.join(featureDir, 'ship-record.json');
     const isShipped = existsSync(shipRecordPath);
 
     // Check PM integration

@@ -1,0 +1,130 @@
+version: '1.0'
+feature: HODGE-341.2
+generated_at: '2025-10-12T04:17:28.786Z'
+recommended_tier: full
+change_analysis:
+  total_files: 23
+  total_lines: 762
+  breakdown:
+    implementation: 16
+    test: 6
+    documentation: 1
+    config: 0
+changed_files:
+  - path: .hodge/context.json
+    lines_changed: 8
+    change_type: implementation
+  - path: .hodge/id-mappings.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/project_management.md
+    lines_changed: 19
+    change_type: documentation
+  - path: .hodge/toolchain.yaml
+    lines_changed: 4
+    change_type: implementation
+  - path: src/bundled-config/tool-registry.yaml
+    lines_changed: 8
+    change_type: implementation
+  - path: src/commands/build.ts
+    lines_changed: 137
+    change_type: implementation
+  - path: src/commands/harden.ts
+    lines_changed: 208
+    change_type: implementation
+  - path: src/commands/ship.integration.test.ts
+    lines_changed: 4
+    change_type: test
+  - path: src/commands/ship.ts
+    lines_changed: 5
+    change_type: implementation
+  - path: src/commands/status.smoke.test.ts
+    lines_changed: 2
+    change_type: test
+  - path: src/commands/status.ts
+    lines_changed: 3
+    change_type: implementation
+  - path: src/lib/git-utils.ts
+    lines_changed: 13
+    change_type: implementation
+  - path: src/lib/harden-service.ts
+    lines_changed: 46
+    change_type: implementation
+  - path: src/lib/hodge-md-generator.test.ts
+    lines_changed: 4
+    change_type: test
+  - path: src/lib/hodge-md-generator.ts
+    lines_changed: 3
+    change_type: implementation
+  - path: src/lib/ship-service.ts
+    lines_changed: 69
+    change_type: implementation
+  - path: src/lib/sub-feature-context-service.integration.test.ts
+    lines_changed: 36
+    change_type: test
+  - path: src/lib/sub-feature-context-service.smoke.test.ts
+    lines_changed: 28
+    change_type: test
+  - path: src/lib/sub-feature-context-service.ts
+    lines_changed: 12
+    change_type: implementation
+  - path: src/lib/toolchain-generator.ts
+    lines_changed: 68
+    change_type: implementation
+  - path: src/lib/toolchain-service-registry.smoke.test.ts
+    lines_changed: 4
+    change_type: test
+  - path: src/lib/toolchain-service.ts
+    lines_changed: 75
+    change_type: implementation
+  - path: src/types/toolchain.ts
+    lines_changed: 2
+    change_type: implementation
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - test-pattern.md
+      - error-boundary.md
+      - input-validation.md
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - testing/vitest-3.x.md
+      - testing/general-test-standards.md
+      - languages/typescript-5.x.md
+      - languages/general-coding-standards.md
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed

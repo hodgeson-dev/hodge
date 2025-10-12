@@ -45,6 +45,19 @@ export async function getCurrentBranch(): Promise<string> {
 }
 
 /**
+ * Get the current commit SHA (HEAD)
+ * HODGE-341.2: Used for tracking commit ranges per feature
+ */
+export async function getCurrentCommitSHA(): Promise<string> {
+  try {
+    const { stdout } = await execAsync('git rev-parse HEAD');
+    return stdout.trim();
+  } catch (error) {
+    throw new Error(`Failed to get current commit SHA: ${String(error)}`);
+  }
+}
+
+/**
  * Get detailed git status including ahead/behind counts
  */
 export async function getGitStatus(): Promise<GitStatus> {

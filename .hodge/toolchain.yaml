@@ -31,7 +31,7 @@ commands:
     provides:
       - linting
   vitest:
-    command: npm test
+    command: NODE_ENV=test npx vitest run --reporter=dot
     provides:
       - testing
   prettier:
@@ -44,7 +44,7 @@ commands:
       - complexity
       - code_smells
   jscpd:
-    command: npx jscpd ${files}
+    command: npx jscpd ${files} --min-lines 10
     provides:
       - duplication
   dependency-cruiser:

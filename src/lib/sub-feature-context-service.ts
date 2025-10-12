@@ -9,7 +9,9 @@ import { existsSync, readFileSync, readdirSync } from 'fs';
 import { join } from 'path';
 
 /**
- * Ship record from ship/ship-record.json
+ * Ship record from feature-root/ship-record.json
+ * Tracks entire feature lifecycle (build, harden, ship phases)
+ * HODGE-341.2: Moved to feature root and added commit tracking for toolchain file scoping
  */
 export interface ShipRecord {
   feature: string;
@@ -22,6 +24,10 @@ export interface ShipRecord {
     docs: boolean;
     changelog: boolean;
   };
+  // Commit tracking for toolchain file scoping (HODGE-341.2)
+  buildStartCommit?: string;  // First commit when build started
+  hardenStartCommit?: string; // First commit when harden started
+  shipCommit?: string;         // Commit SHA when shipped
 }
 
 /**
@@ -332,12 +338,12 @@ export class SubFeatureContextService {
       const files: FileManifestEntry[] = [];
 
       // Ship record (precedence 3)
+      // HODGE-341.2: ship-record.json moved to feature root
       const shipRecordPath = join(
         this.basePath,
         '.hodge',
         'features',
         featureDir,
-        'ship',
         'ship-record.json'
       );
       files.push({
@@ -392,6 +398,7 @@ export class SubFeatureContextService {
 
   /**
    * Load ship record for a feature
+   * HODGE-341.2: ship-record.json moved to feature root
    */
   private loadShipRecord(feature: string): ShipRecord | null {
     const shipRecordPath = join(
@@ -399,7 +406,6 @@ export class SubFeatureContextService {
       '.hodge',
       'features',
       feature,
-      'ship',
       'ship-record.json'
     );
 

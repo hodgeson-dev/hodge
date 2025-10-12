@@ -81,7 +81,7 @@ describe('StatusCommand - Non-Interactive Smoke Tests', () => {
       await workspace.writeFile('.hodge/features/TEST-003/build/context.json', '{}');
       await workspace.writeFile('.hodge/features/TEST-003/harden/context.json', '{}');
       await workspace.writeFile(
-        '.hodge/features/TEST-003/ship/ship-record.json',
+        '.hodge/features/TEST-003/ship-record.json',
         JSON.stringify({ shipped: true })
       );
 

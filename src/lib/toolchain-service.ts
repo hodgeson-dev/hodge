@@ -228,8 +228,10 @@ export class ToolchainService {
     try {
       const { stdout } = await exec(`npx ${versionCommand}`, { cwd: this.cwd });
       // Extract version number from output (e.g., "Version 5.3.3" -> "5.3.3")
-      const match = stdout.match(/\d+\.\d+\.\d+/);
-      return match ? match[0] : undefined;
+      // Use word boundary and non-backtracking pattern to avoid ReDoS
+      const versionPattern = /\b(\d{1,3})\.(\d{1,3})\.(\d{1,3})\b/;
+      const match = versionPattern.exec(stdout);
+      return match?.[0];
     } catch (error) {
       logger.debug(`Could not detect ${toolName} version`, { error: error as Error });
       return undefined;
@@ -250,18 +252,34 @@ export class ToolchainService {
 
   /**
    * Run all quality checks based on configuration
+   * HODGE-341.2: Added 'feature' scope support using commit range tracking
    */
-  async runQualityChecks(scope: FileScope): Promise<RawToolResult[]> {
+  async runQualityChecks(scope: FileScope, feature?: string): Promise<RawToolResult[]> {
     const config = await this.loadConfig();
-    const files = scope === 'uncommitted' ? await this.getUncommittedFiles() : undefined;
+    let files: string[] | undefined;
 
-    logger.info('Running quality checks', { scope, fileCount: files?.length });
+    if (scope === 'uncommitted') {
+      files = await this.getUncommittedFiles();
+    } else if (scope === 'feature') {
+      if (!feature) {
+        throw new Error('Feature name required for "feature" scope');
+      }
+      files = await this.getFeatureFiles(feature);
+    }
+    // scope === 'all' => files = undefined (check all files)
+
+    logger.info('Running quality checks', { scope, feature, fileCount: files?.length });
 
     const results = await Promise.all([
       this.runCheckType('type_checking', config, files),
       this.runCheckType('linting', config, files),
       this.runCheckType('testing', config, files),
       this.runCheckType('formatting', config, files),
+      this.runCheckType('complexity', config, files),
+      this.runCheckType('code_smells', config, files),
+      this.runCheckType('duplication', config, files),
+      this.runCheckType('architecture', config, files),
+      this.runCheckType('security', config, files),
     ]);
 
     return results.flat();
@@ -396,6 +414,53 @@ export class ToolchainService {
     } catch (error) {
       logger.error('Failed to get uncommitted files from git', { error: error as Error });
       throw new Error(`Failed to get uncommitted files: ${(error as Error).message}`);
+    }
+  }
+
+  /**
+   * Get list of files changed in a feature using commit range from ship-record.json
+   * HODGE-341.2: Uses buildStartCommit from ship-record to scope file changes
+   * Includes both committed AND uncommitted changes since buildStartCommit
+   */
+  async getFeatureFiles(feature: string): Promise<string[]> {
+    try {
+      // Read ship-record.json to get buildStartCommit
+      const shipRecordPath = join(this.cwd, '.hodge', 'features', feature, 'ship-record.json');
+      const { readFile } = await import('fs/promises');
+      const shipRecordContent = await readFile(shipRecordPath, 'utf-8');
+      const shipRecord = JSON.parse(shipRecordContent) as { buildStartCommit?: string };
+
+      if (!shipRecord.buildStartCommit) {
+        logger.warn('No buildStartCommit found in ship-record.json, falling back to uncommitted files');
+        return await this.getUncommittedFiles();
+      }
+
+      // Get all files changed since buildStartCommit (includes working tree)
+      // Using single dot (..) to include uncommitted changes
+      const { stdout } = await exec(
+        `git diff ${shipRecord.buildStartCommit} --name-only`,
+        { cwd: this.cwd }
+      );
+
+      const allFiles = stdout.split('\n').filter(Boolean);
+
+      // Filter by extension
+      const filteredFiles = allFiles.filter(
+        (f) => f.endsWith('.ts') || f.endsWith('.tsx') || f.endsWith('.js') || f.endsWith('.jsx')
+      );
+
+      logger.info('Found feature files', {
+        feature,
+        commitRange: `${shipRecord.buildStartCommit.substring(0, 7)}..working-tree`,
+        count: filteredFiles.length,
+      });
+
+      return filteredFiles;
+    } catch (error) {
+      logger.error('Failed to get feature files from git', { feature, error: error as Error });
+      // Fallback to uncommitted files if we can't read ship-record or run git
+      logger.warn('Falling back to uncommitted files');
+      return await this.getUncommittedFiles();
     }
   }
 }

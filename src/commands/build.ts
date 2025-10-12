@@ -5,6 +5,8 @@ import { CacheManager } from '../lib/cache-manager.js';
 import { contextManager } from '../lib/context-manager.js';
 import { PMHooks } from '../lib/pm/pm-hooks.js';
 import { createCommandLogger } from '../lib/logger.js';
+import { ShipService } from '../lib/ship-service.js';
+import { getCurrentCommitSHA } from '../lib/git-utils.js';
 
 export interface BuildOptions {
   skipChecks?: boolean;
@@ -22,6 +24,7 @@ export class BuildCommand {
   private cache = CacheManager.getInstance();
   private pmHooks = new PMHooks();
   private logger = createCommandLogger('build', { enableConsole: true });
+  private shipService = new ShipService();
 
   /**
    * Execute the build command for a feature
@@ -70,50 +73,26 @@ export class BuildCommand {
       const standardsFile = path.join('.hodge', 'standards.md');
       const patternsDir = path.join('.hodge', 'patterns');
 
-      // Phase 1: File existence checks
-      let hasExploration: boolean;
-      let hasDecision: boolean;
-      let hasIssueId: boolean;
-      let hasStandards: boolean;
-      let hasPatterns: boolean;
+      // Phase 1: Validate prerequisites
+      const validation = await this.validatePrerequisites({
+        exploreDir,
+        decisionFile,
+        issueIdFile,
+        standardsFile,
+        patternsDir,
+        feature,
+        skipChecks: options.skipChecks ?? false,
+        sequential: options.sequential ?? false,
+      });
 
-      if (options.sequential) {
-        // Sequential checks for debugging
-        hasExploration = await this.fileExists(exploreDir);
-        hasDecision = await this.fileExists(decisionFile);
-        hasIssueId = await this.fileExists(issueIdFile);
-        hasStandards = await this.fileExists(standardsFile);
-        hasPatterns = await this.fileExists(patternsDir);
-      } else {
-        // Parallel file existence checks
-        [hasExploration, hasDecision, hasIssueId, hasStandards, hasPatterns] = await Promise.all([
-          this.fileExists(exploreDir),
-          this.fileExists(decisionFile),
-          this.fileExists(issueIdFile),
-          this.fileExists(standardsFile),
-          this.fileExists(patternsDir),
-        ]);
+      if (!validation.canProceed) {
+        return; // Validation logged the issue
       }
 
-      // Early return if checks fail
-      if (!options.skipChecks) {
-        if (!hasExploration) {
-          this.logger.info(chalk.yellow('⚠️  No exploration found for this feature.'));
-          this.logger.info(chalk.gray('   Consider exploring first with:'));
-          this.logger.info(chalk.cyan(`   hodge explore ${feature}\n`));
-          this.logger.info(chalk.gray('   Or use --skip-checks to proceed anyway.\n'));
-          return;
-        }
-
-        if (!hasDecision) {
-          this.logger.info(chalk.yellow('⚠️  No decision recorded for this feature.'));
-          this.logger.info(chalk.gray('   Review exploration and make a decision first.'));
-          this.logger.info(chalk.gray('   Or use --skip-checks to proceed anyway.\n'));
-        }
-      }
+      const { hasIssueId, hasStandards, hasPatterns } = validation;
 
       // Phase 2: Parallel data loading with caching
-      const [issueId, _standards, patterns, buildPlanTemplate] = await Promise.all([
+      const [issueId, , patterns, buildPlanTemplate] = await Promise.all([
         // Issue ID is feature-specific, no caching
         hasIssueId
           ? fs.readFile(issueIdFile, 'utf-8').then((s: string) => s.trim())
@@ -168,6 +147,20 @@ export class BuildCommand {
         fs.mkdir(buildDir, { recursive: true }),
         // Don't write context and build plan until directory is created
       ]);
+
+      // HODGE-341.2: Record buildStartCommit for toolchain file scoping
+      try {
+        const commitSHA = await getCurrentCommitSHA();
+        await this.shipService.updateShipRecord(feature, {
+          buildStartCommit: commitSHA,
+        });
+        this.logger.debug('Recorded buildStartCommit', { feature, commitSHA });
+      } catch (error) {
+        // Non-critical - continue if git is not available
+        this.logger.warn('Could not record buildStartCommit (git may not be available)', {
+          error: error as Error,
+        });
+      }
 
       // Write build plan
       await fs.writeFile(
@@ -349,5 +342,69 @@ After implementation:
       issueId && pmTool ? `**PM Issue**: ${issueId} (${pmTool})` : 'No PM issue linked';
 
     return template.replace(/\${feature}/g, feature).replace('${pmInfo}', pmInfo);
+  }
+
+  /**
+   * Validate prerequisites before building
+   * @private
+   */
+  private async validatePrerequisites(params: {
+    exploreDir: string;
+    decisionFile: string;
+    issueIdFile: string;
+    standardsFile: string;
+    patternsDir: string;
+    feature: string;
+    skipChecks: boolean;
+    sequential: boolean;
+  }): Promise<{
+    canProceed: boolean;
+    hasIssueId: boolean;
+    hasStandards: boolean;
+    hasPatterns: boolean;
+  }> {
+    // Check file existence
+    let hasExploration: boolean;
+    let hasDecision: boolean;
+    let hasIssueId: boolean;
+    let hasStandards: boolean;
+    let hasPatterns: boolean;
+
+    if (params.sequential) {
+      // Sequential checks for debugging
+      hasExploration = await this.fileExists(params.exploreDir);
+      hasDecision = await this.fileExists(params.decisionFile);
+      hasIssueId = await this.fileExists(params.issueIdFile);
+      hasStandards = await this.fileExists(params.standardsFile);
+      hasPatterns = await this.fileExists(params.patternsDir);
+    } else {
+      // Parallel file existence checks
+      [hasExploration, hasDecision, hasIssueId, hasStandards, hasPatterns] = await Promise.all([
+        this.fileExists(params.exploreDir),
+        this.fileExists(params.decisionFile),
+        this.fileExists(params.issueIdFile),
+        this.fileExists(params.standardsFile),
+        this.fileExists(params.patternsDir),
+      ]);
+    }
+
+    // Validate required prerequisites
+    if (!params.skipChecks) {
+      if (!hasExploration) {
+        this.logger.info(chalk.yellow('⚠️  No exploration found for this feature.'));
+        this.logger.info(chalk.gray('   Consider exploring first with:'));
+        this.logger.info(chalk.cyan(`   hodge explore ${params.feature}\n`));
+        this.logger.info(chalk.gray('   Or use --skip-checks to proceed anyway.\n'));
+        return { canProceed: false, hasIssueId, hasStandards, hasPatterns };
+      }
+
+      if (!hasDecision) {
+        this.logger.info(chalk.yellow('⚠️  No decision recorded for this feature.'));
+        this.logger.info(chalk.gray('   Review exploration and make a decision first.'));
+        this.logger.info(chalk.gray('   Or use --skip-checks to proceed anyway.\n'));
+      }
+    }
+
+    return { canProceed: true, hasIssueId, hasStandards, hasPatterns };
   }
 }

@@ -35,6 +35,7 @@ export interface QualityGateResults {
 export class HardenService {
   private toolchainService: ToolchainService;
   private useToolchain: boolean;
+  private lastQualityCheckResults?: RawToolResult[];
 
   constructor(cwd: string = process.cwd(), useToolchain: boolean = true) {
     this.toolchainService = new ToolchainService(cwd);
@@ -42,10 +43,13 @@ export class HardenService {
   }
   /**
    * Run all validation checks in parallel
+   * HODGE-341.2: Added feature parameter for commit range scoping
+   * @param feature - Feature name for scoping file checks (optional)
    * @param options - Validation options
    * @returns Promise<ValidationResults> - Validation results for all checks
    */
   async runValidations(
+    feature?: string,
     options: {
       skipTests?: boolean;
       autoFix?: boolean;
@@ -55,10 +59,13 @@ export class HardenService {
     // Try to use toolchain-based validation if enabled
     if (this.useToolchain) {
       try {
-        return await this.runToolchainValidations(options);
+        return await this.runToolchainValidations(feature, options);
       } catch (error) {
         // Fall back to legacy npm commands if toolchain fails
-        console.warn('Toolchain validation failed, falling back to npm commands:', error);
+        // TODO: Remove console.warn and handle error properly (HODGE-330 violation)
+        console.error('⚠️  Toolchain validation failed, falling back to npm commands:');
+        console.error('Error message:', error instanceof Error ? error.message : String(error));
+        console.error('Stack trace:', error instanceof Error ? error.stack : 'N/A');
       }
     }
 
@@ -98,18 +105,26 @@ export class HardenService {
 
   /**
    * Run validations using toolchain configuration
-   * HODGE-341.2: New method for toolchain-based validation
+   * HODGE-341.2: New method for toolchain-based validation with commit range scoping
    * @private
    */
-  private async runToolchainValidations(options: {
-    skipTests?: boolean;
-    autoFix?: boolean;
-    sequential?: boolean;
-  }): Promise<ValidationResults> {
-    // Run quality checks using toolchain
-    const rawResults = await this.toolchainService.runQualityChecks('uncommitted');
+  private async runToolchainValidations(
+    feature?: string,
+    options: {
+      skipTests?: boolean;
+      autoFix?: boolean;
+      sequential?: boolean;
+    } = {}
+  ): Promise<ValidationResults> {
+    // Run quality checks using toolchain with feature scope if available
+    const scope = feature ? 'feature' : 'uncommitted';
+    const rawResults = await this.toolchainService.runQualityChecks(scope, feature);
 
-    // Convert RawToolResult[] to ValidationResults
+    // Store ALL raw results for quality-checks.md (HODGE-341.2)
+    // This will be written by the command layer
+    this.lastQualityCheckResults = rawResults;
+
+    // Convert RawToolResult[] to ValidationResults (only the 4 core checks for backward compatibility)
     const testResult = this.convertToolResult(
       rawResults.filter((r) => r.type === 'testing'),
       options.skipTests
@@ -128,6 +143,14 @@ export class HardenService {
       typecheck: typecheckResult,
       build: buildResult,
     };
+  }
+
+  /**
+   * Get the last quality check results (all checks including advanced ones)
+   * Used by command layer to write quality-checks.md
+   */
+  getLastQualityCheckResults(): RawToolResult[] | undefined {
+    return this.lastQualityCheckResults;
   }
 
   /**
