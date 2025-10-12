@@ -1,0 +1,75 @@
+# GraphQL Anti-Patterns
+# Part of HODGE-341.2: Bundled Semgrep Rules
+# Universal rules for GraphQL resolvers and DataLoader usage
+
+rules:
+  - id: graphql-n-plus-one-without-dataloader
+    pattern-either:
+      - pattern: |
+          $RESOLVER: async ($PARENT, ...) => {
+            ...
+            for (...) {
+              ...
+              await $DB.$MODEL.find(...)
+              ...
+            }
+            ...
+          }
+      - pattern: |
+          $RESOLVER: async ($PARENT, ...) => {
+            ...
+            return $ITEMS.map(async (...) => {
+              ...
+              await $DB.$MODEL.find(...)
+              ...
+            })
+            ...
+          }
+    pattern-not-inside: |
+      $DATALOADER.load(...)
+    message: |
+      N+1 query in GraphQL resolver without DataLoader.
+      Each parent entity triggers a separate database query.
+      Use DataLoader to batch and cache database requests within a single GraphQL query.
+    severity: ERROR
+    languages: [typescript, javascript]
+    metadata:
+      category: performance
+      cwe: CWE-400
+      confidence: HIGH
+
+  - id: graphql-resolver-returning-promise-all
+    pattern: |
+      $RESOLVER: async (...) => {
+        ...
+        return Promise.all($ITEMS.map(...))
+      }
+    message: |
+      Resolver using Promise.all for batch loading.
+      This creates parallel queries but doesn't deduplicate or cache.
+      Consider using DataLoader which provides batching, caching, and deduplication.
+    severity: WARNING
+    languages: [typescript, javascript]
+    metadata:
+      category: performance
+      confidence: MEDIUM
+
+  - id: graphql-dataloader-without-batch-key
+    pattern-either:
+      - pattern: new DataLoader(async (ids) => { ... return $ITEMS ... })
+      - pattern: new DataLoader(async ($IDS) => { ... return $RESULTS ... })
+    pattern-not: |
+      new DataLoader(async (ids) => {
+        ...
+        return ids.map(...)
+        ...
+      })
+    message: |
+      DataLoader batch function should return results in same order as input keys.
+      The returned array must match the order and length of the input IDs array.
+      Use: return ids.map(id => results.find(r => r.id === id) || new Error('not found'))
+    severity: ERROR
+    languages: [typescript, javascript]
+    metadata:
+      category: correctness
+      confidence: HIGH

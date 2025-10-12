@@ -354,6 +354,63 @@ const result = execSync('node dist/src/bin/hodge.js init', {
 
 **See Also**: `.hodge/patterns/test-pattern.md` for examples
 
+## File and Function Length Standards
+**Enforcement: Build(suggested) → Harden(expected) → Ship(mandatory)**
+**⚠️ CRITICAL**: Keep files and functions focused and maintainable through enforced size limits.
+
+### Maximum File Length: 300 Lines
+**Tool-Enforced**: ESLint (`max-lines`)
+
+Files should not exceed 300 lines (excluding blank lines and comments).
+
+**Rationale**:
+- **Cognitive Load**: Files longer than 300 lines are harder to understand and navigate
+- **Testability**: Large files often indicate too many responsibilities, making comprehensive testing difficult
+- **Reviewability**: Code reviews become less effective when files exceed reviewable scope
+- **Maintainability**: Changes to large files have higher risk of unintended side effects
+
+**Refactoring Guidance**:
+- Extract service classes for business logic (move to `src/lib/`)
+- Move shared utilities to common libraries
+- Split by responsibility (Single Responsibility Principle)
+- Consider if file is mixing orchestration with business logic
+
+**Exemptions**:
+- Test files (`*.test.ts`, `*.spec.ts`) - automatically excluded
+- Generated code - add to ESLint ignore patterns if needed
+
+### Maximum Function Length: 50 Lines
+**Tool-Enforced**: ESLint (`max-lines-per-function`)
+
+Functions should not exceed 50 lines (excluding blank lines and comments).
+
+**Rationale**:
+- **Single Responsibility**: Long functions often do too many things
+- **Complexity Management**: Shorter functions are easier to reason about
+- **Reusability**: Smaller functions are more likely to be reusable
+- **Testing**: Functions under 50 lines are easier to test exhaustively
+
+**Refactoring Guidance**:
+- Extract helper functions for repeated logic
+- Move complex conditionals to well-named predicates
+- Break sequential operations into pipeline steps
+- Consider if function is mixing levels of abstraction
+
+**Exemptions**:
+- Test files - automatically excluded (test cases may be longer for readability)
+
+**Configuration**:
+```json
+// .eslintrc.json
+"max-lines": ["warn", { "max": 300, "skipBlankLines": true, "skipComments": true }]
+"max-lines-per-function": ["warn", { "max": 50, "skipBlankLines": true, "skipComments": true }]
+```
+
+**Progressive Enforcement**:
+- **Build Phase**: Warnings shown, not blocking
+- **Harden Phase**: Expected to be addressed, review required
+- **Ship Phase**: Must be resolved or explicitly justified
+
 ## Code Comments and TODOs
 **Enforcement: Build(suggested) → Harden(expected) → Ship(mandatory)**
 - **TODO Convention**: Always use `// TODO:` comments for incomplete work
