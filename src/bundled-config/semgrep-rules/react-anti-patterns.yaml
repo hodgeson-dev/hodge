@@ -65,14 +65,16 @@ rules:
             ...
             return ...
           }
-    pattern-not-inside: |
-      useEffect(...)
-    pattern-not-inside: |
-      useLayoutEffect(...)
-    pattern-not-inside: |
-      use$HOOK(...)
-    pattern-not-inside: |
-      $EVENT_HANDLER(...)
+    pattern-not:
+      pattern-either:
+        - pattern-inside: |
+            useEffect(...)
+        - pattern-inside: |
+            useLayoutEffect(...)
+        - pattern-inside: |
+            use$HOOK(...)
+        - pattern-inside: |
+            $EVENT_HANDLER(...)
     message: |
       Calling setState during render can cause infinite render loops.
       State updates should be inside useEffect, event handlers, or other hooks.
