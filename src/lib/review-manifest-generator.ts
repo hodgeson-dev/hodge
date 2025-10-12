@@ -121,98 +121,14 @@ export class ReviewManifestGenerator {
       return [];
     }
 
-    // Load package.json to check dependencies
-    const packageJsonPath = join(this.basePath, 'package.json');
-    let projectDependencies: string[] = [];
-
-    if (existsSync(packageJsonPath)) {
-      try {
-        const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8')) as {
-          dependencies?: Record<string, string>;
-          devDependencies?: Record<string, string>;
-        };
-        projectDependencies = [
-          ...Object.keys(packageJson.dependencies || {}),
-          ...Object.keys(packageJson.devDependencies || {}),
-        ];
-      } catch (error) {
-        this.logger.warn('Failed to parse package.json', {
-          error: error instanceof Error ? error.message : String(error),
-        });
-      }
-    }
-
+    const projectDependencies = this.loadProjectDependencies();
     const relevantProfiles = new Set<string>();
-
-    // Find all profile files
-    const profileFiles = glob.sync(`${profilesDir}/**/*.md`);
+    const profileFiles = glob.sync(`${profilesDir}/**/*.yaml`);
 
     for (const profileFile of profileFiles) {
-      try {
-        const content = readFileSync(profileFile, 'utf-8');
-
-        // Extract frontmatter
-        const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
-        if (!frontmatterMatch) continue;
-
-        const frontmatter = yaml.load(frontmatterMatch[1]) as Record<string, unknown>;
-
-        // Check detection rules first
-        const detection = frontmatter.detection as
-          | {
-              dependencies?: string[];
-              files?: string[];
-              version_range?: string;
-            }
-          | undefined;
-
-        if (detection?.dependencies) {
-          // Check if any required dependency exists in project
-          const hasRequiredDependency = detection.dependencies.some((dep) =>
-            projectDependencies.includes(dep)
-          );
-
-          if (!hasRequiredDependency) {
-            // Skip this profile - required dependencies not found
-            continue;
-          }
-
-          // NEW: Check version_range if specified in profile frontmatter
-          if (detection.version_range) {
-            const primaryDependency = detection.dependencies[0];
-            const installedVersion = this.getInstalledVersion(primaryDependency, packageJsonPath);
-
-            if (!installedVersion || !semver.satisfies(installedVersion, detection.version_range)) {
-              this.logger.debug('Skipping profile - version mismatch', {
-                profile: profileFile,
-                dependency: primaryDependency,
-                required: detection.version_range,
-                installed: installedVersion,
-              });
-              continue; // Skip - version doesn't match
-            }
-          }
-        }
-
-        // Check if profile applies to changed files
-        if (frontmatter.applies_to && Array.isArray(frontmatter.applies_to)) {
-          const patterns = frontmatter.applies_to as string[];
-
-          // Check if any changed file matches this profile's patterns
-          for (const file of changedFiles) {
-            if (patterns.some((pattern) => micromatch.isMatch(file.path, pattern))) {
-              // Get relative path from profiles directory
-              const relativePath = profileFile.replace(`${profilesDir}/`, '');
-              relevantProfiles.add(relativePath);
-              break;
-            }
-          }
-        }
-      } catch (error) {
-        this.logger.warn('Failed to parse profile', {
-          file: profileFile,
-          error: error instanceof Error ? error.message : String(error),
-        });
+      if (this.isProfileRelevant(profileFile, changedFiles, projectDependencies)) {
+        const relativePath = profileFile.replace(`${profilesDir}/`, '');
+        relevantProfiles.add(relativePath);
       }
     }
 
@@ -220,6 +136,146 @@ export class ReviewManifestGenerator {
     this.logger.debug('Filtered profiles', { count: profiles.length });
 
     return profiles;
+  }
+
+  /**
+   * Load project dependencies from package.json
+   */
+  private loadProjectDependencies(): string[] {
+    const packageJsonPath = join(this.basePath, 'package.json');
+
+    if (!existsSync(packageJsonPath)) {
+      return [];
+    }
+
+    try {
+      const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8')) as {
+        dependencies?: Record<string, string>;
+        devDependencies?: Record<string, string>;
+      };
+      return [
+        ...Object.keys(packageJson.dependencies ?? {}),
+        ...Object.keys(packageJson.devDependencies ?? {}),
+      ];
+    } catch (error) {
+      this.logger.warn('Failed to parse package.json', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return [];
+    }
+  }
+
+  /**
+   * Check if a profile is relevant to changed files
+   */
+  private isProfileRelevant(
+    profileFile: string,
+    changedFiles: GitDiffResult[],
+    projectDependencies: string[]
+  ): boolean {
+    try {
+      const content = readFileSync(profileFile, 'utf-8');
+      const profile = yaml.load(content) as Record<string, unknown>;
+
+      if (!profile.meta) {
+        return false;
+      }
+
+      const frontmatter = profile.meta as Record<string, unknown>;
+
+      // Check dependency requirements
+      if (!this.checkDependencyRequirements(frontmatter, projectDependencies)) {
+        return false;
+      }
+
+      // Check if profile applies to changed files
+      return this.profileMatchesChangedFiles(frontmatter, changedFiles);
+    } catch (error) {
+      this.logger.warn('Failed to parse profile', {
+        file: profileFile,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return false;
+    }
+  }
+
+  /**
+   * Check if profile's dependency requirements are met
+   */
+  private checkDependencyRequirements(
+    frontmatter: Record<string, unknown>,
+    projectDependencies: string[]
+  ): boolean {
+    const detection = frontmatter.detection as
+      | {
+          dependencies?: string[];
+          deps?: string[];
+          files?: string[];
+        }
+      | undefined;
+
+    const depsList = detection?.dependencies ?? detection?.deps;
+
+    if (!depsList) {
+      return true; // No dependency requirements
+    }
+
+    // Check if required dependencies exist
+    const hasRequiredDependency = depsList.some((dep) => projectDependencies.includes(dep));
+
+    if (!hasRequiredDependency) {
+      return false;
+    }
+
+    // Check version range if specified
+    const versionRange = frontmatter.version_range as string | undefined;
+    if (versionRange) {
+      return this.checkVersionRange(depsList[0], versionRange);
+    }
+
+    return true;
+  }
+
+  /**
+   * Check if installed version satisfies required range
+   */
+  private checkVersionRange(dependency: string, versionRange: string): boolean {
+    const packageJsonPath = join(this.basePath, 'package.json');
+    const installedVersion = this.getInstalledVersion(dependency, packageJsonPath);
+
+    if (!installedVersion || !semver.satisfies(installedVersion, versionRange)) {
+      this.logger.debug('Skipping profile - version mismatch', {
+        dependency,
+        required: versionRange,
+        installed: installedVersion,
+      });
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Check if profile applies to any changed files
+   */
+  private profileMatchesChangedFiles(
+    frontmatter: Record<string, unknown>,
+    changedFiles: GitDiffResult[]
+  ): boolean {
+    if (!frontmatter.applies_to || !Array.isArray(frontmatter.applies_to)) {
+      return false;
+    }
+
+    const patterns = frontmatter.applies_to as string[];
+
+    // Check if any changed file matches profile patterns
+    for (const file of changedFiles) {
+      if (patterns.some((pattern) => micromatch.isMatch(file.path, pattern))) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /**
@@ -237,7 +293,7 @@ export class ReviewManifestGenerator {
       };
 
       const version =
-        packageJson.dependencies?.[dependencyName] || packageJson.devDependencies?.[dependencyName];
+        packageJson.dependencies?.[dependencyName] ?? packageJson.devDependencies?.[dependencyName];
 
       if (!version) {
         this.logger.debug('Dependency not found in package.json', { dependency: dependencyName });

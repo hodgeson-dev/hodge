@@ -9,7 +9,7 @@ import {
   type ValidationResult,
   type ValidationResults,
 } from '../lib/harden-service.js';
-import type { RawToolResult } from '../types/toolchain.js';
+import type { RawToolResult, ToolchainConfig } from '../types/toolchain.js';
 import { createCommandLogger } from '../lib/logger.js';
 import { GitDiffAnalyzer } from '../lib/git-diff-analyzer.js';
 import { ReviewTierClassifier } from '../lib/review-tier-classifier.js';
@@ -125,6 +125,9 @@ export class HardenCommand {
       // Display validation status (presentation layer)
       this.displayValidationStatus(results, options);
 
+      // Check if all validations passed
+      const allPassed = Object.values(results).every((r: ValidationResult) => r.passed);
+
       // Save validation results
       await fs.writeFile(
         path.join(hardenDir, 'validation-results.json'),
@@ -145,6 +148,11 @@ export class HardenCommand {
       // Generate and save report
       const reportContent = this.generateReport(feature, results, options);
       await fs.writeFile(path.join(hardenDir, 'harden-report.md'), reportContent);
+
+      // HODGE-341.5: If all errors fixed, prompt AI to review warnings
+      if (allPassed) {
+        await this.promptWarningReview(hardenDir);
+      }
 
       // Display final summary
       this.displaySummary(feature, results, hardenDir, options);
@@ -624,6 +632,76 @@ The AI will interpret these results to identify issues that need to be fixed bef
         { error: error as Error }
       );
       throw error;
+    }
+  }
+
+  /**
+   * Prompt AI to review warnings after all errors are fixed
+   * HODGE-341.5: AI-driven warning review
+   * @private
+   */
+  private async promptWarningReview(hardenDir: string): Promise<void> {
+    // Load toolchain config to check if warning review is enabled
+    const toolchainConfigPath = path.join(process.cwd(), '.hodge', 'toolchain.yaml');
+
+    if (!existsSync(toolchainConfigPath)) {
+      return; // No config, skip warning review
+    }
+
+    try {
+      const toolchainYaml = await fs.readFile(toolchainConfigPath, 'utf-8');
+      const toolchainConfig = yaml.load(toolchainYaml) as ToolchainConfig;
+
+      // Check if warning review is enabled
+      const reviewWarnings = toolchainConfig.quality_gates?.harden?.review_warnings ?? false;
+
+      if (!reviewWarnings) {
+        return; // Warning review disabled
+      }
+
+      // Check if quality-checks.md exists
+      const qualityChecksPath = path.join(hardenDir, 'quality-checks.md');
+      if (!existsSync(qualityChecksPath)) {
+        return; // No quality checks to review
+      }
+
+      // Display prompt for AI
+      this.logger.info('\n' + chalk.bold('═'.repeat(70)));
+      this.logger.info(chalk.green.bold('✅ All Blocking Errors Fixed!'));
+      this.logger.info(chalk.bold('═'.repeat(70)));
+
+      this.logger.info(
+        '\n' + chalk.yellow('⚠️  Some warnings remain in ') + chalk.cyan('quality-checks.md')
+      );
+
+      // Load and display warning guidance if configured
+      const warningGuidance = toolchainConfig.quality_gates?.harden?.warning_guidance;
+      if (warningGuidance) {
+        this.logger.info('\n' + chalk.bold('Warning Review Guidance:'));
+        this.logger.info(chalk.gray(warningGuidance.trim()));
+      }
+
+      this.logger.info('\n' + chalk.bold('AI Prompt:'));
+      this.logger.info(
+        chalk.cyan(
+          `Please review ${chalk.yellow('quality-checks.md')} and identify any warnings that should be fixed before shipping.`
+        )
+      );
+      this.logger.info(
+        chalk.cyan(
+          'Consider the guidance above, project standards in .hodge/standards.md, and the scope of this feature.'
+        )
+      );
+      this.logger.info(
+        '\n' +
+          chalk.dim(
+            'Note: You can respond naturally. For example: "Fix the complexity warnings" or "These warnings are acceptable"'
+          )
+      );
+      this.logger.info(chalk.bold('═'.repeat(70)) + '\n');
+    } catch (error) {
+      // Non-critical - log and continue
+      this.logger.debug('Failed to check warning review config', { error: error as Error });
     }
   }
 }

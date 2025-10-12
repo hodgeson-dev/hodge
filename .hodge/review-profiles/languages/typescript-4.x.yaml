@@ -1,0 +1,16 @@
+meta:
+  version: "1.0.0"
+  language: typescript
+  version_range: ">=4.0.0 <5.0.0"
+  detection:
+    deps: ["typescript"]
+  applies_to:
+    - "**/*.ts"
+    - "**/*.tsx"
+
+rules:
+  - id: placeholder
+    name: "TypeScript 4.x Placeholder"
+    enforcement: SUGGESTED
+    severity: SUGGESTION
+    desc: "Profile content pending - full rules to be added based on user demand"

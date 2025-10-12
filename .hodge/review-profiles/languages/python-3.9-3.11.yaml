@@ -1,0 +1,15 @@
+meta:
+  version: "1.0.0"
+  language: python
+  version_range: ">=3.9.0 <3.12.0"
+  detection:
+    files: ["pyproject.toml", "requirements.txt", "setup.py"]
+  applies_to:
+    - "**/*.py"
+
+rules:
+  - id: placeholder
+    name: "Placeholder Rule"
+    enforcement: SUGGESTED
+    severity: SUGGESTION
+    desc: "Profile content coming in future version based on user demand"

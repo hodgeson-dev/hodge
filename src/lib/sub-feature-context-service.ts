@@ -25,9 +25,9 @@ export interface ShipRecord {
     changelog: boolean;
   };
   // Commit tracking for toolchain file scoping (HODGE-341.2)
-  buildStartCommit?: string;  // First commit when build started
+  buildStartCommit?: string; // First commit when build started
   hardenStartCommit?: string; // First commit when harden started
-  shipCommit?: string;         // Commit SHA when shipped
+  shipCommit?: string; // Commit SHA when shipped
 }
 
 /**
@@ -106,7 +106,7 @@ export class SubFeatureContextService {
   detectSubFeature(feature: string): { isSubFeature: boolean; parent?: string } {
     // Pattern: HODGE-NNN.N (numeric sub-feature)
     const subFeaturePattern = /^(HODGE-\d+)\.(\d+)$/;
-    const match = feature.match(subFeaturePattern);
+    const match = subFeaturePattern.exec(feature);
 
     if (match) {
       return {
@@ -139,7 +139,7 @@ export class SubFeatureContextService {
     const siblingPattern = new RegExp(`^${parent}\\.(\\d+)$`);
 
     for (const featureDir of allFeatures) {
-      const match = featureDir.match(siblingPattern);
+      const match = siblingPattern.exec(featureDir);
       if (!match) continue;
 
       // Check if excluded
@@ -180,56 +180,111 @@ export class SubFeatureContextService {
       return null;
     }
 
-    const explorationPath = join(parentDir, 'explore', 'exploration.md');
-    const decisionsPath = join(parentDir, 'decisions.md');
-
     const context: ParentContext = {
       feature: parent,
       decisions: [],
     };
 
-    // Extract from exploration.md
-    if (existsSync(explorationPath)) {
-      const exploration = readFileSync(explorationPath, 'utf-8');
-
-      // Extract Problem Statement
-      const problemMatch = exploration.match(/## Problem Statement\s+([\s\S]*?)(?=\n## |\n---|$)/);
-      if (problemMatch) {
-        context.problemStatement = problemMatch[1].trim();
-      }
-
-      // Extract Recommendation
-      const recommendationMatch = exploration.match(
-        /## Recommendation\s*\n+([\s\S]*?)(?=\n## |\n---|\n\*|$)/
-      );
-      if (recommendationMatch) {
-        context.recommendation = recommendationMatch[1].trim();
-      }
-
-      // Extract decisions from exploration
-      const decisionsMatch = exploration.match(
-        /## Decisions Decided During Exploration\s+([\s\S]*?)(?=\n## |\n---|$)/
-      );
-      if (decisionsMatch) {
-        const decisionsText = decisionsMatch[1];
-        const decisionLines = decisionsText.match(/^\d+\.\s*✓\s*\*\*(.+?)\*\*/gm);
-        if (decisionLines) {
-          context.decisions.push(...decisionLines.map((line) => line.trim()));
-        }
-      }
-    }
-
-    // Load from decisions.md if exists
-    if (existsSync(decisionsPath)) {
-      const decisionsContent = readFileSync(decisionsPath, 'utf-8');
-      // Extract decision summaries (simplified)
-      const decisionMatches = decisionsContent.match(/^### .+$/gm);
-      if (decisionMatches) {
-        context.decisions.push(...decisionMatches.map((d) => d.replace('### ', '').trim()));
-      }
-    }
+    this.loadExplorationContext(parentDir, context);
+    this.loadDecisionsContext(parentDir, context);
 
     return context;
+  }
+
+  /**
+   * Load context from exploration.md
+   */
+  private loadExplorationContext(parentDir: string, context: ParentContext): void {
+    const explorationPath = join(parentDir, 'explore', 'exploration.md');
+
+    if (!existsSync(explorationPath)) {
+      return;
+    }
+
+    const exploration = readFileSync(explorationPath, 'utf-8');
+
+    // Extract sections
+    context.problemStatement = this.extractSection(exploration, '## Problem Statement', 20);
+    context.recommendation = this.extractSection(exploration, '## Recommendation', 17);
+
+    // Extract decisions from exploration
+    const decisionsText = this.extractSection(
+      exploration,
+      '## Decisions Decided During Exploration',
+      39
+    );
+    if (decisionsText) {
+      this.extractDecisionsFromText(decisionsText, context.decisions);
+    }
+  }
+
+  /**
+   * Load context from decisions.md
+   */
+  private loadDecisionsContext(parentDir: string, context: ParentContext): void {
+    const decisionsPath = join(parentDir, 'decisions.md');
+
+    if (!existsSync(decisionsPath)) {
+      return;
+    }
+
+    const decisionsContent = readFileSync(decisionsPath, 'utf-8');
+    const lines = decisionsContent.split('\n');
+
+    for (const line of lines) {
+      if (line.startsWith('### ')) {
+        context.decisions.push(line.replace('### ', '').trim());
+      }
+    }
+  }
+
+  /**
+   * Extract a section from markdown content
+   */
+  private extractSection(
+    content: string,
+    sectionHeader: string,
+    headerLength: number
+  ): string | undefined {
+    const sectionIdx = content.indexOf(sectionHeader);
+    if (sectionIdx === -1) {
+      return undefined;
+    }
+
+    const afterSection = content.slice(sectionIdx + headerLength);
+    const nextSectionIdx = this.findNextSection(afterSection);
+    return afterSection.slice(0, nextSectionIdx).trim();
+  }
+
+  /**
+   * Extract numbered decisions from text
+   */
+  private extractDecisionsFromText(text: string, decisions: string[]): void {
+    const lines = text.split('\n');
+    const decisionPattern = /^\d+\.\s*✓\s*\*\*(.+?)\*\*/;
+
+    for (const line of lines) {
+      const match = decisionPattern.exec(line);
+      if (match) {
+        decisions.push(line.trim());
+      }
+    }
+  }
+
+  /**
+   * Find the next markdown section (## header or --- separator)
+   * Returns index of next section or end of string
+   */
+  private findNextSection(text: string): number {
+    const lines = text.split('\n');
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i];
+      if (line.startsWith('## ') || line.startsWith('---')) {
+        // Calculate character position
+        return lines.slice(0, i).join('\n').length;
+      }
+    }
+    return text.length;
   }
 
   /**
@@ -245,10 +300,10 @@ export class SubFeatureContextService {
     }
 
     return {
-      parent: parentContext || undefined,
+      parent: parentContext ?? undefined,
       siblings,
       suggestedReadingOrder:
-        'parent exploration → parent decisions → sibling ship records → sibling lessons',
+        'parent exploration → parent decisions → sibling exploration → sibling decisions → sibling ship records → sibling lessons',
     };
   }
 
@@ -310,73 +365,132 @@ export class SubFeatureContextService {
     }
 
     const allFeatures = readdirSync(featuresDir);
+    const siblingPattern = new RegExp(`^${parent}\\.(\\d+)$`);
     const siblings: Array<{
       feature: string;
       shippedAt: string;
       files: FileManifestEntry[];
     }> = [];
 
-    const siblingPattern = new RegExp(`^${parent}\\.(\\d+)$`);
-
     for (const featureDir of allFeatures) {
-      const match = featureDir.match(siblingPattern);
-      if (!match) continue;
-
-      // Check exclusion
-      const siblingNumber = match[1];
-      const shortId = `${parent.split('-')[1]}.${siblingNumber}`;
-      if (exclude.includes(shortId) || exclude.includes(featureDir)) {
-        continue;
+      const sibling = this.processSiblingFeature(featureDir, siblingPattern, parent, exclude);
+      if (sibling) {
+        siblings.push(sibling);
       }
-
-      // Check ship record
-      const shipRecord = this.loadShipRecord(featureDir);
-      if (!shipRecord || !shipRecord.validationPassed) {
-        continue;
-      }
-
-      const files: FileManifestEntry[] = [];
-
-      // Ship record (precedence 3)
-      // HODGE-341.2: ship-record.json moved to feature root
-      const shipRecordPath = join(
-        this.basePath,
-        '.hodge',
-        'features',
-        featureDir,
-        'ship-record.json'
-      );
-      files.push({
-        path: shipRecordPath,
-        type: 'ship-record',
-        feature: featureDir,
-        precedence: 3,
-        timestamp: shipRecord.timestamp,
-      });
-
-      // Lessons learned (precedence 4)
-      const lessonsDir = join(this.basePath, '.hodge', 'lessons');
-      if (existsSync(lessonsDir)) {
-        const lessonFiles = readdirSync(lessonsDir);
-        const lessonFile = lessonFiles.find((file) => file.startsWith(featureDir));
-        if (lessonFile) {
-          files.push({
-            path: join(lessonsDir, lessonFile),
-            type: 'lessons',
-            feature: featureDir,
-            precedence: 4,
-          });
-        }
-      }
-
-      siblings.push({
-        feature: featureDir,
-        shippedAt: shipRecord.timestamp,
-        files,
-      });
     }
 
     return siblings.sort((a, b) => a.feature.localeCompare(b.feature));
+  }
+
+  /**
+   * Process a potential sibling feature and return its files if valid
+   */
+  private processSiblingFeature(
+    featureDir: string,
+    siblingPattern: RegExp,
+    parent: string,
+    exclude: string[]
+  ): { feature: string; shippedAt: string; files: FileManifestEntry[] } | null {
+    const match = siblingPattern.exec(featureDir);
+    if (!match) return null;
+
+    // Check exclusion
+    const siblingNumber = match[1];
+    const shortId = `${parent.split('-')[1]}.${siblingNumber}`;
+    if (exclude.includes(shortId) || exclude.includes(featureDir)) {
+      return null;
+    }
+
+    // Check ship record
+    const shipRecord = this.loadShipRecord(featureDir);
+    if (!shipRecord || !shipRecord.validationPassed) {
+      return null;
+    }
+
+    const files = this.collectSiblingFiles(featureDir, shipRecord);
+
+    return {
+      feature: featureDir,
+      shippedAt: shipRecord.timestamp,
+      files,
+    };
+  }
+
+  /**
+   * Collect all relevant files for a sibling feature
+   */
+  private collectSiblingFiles(featureDir: string, shipRecord: ShipRecord): FileManifestEntry[] {
+    const files: FileManifestEntry[] = [];
+
+    // Sibling exploration (precedence 3)
+    this.addFileIfExists(
+      files,
+      join(this.basePath, '.hodge', 'features', featureDir, 'explore', 'exploration.md'),
+      'exploration',
+      featureDir,
+      3
+    );
+
+    // Sibling decisions (precedence 4)
+    this.addFileIfExists(
+      files,
+      join(this.basePath, '.hodge', 'features', featureDir, 'decisions.md'),
+      'decisions',
+      featureDir,
+      4
+    );
+
+    // Ship record (precedence 5) - always include
+    files.push({
+      path: join(this.basePath, '.hodge', 'features', featureDir, 'ship-record.json'),
+      type: 'ship-record',
+      feature: featureDir,
+      precedence: 5,
+      timestamp: shipRecord.timestamp,
+    });
+
+    // Lessons learned (precedence 6)
+    this.addLessonsFileIfExists(files, featureDir);
+
+    return files;
+  }
+
+  /**
+   * Add a file to the manifest if it exists
+   */
+  private addFileIfExists(
+    files: FileManifestEntry[],
+    path: string,
+    type: 'exploration' | 'decisions' | 'ship-record' | 'lessons',
+    feature: string,
+    precedence: number
+  ): void {
+    if (existsSync(path)) {
+      files.push({ path, type, feature, precedence });
+    }
+  }
+
+  /**
+   * Add lessons file to manifest if it exists
+   */
+  private addLessonsFileIfExists(files: FileManifestEntry[], featureDir: string): void {
+    const lessonsDir = join(this.basePath, '.hodge', 'lessons');
+
+    if (!existsSync(lessonsDir)) {
+      return;
+    }
+
+    const lessonFiles = readdirSync(lessonsDir);
+    const lessonFile = lessonFiles.find((file) => file.startsWith(featureDir));
+
+    if (lessonFile) {
+      files.push({
+        path: join(lessonsDir, lessonFile),
+        type: 'lessons',
+        feature: featureDir,
+        precedence: 6,
+      });
+    }
   }
 
   /**
@@ -401,13 +515,7 @@ export class SubFeatureContextService {
    * HODGE-341.2: ship-record.json moved to feature root
    */
   private loadShipRecord(feature: string): ShipRecord | null {
-    const shipRecordPath = join(
-      this.basePath,
-      '.hodge',
-      'features',
-      feature,
-      'ship-record.json'
-    );
+    const shipRecordPath = join(this.basePath, '.hodge', 'features', feature, 'ship-record.json');
 
     if (!existsSync(shipRecordPath)) {
       return null;
@@ -428,61 +536,88 @@ export class SubFeatureContextService {
     const decisions: string[] = [];
     const featureDir = join(this.basePath, '.hodge', 'features', feature);
 
-    // Check decisions.md
-    const decisionsPath = join(featureDir, 'decisions.md');
-    if (existsSync(decisionsPath)) {
-      const content = readFileSync(decisionsPath, 'utf-8');
-      const decisionMatches = content.match(/^### .+$/gm);
-      if (decisionMatches) {
-        decisions.push(...decisionMatches.map((d) => d.replace('### ', '').trim()));
-      }
-    }
-
-    // Check exploration decisions
-    const explorationPath = join(featureDir, 'explore', 'exploration.md');
-    if (existsSync(explorationPath)) {
-      const exploration = readFileSync(explorationPath, 'utf-8');
-      const decisionsMatch = exploration.match(
-        /## Decisions Decided During Exploration\s+([\s\S]*?)(?=\n## |\n---|$)/
-      );
-      if (decisionsMatch) {
-        const decisionsText = decisionsMatch[1];
-        const decisionLines = decisionsText.match(/^\d+\.\s*✓\s*\*\*(.+?)\*\*/gm);
-        if (decisionLines) {
-          decisions.push(...decisionLines.map((line) => line.trim()));
-        }
-      }
-    }
+    this.loadDecisionsFromFile(featureDir, decisions);
+    this.loadDecisionsFromExploration(featureDir, decisions);
 
     return decisions;
+  }
+
+  /**
+   * Load decisions from decisions.md file
+   */
+  private loadDecisionsFromFile(featureDir: string, decisions: string[]): void {
+    const decisionsPath = join(featureDir, 'decisions.md');
+    if (!existsSync(decisionsPath)) {
+      return;
+    }
+
+    const content = readFileSync(decisionsPath, 'utf-8');
+    const lines = content.split('\n');
+    for (const line of lines) {
+      if (line.startsWith('### ')) {
+        decisions.push(line.replace('### ', '').trim());
+      }
+    }
+  }
+
+  /**
+   * Load decisions from exploration.md file
+   */
+  private loadDecisionsFromExploration(featureDir: string, decisions: string[]): void {
+    const explorationPath = join(featureDir, 'explore', 'exploration.md');
+    if (!existsSync(explorationPath)) {
+      return;
+    }
+
+    const exploration = readFileSync(explorationPath, 'utf-8');
+    const decisionsIdx = exploration.indexOf('## Decisions Decided During Exploration');
+    if (decisionsIdx === -1) {
+      return;
+    }
+
+    const afterDecisions = exploration.slice(decisionsIdx + 39);
+    const nextSectionIdx = this.findNextSection(afterDecisions);
+    const decisionsText = afterDecisions.slice(0, nextSectionIdx);
+
+    this.extractDecisionLines(decisionsText, decisions);
+  }
+
+  /**
+   * Extract decision lines from text
+   */
+  private extractDecisionLines(text: string, decisions: string[]): void {
+    const lines = text.split('\n');
+    // Fixed regex: simplified pattern to avoid backtracking
+    const decisionPattern = /^\d+\.\s*✓\s*\*\*[^*]+\*\*/;
+
+    for (const line of lines) {
+      if (decisionPattern.test(line)) {
+        decisions.push(line.trim());
+      }
+    }
   }
 
   /**
    * Extract infrastructure files created from ship record commit message
    */
   private extractInfrastructure(shipRecord: ShipRecord): string[] {
-    const infrastructure: string[] = [];
     const commitMessage = shipRecord.commitMessage;
+    // Fixed regex: simple pattern with word boundaries to prevent backtracking
+    // Pattern matches: word/word-word/word.ts (e.g., src/lib/service-name.ts)
+    // Hyphen at end of character class doesn't need escaping
+    const filePattern = /\b[a-z]+\/[a-z-]+\/[a-z-]+\.ts\b/gi;
+    const infrastructureSet = new Set<string>();
 
-    // Look for file paths in commit message
-    // Pattern: src/lib/something.ts or similar
-    const fileMatches = commitMessage.match(/[a-z]+\/[a-z-]+\/[a-z-]+\.ts/gi);
-    if (fileMatches) {
-      infrastructure.push(...fileMatches);
-    }
-
-    // Look for explicit "New Infrastructure" or "Files created" sections
-    const infraMatch = commitMessage.match(
-      /\*\*New Infrastructure\*\*[\s\S]*?:\s*(.+?)(?:\n-|\n\*\*)/gim
-    );
-    if (infraMatch) {
-      for (const match of infraMatch) {
-        const files = match.match(/[a-z]+\/[a-z-]+\/[a-z-]+\.ts/gi);
-        if (files) infrastructure.push(...files);
+    // Split message into lines to limit regex scope and prevent ReDoS
+    const lines = commitMessage.split('\n');
+    for (const line of lines) {
+      const matches = line.match(filePattern);
+      if (matches) {
+        matches.forEach((match) => infrastructureSet.add(match));
       }
     }
 
-    return [...new Set(infrastructure)]; // Remove duplicates
+    return Array.from(infrastructureSet);
   }
 
   /**

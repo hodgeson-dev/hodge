@@ -1,0 +1,63 @@
+meta:
+  version: "1.0.0"
+  database: prisma
+  version_range: ">=5.0.0 <6.0.0"
+  detection:
+    deps: ["@prisma/client", "prisma"]
+  applies_to:
+    - "**/prisma/schema.prisma"
+    - "**/*.prisma"
+    - "**/*prisma*.ts"
+    - "**/*prisma*.js"
+
+rules:
+  - id: schema-design
+    name: "Schema Design"
+    enforcement: SUGGESTED
+    severity: WARNING
+    desc: "Design schemas with clear relationships, appropriate field types, proper indexes"
+    guidance: "Explicit @relation names prevent ambiguity. String has limits, Text for longer content. Add @@index on WHERE fields."
+
+  - id: type-safety
+    name: "Type Safety with Generated Client"
+    enforcement: SUGGESTED
+    severity: SUGGESTION
+    desc: "Leverage Prisma's generated TypeScript client for full type safety"
+    guidance: "Run prisma generate after schema changes. Use select to narrow types. Avoid any with Prisma models."
+
+  - id: query-optimization
+    name: "Query Optimization"
+    enforcement: SUGGESTED
+    severity: WARNING
+    desc: "Use include/select to prevent N+1 problems. Always limit unbounded queries."
+    guidance: "include fetches related data in single query. Use cursor pagination for large datasets."
+    xref: "standards/performance"
+
+  - id: transactions
+    name: "Transaction Management"
+    enforcement: SUGGESTED
+    severity: WARNING
+    desc: "Use $transaction for operations that must succeed or fail together"
+    guidance: "Keep transactions short. Don't hold during external API calls. Handle errors for rollbacks."
+
+  - id: migrations
+    name: "Migration Strategy"
+    enforcement: SUGGESTED
+    severity: WARNING
+    desc: "Manage schema changes through Prisma Migrate. Never edit applied migrations."
+    guidance: "migrate dev in development, migrate deploy in production. Test on staging first."
+
+  - id: error-handling
+    name: "Error Handling"
+    enforcement: SUGGESTED
+    severity: WARNING
+    desc: "Catch PrismaClientKnownRequestError for constraint violations. Check error codes."
+    guidance: "P2002=unique constraint, P2025=not found, P2003=foreign key. Translate to user-friendly messages."
+    xref: "standards/error-handling"
+
+  - id: connection-management
+    name: "Connection Management"
+    enforcement: SUGGESTED
+    severity: WARNING
+    desc: "Reuse single PrismaClient instance (singleton). Call $disconnect() on shutdown."
+    guidance: "Don't create per request. Configure pool size based on database limits. Use pooling in serverless."

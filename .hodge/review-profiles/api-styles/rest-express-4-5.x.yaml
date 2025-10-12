@@ -1,0 +1,19 @@
+meta:
+  version: "1.0.0"
+  api_style: rest
+  framework: express
+  version_range: ">=4.0.0 <6.0.0"
+  detection:
+    deps: ["express"]
+  applies_to:
+    - "**/*.ts"
+    - "**/*.js"
+    - "**/routes/**"
+    - "**/controllers/**"
+
+rules:
+  - id: placeholder
+    name: "Placeholder Rule"
+    enforcement: SUGGESTED
+    severity: SUGGESTION
+    desc: "Profile content coming in future version based on user demand"

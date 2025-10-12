@@ -1,0 +1,14 @@
+meta:
+  version: "1.0.0"
+  language: javascript
+  detection:
+    files: ["package.json"]
+  applies_to:
+    - "**/*.js"
+
+rules:
+  - id: placeholder
+    name: "Placeholder Rule"
+    enforcement: SUGGESTED
+    severity: SUGGESTION
+    desc: "Profile content coming in future version based on user demand"

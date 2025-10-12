@@ -1,0 +1,15 @@
+meta:
+  version: "1.0.0"
+  framework: vue
+  version_range: ">=2.0.0 <3.0.0"
+  detection:
+    deps: ["vue"]
+  applies_to:
+    - "**/*.vue"
+
+rules:
+  - id: placeholder
+    name: "Placeholder Rule"
+    enforcement: SUGGESTED
+    severity: SUGGESTION
+    desc: "Profile content coming in future version based on user demand"

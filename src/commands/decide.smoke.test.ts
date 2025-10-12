@@ -33,6 +33,9 @@ describe('Decide Command --feature Flag (HODGE-313)', () => {
     const featureDir = path.join(tempDir, '.hodge', 'features', 'TEST-001');
     await fs.promises.mkdir(featureDir, { recursive: true });
 
+    // Verify directory was created before proceeding
+    expect(fs.existsSync(featureDir)).toBe(true);
+
     // Execute: Record decision with --feature flag
     await decideCommand.execute('Test feature decision', { feature: 'TEST-001' });
 

@@ -165,6 +165,18 @@ export interface ToolCommand {
 }
 
 /**
+ * Quality gate configuration for different phases
+ * HODGE-341.5: AI-driven warning review
+ */
+export interface QualityGateConfig {
+  /** Should AI review warnings after errors are fixed? */
+  review_warnings?: boolean;
+
+  /** Optional guidance text for AI when reviewing warnings (not rigid rules) */
+  warning_guidance?: string;
+}
+
+/**
  * Toolchain configuration (loaded from .hodge/toolchain.yaml)
  */
 export interface ToolchainConfig {
@@ -179,6 +191,12 @@ export interface ToolchainConfig {
 
   /** Mapping of quality check types to tool names */
   quality_checks: QualityChecksMapping;
+
+  /** Quality gate configuration for each phase (HODGE-341.5) */
+  quality_gates?: {
+    harden?: QualityGateConfig;
+    ship?: QualityGateConfig;
+  };
 }
 
 /**

@@ -1,0 +1,20 @@
+meta:
+  version: "1.0.0"
+  framework: nextjs
+  version_range: ">=14.0.0 <15.0.0"
+  detection:
+    deps: ["next"]
+  applies_to:
+    - "**/*.ts"
+    - "**/*.tsx"
+    - "**/*.js"
+    - "**/*.jsx"
+    - "**/pages/**"
+    - "**/app/**"
+
+rules:
+  - id: placeholder
+    name: "Placeholder Rule"
+    enforcement: SUGGESTED
+    severity: SUGGESTION
+    desc: "Profile content coming in future version based on user demand"

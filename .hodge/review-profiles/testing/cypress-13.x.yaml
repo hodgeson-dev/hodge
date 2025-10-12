@@ -1,0 +1,18 @@
+meta:
+  version: "1.0.0"
+  testing_framework: cypress
+  version_range: ">=13.0.0 <14.0.0"
+  detection:
+    deps: ["cypress"]
+  applies_to:
+    - "**/cypress/**/*.ts"
+    - "**/cypress/**/*.js"
+    - "**/*.cy.ts"
+    - "**/*.cy.js"
+
+rules:
+  - id: placeholder
+    name: "Placeholder Rule"
+    enforcement: SUGGESTED
+    severity: SUGGESTION
+    desc: "Profile content coming in future version based on user demand"

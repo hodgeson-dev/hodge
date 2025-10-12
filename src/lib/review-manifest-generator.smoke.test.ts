@@ -137,12 +137,12 @@ describe('ReviewManifestGenerator - Smoke Tests', () => {
 
     const profiles = generator.filterRelevantProfiles(changes);
 
-    // Should include vitest-3.x.md (project has vitest: ^3.2.4)
-    expect(profiles).toContain('testing/vitest-3.x.md');
+    // Should include vitest-3.x.yaml (project has vitest: ^3.2.4) - HODGE-341.4: YAML format
+    expect(profiles).toContain('testing/vitest-3.x.yaml');
 
     // Should NOT include other vitest versions
-    expect(profiles).not.toContain('testing/vitest-1.x.md');
-    expect(profiles).not.toContain('testing/vitest-0.34+.md');
+    expect(profiles).not.toContain('testing/vitest-1.x.yaml');
+    expect(profiles).not.toContain('testing/vitest-0.34+.yaml');
   });
 
   smokeTest('should filter TypeScript profiles by version', () => {
@@ -153,11 +153,11 @@ describe('ReviewManifestGenerator - Smoke Tests', () => {
 
     const profiles = generator.filterRelevantProfiles(changes);
 
-    // Should include typescript-5.x.md (project has typescript: ^5.3.3)
-    expect(profiles).toContain('languages/typescript-5.x.md');
+    // Should include typescript-5.x.yaml (project has typescript: ^5.3.3) - HODGE-341.4: YAML format
+    expect(profiles).toContain('languages/typescript-5.x.yaml');
 
-    // Should NOT include typescript-4.x.md
-    expect(profiles).not.toContain('languages/typescript-4.x.md');
+    // Should NOT include typescript-4.x.yaml
+    expect(profiles).not.toContain('languages/typescript-4.x.yaml');
   });
 
   smokeTest('should include general profiles regardless of version', () => {
@@ -169,8 +169,8 @@ describe('ReviewManifestGenerator - Smoke Tests', () => {
 
     const profiles = generator.filterRelevantProfiles(changes);
 
-    // Should always include general profiles (no version_range in frontmatter)
-    expect(profiles).toContain('languages/general-coding-standards.md');
-    expect(profiles).toContain('testing/general-test-standards.md');
+    // Should always include general profiles (no version_range in meta) - HODGE-341.4: YAML format
+    expect(profiles).toContain('languages/general-coding-standards.yaml');
+    expect(profiles).toContain('testing/general-test-standards.yaml');
   });
 });

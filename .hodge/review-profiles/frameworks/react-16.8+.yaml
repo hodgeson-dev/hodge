@@ -1,0 +1,16 @@
+meta:
+  version: "1.0.0"
+  framework: react
+  version_range: ">=16.8.0 <17.0.0"
+  detection:
+    deps: ["react"]
+  applies_to:
+    - "**/*.jsx"
+    - "**/*.tsx"
+
+rules:
+  - id: placeholder
+    name: "Placeholder Rule"
+    enforcement: SUGGESTED
+    severity: SUGGESTION
+    desc: "Profile content coming in future version based on user demand"

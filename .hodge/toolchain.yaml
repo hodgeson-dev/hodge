@@ -9,6 +9,28 @@ language: typescript
 #   - src/auth/           # Security-critical: authentication
 #   - src/lib/*-service.ts # Core service files
 
+# Quality Gates (HODGE-341.5)
+# Configure how warnings are handled after errors are fixed
+quality_gates:
+  harden:
+    # Should AI review warnings after all errors are fixed?
+    review_warnings: true
+
+    # Optional: Guidance for AI when reviewing warnings (not rigid rules)
+    # AI will use judgment based on project context, standards, and this guidance
+    warning_guidance: |
+      Focus on production-impacting issues:
+      - Security warnings (any tool, any severity)
+      - Cognitive complexity >15 (maintainability risk)
+      - Functions >50 lines (testability concern)
+      - Files >300 lines (architectural smell)
+      - Code duplication (DRY principle)
+
+      Lower priority (fix if time allows):
+      - Style/formatting preferences
+      - Minor TypeScript inference warnings
+      - Overly strict linting rules
+
 quality_checks:
   type_checking:
     - typescript

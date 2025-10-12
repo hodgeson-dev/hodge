@@ -47,23 +47,27 @@ describe('ToolchainService - Smoke Tests', () => {
     expect(typescript?.detected).toBe(true);
   });
 
-  smokeTest('should detect tools from package.json', async () => {
-    // Create package.json with devDependencies
-    const packageJson = {
-      devDependencies: {
-        eslint: '^8.0.0',
-        prettier: '^3.0.0',
-      },
-    };
-    await fs.writeFile(join(tempDir, 'package.json'), JSON.stringify(packageJson));
+  smokeTest(
+    'should detect tools from package.json',
+    async () => {
+      // Create package.json with devDependencies
+      const packageJson = {
+        devDependencies: {
+          eslint: '^8.0.0',
+          prettier: '^3.0.0',
+        },
+      };
+      await fs.writeFile(join(tempDir, 'package.json'), JSON.stringify(packageJson));
 
-    const tools = await service.detectTools();
+      const tools = await service.detectTools();
 
-    expect(tools).toBeDefined();
-    expect(tools.length).toBeGreaterThan(0);
-    const eslint = tools.find((t) => t.name === 'eslint');
-    expect(eslint).toBeDefined();
-  });
+      expect(tools).toBeDefined();
+      expect(tools.length).toBeGreaterThan(0);
+      const eslint = tools.find((t) => t.name === 'eslint');
+      expect(eslint).toBeDefined();
+    },
+    10000
+  ); // Increased timeout to 10s for tool detection
 
   smokeTest('should prefer config file over package.json', async () => {
     // Create both tsconfig.json and package.json

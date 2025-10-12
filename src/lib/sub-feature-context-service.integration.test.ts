@@ -57,7 +57,29 @@ We decided to use gray-matter library for frontmatter parsing.
 
     // Create first shipped sibling
     const sibling1Dir = join(tempDir, '.hodge', 'features', 'HODGE-333.1');
-    mkdirSync(sibling1Dir, { recursive: true });
+    mkdirSync(join(sibling1Dir, 'explore'), { recursive: true });
+
+    // Add exploration and decisions for sibling 1
+    writeFileSync(
+      join(sibling1Dir, 'explore', 'exploration.md'),
+      `# Exploration: HODGE-333.1
+
+## Title
+Frontmatter Parser Implementation
+
+## Problem Statement
+Need to parse frontmatter from markdown files.
+`
+    );
+
+    writeFileSync(
+      join(sibling1Dir, 'decisions.md'),
+      `# Decisions for HODGE-333.1
+
+### Decision: Use gray-matter library
+Date: 2025-10-05
+`
+    );
 
     writeFileSync(
       join(sibling1Dir, 'ship-record.json'),
@@ -119,13 +141,19 @@ Gray-matter is much simpler than AST parsing. Stick with simple solutions.
     expect(manifest?.siblings[0].feature).toBe('HODGE-333.1');
     expect(manifest?.siblings[1].feature).toBe('HODGE-333.2');
 
-    // Verify sibling 1 files
+    // Verify sibling 1 files (HODGE-341.4: now includes exploration and decisions)
+    const sibling1Exploration = manifest?.siblings[0].files.find((f) => f.type === 'exploration');
+    expect(sibling1Exploration?.precedence).toBe(3);
+
+    const sibling1Decisions = manifest?.siblings[0].files.find((f) => f.type === 'decisions');
+    expect(sibling1Decisions?.precedence).toBe(4);
+
     const sibling1ShipRecord = manifest?.siblings[0].files.find((f) => f.type === 'ship-record');
-    expect(sibling1ShipRecord?.precedence).toBe(3);
+    expect(sibling1ShipRecord?.precedence).toBe(5);
     expect(sibling1ShipRecord?.timestamp).toBe('2025-10-05T12:00:00Z');
 
     const sibling1Lessons = manifest?.siblings[0].files.find((f) => f.type === 'lessons');
-    expect(sibling1Lessons?.precedence).toBe(4);
+    expect(sibling1Lessons?.precedence).toBe(6);
     expect(sibling1Lessons?.path).toContain('HODGE-333.1-frontmatter-parsing.md');
 
     // Verify sibling 2 has ship record but no lessons

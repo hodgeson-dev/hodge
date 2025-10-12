@@ -269,7 +269,12 @@ integrationTest('PM integration: processQueue handles queued operations', async 
       process.env.HODGE_PM_TOOL = originalPmTool;
     }
 
-    // Cleanup
-    await fs.rm(testDir, { recursive: true, force: true });
+    // Cleanup with retry logic for Windows/locked files
+    try {
+      await fs.rm(testDir, { recursive: true, force: true, maxRetries: 3 });
+    } catch (error) {
+      // Ignore cleanup errors in tests - directory will be cleaned by OS
+      console.warn(`Warning: Could not clean up test directory ${testDir}:`, error);
+    }
   }
 });

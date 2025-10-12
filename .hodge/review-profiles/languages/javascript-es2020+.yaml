@@ -1,0 +1,63 @@
+meta:
+  version: "1.0.0"
+  language: javascript
+  detection:
+    files: ["package.json"]
+  applies_to:
+    - "**/*.js"
+    - "**/*.jsx"
+    - "**/*.mjs"
+    - "**/*.cjs"
+
+rules:
+  - id: modern-syntax
+    name: "Modern Syntax Adoption"
+    enforcement: SUGGESTED
+    severity: SUGGESTION
+    desc: "Use optional chaining, nullish coalescing, template literals, and spread over legacy patterns"
+    guidance: "?. is safer than && chains. ?? only triggers on null/undefined while || triggers on any falsy."
+    example: "user?.profile?.name vs user && user.profile && user.profile.name"
+
+  - id: variable-declarations
+    name: "Variable Declarations"
+    enforcement: SUGGESTED
+    severity: WARNING
+    desc: "Use const by default, let when reassignment needed, never use var"
+    guidance: "var has function scope and hoisting issues. Flag any var usage as warning."
+
+  - id: arrow-functions
+    name: "Arrow Functions"
+    enforcement: SUGGESTED
+    severity: SUGGESTION
+    desc: "Use arrow functions for callbacks, traditional functions for methods needing this context"
+    guidance: "Arrow functions have lexical this binding. Avoid for object methods needing this."
+
+  - id: destructuring
+    name: "Destructuring Patterns"
+    enforcement: SUGGESTED
+    severity: SUGGESTION
+    desc: "Use destructuring to extract values from objects and arrays"
+    example: "function greet({name, age}) vs function greet(user) { const name = user.name; }"
+    guidance: "Destructuring is self-documenting. Use defaults in destructuring. Don't over-destructure."
+
+  - id: async-patterns
+    name: "Async Patterns"
+    enforcement: SUGGESTED
+    severity: WARNING
+    desc: "Prefer async/await over promise chains, always handle rejections"
+    guidance: "Unhandled promise rejections crash Node.js. Sequential awaits run in series, Promise.all runs parallel."
+    xref: "standards/error-handling"
+
+  - id: module-patterns
+    name: "Module Patterns (ESM)"
+    enforcement: SUGGESTED
+    severity: SUGGESTION
+    desc: "Prefer named exports over default exports, use import/export over require"
+    guidance: "Named exports enable better IDE refactoring. Circular dependencies indicate design issues."
+
+  - id: modern-array-methods
+    name: "Modern Array Methods"
+    enforcement: SUGGESTED
+    severity: SUGGESTION
+    desc: "Use map/filter/reduce over imperative loops for transformations"
+    guidance: "Functional methods declare intent better. Don't abuse reduce. Performance difference is negligible."

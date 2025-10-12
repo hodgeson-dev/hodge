@@ -1,0 +1,70 @@
+meta:
+  version: "1.0.0"
+  language: typescript
+  version_range: ">=5.0.0 <6.0.0"
+  detection:
+    files: ["tsconfig.json"]
+    deps: ["typescript"]
+  applies_to:
+    - "**/*.ts"
+    - "**/*.tsx"
+
+rules:
+  - id: strict-mode
+    name: "Strict Mode Configuration"
+    enforcement: MANDATORY
+    severity: BLOCKER
+    desc: "Enable strict:true in tsconfig.json for all strict type-checking options"
+    guidance: "Non-negotiable for new code. Legacy code can migrate gradually."
+
+  - id: avoid-any
+    name: "Avoid any Type"
+    enforcement: SUGGESTED
+    severity: WARNING
+    desc: "Use unknown for truly unknown types, proper types/generics for known shapes"
+    guidance: "Explore phase: ok. Ship phase: use unknown or justify with comment."
+
+  - id: type-inference
+    name: "Prefer Type Inference"
+    enforcement: SUGGESTED
+    severity: SUGGESTION
+    desc: "Let TypeScript infer types when obvious - reduces noise, improves maintainability"
+    guidance: "Infer variables, explicit for function params/returns. Explicit types serve as docs."
+
+  - id: discriminated-unions
+    name: "Discriminated Unions for State"
+    enforcement: SUGGESTED
+    severity: SUGGESTION
+    desc: "Use tagged unions for state machines, result types - enables exhaustive checking"
+    example: "type Status = {type:'loading'} | {type:'success',data:string} | {type:'error',error:Error}"
+    guidance: "Prevents bugs via type system. Common in async ops, UI states, domain models."
+
+  - id: async-await
+    name: "Async/Await Best Practices"
+    enforcement: SUGGESTED
+    severity: WARNING
+    desc: "Prefer async/await over raw promises. Always handle errors with try/catch."
+    guidance: "Use Promise.all() for parallel ops, not sequential awaits."
+    xref: "standards/error-handling"
+
+  - id: utility-types
+    name: "Utility Types Usage"
+    enforcement: SUGGESTED
+    severity: SUGGESTION
+    desc: "Leverage built-in utility types to transform types rather than duplicating definitions"
+    guidance: "Partial, Pick, Omit, Required, Record, NonNullable. Use when they clarify intent."
+
+  - id: generics
+    name: "Generics Best Practices"
+    enforcement: SUGGESTED
+    severity: SUGGESTION
+    desc: "Use generics for reusable type-safe code. Constrain when possible (<T extends BaseType>)."
+    guidance: "Single-letter (T,K,V) ok for simple. Descriptive for complex. Balance safety vs complexity."
+
+  - id: error-handling
+    name: "Type Safety in Error Handling"
+    enforcement: SUGGESTED
+    severity: WARNING
+    desc: "Type catch blocks as unknown, use type guards before accessing properties"
+    example: "catch(e:unknown){if(e instanceof Error)log(e.message)}"
+    xref: "standards/error-handling"

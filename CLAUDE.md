@@ -26,6 +26,7 @@ Use commands in `.claude/commands/`:
 - `/build {{feature}}` - Build with smoke tests
 - `/harden {{feature}}` - Add integration tests
 - `/ship {{feature}}` - Ship with full test suite
+- `/codify "rule"` - Add any type of rule to project (standard/principle/decision/pattern/profile)
 
 ## Key Directories
 
@@ -34,7 +35,14 @@ Use commands in `.claude/commands/`:
 ├── standards.md        # Requirements (ALWAYS loaded)
 ├── patterns/          # Code examples (loaded on-demand)
 │   ├── test-pattern.md
-│   └── structure-pattern.md
+│   ├── structure-pattern.md
+│   └── review-profile-pattern.md
+├── review-profiles/   # Compressed YAML profiles (50-80% token reduction)
+│   ├── languages/     # TypeScript, JavaScript, Python, etc.
+│   ├── frameworks/    # React, Vue, Next.js, etc.
+│   ├── databases/     # Prisma, MongoDB, etc.
+│   ├── testing/       # Vitest, Jest, Playwright, etc.
+│   └── ui-libraries/  # Tailwind, MUI, Ant Design, etc.
 ├── features/          # Feature work directories
 └── AI-CONTEXT.md      # Context loading strategy
 
@@ -84,6 +92,15 @@ When working on specific areas, load relevant patterns:
 - Testing → `.hodge/patterns/test-pattern.md`
 - Structure → `.hodge/patterns/structure-pattern.md`
 - Errors → `.hodge/patterns/error-pattern.md`
+- Review Profiles → `.hodge/patterns/review-profile-pattern.md`
+
+## Codifying Knowledge
+
+Use `/codify` to add any type of rule to the project:
+- `/codify "Your practice or rule"`
+- AI will recommend whether it's a standard, principle, decision, pattern, or profile
+- Automatically loads relevant authoring guidelines
+- Interactive workflow for approval and placement
 
 ## Quality Gates
 

@@ -1,0 +1,118 @@
+version: '1.0'
+feature: HODGE-341.4
+generated_at: '2025-10-12T12:27:44.824Z'
+recommended_tier: full
+change_analysis:
+  total_files: 19
+  total_lines: 1673
+  breakdown:
+    implementation: 11
+    test: 4
+    documentation: 3
+    config: 1
+changed_files:
+  - path: .hodge/.session
+    lines_changed: 12
+    change_type: implementation
+  - path: .hodge/HODGE.md
+    lines_changed: 20
+    change_type: documentation
+  - path: .hodge/context.json
+    lines_changed: 8
+    change_type: implementation
+  - path: .hodge/id-mappings.json
+    lines_changed: 8
+    change_type: implementation
+  - path: .hodge/project_management.md
+    lines_changed: 2
+    change_type: documentation
+  - path: .hodge/toolchain.yaml
+    lines_changed: 22
+    change_type: implementation
+  - path: CLAUDE.md
+    lines_changed: 19
+    change_type: documentation
+  - path: package-lock.json
+    lines_changed: 218
+    change_type: implementation
+  - path: package.json
+    lines_changed: 2
+    change_type: config
+  - path: report/jscpd-report.json
+    lines_changed: 143
+    change_type: implementation
+  - path: src/commands/harden.ts
+    lines_changed: 80
+    change_type: implementation
+  - path: src/lib/claude-commands.ts
+    lines_changed: 394
+    change_type: implementation
+  - path: src/lib/install-hodge-way.test.ts
+    lines_changed: 17
+    change_type: test
+  - path: src/lib/review-manifest-generator.smoke.test.ts
+    lines_changed: 22
+    change_type: test
+  - path: src/lib/review-manifest-generator.ts
+    lines_changed: 232
+    change_type: implementation
+  - path: src/lib/sub-feature-context-service.integration.test.ts
+    lines_changed: 36
+    change_type: test
+  - path: src/lib/sub-feature-context-service.ts
+    lines_changed: 411
+    change_type: implementation
+  - path: src/types/toolchain.ts
+    lines_changed: 18
+    change_type: implementation
+  - path: test/pm-integration.integration.test.ts
+    lines_changed: 9
+    change_type: test
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - test-pattern.md
+      - error-boundary.md
+      - input-validation.md
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - testing/vitest-3.x.yaml
+      - testing/general-test-standards.yaml
+      - languages/typescript-5.x.yaml
+      - languages/general-coding-standards.yaml
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed
