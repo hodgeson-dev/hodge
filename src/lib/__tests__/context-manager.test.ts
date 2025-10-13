@@ -1,23 +1,24 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { ContextManager } from '../context-manager';
-import { rm, mkdir } from 'fs/promises';
+import { mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import path from 'path';
-import { tmpdir } from 'os';
-import { randomBytes } from 'crypto';
+import { TempDirectoryFixture } from '../../test/temp-directory-fixture.js';
 
 describe('[smoke] ContextManager', () => {
+  let fixture: TempDirectoryFixture;
   let testDir: string;
   let contextManager: ContextManager;
 
   beforeEach(async () => {
-    testDir = path.join(tmpdir(), `hodge-test-${Date.now()}-${randomBytes(4).toString('hex')}`);
+    fixture = new TempDirectoryFixture();
+    testDir = await fixture.setup();
     await mkdir(path.join(testDir, '.hodge'), { recursive: true });
     contextManager = new ContextManager(testDir);
   });
 
   afterEach(async () => {
-    await rm(testDir, { recursive: true, force: true });
+    await fixture.cleanup();
   });
 
   it('should create a ContextManager instance', () => {

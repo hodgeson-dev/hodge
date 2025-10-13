@@ -60,8 +60,8 @@ describe('[smoke] Test Isolation', () => {
   });
   */
 
-  smokeTest('tests should use tmpdir for test directories', async () => {
-    // Read test files to verify they import tmpdir
+  smokeTest('tests should use TempDirectoryFixture for test directories', async () => {
+    // Read test files to verify they import TempDirectoryFixture
     const testFiles = [
       'src/lib/session-manager.test.ts',
       'src/test/context-aware-commands.test.ts',
@@ -73,9 +73,9 @@ describe('[smoke] Test Isolation', () => {
     for (const file of testFiles) {
       const content = readFileSync(file, 'utf-8');
 
-      // Check that tmpdir is imported
-      if (!content.includes("import { tmpdir } from 'os'")) {
-        throw new Error(`${file} does not import tmpdir from 'os'`);
+      // Check that TempDirectoryFixture is imported
+      if (!content.includes('TempDirectoryFixture')) {
+        throw new Error(`${file} does not import TempDirectoryFixture`);
       }
 
       // Check that process.cwd() is not used for test directories

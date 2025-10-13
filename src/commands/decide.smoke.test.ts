@@ -1,18 +1,19 @@
 import { describe, expect, beforeEach, afterEach } from 'vitest';
 import { smokeTest } from '../test/helpers.js';
 import { DecideCommand } from './decide.js';
+import { TempDirectoryFixture } from '../test/temp-directory-fixture.js';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as os from 'os';
 
 describe('Decide Command --feature Flag (HODGE-313)', () => {
+  let fixture: TempDirectoryFixture;
   let tempDir: string;
   let decideCommand: DecideCommand;
 
   beforeEach(async () => {
     // Create temp directory for isolated testing
-    tempDir = path.join(os.tmpdir(), `hodge-test-${Date.now()}`);
-    await fs.promises.mkdir(tempDir, { recursive: true });
+    fixture = new TempDirectoryFixture();
+    tempDir = await fixture.setup();
 
     // Create .hodge directory structure
     const hodgeDir = path.join(tempDir, '.hodge');
@@ -23,9 +24,7 @@ describe('Decide Command --feature Flag (HODGE-313)', () => {
 
   afterEach(async () => {
     // Clean up temp directory
-    if (fs.existsSync(tempDir)) {
-      await fs.promises.rm(tempDir, { recursive: true, force: true });
-    }
+    await fixture.cleanup();
   });
 
   smokeTest('Feature decision writes ONLY to feature decisions.md (not global)', async () => {

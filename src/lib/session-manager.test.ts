@@ -4,22 +4,18 @@ import { SessionManager } from './session-manager';
 import { existsSync } from 'fs';
 import path from 'path';
 import { mkdir } from 'fs/promises';
-import { rm } from 'fs/promises';
-import { tmpdir } from 'os';
-import { randomBytes } from 'crypto';
+import { TempDirectoryFixture } from '../test/temp-directory-fixture.js';
 
 describe('SessionManager', () => {
+  let fixture: TempDirectoryFixture;
   let sessionManager: SessionManager;
   let testDir: string;
   let testSessionFile: string;
 
-  const createTestDir = () => {
-    return path.join(tmpdir(), `hodge-test-${Date.now()}-${randomBytes(4).toString('hex')}`);
-  };
-
   beforeEach(async () => {
     // Create isolated test directory
-    testDir = createTestDir();
+    fixture = new TempDirectoryFixture();
+    testDir = await fixture.setup();
     testSessionFile = path.join(testDir, '.hodge', '.session');
     await mkdir(path.join(testDir, '.hodge'), { recursive: true });
     sessionManager = new SessionManager(testDir);
@@ -31,7 +27,7 @@ describe('SessionManager', () => {
 
   afterEach(async () => {
     // Clean up test directory
-    await rm(testDir, { recursive: true, force: true });
+    await fixture.cleanup();
   });
 
   describe('Smoke Tests', () => {

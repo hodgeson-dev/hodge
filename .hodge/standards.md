@@ -395,6 +395,77 @@ const result = execSync('node dist/src/bin/hodge.js init', {
 
 **See Also**: `.hodge/patterns/test-pattern.md` for examples
 
+### Test Quality Anti-Patterns (HODGE-343)
+**Enforcement: Build(encouraged) → Harden(expected) → Ship(required)**
+**Reference**: `.hodge/review-profiles/testing/general-test-standards.md` for comprehensive guidance
+
+#### Anti-Pattern 1: Method Existence Tests
+**AVOID**: Tests that only verify a method exists - TypeScript already guarantees this.
+
+```typescript
+// ❌ BAD: TypeScript already validates this
+it('should have required methods', () => {
+  expect(manager.load).toBeDefined();
+  expect(manager.save).toBeDefined();
+  expect(manager.getFeature).toBeDefined();
+});
+```
+
+**Why**: If the method doesn't exist, TypeScript compilation fails. These tests provide zero value and create maintenance burden.
+
+**Alternative**: Test behavior instead:
+```typescript
+// ✅ GOOD: Test what the methods do
+it('should persist and retrieve context', async () => {
+  await manager.save({ feature: 'TEST-001' });
+  const context = await manager.load();
+  expect(context.feature).toBe('TEST-001');
+});
+```
+
+#### Anti-Pattern 2: Implementation Detail Tests
+**AVOID**: Tests that verify specific internal formats or mechanisms instead of behavior.
+
+```typescript
+// ❌ BAD: Tests internal ID format
+it('should generate HODGE-001 format IDs', () => {
+  const id = idManager.generateID();
+  expect(id).toMatch(/^HODGE-\d{3}$/);
+});
+```
+
+**Why**: This locks in implementation details. If we change to a different ID format, the test breaks even though behavior is correct.
+
+**Alternative**: Test the contract/behavior:
+```typescript
+// ✅ GOOD: Tests uniqueness (the actual requirement)
+it('should generate unique IDs', () => {
+  const id1 = idManager.generateID();
+  const id2 = idManager.generateID();
+  expect(id1).not.toBe(id2);
+});
+```
+
+#### Anti-Pattern 3: Vague Assertions
+**AVOID**: Using `toBeDefined()`, `toBeTruthy()` when more specific matchers exist.
+
+```typescript
+// ❌ BAD: Vague assertion hides bugs
+expect(config.port).toBeDefined(); // Could be 0, "", false
+expect(data).toBeTruthy(); // What structure do we actually need?
+```
+
+**Alternative**: Use specific assertions:
+```typescript
+// ✅ GOOD: Specific assertions catch more bugs
+expect(config.port).toBe(3000);
+expect(data).toEqual({ id: 1, name: 'test' });
+```
+
+**See Also**:
+- `.hodge/review-profiles/testing/general-test-standards.md` - Comprehensive test quality guidance
+- `.hodge/patterns/test-pattern.md` - Test pattern examples
+
 ## File and Function Length Standards
 **Enforcement: Build(suggested) → Harden(expected) → Ship(mandatory)**
 **⚠️ CRITICAL**: Keep files and functions focused and maintainable through enforced size limits.

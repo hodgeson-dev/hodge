@@ -2,55 +2,58 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { IDManager } from './id-manager.js';
-import * as os from 'os';
+import { TempDirectoryFixture } from '../test/temp-directory-fixture.js';
 
 /**
  * Test suite for IDManager class
  * Tests dual ID system functionality, persistence, and error handling
  */
 describe('IDManager', () => {
+  let fixture: TempDirectoryFixture;
   let idManager: IDManager;
   let testDir: string;
 
   describe('performance', () => {
     it('should complete operations within 500ms', async () => {
-      const tempDir = path.join(os.tmpdir(), 'hodge-perf-test-' + Date.now());
-      await fs.mkdir(tempDir, { recursive: true });
+      const perfFixture = new TempDirectoryFixture();
+      const tempDir = await perfFixture.setup();
       const perfManager = new IDManager(tempDir);
       const start = Date.now();
 
-      // Create multiple features
-      for (let i = 0; i < 10; i++) {
-        await perfManager.createFeature(`feature-${i}`, `HOD-${i}`);
+      try {
+        // Create multiple features
+        for (let i = 0; i < 10; i++) {
+          await perfManager.createFeature(`feature-${i}`, `HOD-${i}`);
+        }
+
+        // Resolve IDs
+        for (let i = 0; i < 10; i++) {
+          await perfManager.resolveID(`HODGE-00${i + 1}`);
+          await perfManager.resolveID(`HOD-${i}`);
+        }
+
+        // Get all mappings
+        await perfManager.getAllMappings();
+
+        const duration = Date.now() - start;
+        expect(duration).toBeLessThan(500); // Must complete within 500ms
+      } finally {
+        // Cleanup
+        await perfFixture.cleanup();
       }
-
-      // Resolve IDs
-      for (let i = 0; i < 10; i++) {
-        await perfManager.resolveID(`HODGE-00${i + 1}`);
-        await perfManager.resolveID(`HOD-${i}`);
-      }
-
-      // Get all mappings
-      await perfManager.getAllMappings();
-
-      const duration = Date.now() - start;
-      expect(duration).toBeLessThan(500); // Must complete within 500ms
-
-      // Cleanup
-      await fs.rm(tempDir, { recursive: true, force: true });
     });
   });
 
   beforeEach(async () => {
     // Create a temporary directory for testing
-    testDir = path.join(os.tmpdir(), 'hodge-test-' + Date.now());
-    await fs.mkdir(testDir, { recursive: true });
+    fixture = new TempDirectoryFixture();
+    testDir = await fixture.setup();
     idManager = new IDManager(testDir);
   });
 
   afterEach(async () => {
     // Clean up test directory
-    await fs.rm(testDir, { recursive: true, force: true });
+    await fixture.cleanup();
   });
 
   describe('createFeature', () => {

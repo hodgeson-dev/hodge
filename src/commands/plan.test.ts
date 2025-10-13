@@ -1,19 +1,20 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { PlanCommand } from './plan.js';
-import os from 'os';
 import path from 'path';
 import fs from 'fs/promises';
 import { existsSync, mkdirSync } from 'fs';
 import { smokeTest } from '../test/helpers.js';
+import { TempDirectoryFixture } from '../test/temp-directory-fixture.js';
 
 describe('PlanCommand - Smoke Tests', () => {
+  let fixture: TempDirectoryFixture;
   let tmpDir: string;
   let command: PlanCommand;
 
   beforeEach(async () => {
     // Create isolated temp directory for tests
-    tmpDir = path.join(os.tmpdir(), `hodge-plan-test-${Date.now()}`);
-    mkdirSync(tmpDir, { recursive: true });
+    fixture = new TempDirectoryFixture();
+    tmpDir = await fixture.setup();
 
     // Initialize Hodge structure in temp directory
     mkdirSync(path.join(tmpDir, '.hodge'), { recursive: true });
@@ -24,9 +25,7 @@ describe('PlanCommand - Smoke Tests', () => {
 
   afterEach(async () => {
     // Cleanup temp directory
-    if (existsSync(tmpDir)) {
-      await fs.rm(tmpDir, { recursive: true, force: true });
-    }
+    await fixture.cleanup();
   });
 
   smokeTest('should not crash when creating plan without decisions', async () => {
@@ -275,13 +274,14 @@ describe('PlanCommand Template - Vertical Slice Validation', () => {
 });
 
 describe('PlanCommand - AI-Generated Plan Detection', () => {
+  let fixture: TempDirectoryFixture;
   let tmpDir: string;
   let command: PlanCommand;
 
   beforeEach(async () => {
     // Create isolated temp directory for tests
-    tmpDir = path.join(os.tmpdir(), `hodge-plan-ai-test-${Date.now()}`);
-    mkdirSync(tmpDir, { recursive: true });
+    fixture = new TempDirectoryFixture();
+    tmpDir = await fixture.setup();
 
     // Initialize Hodge structure
     mkdirSync(path.join(tmpDir, '.hodge'), { recursive: true });
@@ -292,9 +292,7 @@ describe('PlanCommand - AI-Generated Plan Detection', () => {
 
   afterEach(async () => {
     // Cleanup temp directory
-    if (existsSync(tmpDir)) {
-      await fs.rm(tmpDir, { recursive: true, force: true });
-    }
+    await fixture.cleanup();
   });
 
   smokeTest('should detect and use AI-generated plan file', async () => {

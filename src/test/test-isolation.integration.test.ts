@@ -2,8 +2,8 @@ import { describe, expect } from 'vitest';
 import { integrationTest } from './helpers';
 import { existsSync, mkdirSync, writeFileSync, rmSync, readdirSync } from 'fs';
 import { join } from 'path';
-import { tmpdir } from 'os';
 import { randomBytes } from 'crypto';
+import { TempDirectoryFixture } from './temp-directory-fixture.js';
 
 describe('[integration] Test Isolation', () => {
   integrationTest(
@@ -46,18 +46,18 @@ describe('[integration] Test Isolation', () => {
 
   integrationTest('should clean up test directories even on failure', async () => {
     // Verify that temp directories are cleaned up even when tests fail
-    const testDir = join(tmpdir(), `cleanup-test-${Date.now()}-${randomBytes(4).toString('hex')}`);
+    const fixture = new TempDirectoryFixture();
+    const testDir = await fixture.setup();
 
     try {
-      // Create a temp directory (simulating a test creating one)
-      mkdirSync(testDir, { recursive: true });
+      // Directory is already created by fixture
 
       // Simulate test failure by throwing error
       try {
         throw new Error('Intentional test failure');
       } finally {
         // Cleanup should happen in finally block (HODGE-308 pattern)
-        rmSync(testDir, { recursive: true, force: true });
+        await fixture.cleanup();
       }
 
       // This line won't be reached due to throw, but cleanup should still happen
@@ -68,11 +68,10 @@ describe('[integration] Test Isolation', () => {
     // Verify temp directory was cleaned up despite the failure
     expect(existsSync(testDir)).toBe(false);
 
-    // Verify no leftover test-cleanup-* directories in tmpdir
-    const tmpDirFiles = readdirSync(tmpdir());
-    const hasTestCleanupDirs = tmpDirFiles.some((file) => file.startsWith('test-cleanup-'));
-
-    expect(hasTestCleanupDirs).toBe(false);
+    // Note: We don't check for ALL hodge-test-* directories in tmpdir
+    // because parallel test execution may have other tests' temp directories
+    // that haven't been cleaned up yet. The important thing is that THIS
+    // test's directory was cleaned up properly (verified above).
   });
 
   integrationTest(
@@ -112,7 +111,7 @@ describe('[integration] Test Isolation', () => {
   integrationTest('should prevent test data from leaking into project', async () => {
     // Verify that tests don't leak data into the project's .hodge directory
     // by checking filesystem state (without spawning subprocesses)
-    const markerPath = '.hodge/.test-marker-' + Date.now();
+    const markerPath = '.hodge/.test-marker-' + randomBytes(8).toString('hex');
     const markerContent = 'This file should not be modified by tests';
 
     try {

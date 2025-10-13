@@ -1,24 +1,26 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as os from 'os';
-import { installHodgeWay, checkHodgeWayStatus, listHodgeWayFiles } from './install-hodge-way';
-import { testCategory } from '../test/helpers';
+import { installHodgeWay, checkHodgeWayStatus, listHodgeWayFiles } from './install-hodge-way.js';
+import { testCategory } from '../test/helpers.js';
+import { TempDirectoryFixture } from '../test/temp-directory-fixture.js';
 
 describe('Install Hodge Way', () => {
+  let fixture: TempDirectoryFixture;
   let testDir: string;
   let hodgePath: string;
 
   beforeEach(async () => {
     // Create a temporary test directory
-    testDir = path.join(os.tmpdir(), `hodge-test-${Date.now()}`);
+    fixture = new TempDirectoryFixture();
+    testDir = await fixture.setup();
     hodgePath = path.join(testDir, '.hodge');
     await fs.ensureDir(hodgePath);
   });
 
   afterEach(async () => {
     // Clean up test directory
-    await fs.remove(testDir);
+    await fixture.cleanup();
   });
 
   it(testCategory('unit', 'should install all Hodge Way files by default'), async () => {
