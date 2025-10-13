@@ -1,16 +1,16 @@
 meta:
-  version: "1.0.0"
+  version: '1.0.0'
   framework: react
-  version_range: ">=17.0.0 <18.0.0"
+  version_range: '>=17.0.0 <18.0.0'
   detection:
-    deps: ["react"]
+    deps: ['react']
   applies_to:
-    - "**/*.jsx"
-    - "**/*.tsx"
+    - '**/*.jsx'
+    - '**/*.tsx'
 
 rules:
   - id: placeholder
-    name: "Placeholder Rule"
+    name: 'Placeholder Rule'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Profile content coming in future version based on user demand"
+    desc: 'Profile content coming in future version based on user demand'

@@ -1,59 +1,59 @@
 meta:
-  version: "1.0.0"
+  version: '1.0.0'
   testing_framework: jest
-  version_range: ">=29.0.0 <30.0.0"
+  version_range: '>=29.0.0 <30.0.0'
   detection:
-    deps: ["jest"]
+    deps: ['jest']
   applies_to:
-    - "**/*.test.ts"
-    - "**/*.test.js"
-    - "**/*.spec.ts"
-    - "**/*.spec.js"
+    - '**/*.test.ts'
+    - '**/*.test.js'
+    - '**/*.spec.ts'
+    - '**/*.spec.js'
 
 rules:
   - id: test-organization
-    name: "Test Organization"
+    name: 'Test Organization'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Use describe/it for organization, describe.each for parameterized suites, test.concurrent for parallel tests"
-    guidance: "Pick test or it style consistently. test.concurrent requires true isolation."
-    xref: "general-test-standards"
+    desc: 'Use describe/it for organization, describe.each for parameterized suites, test.concurrent for parallel tests'
+    guidance: 'Pick test or it style consistently. test.concurrent requires true isolation.'
+    xref: 'general-test-standards'
 
   - id: assertion-api
-    name: "Assertion API"
+    name: 'Assertion API'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Use specific matchers like toEqual, toStrictEqual, toMatchObject over generic toBeTruthy"
-    guidance: "toEqual deep equality, toBe identity, toStrictEqual strictest. Rich matcher library for better errors."
-    xref: "general-test-standards"
+    desc: 'Use specific matchers like toEqual, toStrictEqual, toMatchObject over generic toBeTruthy'
+    guidance: 'toEqual deep equality, toBe identity, toStrictEqual strictest. Rich matcher library for better errors.'
+    xref: 'general-test-standards'
 
   - id: mocking-patterns
-    name: "Mocking Patterns"
+    name: 'Mocking Patterns'
     enforcement: SUGGESTED
     severity: WARNING
-    desc: "Use jest.mock for modules, jest.fn for functions, jest.spyOn for spying, clear mocks in beforeEach"
+    desc: 'Use jest.mock for modules, jest.fn for functions, jest.spyOn for spying, clear mocks in beforeEach'
     guidance: "jest.mock auto-hoists. Clear mocks to prevent pollution. Use jest.resetModules rarely. Don't test mock.calls."
-    xref: "general-test-standards"
+    xref: 'general-test-standards'
 
   - id: jest-features
-    name: "Jest-Specific Features"
+    name: 'Jest-Specific Features'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Use toMatchSnapshot sparingly, toMatchInlineSnapshot for inline snapshots, jest.useFakeTimers for time"
-    guidance: "Snapshot overuse leads to meaningless updates. Inline snapshots keep test and expectation together. Fake timers essential for setTimeout/setInterval."
+    desc: 'Use toMatchSnapshot sparingly, toMatchInlineSnapshot for inline snapshots, jest.useFakeTimers for time'
+    guidance: 'Snapshot overuse leads to meaningless updates. Inline snapshots keep test and expectation together. Fake timers essential for setTimeout/setInterval.'
 
   - id: test-lifecycle
-    name: "Test Lifecycle"
+    name: 'Test Lifecycle'
     enforcement: SUGGESTED
     severity: WARNING
-    desc: "Use beforeEach/afterEach for isolation, avoid beforeAll/afterAll shared state, clean up resources"
-    guidance: "beforeAll violates isolation principle. Always pair beforeEach with afterEach for symmetric setup/teardown."
-    xref: "general-test-standards"
+    desc: 'Use beforeEach/afterEach for isolation, avoid beforeAll/afterAll shared state, clean up resources'
+    guidance: 'beforeAll violates isolation principle. Always pair beforeEach with afterEach for symmetric setup/teardown.'
+    xref: 'general-test-standards'
 
   - id: coverage-config
-    name: "Coverage Configuration"
+    name: 'Coverage Configuration'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Configure coverage in jest.config.js with appropriate provider, set phase-appropriate thresholds"
-    guidance: "Exclude test files, __mocks__, type definitions. Use collectCoverageFrom to target specific dirs. Coverage is a metric not a goal."
-    xref: "general-test-standards"
+    desc: 'Configure coverage in jest.config.js with appropriate provider, set phase-appropriate thresholds'
+    guidance: 'Exclude test files, __mocks__, type definitions. Use collectCoverageFrom to target specific dirs. Coverage is a metric not a goal.'
+    xref: 'general-test-standards'

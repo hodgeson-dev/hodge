@@ -1,18 +1,18 @@
 meta:
-  version: "1.0.0"
+  version: '1.0.0'
   ui_library: tailwindcss
-  version_range: ">=2.0.0 <3.0.0"
+  version_range: '>=2.0.0 <3.0.0'
   detection:
-    deps: ["tailwindcss"]
-    files: ["tailwind.config.js"]
+    deps: ['tailwindcss']
+    files: ['tailwind.config.js']
   applies_to:
-    - "**/*.tsx"
-    - "**/*.jsx"
-    - "**/*.html"
+    - '**/*.tsx'
+    - '**/*.jsx'
+    - '**/*.html'
 
 rules:
   - id: placeholder
-    name: "Placeholder Rule"
+    name: 'Placeholder Rule'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Profile content coming in future version based on user demand"
+    desc: 'Profile content coming in future version based on user demand'

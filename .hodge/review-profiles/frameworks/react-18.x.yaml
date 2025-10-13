@@ -1,60 +1,60 @@
 meta:
-  version: "1.0.0"
+  version: '1.0.0'
   framework: react
-  version_range: ">=18.0.0 <19.0.0"
+  version_range: '>=18.0.0 <19.0.0'
   detection:
-    deps: ["react"]
+    deps: ['react']
   applies_to:
-    - "**/*.jsx"
-    - "**/*.tsx"
+    - '**/*.jsx'
+    - '**/*.tsx'
 
 rules:
   - id: component-style
-    name: "Component Style"
+    name: 'Component Style'
     enforcement: SUGGESTED
     severity: WARNING
-    desc: "Use functional components with hooks over class components"
-    guidance: "Class components legacy - only for existing code or error boundaries. Keep components small and focused."
+    desc: 'Use functional components with hooks over class components'
+    guidance: 'Class components legacy - only for existing code or error boundaries. Keep components small and focused.'
 
   - id: hooks-rules
-    name: "Hooks Best Practices"
+    name: 'Hooks Best Practices'
     enforcement: SUGGESTED
     severity: WARNING
-    desc: "Call hooks at top level only. Always specify dependency arrays, include all used values."
-    guidance: "Empty [] = run once on mount. Missing deps cause stale closures. React ESLint plugin catches violations."
+    desc: 'Call hooks at top level only. Always specify dependency arrays, include all used values.'
+    guidance: 'Empty [] = run once on mount. Missing deps cause stale closures. React ESLint plugin catches violations.'
 
   - id: state-management
-    name: "State Management Patterns"
+    name: 'State Management Patterns'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Lift state only when needed. Use Context for truly global state, not avoiding prop drilling."
-    guidance: "Local useState often sufficient. Context re-renders all consumers. 2-3 levels prop drilling is fine."
+    desc: 'Lift state only when needed. Use Context for truly global state, not avoiding prop drilling.'
+    guidance: 'Local useState often sufficient. Context re-renders all consumers. 2-3 levels prop drilling is fine.'
 
   - id: performance
-    name: "Performance Optimization"
+    name: 'Performance Optimization'
     enforcement: SUGGESTED
     severity: SUGGESTION
     desc: "Don't optimize prematurely. Profile with React DevTools before optimizing."
-    guidance: "React.memo for expensive components. useMemo for expensive calculations. useCallback for memoized children."
+    guidance: 'React.memo for expensive components. useMemo for expensive calculations. useCallback for memoized children.'
 
   - id: composition
-    name: "Component Composition"
+    name: 'Component Composition'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Prefer composition over prop drilling. Use children prop for flexible layouts."
-    guidance: "Custom hooks extract logic. HOCs are legacy. Render props for render control. Keep trees shallow."
+    desc: 'Prefer composition over prop drilling. Use children prop for flexible layouts.'
+    guidance: 'Custom hooks extract logic. HOCs are legacy. Render props for render control. Keep trees shallow.'
 
   - id: error-handling
-    name: "Error Handling"
+    name: 'Error Handling'
     enforcement: SUGGESTED
     severity: WARNING
-    desc: "Use Error Boundaries for component tree errors. Try/catch for event handlers and async."
-    guidance: "Place boundaries strategically. Show actionable error messages, not stack traces."
-    xref: "standards/error-handling"
+    desc: 'Use Error Boundaries for component tree errors. Try/catch for event handlers and async.'
+    guidance: 'Place boundaries strategically. Show actionable error messages, not stack traces.'
+    xref: 'standards/error-handling'
 
   - id: concurrent-features
-    name: "Concurrent Features (React 18)"
+    name: 'Concurrent Features (React 18)'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Use Suspense, startTransition, useDeferredValue when appropriate for responsive UI."
-    guidance: "Suspense needs library support. startTransition for non-urgent updates. Automatic batching everywhere now."
+    desc: 'Use Suspense, startTransition, useDeferredValue when appropriate for responsive UI.'
+    guidance: 'Suspense needs library support. startTransition for non-urgent updates. Automatic batching everywhere now.'

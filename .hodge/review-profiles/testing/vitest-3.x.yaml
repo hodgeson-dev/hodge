@@ -1,91 +1,91 @@
 meta:
-  version: "1.0.0"
+  version: '1.0.0'
   testing_framework: vitest
-  version_range: ">=3.0.0 <4.0.0"
+  version_range: '>=3.0.0 <4.0.0'
   detection:
-    deps: ["vitest"]
+    deps: ['vitest']
   applies_to:
-    - "**/*.test.ts"
-    - "**/*.test.js"
-    - "**/*.spec.ts"
-    - "**/*.spec.js"
-    - "**/*.test.tsx"
-    - "**/*.spec.tsx"
+    - '**/*.test.ts'
+    - '**/*.test.js'
+    - '**/*.spec.ts'
+    - '**/*.spec.js'
+    - '**/*.test.tsx'
+    - '**/*.spec.tsx'
 
 rules:
   - id: test-organization
-    name: "Test Organization"
+    name: 'Test Organization'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Use describe/it for organization, describe.each for parameterized suites, it.concurrent for parallel tests"
-    guidance: "Pick test or it style consistently. it.concurrent requires true isolation. Vitest 3.x improved concurrent error reporting."
-    xref: "general-test-standards"
+    desc: 'Use describe/it for organization, describe.each for parameterized suites, it.concurrent for parallel tests'
+    guidance: 'Pick test or it style consistently. it.concurrent requires true isolation. Vitest 3.x improved concurrent error reporting.'
+    xref: 'general-test-standards'
 
   - id: assertion-api
-    name: "Assertion API"
+    name: 'Assertion API'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Use specific matchers like toEqual, toStrictEqual, toMatchObject over generic toBeTruthy"
-    guidance: "toEqual does deep equality, toBe checks identity, toStrictEqual is stricter. Vitest 3.x improved type safety for matchers."
-    xref: "general-test-standards"
+    desc: 'Use specific matchers like toEqual, toStrictEqual, toMatchObject over generic toBeTruthy'
+    guidance: 'toEqual does deep equality, toBe checks identity, toStrictEqual is stricter. Vitest 3.x improved type safety for matchers.'
+    xref: 'general-test-standards'
 
   - id: mocking-patterns
-    name: "Mocking Patterns"
+    name: 'Mocking Patterns'
     enforcement: SUGGESTED
     severity: WARNING
-    desc: "Use vi.mock for modules, vi.fn for functions, vi.spyOn for spying, clear mocks in beforeEach"
+    desc: 'Use vi.mock for modules, vi.fn for functions, vi.spyOn for spying, clear mocks in beforeEach'
     guidance: "vi.mock auto-hoists. Vitest 3.x improved ESM mock support. Clear mocks to prevent pollution. Don't test mock.calls."
-    xref: "general-test-standards"
+    xref: 'general-test-standards'
 
   - id: vitest-3x-features
-    name: "Vitest 3.x-Specific Features"
+    name: 'Vitest 3.x-Specific Features'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Use vi.stubEnv for env vars, inlineSnapshot for inline snapshots, bench for benchmarks, expectTypeOf for types"
-    guidance: "3.x added improved workspace support, better browser mode, enhanced coverage with v8, smarter watch mode."
+    desc: 'Use vi.stubEnv for env vars, inlineSnapshot for inline snapshots, bench for benchmarks, expectTypeOf for types'
+    guidance: '3.x added improved workspace support, better browser mode, enhanced coverage with v8, smarter watch mode.'
 
   - id: test-lifecycle
-    name: "Test Lifecycle"
+    name: 'Test Lifecycle'
     enforcement: SUGGESTED
     severity: WARNING
-    desc: "Use beforeEach/afterEach for isolation, avoid beforeAll/afterAll shared state, clean up resources"
-    guidance: "beforeAll violates isolation. 3.x improved lifecycle hook error handling with clearer context."
-    xref: "general-test-standards"
+    desc: 'Use beforeEach/afterEach for isolation, avoid beforeAll/afterAll shared state, clean up resources'
+    guidance: 'beforeAll violates isolation. 3.x improved lifecycle hook error handling with clearer context.'
+    xref: 'general-test-standards'
 
   - id: coverage-config
-    name: "Coverage Configuration"
+    name: 'Coverage Configuration'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Configure coverage in vitest.config.ts with v8 or istanbul provider, set phase-appropriate thresholds"
-    guidance: "v8 provider recommended in 3.x - faster and more accurate. Exclude test files. Support per-file thresholds."
-    xref: "general-test-standards"
+    desc: 'Configure coverage in vitest.config.ts with v8 or istanbul provider, set phase-appropriate thresholds'
+    guidance: 'v8 provider recommended in 3.x - faster and more accurate. Exclude test files. Support per-file thresholds.'
+    xref: 'general-test-standards'
 
   - id: browser-mode
-    name: "Browser Mode (New in 3.x)"
+    name: 'Browser Mode (New in 3.x)'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Use browser mode for UI testing when real browser APIs needed"
-    guidance: "Runs tests in real browsers via Playwright. Production-ready in 3.x. Use for browser-specific features only."
+    desc: 'Use browser mode for UI testing when real browser APIs needed'
+    guidance: 'Runs tests in real browsers via Playwright. Production-ready in 3.x. Use for browser-specific features only.'
 
   - id: workspace-support
-    name: "Workspace Support (Enhanced in 3.x)"
+    name: 'Workspace Support (Enhanced in 3.x)'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Use Vitest workspaces for monorepos to share config across packages"
+    desc: 'Use Vitest workspaces for monorepos to share config across packages'
     example: "export default ['packages/*']"
-    guidance: "3.x significantly improved workspace performance. Run packages in parallel with shared base config."
+    guidance: '3.x significantly improved workspace performance. Run packages in parallel with shared base config.'
 
   - id: snapshot-testing
-    name: "Snapshot Testing"
+    name: 'Snapshot Testing'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Use snapshots for data structures and serializable output, not implementation details"
-    guidance: "3.x improved snapshot diffing. Use inline snapshots for small output. Review snapshot changes carefully."
+    desc: 'Use snapshots for data structures and serializable output, not implementation details'
+    guidance: '3.x improved snapshot diffing. Use inline snapshots for small output. Review snapshot changes carefully.'
 
   - id: performance-watch
-    name: "Performance and Watch Mode"
+    name: 'Performance and Watch Mode'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Leverage improved watch mode for faster feedback, use pool config for isolation vs performance"
-    guidance: "3.x watch mode only re-runs affected tests. threads are faster, forks provide better isolation."
-    xref: "general-test-standards"
+    desc: 'Leverage improved watch mode for faster feedback, use pool config for isolation vs performance'
+    guidance: '3.x watch mode only re-runs affected tests. threads are faster, forks provide better isolation.'
+    xref: 'general-test-standards'

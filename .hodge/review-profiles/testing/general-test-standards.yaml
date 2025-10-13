@@ -1,59 +1,59 @@
 meta:
-  version: "1.0.0"
+  version: '1.0.0'
   type: universal
   applies_to:
-    - "**/*.test.ts"
-    - "**/*.test.js"
-    - "**/*.spec.ts"
-    - "**/*.spec.js"
+    - '**/*.test.ts'
+    - '**/*.test.js'
+    - '**/*.spec.ts'
+    - '**/*.spec.js'
 
 rules:
   - id: test-isolation
-    name: "Test Isolation"
+    name: 'Test Isolation'
     enforcement: MANDATORY
     severity: BLOCKER
-    desc: "Tests must be completely isolated with no shared state, use temp directories for files"
-    guidance: "All file ops use os.tmpdir(). Use beforeEach/afterEach not beforeAll. Clean up resources. Tests work in parallel."
-    xref: "lessons/subprocess-ban"
+    desc: 'Tests must be completely isolated with no shared state, use temp directories for files'
+    guidance: 'All file ops use os.tmpdir(). Use beforeEach/afterEach not beforeAll. Clean up resources. Tests work in parallel.'
+    xref: 'lessons/subprocess-ban'
 
   - id: test-organization
-    name: "Test Organization and Naming"
+    name: 'Test Organization and Naming'
     enforcement: SUGGESTED
     severity: WARNING
-    desc: "Organize logically with descriptive names explaining behavior not implementation"
-    guidance: "Group by feature not class. Names describe expected behavior. Follow Arrange-Act-Assert. One logical assertion per test."
+    desc: 'Organize logically with descriptive names explaining behavior not implementation'
+    guidance: 'Group by feature not class. Names describe expected behavior. Follow Arrange-Act-Assert. One logical assertion per test.'
 
   - id: assertion-quality
-    name: "Assertion Quality"
+    name: 'Assertion Quality'
     enforcement: SUGGESTED
     severity: WARNING
-    desc: "Assertions should be specific and meaningful not vague"
+    desc: 'Assertions should be specific and meaningful not vague'
     guidance: "Use toEqual not toBeTruthy. Don't assert on mock call counts unless testing integration patterns."
 
   - id: test-data
-    name: "Test Data Management"
+    name: 'Test Data Management'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Test data should be clear, intentional, and maintainable"
-    guidance: "Use factories for complex objects, inline simple data. Balance DRY with readability. Make data intention-revealing."
+    desc: 'Test data should be clear, intentional, and maintainable'
+    guidance: 'Use factories for complex objects, inline simple data. Balance DRY with readability. Make data intention-revealing.'
 
   - id: mocking-strategy
-    name: "Mocking Strategy"
+    name: 'Mocking Strategy'
     enforcement: SUGGESTED
     severity: WARNING
-    desc: "Mock external dependencies but prefer real implementations for in-process code"
-    guidance: "Mock network, filesystem, databases, external services. Use real implementations for your code. Mock at boundaries."
+    desc: 'Mock external dependencies but prefer real implementations for in-process code'
+    guidance: 'Mock network, filesystem, databases, external services. Use real implementations for your code. Mock at boundaries.'
 
   - id: coverage-philosophy
-    name: "Test Coverage Philosophy"
+    name: 'Test Coverage Philosophy'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Coverage is a metric not a goal - focus on critical paths and edge cases"
+    desc: 'Coverage is a metric not a goal - focus on critical paths and edge cases'
     guidance: "Aim for 80%+ in shipped code. Lower in explore/build. 100% doesn't mean bug-free. Find untested critical paths."
 
   - id: test-performance
-    name: "Test Performance"
+    name: 'Test Performance'
     enforcement: SUGGESTED
     severity: WARNING
-    desc: "Tests should run fast to enable rapid feedback - unit tests under 10ms ideal"
-    guidance: "Slow tests indicate poor architecture. Flag tests over 100ms unless explicitly integration tests. Use parallel execution."
+    desc: 'Tests should run fast to enable rapid feedback - unit tests under 10ms ideal'
+    guidance: 'Slow tests indicate poor architecture. Flag tests over 100ms unless explicitly integration tests. Use parallel execution.'

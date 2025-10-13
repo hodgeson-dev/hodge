@@ -1,91 +1,91 @@
 meta:
-  version: "1.0.0"
+  version: '1.0.0'
   type: universal
   applies_to:
-    - "**/*.ts"
-    - "**/*.js"
-    - "**/*.tsx"
-    - "**/*.jsx"
-    - "**/*.py"
-    - "**/*.java"
-    - "**/*.kt"
-    - "**/*.kts"
-    - "**/*.go"
+    - '**/*.ts'
+    - '**/*.js'
+    - '**/*.tsx'
+    - '**/*.jsx'
+    - '**/*.py'
+    - '**/*.java'
+    - '**/*.kt'
+    - '**/*.kts'
+    - '**/*.go'
 
 rules:
   - id: single-responsibility
-    name: "Single Responsibility Principle"
+    name: 'Single Responsibility Principle'
     enforcement: SUGGESTED
     severity: WARNING
-    desc: "Class or function should have one reason to change"
-    guidance: "Flag when responsibilities are unrelated. Use project principles for boundaries."
+    desc: 'Class or function should have one reason to change'
+    guidance: 'Flag when responsibilities are unrelated. Use project principles for boundaries.'
 
   - id: dry-violations
-    name: "DRY Violations"
+    name: 'DRY Violations'
     enforcement: SUGGESTED
     severity: SUGGESTION
     desc: "Don't repeat yourself - look for duplicated logic across functions or files"
-    guidance: "Flag when same business logic appears in 3+ places. Suggest shared service/utility."
+    guidance: 'Flag when same business logic appears in 3+ places. Suggest shared service/utility.'
 
   - id: coupling-cohesion
-    name: "Coupling & Cohesion"
+    name: 'Coupling & Cohesion'
     enforcement: SUGGESTED
     severity: WARNING
-    desc: "Modules should depend on interfaces not implementations"
-    guidance: "Flag when code accesses private details of other modules. Consider dependency inversion."
+    desc: 'Modules should depend on interfaces not implementations'
+    guidance: 'Flag when code accesses private details of other modules. Consider dependency inversion.'
 
   - id: complexity-hotspots
-    name: "Complexity Hotspots"
+    name: 'Complexity Hotspots'
     enforcement: SUGGESTED
     severity: WARNING
-    desc: "Identify areas with high cognitive load - 4+ nesting levels or 50+ line functions"
-    guidance: "Suggest extraction to well-named helpers. Readability usually wins over performance."
+    desc: 'Identify areas with high cognitive load - 4+ nesting levels or 50+ line functions'
+    guidance: 'Suggest extraction to well-named helpers. Readability usually wins over performance.'
 
   - id: naming-consistency
-    name: "Naming Consistency"
+    name: 'Naming Consistency'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Names should reveal intent without comments"
+    desc: 'Names should reveal intent without comments'
     guidance: "Flag vague names like handler, manager, util that don't convey purpose."
 
   - id: error-handling
-    name: "Error Handling"
+    name: 'Error Handling'
     enforcement: SUGGESTED
     severity: WARNING
-    desc: "All async operations should handle errors properly"
-    guidance: "Empty catch blocks are code smells unless justified. Error messages should be actionable."
+    desc: 'All async operations should handle errors properly'
+    guidance: 'Empty catch blocks are code smells unless justified. Error messages should be actionable.'
 
   - id: code-documentation
-    name: "Code Documentation"
+    name: 'Code Documentation'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Comments should explain WHY not WHAT - code should be self-documenting"
-    guidance: "Flag missing docs for public APIs and complex algorithms. Avoid redundant comments."
+    desc: 'Comments should explain WHY not WHAT - code should be self-documenting'
+    guidance: 'Flag missing docs for public APIs and complex algorithms. Avoid redundant comments.'
 
   - id: magic-numbers
-    name: "Magic Numbers and Constants"
+    name: 'Magic Numbers and Constants'
     enforcement: SUGGESTED
     severity: WARNING
-    desc: "Literal values with unclear meaning should be named constants"
+    desc: 'Literal values with unclear meaning should be named constants'
     guidance: "Flag when same literal appears 3+ times. Simple cases (0, 1, -1, empty string) don't need extraction."
 
   - id: code-duplication
-    name: "Code Duplication Detection"
+    name: 'Code Duplication Detection'
     enforcement: SUGGESTED
     severity: WARNING
-    desc: "Substantial duplicated code should be refactored into shared utilities"
-    guidance: "Flag when 10+ lines of identical logic appear in 3+ places. Focus on semantic duplication."
+    desc: 'Substantial duplicated code should be refactored into shared utilities'
+    guidance: 'Flag when 10+ lines of identical logic appear in 3+ places. Focus on semantic duplication.'
 
   - id: performance-considerations
-    name: "Performance Considerations"
+    name: 'Performance Considerations'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Balance performance with readability - avoid premature optimization"
-    guidance: "Readability wins. Flag clear anti-patterns like N+1 queries or nested loops with large datasets."
+    desc: 'Balance performance with readability - avoid premature optimization'
+    guidance: 'Readability wins. Flag clear anti-patterns like N+1 queries or nested loops with large datasets.'
 
   - id: security-basics
-    name: "Security Basics"
+    name: 'Security Basics'
     enforcement: MANDATORY
     severity: BLOCKER
-    desc: "All user input must be validated and sanitized"
-    guidance: "All user input is untrusted. Flag direct use in queries, commands, or HTML. Secrets use env vars."
+    desc: 'All user input must be validated and sanitized'
+    guidance: 'All user input is untrusted. Flag direct use in queries, commands, or HTML. Secrets use env vars.'

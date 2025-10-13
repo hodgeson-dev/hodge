@@ -1,16 +1,16 @@
 meta:
-  version: "1.0.0"
+  version: '1.0.0'
   ui_library: antd
-  version_range: ">=4.0.0 <5.0.0"
+  version_range: '>=4.0.0 <5.0.0'
   detection:
-    deps: ["antd"]
+    deps: ['antd']
   applies_to:
-    - "**/*.tsx"
-    - "**/*.jsx"
+    - '**/*.tsx'
+    - '**/*.jsx'
 
 rules:
   - id: placeholder
-    name: "Placeholder Rule"
+    name: 'Placeholder Rule'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Profile content coming in future version based on user demand"
+    desc: 'Profile content coming in future version based on user demand'

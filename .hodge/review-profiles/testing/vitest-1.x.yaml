@@ -1,59 +1,59 @@
 meta:
-  version: "1.0.0"
+  version: '1.0.0'
   testing_framework: vitest
-  version_range: ">=1.0.0 <2.0.0"
+  version_range: '>=1.0.0 <2.0.0'
   detection:
-    deps: ["vitest"]
+    deps: ['vitest']
   applies_to:
-    - "**/*.test.ts"
-    - "**/*.test.js"
-    - "**/*.spec.ts"
-    - "**/*.spec.js"
+    - '**/*.test.ts'
+    - '**/*.test.js'
+    - '**/*.spec.ts'
+    - '**/*.spec.js'
 
 rules:
   - id: test-organization
-    name: "Test Organization"
+    name: 'Test Organization'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Use describe/it for organization, describe.each for parameterized suites, it.concurrent for parallel tests"
-    guidance: "Pick test or it style consistently. it.concurrent requires true isolation."
-    xref: "general-test-standards"
+    desc: 'Use describe/it for organization, describe.each for parameterized suites, it.concurrent for parallel tests'
+    guidance: 'Pick test or it style consistently. it.concurrent requires true isolation.'
+    xref: 'general-test-standards'
 
   - id: assertion-api
-    name: "Assertion API"
+    name: 'Assertion API'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Use specific matchers like toEqual, toStrictEqual, toMatchObject over generic toBeTruthy"
-    guidance: "toEqual does deep equality, toBe checks identity, toStrictEqual is stricter. Jest-compatible with extras."
-    xref: "general-test-standards"
+    desc: 'Use specific matchers like toEqual, toStrictEqual, toMatchObject over generic toBeTruthy'
+    guidance: 'toEqual does deep equality, toBe checks identity, toStrictEqual is stricter. Jest-compatible with extras.'
+    xref: 'general-test-standards'
 
   - id: mocking-patterns
-    name: "Mocking Patterns"
+    name: 'Mocking Patterns'
     enforcement: SUGGESTED
     severity: WARNING
-    desc: "Use vi.mock for modules, vi.fn for functions, vi.spyOn for spying, clear mocks in beforeEach"
+    desc: 'Use vi.mock for modules, vi.fn for functions, vi.spyOn for spying, clear mocks in beforeEach'
     guidance: "vi namespace vs Jest's jest. vi.mock auto-hoists. Clear mocks to prevent pollution. Don't test mock.calls."
-    xref: "general-test-standards"
+    xref: 'general-test-standards'
 
   - id: vitest-features
-    name: "Vitest-Specific Features"
+    name: 'Vitest-Specific Features'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Use vi.stubEnv for env vars, inlineSnapshot for inline snapshots, bench for benchmarks, expectTypeOf for types"
+    desc: 'Use vi.stubEnv for env vars, inlineSnapshot for inline snapshots, bench for benchmarks, expectTypeOf for types'
     guidance: "These are opt-in features - use when they solve specific problems. Don't over-optimize with bench."
 
   - id: test-lifecycle
-    name: "Test Lifecycle"
+    name: 'Test Lifecycle'
     enforcement: SUGGESTED
     severity: WARNING
-    desc: "Use beforeEach/afterEach for isolation, avoid beforeAll/afterAll shared state, clean up resources"
-    guidance: "beforeAll violates isolation principle. Always pair beforeEach with afterEach for symmetric setup/teardown."
-    xref: "general-test-standards"
+    desc: 'Use beforeEach/afterEach for isolation, avoid beforeAll/afterAll shared state, clean up resources'
+    guidance: 'beforeAll violates isolation principle. Always pair beforeEach with afterEach for symmetric setup/teardown.'
+    xref: 'general-test-standards'
 
   - id: coverage-config
-    name: "Coverage Configuration"
+    name: 'Coverage Configuration'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Configure coverage in vitest.config.ts with v8 or istanbul provider, set phase-appropriate thresholds"
-    guidance: "v8 is faster, istanbul more accurate. Exclude test files and mocks. Coverage is a metric not a goal."
-    xref: "general-test-standards"
+    desc: 'Configure coverage in vitest.config.ts with v8 or istanbul provider, set phase-appropriate thresholds'
+    guidance: 'v8 is faster, istanbul more accurate. Exclude test files and mocks. Coverage is a metric not a goal.'
+    xref: 'general-test-standards'
