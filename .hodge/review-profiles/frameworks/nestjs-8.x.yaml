@@ -1,18 +1,18 @@
 meta:
-  version: "1.0.0"
+  version: '1.0.0'
   framework: nestjs
-  version_range: ">=8.0.0 <9.0.0"
+  version_range: '>=8.0.0 <9.0.0'
   detection:
-    deps: ["@nestjs/core"]
+    deps: ['@nestjs/core']
   applies_to:
-    - "**/*.ts"
-    - "**/*.controller.ts"
-    - "**/*.service.ts"
-    - "**/*.module.ts"
+    - '**/*.ts'
+    - '**/*.controller.ts'
+    - '**/*.service.ts'
+    - '**/*.module.ts'
 
 rules:
   - id: placeholder
-    name: "Placeholder Rule"
+    name: 'Placeholder Rule'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Profile content coming in future version based on user demand"
+    desc: 'Profile content coming in future version based on user demand'

@@ -1,18 +1,18 @@
 meta:
-  version: "1.0.0"
+  version: '1.0.0'
   api_style: graphql
-  version_range: ">=16.0.0 <17.0.0"
+  version_range: '>=16.0.0 <17.0.0'
   detection:
-    deps: ["graphql", "@apollo/server", "@graphql-yoga/node", "type-graphql"]
+    deps: ['graphql', '@apollo/server', '@graphql-yoga/node', 'type-graphql']
   applies_to:
-    - "**/*.graphql"
-    - "**/*.gql"
-    - "**/*resolver*.ts"
-    - "**/*resolver*.js"
+    - '**/*.graphql'
+    - '**/*.gql'
+    - '**/*resolver*.ts'
+    - '**/*resolver*.js'
 
 rules:
   - id: placeholder
-    name: "Placeholder Rule"
+    name: 'Placeholder Rule'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Profile content coming in future version based on user demand"
+    desc: 'Profile content coming in future version based on user demand'

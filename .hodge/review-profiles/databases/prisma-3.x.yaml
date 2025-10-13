@@ -1,18 +1,18 @@
 meta:
-  version: "1.0.0"
+  version: '1.0.0'
   database: prisma
-  version_range: ">=3.0.0 <4.0.0"
+  version_range: '>=3.0.0 <4.0.0'
   detection:
-    deps: ["@prisma/client", "prisma"]
+    deps: ['@prisma/client', 'prisma']
   applies_to:
-    - "**/prisma/schema.prisma"
-    - "**/*.prisma"
-    - "**/*prisma*.ts"
-    - "**/*prisma*.js"
+    - '**/prisma/schema.prisma'
+    - '**/*.prisma'
+    - '**/*prisma*.ts'
+    - '**/*prisma*.js'
 
 rules:
   - id: placeholder
-    name: "Placeholder Rule"
+    name: 'Placeholder Rule'
     enforcement: SUGGESTED
     severity: SUGGESTION
-    desc: "Profile content coming in future version based on user demand"
+    desc: 'Profile content coming in future version based on user demand'

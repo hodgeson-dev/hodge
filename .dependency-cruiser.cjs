@@ -157,7 +157,7 @@ module.exports = {
         path: '^(src)',
         pathNot: [
           '[.](?:spec|test)[.](?:js|mjs|cjs|jsx|ts|mts|cts|tsx)$',
-          '^src/test/',  // Test utilities can depend on dev dependencies
+          '^src/test/', // Test utilities can depend on dev dependencies
         ],
       },
       to: {
