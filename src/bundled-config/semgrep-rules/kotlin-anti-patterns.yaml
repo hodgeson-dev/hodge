@@ -1,0 +1,68 @@
+# Kotlin Anti-Patterns
+# Part of HODGE-341.5: Multi-Language Toolchain Support
+# Focused rules for coroutines, null safety, and Jetpack Compose
+
+rules:
+  - id: kotlin-globalscope-launch
+    pattern: GlobalScope.launch { ... }
+    message: |
+      GlobalScope.launch creates unstructured coroutines that live for the entire application lifecycle.
+      This can cause:
+      - Memory leaks (coroutines outlive their context)
+      - Inability to cancel operations
+      - Difficult testing
+      Use structured concurrency instead: CoroutineScope, lifecycleScope, or viewModelScope.
+    severity: WARNING
+    languages: [kotlin]
+    metadata:
+      category: correctness
+      confidence: HIGH
+
+  - id: kotlin-nullable-platform-type
+    pattern-either:
+      - pattern: |
+          val $VAR = $JAVA_METHOD(...)
+      - pattern: |
+          var $VAR = $JAVA_METHOD(...)
+    pattern-inside: |
+      class $CLASS {
+        ...
+      }
+    message: |
+      Variable assigned from Java method without explicit nullability annotation.
+      Platform types (!) can hide null safety issues. Java methods may return null unexpectedly.
+      Add explicit type annotation: val x: String? = ... or val x: String = ... ?: defaultValue
+    severity: INFO
+    languages: [kotlin]
+    metadata:
+      category: correctness
+      confidence: MEDIUM
+
+  - id: kotlin-compose-unstable-collections
+    pattern-either:
+      - pattern: |
+          @Composable
+          fun $FUNC(..., $PARAM: List<$TYPE>, ...) {
+            ...
+          }
+      - pattern: |
+          @Composable
+          fun $FUNC(..., $PARAM: Map<$K, $V>, ...) {
+            ...
+          }
+      - pattern: |
+          @Composable
+          fun $FUNC(..., $PARAM: Set<$TYPE>, ...) {
+            ...
+          }
+    message: |
+      Composable function accepts mutable collection type as parameter.
+      Mutable collections are unstable in Compose, causing unnecessary recomposition.
+      Use ImmutableList, ImmutableMap, or mark parameters as @Stable if they won't change.
+      Alternative: Use kotlinx.collections.immutable library.
+    severity: WARNING
+    languages: [kotlin]
+    metadata:
+      category: performance
+      framework: jetpack-compose
+      confidence: MEDIUM

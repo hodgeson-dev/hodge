@@ -1,0 +1,76 @@
+# Python Anti-Patterns
+# Part of HODGE-341.5: Multi-Language Toolchain Support
+# Focused rules for Django, Flask, and common Python pitfalls
+
+rules:
+  - id: python-django-raw-sql
+    pattern-either:
+      - pattern: cursor.execute($QUERY)
+      - pattern: cursor.executemany($QUERY, ...)
+    pattern-not:
+      pattern-either:
+        - pattern: cursor.execute("...", ...)
+        - pattern: cursor.executemany("...", ...)
+    message: |
+      Raw SQL execution with dynamic query detected.
+      This can lead to SQL injection vulnerabilities.
+      Use Django ORM querysets or parameterized queries instead.
+      Example: MyModel.objects.filter(name=value) or cursor.execute(query, [params])
+    severity: ERROR
+    languages: [python]
+    metadata:
+      category: security
+      framework: django
+      confidence: HIGH
+      cwe: CWE-89
+
+  - id: python-flask-debug-enabled
+    pattern-either:
+      - pattern: app.run(debug=True)
+      - pattern: app.run(..., debug=True, ...)
+    message: |
+      Flask debug mode enabled in code.
+      Debug mode should NEVER be enabled in production as it:
+      - Exposes sensitive application internals
+      - Allows arbitrary code execution via the debugger
+      - Leaks environment variables and configuration
+      Use environment variables to control debug mode instead.
+    severity: ERROR
+    languages: [python]
+    metadata:
+      category: security
+      framework: flask
+      confidence: HIGH
+      cwe: CWE-489
+
+  - id: python-async-await-misuse
+    pattern-either:
+      - pattern: |
+          async def $FUNC(...):
+            ...
+            $RESULT = $ASYNC_CALL(...)
+            ...
+      - pattern: |
+          async def $FUNC(...):
+            ...
+            return $ASYNC_CALL(...)
+    pattern-not:
+      pattern-either:
+        - pattern: |
+            async def $FUNC(...):
+              ...
+              $RESULT = await $ASYNC_CALL(...)
+              ...
+        - pattern: |
+            async def $FUNC(...):
+              ...
+              return await $ASYNC_CALL(...)
+    message: |
+      Async function called without 'await'.
+      This returns a coroutine object instead of executing the function.
+      Add 'await' before the async function call or use asyncio.create_task() to run concurrently.
+    severity: WARNING
+    languages: [python]
+    metadata:
+      category: correctness
+      confidence: MEDIUM

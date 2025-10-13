@@ -5,7 +5,7 @@
     "sourceType": "module",
     "project": "./tsconfig.json"
   },
-  "plugins": ["@typescript-eslint", "sonarjs"],
+  "plugins": ["@typescript-eslint", "sonarjs", "local-rules"],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
@@ -94,7 +94,10 @@
         "skipBlankLines": true,
         "skipComments": true
       }
-    ]
+    ],
+
+    // Test Infrastructure Standards (HODGE-341.5)
+    "local-rules/no-date-now-in-tests": "error"
   },
   "ignorePatterns": [
     "dist/",

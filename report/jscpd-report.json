@@ -1,12 +1,12 @@
 {
   "statistics": {
-    "detectionDate": "2025-10-12T12:37:11.798Z",
+    "detectionDate": "2025-10-13T14:29:07.510Z",
     "formats": {
       "typescript": {
         "sources": {
-          "test/pm-integration.integration.test.ts": {
-            "lines": 279,
-            "tokens": 2173,
+          "test/pm-integration.smoke.test.ts": {
+            "lines": 225,
+            "tokens": 1850,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -16,9 +16,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/types/toolchain.ts": {
-            "lines": 324,
-            "tokens": 1262,
+          "test/pm-integration.integration.test.ts": {
+            "lines": 281,
+            "tokens": 1990,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -29,8 +29,8 @@
             "newClones": 0
           },
           "src/lib/toolchain-service.smoke.test.ts": {
-            "lines": 182,
-            "tokens": 1461,
+            "lines": 160,
+            "tokens": 1160,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -40,9 +40,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/lib/sub-feature-context-service.ts": {
-            "lines": 647,
-            "tokens": 4568,
+          "src/lib/toolchain-service-registry.smoke.test.ts": {
+            "lines": 162,
+            "tokens": 1454,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -52,9 +52,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/lib/sub-feature-context-service.integration.test.ts": {
-            "lines": 301,
-            "tokens": 2868,
+          "src/lib/package-manager-detector.ts": {
+            "lines": 86,
+            "tokens": 532,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -64,9 +64,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/lib/review-manifest-generator.ts": {
-            "lines": 413,
-            "tokens": 3023,
+          "src/lib/package-manager-detector.smoke.test.ts": {
+            "lines": 106,
+            "tokens": 971,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -76,9 +76,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/lib/review-manifest-generator.smoke.test.ts": {
-            "lines": 175,
-            "tokens": 1867,
+          "src/lib/monorepo-detector.ts": {
+            "lines": 165,
+            "tokens": 1189,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -88,9 +88,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/lib/install-hodge-way.test.ts": {
-            "lines": 120,
-            "tokens": 1195,
+          "src/lib/monorepo-detector.smoke.test.ts": {
+            "lines": 121,
+            "tokens": 1090,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -100,9 +100,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/commands/harden.ts": {
-            "lines": 706,
-            "tokens": 5702,
+          "src/lib/language-detector.ts": {
+            "lines": 210,
+            "tokens": 1441,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -112,9 +112,33 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/commands/decide.smoke.test.ts": {
-            "lines": 131,
-            "tokens": 1349,
+          "src/lib/language-detector.smoke.test.ts": {
+            "lines": 97,
+            "tokens": 986,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/framework-detector.ts": {
+            "lines": 190,
+            "tokens": 1778,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/framework-detector.smoke.test.ts": {
+            "lines": 146,
+            "tokens": 1154,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -126,9 +150,9 @@
           }
         },
         "total": {
-          "lines": 3278,
-          "tokens": 25468,
-          "sources": 10,
+          "lines": 1949,
+          "tokens": 15595,
+          "sources": 12,
           "clones": 0,
           "duplicatedLines": 0,
           "duplicatedTokens": 0,
@@ -140,9 +164,9 @@
       }
     },
     "total": {
-      "lines": 3278,
-      "tokens": 25468,
-      "sources": 10,
+      "lines": 1949,
+      "tokens": 15595,
+      "sources": 12,
       "clones": 0,
       "duplicatedLines": 0,
       "duplicatedTokens": 0,

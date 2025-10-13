@@ -34,11 +34,14 @@ export class PMHooks {
   private configManager = getConfigManager();
   private shipContext?: ShipContext;
   private idManager: IDManager;
-  private pmQueueFile = '.hodge/.pm-queue.json';
+  private pmQueueFile: string;
+  private basePath: string;
 
   constructor(basePath?: string) {
+    this.basePath = basePath ?? process.cwd();
     this.localAdapter = new LocalPMAdapter(basePath);
     this.idManager = new IDManager();
+    this.pmQueueFile = path.join(this.basePath, '.hodge/.pm-queue.json');
   }
 
   /**

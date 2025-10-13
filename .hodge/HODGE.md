@@ -3,16 +3,16 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: HODGE-341.4
+**Feature**: HODGE-341.5
 **Mode**: shipped
-**PM Issue**: HODGE-341.4
-**Last Updated**: 2025-10-12T12:19:03.984Z
+**PM Issue**: HODGE-341.5
+**Last Updated**: 2025-10-13T14:12:27.437Z
 ## Current Session
-**Resumed**: 2 hours ago
-**Progress**: Explored HODGE-341.4 - template ready for AI approach generation
-**Working on**: HODGE-341.4 (explore mode)
+**Resumed**: 25 hours ago
+**Progress**: Explored HODGE-341.5 - template ready for AI approach generation
+**Working on**: HODGE-341.5 (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-341.4. Explored HODGE-341.4 - template ready for AI approach generation
+You were helping with HODGE-341.5. Explored HODGE-341.5 - template ready for AI approach generation
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
@@ -135,6 +135,9 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - Any test that needs a `.hodge` structure should create it in an isolated temp directory
 - This prevents tests from corrupting project data or affecting other tests
 - Violation of this rule can lead to data loss and unpredictable test behavior
+- **REQUIRED**: Use `TempDirectoryFixture` from `src/test/temp-directory-fixture.ts` for all temporary directory operations
+- **NEVER**: Use `Date.now()` or timestamps for directory naming (causes race conditions in parallel tests)
+- **Pattern**: See `.hodge/patterns/temp-directory-fixture-pattern.md` for usage examples
 - **Root Cause**: Subprocesses create orphaned zombie processes that hang indefinitely
 - **Symptom**: Tests timeout, hung Node processes require manual kill in Activity Monitor
 - **Solution**: Test behavior through direct assertions, not subprocess execution
@@ -211,9 +214,9 @@ Suggested next: Review exploration and decide with 'hodge decide'
 
 ## Working Files
 
-- `.hodge/features/HODGE-341.4/explore/exploration.md`
-- `.hodge/features/HODGE-341.4/explore/test-intentions.md`
-- `.hodge/features/HODGE-341.4/build/build-plan.md`
+- `.hodge/features/HODGE-341.5/explore/exploration.md`
+- `.hodge/features/HODGE-341.5/explore/test-intentions.md`
+- `.hodge/features/HODGE-341.5/build/build-plan.md`
 
 ## Next Steps
 

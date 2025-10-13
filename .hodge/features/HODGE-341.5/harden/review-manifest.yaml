@@ -1,0 +1,130 @@
+version: '1.0'
+feature: HODGE-341.5
+generated_at: '2025-10-13T02:52:54.691Z'
+recommended_tier: full
+change_analysis:
+  total_files: 23
+  total_lines: 6117
+  breakdown:
+    implementation: 14
+    test: 4
+    documentation: 5
+    config: 0
+changed_files:
+  - path: .hodge/.pm-queue.json
+    lines_changed: 22
+    change_type: implementation
+  - path: .hodge/.session
+    lines_changed: 20
+    change_type: implementation
+  - path: .hodge/HODGE.md
+    lines_changed: 40
+    change_type: documentation
+  - path: .hodge/context.json
+    lines_changed: 12
+    change_type: implementation
+  - path: .hodge/features/HODGE-341.5/build/build-plan.md
+    lines_changed: 92
+    change_type: documentation
+  - path: .hodge/features/HODGE-341.5/explore/exploration.md
+    lines_changed: 2142
+    change_type: documentation
+  - path: .hodge/features/HODGE-341.5/explore/test-intentions.md
+    lines_changed: 98
+    change_type: documentation
+  - path: .hodge/features/HODGE-341.5/issue-id.txt
+    lines_changed: 2
+    change_type: implementation
+  - path: .hodge/features/HODGE-341.5/ship-record.json
+    lines_changed: 31
+    change_type: implementation
+  - path: .hodge/id-mappings.json
+    lines_changed: 8
+    change_type: implementation
+  - path: .hodge/project_management.md
+    lines_changed: 26
+    change_type: documentation
+  - path: src/bundled-config/semgrep-rules/java-anti-patterns.yaml
+    lines_changed: 176
+    change_type: implementation
+  - path: src/bundled-config/semgrep-rules/kotlin-anti-patterns.yaml
+    lines_changed: 136
+    change_type: implementation
+  - path: src/bundled-config/semgrep-rules/python-anti-patterns.yaml
+    lines_changed: 152
+    change_type: implementation
+  - path: src/bundled-config/tool-registry.yaml
+    lines_changed: 778
+    change_type: implementation
+  - path: src/lib/framework-detector.smoke.test.ts
+    lines_changed: 336
+    change_type: test
+  - path: src/lib/framework-detector.ts
+    lines_changed: 356
+    change_type: implementation
+  - path: src/lib/language-detector.smoke.test.ts
+    lines_changed: 242
+    change_type: test
+  - path: src/lib/language-detector.ts
+    lines_changed: 422
+    change_type: implementation
+  - path: src/lib/monorepo-detector.smoke.test.ts
+    lines_changed: 282
+    change_type: test
+  - path: src/lib/monorepo-detector.ts
+    lines_changed: 332
+    change_type: implementation
+  - path: src/lib/package-manager-detector.smoke.test.ts
+    lines_changed: 238
+    change_type: test
+  - path: src/lib/package-manager-detector.ts
+    lines_changed: 174
+    change_type: implementation
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - test-pattern.md
+      - error-boundary.md
+      - input-validation.md
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - testing/vitest-3.x.yaml
+      - testing/general-test-standards.yaml
+      - languages/typescript-5.x.yaml
+      - languages/general-coding-standards.yaml
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed

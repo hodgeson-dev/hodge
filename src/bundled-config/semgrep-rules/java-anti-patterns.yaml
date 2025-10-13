@@ -1,0 +1,88 @@
+# Java Anti-Patterns
+# Part of HODGE-341.5: Multi-Language Toolchain Support
+# Focused rules for Stream API, Spring Security, and concurrency
+
+rules:
+  - id: java-stream-foreach-sideeffect
+    pattern: |
+      $STREAM.forEach($VAR -> {
+        ...
+        $MUTATION;
+        ...
+      })
+    pattern-not:
+      pattern: |
+        $STREAM.forEach($VAR -> {
+          System.out.println(...);
+        })
+    message: |
+      Stream.forEach() used with side effects (mutation).
+      This violates functional programming principles and can cause:
+      - Non-deterministic behavior with parallel streams
+      - Difficult debugging
+      - Reduced code clarity
+      Use collectors instead: collect(Collectors.toList()), reduce(), or collect(Collectors.groupingBy()).
+    severity: WARNING
+    languages: [java]
+    metadata:
+      category: correctness
+      confidence: MEDIUM
+
+  - id: java-spring-security-permitall
+    pattern-either:
+      - pattern: .antMatchers($PATH).permitAll()
+      - pattern: .requestMatchers($PATH).permitAll()
+    message: |
+      Security configuration exposes endpoint with permitAll().
+      Review this endpoint to ensure it should be publicly accessible:
+      - Authentication endpoints: /login, /register (usually OK)
+      - Public content: /public/**, /static/** (usually OK)
+      - Admin endpoints: /admin/** (should be protected!)
+      - API endpoints with sensitive data (should require authentication)
+      If authentication is needed, use .authenticated(), .hasRole(), or .hasAuthority() instead.
+    severity: WARNING
+    languages: [java]
+    metadata:
+      category: security
+      framework: spring-security
+      confidence: HIGH
+      cwe: CWE-862
+
+  - id: java-double-checked-locking-broken
+    pattern: |
+      class $CLASS {
+        ...
+        private $TYPE $FIELD;
+        ...
+        public $TYPE $METHOD(...) {
+          if ($FIELD == null) {
+            synchronized(...) {
+              if ($FIELD == null) {
+                $FIELD = ...;
+              }
+            }
+          }
+          return $FIELD;
+        }
+        ...
+      }
+    pattern-not:
+      pattern: |
+        class $CLASS {
+          ...
+          private volatile $TYPE $FIELD;
+          ...
+        }
+    message: |
+      Double-checked locking pattern without 'volatile' keyword.
+      This is broken in Java due to instruction reordering and can cause:
+      - Returning partially constructed objects
+      - Subtle concurrency bugs
+      - Non-deterministic failures
+      Add 'volatile' keyword to the field or use java.util.concurrent utilities instead.
+    severity: ERROR
+    languages: [java]
+    metadata:
+      category: correctness
+      confidence: HIGH
+      cwe: CWE-609

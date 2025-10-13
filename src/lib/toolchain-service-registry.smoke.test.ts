@@ -143,17 +143,21 @@ describe('ToolchainService - Registry-Based Detection (HODGE-341.2)', () => {
     }
   });
 
-  smokeTest('should detect version information when available', async () => {
-    const service = new ToolchainService();
-    const tools = await service.detectTools();
+  smokeTest(
+    'should detect version information when available',
+    async () => {
+      const service = new ToolchainService();
+      const tools = await service.detectTools();
 
-    const typescript = tools.find((t) => t.name === 'typescript');
-    if (typescript) {
-      // Version might be undefined if tool not executable, but should be string if present
-      if (typescript.version) {
-        expect(typeof typescript.version).toBe('string');
-        expect(typescript.version).toMatch(/\d+\.\d+\.\d+/);
+      const typescript = tools.find((t) => t.name === 'typescript');
+      if (typescript) {
+        // Version might be undefined if tool not executable, but should be string if present
+        if (typescript.version) {
+          expect(typeof typescript.version).toBe('string');
+          expect(typescript.version).toMatch(/\d+\.\d+\.\d+/);
+        }
       }
-    }
-  });
+    },
+    20000
+  ); // Increased timeout for version detection which runs external commands
 });

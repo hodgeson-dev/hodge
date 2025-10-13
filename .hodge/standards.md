@@ -320,6 +320,47 @@ interface ContextSummary {
 - This prevents tests from corrupting project data or affecting other tests
 - Violation of this rule can lead to data loss and unpredictable test behavior
 
+#### Temporary Directory Usage (HODGE-341.5)
+**Enforcement: ALL PHASES (mandatory)**
+**⚠️ CRITICAL**: Use `TempDirectoryFixture` for all temporary directory operations.
+
+- **REQUIRED**: Use `TempDirectoryFixture` from `src/test/temp-directory-fixture.ts` for all temporary directory operations
+- **NEVER**: Use `Date.now()` or timestamps for directory naming (causes race conditions in parallel tests)
+- **Pattern**: See `.hodge/patterns/temp-directory-fixture-pattern.md` for usage examples
+
+**Anti-Pattern (Forbidden)**:
+```typescript
+// ❌ FORBIDDEN: Non-unique naming causes race conditions
+beforeEach(async () => {
+  tempDir = join(tmpdir(), `test-${Date.now()}`);
+  await fs.mkdir(tempDir, { recursive: true });
+});
+```
+
+**Required Pattern**:
+```typescript
+// ✅ REQUIRED: UUID-based naming with retry logic
+import { TempDirectoryFixture } from '../test/temp-directory-fixture.js';
+
+let fixture: TempDirectoryFixture;
+
+beforeEach(async () => {
+  fixture = new TempDirectoryFixture();
+  await fixture.setup();
+});
+
+afterEach(async () => {
+  await fixture.cleanup();
+});
+
+it('test', async () => {
+  await fixture.writeFile('file.txt', 'content');
+  // Helper creates parent directories automatically
+});
+```
+
+**Rationale**: Eliminates timing bugs that caused persistent test flakiness (HODGE-341.5). Pattern includes UUID naming, retry logic, and operation verification.
+
 ### Subprocess Spawning Ban (HODGE-317.1 + HODGE-319.1)
 **Enforcement: ALL PHASES (mandatory)**
 **⚠️ CRITICAL**: Tests must NEVER spawn subprocesses using `execSync()`, `spawn()`, or `exec()`.

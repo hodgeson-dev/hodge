@@ -12,9 +12,9 @@ import { smokeTest } from '../src/test/helpers';
 import { PMHooks } from '../src/lib/pm/pm-hooks';
 import { DecideCommand } from '../src/commands/decide';
 import { IDManager } from '../src/lib/id-manager';
+import { TempDirectoryFixture } from '../src/test/temp-directory-fixture';
 import fs from 'fs/promises';
 import path from 'path';
-import { tmpdir } from 'os';
 
 smokeTest('PMHooks should have createPMIssue method', () => {
   const pmHooks = new PMHooks();
@@ -42,8 +42,8 @@ smokeTest('PlanCommand should handle epic breakdown', async () => {
 });
 
 smokeTest('IDManager should support parent/child relationships', async () => {
-  const testDir = path.join(tmpdir(), `hodge-test-${Date.now()}`);
-  await fs.mkdir(testDir, { recursive: true });
+  const fixture = new TempDirectoryFixture();
+  const testDir = await fixture.setup();
 
   const idManager = new IDManager(testDir);
 
@@ -54,12 +54,12 @@ smokeTest('IDManager should support parent/child relationships', async () => {
   expect(idManager.isEpic).toBeDefined();
 
   // Cleanup
-  await fs.rm(testDir, { recursive: true, force: true });
+  await fixture.cleanup();
 });
 
 smokeTest('IDManager should create sub-issue IDs in HODGE-XXX.Y format', async () => {
-  const testDir = path.join(tmpdir(), `hodge-test-${Date.now()}`);
-  await fs.mkdir(testDir, { recursive: true });
+  const fixture = new TempDirectoryFixture();
+  const testDir = await fixture.setup();
 
   const idManager = new IDManager(testDir);
 
@@ -80,7 +80,7 @@ smokeTest('IDManager should create sub-issue IDs in HODGE-XXX.Y format', async (
   expect(isEpic).toBe(true);
 
   // Cleanup
-  await fs.rm(testDir, { recursive: true, force: true });
+  await fixture.cleanup();
 });
 
 smokeTest('PMHooks createPMIssue should handle epic with sub-issues', async () => {
@@ -115,8 +115,8 @@ smokeTest(
   'PM queue should handle failed operations gracefully',
   async () => {
     // Use a temp directory for PMHooks to avoid conflicts
-    const testDir = path.join(tmpdir(), `hodge-test-${Date.now()}`);
-    await fs.mkdir(testDir, { recursive: true });
+    const fixture = new TempDirectoryFixture();
+    const testDir = await fixture.setup();
 
     const pmHooks = new PMHooks(testDir);
 
@@ -124,23 +124,18 @@ smokeTest(
     await expect(pmHooks.processQueue()).resolves.not.toThrow();
 
     // Cleanup
-    await fs.rm(testDir, { recursive: true, force: true });
+    await fixture.cleanup();
   },
   10000
 ); // Increase timeout to 10s just in case
 
 smokeTest('PlanCommand should generate epic structure from decisions', async () => {
   const { PlanCommand } = await import('../src/commands/plan');
-  const testDir = path.join(
-    tmpdir(),
-    `hodge-test-${Date.now()}-${Math.random().toString(36).substring(7)}`
-  );
+  const fixture = new TempDirectoryFixture();
+  const testDir = await fixture.setup();
   const planCommand = new PlanCommand(testDir);
 
-  // Create mock decisions file
-  const hodgeDir = path.join(testDir, '.hodge');
-  await fs.mkdir(hodgeDir, { recursive: true });
-
+  // Create mock decisions file using fixture
   const decisionsContent = `
 ### 2025-01-01 - Decision
 **Status**: Accepted
@@ -148,45 +143,39 @@ smokeTest('PlanCommand should generate epic structure from decisions', async () 
 **Decision**: Create epic with sub-issues
 ---`;
 
-  await fs.writeFile(path.join(hodgeDir, 'decisions.md'), decisionsContent);
+  await fixture.writeFile('.hodge/decisions.md', decisionsContent);
 
   // Test that plan command can be instantiated
   expect(planCommand).toBeDefined();
   expect(typeof planCommand.execute).toBe('function');
 
-  await fs.rm(testDir, { recursive: true, force: true });
+  await fixture.cleanup();
 });
 
 smokeTest('DecideCommand should record decisions without PM integration', async () => {
-  const testDir = path.join(
-    tmpdir(),
-    `hodge-test-${Date.now()}-${Math.random().toString(36).substring(7)}`
-  );
+  const fixture = new TempDirectoryFixture();
+  const testDir = await fixture.setup();
   const decideCommand = new DecideCommand(testDir);
 
-  const hodgeDir = path.join(testDir, '.hodge');
-  await fs.mkdir(hodgeDir, { recursive: true });
-
   // Create feature directory (required for --feature flag validation)
-  const featureDir = path.join(hodgeDir, 'features', 'HODGE-301');
-  await fs.mkdir(featureDir, { recursive: true });
+  await fixture.writeFile('.hodge/features/HODGE-301/.gitkeep', '');
 
   await decideCommand.execute('Implement as a single story', { feature: 'HODGE-301' });
 
   // With --feature flag, decision should be in feature-specific file
   const decisions = await fs.readFile(
-    path.join(hodgeDir, 'features', 'HODGE-301', 'decisions.md'),
+    path.join(testDir, '.hodge', 'features', 'HODGE-301', 'decisions.md'),
     'utf-8'
   );
   expect(decisions).toContain('Implement as a single story');
   expect(decisions).toContain('HODGE-301');
 
-  await fs.rm(testDir, { recursive: true, force: true });
+  await fixture.cleanup();
 });
 
 smokeTest('IDManager should track parent-child relationships correctly', async () => {
-  const testDir = path.join(tmpdir(), `hodge-test-${Date.now()}`);
-  await fs.mkdir(testDir, { recursive: true });
+  const fixture = new TempDirectoryFixture();
+  const testDir = await fixture.setup();
 
   const idManager = new IDManager(testDir);
 
@@ -207,7 +196,7 @@ smokeTest('IDManager should track parent-child relationships correctly', async (
   expect(parentEpic?.localID).toBe(parentID);
 
   // Cleanup
-  await fs.rm(testDir, { recursive: true, force: true });
+  await fixture.cleanup();
 });
 
 smokeTest('FeatureID interface should support hierarchy fields', () => {

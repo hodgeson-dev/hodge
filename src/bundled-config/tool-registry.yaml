@@ -17,9 +17,11 @@ tools:
         npm:
           package: typescript
           install_command: npm install --save-dev typescript
-    default_command: npx tsc -p tsconfig.build.json --noEmit ${files}
+    default_command: npx tsc -p tsconfig.build.json --noEmit --pretty
     version_command: tsc --version
     categories: [type_checking]
+    # --pretty: Formatted, colored output for easier reading
+    # Note: TypeScript project mode doesn't accept ${files} - uses tsconfig include/exclude
 
   eslint:
     languages: [typescript, javascript]
@@ -33,9 +35,12 @@ tools:
         npm:
           package: eslint
           install_command: npm install --save-dev eslint
-    default_command: npx eslint ${files}
+    default_command: npx eslint --format compact ${files}
     version_command: eslint --version
-    categories: [linting]
+    categories: [linting, complexity, code_smells]
+    # --format compact: One issue per line (file:line:col: message)
+    # More concise than default 'stylish' format
+    # ESLint with sonarjs plugin provides linting, complexity, and code smell checks
 
   prettier:
     languages: [typescript, javascript, json, yaml, markdown, html, css]
@@ -52,6 +57,7 @@ tools:
     default_command: npx prettier --check ${files}
     version_command: prettier --version
     categories: [formatting]
+    # --check: Exit with error if files are not formatted (lists unformatted files)
 
   vitest:
     languages: [typescript, javascript]
@@ -65,9 +71,11 @@ tools:
         npm:
           package: vitest
           install_command: npm install --save-dev vitest
-    default_command: NODE_ENV=test npx vitest run --reporter=dot
+    default_command: NODE_ENV=test npx vitest run --reporter=dot --silent=passed-only
     version_command: vitest --version
     categories: [testing]
+    # --reporter=dot: Dots for passing tests, 'x' for failures
+    # --silent=passed-only: Only show console output from failing tests
 
   # ==================== Advanced TypeScript/JavaScript Tools (HODGE-341.2) ====================
 
@@ -91,7 +99,7 @@ tools:
     categories: [complexity, code_smells]
 
   jscpd:
-    languages: [typescript, javascript, python, go, java, ruby, php]
+    languages: [typescript, javascript, python, go, java, ruby, php, kotlin]
     detection:
       - type: package_json
         package: jscpd
@@ -100,9 +108,11 @@ tools:
         npm:
           package: jscpd
           install_command: npm install --save-dev jscpd
-    default_command: npx jscpd ${files} --min-lines 10
+    default_command: npx jscpd ${files} --min-lines 10 --silent --reporters json
     version_command: jscpd --version
     categories: [duplication]
+    # --silent: No progress output
+    # --reporters json: Structured output for easier parsing
 
   dependency-cruiser:
     languages: [typescript, javascript]
@@ -114,18 +124,379 @@ tools:
         npm:
           package: dependency-cruiser
           install_command: npm install --save-dev dependency-cruiser
-    default_command: npx depcruise --config .dependency-cruiser.cjs ${files}
+    default_command: npx depcruise --config .dependency-cruiser.cjs --output-type err ${files}
     version_command: depcruise --version
     categories: [architecture]
+    # --output-type err: Only show violations, suppresses graph output
 
   semgrep:
-    languages: [typescript, javascript, python, go, ruby, java, php, c, cpp, rust]
+    languages: [typescript, javascript, python, go, ruby, java, php, c, cpp, rust, kotlin]
     detection:
       - type: command
         command: semgrep
     installation:
       external: true
       install_instructions: "Install from https://semgrep.dev/docs/getting-started/"
-    default_command: semgrep --config .hodge/semgrep-rules/ --config auto ${files}
+    default_command: semgrep --config .hodge/semgrep-rules/ --config auto --quiet ${files}
     version_command: semgrep --version
     categories: [security, patterns]
+    # --quiet: Only show findings, suppress progress output
+
+  # ==================== Python Tools ====================
+
+  mypy:
+    languages: [python]
+    detection:
+      - type: config_file
+        paths: [mypy.ini, .mypy.ini, pyproject.toml, setup.cfg]
+      - type: command
+        command: mypy
+    installation:
+      package_managers:
+        pip:
+          package: mypy
+          install_command: pip install mypy
+        poetry:
+          package: mypy
+          install_command: poetry add --group dev mypy
+    default_command: mypy --no-error-summary ${files}
+    version_command: mypy --version
+    categories: [type_checking]
+    # --no-error-summary: Suppress summary stats, only show actual errors
+
+  ruff:
+    languages: [python]
+    detection:
+      - type: config_file
+        paths: [ruff.toml, .ruff.toml, pyproject.toml]
+      - type: command
+        command: ruff
+    installation:
+      package_managers:
+        pip:
+          package: ruff
+          install_command: pip install ruff
+        poetry:
+          package: ruff
+          install_command: poetry add --group dev ruff
+    default_command: ruff check --output-format concise ${files}
+    version_command: ruff --version
+    categories: [linting]
+    # --output-format concise: One issue per line (file:line:col: code message)
+
+  pylint:
+    languages: [python]
+    detection:
+      - type: config_file
+        paths: [.pylintrc, pylintrc, pyproject.toml]
+      - type: command
+        command: pylint
+    installation:
+      package_managers:
+        pip:
+          package: pylint
+          install_command: pip install pylint
+        poetry:
+          package: pylint
+          install_command: poetry add --group dev pylint
+    default_command: pylint --output-format=parseable --reports=no ${files}
+    version_command: pylint --version
+    categories: [linting, code_smells]
+    # --output-format=parseable: One issue per line, no formatting
+    # --reports=no: Suppress statistics section
+
+  pytest:
+    languages: [python]
+    detection:
+      - type: config_file
+        paths: [pytest.ini, pyproject.toml, setup.cfg]
+      - type: command
+        command: pytest
+    installation:
+      package_managers:
+        pip:
+          package: pytest
+          install_command: pip install pytest
+        poetry:
+          package: pytest
+          install_command: poetry add --group dev pytest
+    default_command: pytest --quiet --no-header --tb=short
+    version_command: pytest --version
+    categories: [testing]
+    # --quiet: Minimal output, only show failures
+    # --no-header: Suppress session header
+    # --tb=short: Shorter traceback format
+
+  black:
+    languages: [python]
+    detection:
+      - type: config_file
+        paths: [pyproject.toml, .black]
+      - type: command
+        command: black
+    installation:
+      package_managers:
+        pip:
+          package: black
+          install_command: pip install black
+        poetry:
+          package: black
+          install_command: poetry add --group dev black
+    default_command: black --check --quiet ${files}
+    version_command: black --version
+    categories: [formatting]
+    # --check: Exit with error if files need formatting
+    # --quiet: Only show files that would be reformatted
+
+  radon:
+    languages: [python]
+    detection:
+      - type: command
+        command: radon
+    installation:
+      package_managers:
+        pip:
+          package: radon
+          install_command: pip install radon
+        poetry:
+          package: radon
+          install_command: poetry add --group dev radon
+    default_command: radon cc --min C --no-assert ${files}
+    version_command: radon --version
+    categories: [complexity]
+    # --min C: Only show functions with complexity C or worse (10+)
+    # --no-assert: Don't count assert statements (test code)
+
+  import-linter:
+    languages: [python]
+    detection:
+      - type: config_file
+        paths: [.importlinter, setup.cfg, pyproject.toml]
+      - type: command
+        command: lint-imports
+    installation:
+      package_managers:
+        pip:
+          package: import-linter
+          install_command: pip install import-linter
+        poetry:
+          package: import-linter
+          install_command: poetry add --group dev import-linter
+    default_command: lint-imports --no-color
+    version_command: lint-imports --version
+    categories: [architecture]
+    # --no-color: Plain text output (easier for AI to parse)
+
+  # ==================== Kotlin Tools ====================
+
+  kotlinc:
+    languages: [kotlin]
+    detection:
+      - type: command
+        command: kotlinc
+    installation:
+      external: true
+      install_instructions: "Install Kotlin from https://kotlinlang.org/docs/command-line.html or use SDKMAN"
+    default_command: kotlinc -nowarn -d /tmp/hodge-kotlin-check ${files}
+    version_command: kotlinc -version
+    categories: [type_checking]
+    # -nowarn: Suppress warnings, only show errors
+    # -d /tmp: Output to temp dir (check only, don't pollute project)
+
+  detekt:
+    languages: [kotlin]
+    detection:
+      - type: config_file
+        paths: [detekt.yml, .detekt.yml, detekt.yaml]
+      - type: command
+        command: detekt
+    installation:
+      package_managers:
+        gradle:
+          package: io.gitlab.arturbosch.detekt
+          install_command: |
+            Add to build.gradle.kts:
+            plugins { id("io.gitlab.arturbosch.detekt") version "1.23.0" }
+    default_command: detekt --input ${files} --report txt:stdout --build-upon-default-config
+    version_command: detekt --version
+    categories: [linting, complexity, code_smells]
+    # --report txt:stdout: Print findings to stdout (not files)
+    # --build-upon-default-config: Use sensible defaults
+
+  ktlint:
+    languages: [kotlin]
+    detection:
+      - type: config_file
+        paths: [.editorconfig]
+      - type: command
+        command: ktlint
+    installation:
+      package_managers:
+        gradle:
+          package: com.pinterest.ktlint
+          install_command: |
+            Add to build.gradle.kts:
+            plugins { id("org.jlleitschuh.gradle.ktlint") version "11.6.0" }
+    default_command: ktlint --reporter=plain ${files}
+    version_command: ktlint --version
+    categories: [formatting]
+    # --reporter=plain: One issue per line, minimal formatting
+
+  gradle-test:
+    languages: [kotlin, java]
+    detection:
+      - type: config_file
+        paths: [build.gradle.kts, build.gradle, gradlew]
+    installation:
+      external: true
+      install_instructions: "Gradle wrapper should be in project (./gradlew)"
+    default_command: ./gradlew test --console=plain --quiet
+    version_command: ./gradlew --version
+    categories: [testing]
+    # --console=plain: No ANSI color codes
+    # --quiet: Only show failures and errors
+
+  dependency-analysis-gradle-plugin:
+    languages: [kotlin, java]
+    detection:
+      - type: gradle_plugin
+        plugin: com.autonomousapps.dependency-analysis
+    installation:
+      package_managers:
+        gradle:
+          package: com.autonomousapps.dependency-analysis
+          install_command: |
+            Add to build.gradle.kts:
+            plugins { id("com.autonomousapps.dependency-analysis") version "1.25.0" }
+    default_command: ./gradlew buildHealth --console=plain --quiet
+    version_command: ./gradlew buildHealth --version
+    categories: [architecture]
+    # --console=plain: No ANSI color codes
+    # --quiet: Only show violations
+
+  # ==================== Java Tools ====================
+
+  javac:
+    languages: [java]
+    detection:
+      - type: command
+        command: javac
+    installation:
+      external: true
+      install_instructions: "Install JDK from https://adoptium.net/ or use SDKMAN"
+    default_command: javac -Xlint:all -d /tmp/hodge-java-check ${files}
+    version_command: javac -version
+    categories: [type_checking]
+    # -Xlint:all: Enable all warnings
+    # -d /tmp: Output to temp dir (check only)
+
+  checkstyle:
+    languages: [java]
+    detection:
+      - type: config_file
+        paths: [checkstyle.xml, .checkstyle.xml, config/checkstyle/checkstyle.xml]
+      - type: command
+        command: checkstyle
+    installation:
+      package_managers:
+        gradle:
+          package: checkstyle
+          install_command: |
+            Add to build.gradle.kts:
+            plugins { checkstyle }
+            checkstyle { toolVersion = "10.12.0" }
+        maven:
+          package: org.apache.maven.plugins:maven-checkstyle-plugin
+          install_command: |
+            Add to pom.xml:
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-checkstyle-plugin</artifactId>
+            </plugin>
+    default_command: checkstyle -c checkstyle.xml -f plain ${files}
+    version_command: checkstyle --version
+    categories: [linting]
+    # -f plain: One violation per line (file:line:column: message)
+
+  pmd:
+    languages: [java]
+    detection:
+      - type: config_file
+        paths: [pmd.xml, .pmd.xml, ruleset.xml]
+      - type: command
+        command: pmd
+    installation:
+      package_managers:
+        gradle:
+          package: pmd
+          install_command: |
+            Add to build.gradle.kts:
+            plugins { pmd }
+            pmd { toolVersion = "6.55.0" }
+        maven:
+          package: org.apache.maven.plugins:maven-pmd-plugin
+          install_command: |
+            Add to pom.xml:
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-pmd-plugin</artifactId>
+            </plugin>
+    default_command: pmd check --dir ${files} --rulesets rulesets/java/quickstart.xml --format text --no-cache
+    version_command: pmd --version
+    categories: [linting, complexity, code_smells]
+    # --format text: Plain text output, one violation per line
+    # --no-cache: Disable cache for consistent results
+
+  google-java-format:
+    languages: [java]
+    detection:
+      - type: command
+        command: google-java-format
+    installation:
+      external: true
+      install_instructions: "Download from https://github.com/google/google-java-format/releases"
+    default_command: google-java-format --dry-run --set-exit-if-changed ${files}
+    version_command: google-java-format --version
+    categories: [formatting]
+    # --dry-run: Don't modify files, just check
+    # --set-exit-if-changed: Exit with error if formatting needed
+
+  maven-test:
+    languages: [java]
+    detection:
+      - type: config_file
+        paths: [pom.xml, mvnw]
+    installation:
+      external: true
+      install_instructions: "Maven wrapper should be in project (./mvnw)"
+    default_command: ./mvnw test --batch-mode --quiet
+    version_command: ./mvnw --version
+    categories: [testing]
+    # --batch-mode: Non-interactive, no progress messages
+    # --quiet: Only show errors
+
+  jdepend:
+    languages: [java]
+    detection:
+      - type: command
+        command: jdepend
+    installation:
+      package_managers:
+        gradle:
+          package: jdepend:jdepend
+          install_command: |
+            Add to build.gradle.kts dependencies:
+            testImplementation("jdepend:jdepend:2.10")
+        maven:
+          package: jdepend:jdepend
+          install_command: |
+            Add to pom.xml:
+            <dependency>
+              <groupId>jdepend</groupId>
+              <artifactId>jdepend</artifactId>
+              <version>2.10</version>
+            </dependency>
+    default_command: jdepend -file - ${files}
+    version_command: jdepend -version
+    categories: [architecture]
+    # -file -: Output to stdout instead of file

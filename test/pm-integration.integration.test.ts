@@ -9,12 +9,13 @@ import { DecideCommand } from '../src/commands/decide';
 import { IDManager } from '../src/lib/id-manager';
 import fs from 'fs/promises';
 import path from 'path';
-import { tmpdir } from 'os';
 import { existsSync } from 'fs';
+import { TempDirectoryFixture } from '../src/test/temp-directory-fixture';
 
 integrationTest('PM integration: decide command creates issues after decisions', async () => {
   // Setup test environment
-  const testDir = path.join(tmpdir(), `hodge-test-${Date.now()}`);
+  const fixture = new TempDirectoryFixture();
+  const testDir = await fixture.setup();
   const hodgeDir = path.join(testDir, '.hodge');
   await fs.mkdir(hodgeDir, { recursive: true });
 
@@ -66,12 +67,13 @@ Implement feature with epic structure
     }
 
     // Cleanup
-    await fs.rm(testDir, { recursive: true, force: true });
+    await fixture.cleanup();
   }
 });
 
 integrationTest('PM integration: epic breakdown with sub-issues', async () => {
-  const testDir = path.join(tmpdir(), `hodge-test-${Date.now()}`);
+  const fixture = new TempDirectoryFixture();
+  const testDir = await fixture.setup();
   const hodgeDir = path.join(testDir, '.hodge');
   await fs.mkdir(hodgeDir, { recursive: true });
 
@@ -105,12 +107,12 @@ integrationTest('PM integration: epic breakdown with sub-issues', async () => {
   expect(parentFromSub?.localID).toBe(parentID);
 
   // Cleanup
-  await fs.rm(testDir, { recursive: true, force: true });
+  await fixture.cleanup();
 });
 
 integrationTest('PM integration: queue mechanism for failed operations', async () => {
-  const testDir = path.join(tmpdir(), `hodge-test-${Date.now()}`);
-  await fs.mkdir(testDir, { recursive: true });
+  const fixture = new TempDirectoryFixture();
+  const testDir = await fixture.setup();
 
   const pmHooks = new PMHooks(testDir);
   const queueFile = path.join(testDir, '.hodge', '.pm-queue.json');
@@ -136,13 +138,14 @@ integrationTest('PM integration: queue mechanism for failed operations', async (
     delete process.env.HODGE_PM_TOOL;
 
     // Cleanup
-    await fs.rm(testDir, { recursive: true, force: true });
+    await fixture.cleanup();
   }
 });
 
 integrationTest('PM integration: plan command analyzes decisions', async () => {
   const { PlanCommand } = await import('../src/commands/plan');
-  const testDir = path.join(tmpdir(), `hodge-test-${Date.now()}`);
+  const fixture = new TempDirectoryFixture();
+  const testDir = await fixture.setup();
   const hodgeDir = path.join(testDir, '.hodge');
   await fs.mkdir(hodgeDir, { recursive: true });
 
@@ -203,11 +206,12 @@ Different feature decision
   expect(plan.stories).toBeDefined();
   expect(plan.stories.length).toBeGreaterThan(0);
 
-  await fs.rm(testDir, { recursive: true, force: true });
+  await fixture.cleanup();
 });
 
 integrationTest('PM integration: ID mapping with external IDs', async () => {
-  const testDir = path.join(tmpdir(), `hodge-test-${Date.now()}`);
+  const fixture = new TempDirectoryFixture();
+  const testDir = await fixture.setup();
   const hodgeDir = path.join(testDir, '.hodge');
   await fs.mkdir(hodgeDir, { recursive: true });
 
@@ -229,52 +233,50 @@ integrationTest('PM integration: ID mapping with external IDs', async () => {
   expect(resolvedByExternal?.localID).toBe(localID);
 
   // Cleanup
-  await fs.rm(testDir, { recursive: true, force: true });
+  await fixture.cleanup();
 });
 
-integrationTest('PM integration: processQueue handles queued operations', async () => {
-  const testDir = path.join(tmpdir(), `hodge-test-${Date.now()}`);
-  const hodgeDir = path.join(testDir, '.hodge');
-  await fs.mkdir(hodgeDir, { recursive: true });
+integrationTest(
+  'PM integration: processQueue handles queued operations',
+  async () => {
+    const fixture = new TempDirectoryFixture();
+    const testDir = await fixture.setup();
 
-  const pmHooks = new PMHooks(testDir);
-  const queueFile = path.join(testDir, '.hodge', '.pm-queue.json');
+    const pmHooks = new PMHooks(testDir);
 
-  // Create a mock queue file
-  const queuedOps = [
-    {
-      type: 'create_issue',
-      feature: 'TEST-003',
-      decisions: ['Test decision'],
-      isEpic: false,
-      timestamp: new Date().toISOString(),
-    },
-  ];
+    // Create .hodge directory and queue file using fixture
+    const queuedOps = [
+      {
+        type: 'create_issue',
+        feature: 'TEST-003',
+        decisions: ['Test decision'],
+        isEpic: false,
+        timestamp: new Date().toISOString(),
+      },
+    ];
 
-  await fs.writeFile(queueFile, JSON.stringify(queuedOps, null, 2));
+    await fixture.writeFile('.hodge/.pm-queue.json', JSON.stringify(queuedOps, null, 2));
+    const queueFile = path.join(testDir, '.hodge', '.pm-queue.json');
 
-  // Mock environment to prevent real API calls
-  const originalPmTool = process.env.HODGE_PM_TOOL;
-  delete process.env.HODGE_PM_TOOL;
+    // Mock environment to prevent real API calls
+    const originalPmTool = process.env.HODGE_PM_TOOL;
+    delete process.env.HODGE_PM_TOOL;
 
-  try {
-    // Process queue (should handle gracefully without PM tool)
-    await pmHooks.processQueue();
-
-    // Queue should remain since no PM tool configured
-    expect(existsSync(queueFile)).toBe(true);
-  } finally {
-    // Restore environment
-    if (originalPmTool) {
-      process.env.HODGE_PM_TOOL = originalPmTool;
-    }
-
-    // Cleanup with retry logic for Windows/locked files
     try {
-      await fs.rm(testDir, { recursive: true, force: true, maxRetries: 3 });
-    } catch (error) {
-      // Ignore cleanup errors in tests - directory will be cleaned by OS
-      console.warn(`Warning: Could not clean up test directory ${testDir}:`, error);
+      // Process queue (should handle gracefully without PM tool)
+      await pmHooks.processQueue();
+
+      // Queue should remain since no PM tool configured
+      expect(existsSync(queueFile)).toBe(true);
+    } finally {
+      // Restore environment
+      if (originalPmTool) {
+        process.env.HODGE_PM_TOOL = originalPmTool;
+      }
+
+      // Cleanup
+      await fixture.cleanup();
     }
-  }
-});
+  },
+  10000
+); // Increased timeout for queue processing under load
