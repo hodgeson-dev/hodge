@@ -35,7 +35,7 @@ quality_checks:
   type_checking:
     - typescript
   linting:
-    - eslint  # ESLint with sonarjs plugin checks linting, complexity, and code smells
+    - eslint # ESLint with sonarjs plugin checks linting, complexity, and code smells
   testing:
     - vitest
   formatting:

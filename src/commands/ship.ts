@@ -195,12 +195,14 @@ export class ShipCommand {
 
     // Fallback if no message was set
     if (!commitMessage) {
+      const closesLine = issueId ? ` (closes ${issueId})` : '';
+      const closesFooter = issueId ? `\n- Closes ${issueId}` : '';
       commitMessage =
-        `ship: ${feature}${issueId ? ` (closes ${issueId})` : ''}\n\n` +
+        `ship: ${feature}${closesLine}\n\n` +
         `- Implementation complete\n` +
         `- Tests passing\n` +
         `- Documentation updated` +
-        (issueId ? `\n- Closes ${issueId}` : '');
+        closesFooter;
       this.logger.warn(
         chalk.yellow('⚠️  Using default commit message (no message from slash command)')
       );
@@ -210,7 +212,7 @@ export class ShipCommand {
     const shipRecord = this.shipService.generateShipRecord({
       feature,
       issueId,
-      pmTool: pmTool || null,
+      pmTool: pmTool ?? null,
       validationPassed,
       shipChecks,
       commitMessage,
@@ -218,7 +220,10 @@ export class ShipCommand {
 
     // HODGE-341.2: Write ship-record.json to feature root (not ship/ subdirectory)
     // This allows BuildCommand and HardenCommand to update it with commit tracking
-    await fs.writeFile(path.join(featureDir, 'ship-record.json'), JSON.stringify(shipRecord, null, 2));
+    await fs.writeFile(
+      path.join(featureDir, 'ship-record.json'),
+      JSON.stringify(shipRecord, null, 2)
+    );
 
     const shipDir = path.join(featureDir, 'ship');
     await fs.mkdir(shipDir, { recursive: true });
@@ -280,14 +285,15 @@ export class ShipCommand {
 
       if (learningResult.patterns.length > 0) {
         this.logger.info(chalk.dim('\n   Top patterns:'));
-        learningResult.patterns
-          .sort((a, b) => b.frequency - a.frequency)
-          .slice(0, 3)
-          .forEach((p) => {
-            this.logger.info(
-              chalk.dim(`   • ${p.name} (${p.frequency}x, ${p.metadata.confidence}% confidence)`)
-            );
-          });
+        const sortedPatterns = [...learningResult.patterns].sort(
+          (a, b) => b.frequency - a.frequency
+        );
+        const topPatterns = sortedPatterns.slice(0, 3);
+        topPatterns.forEach((p) => {
+          this.logger.info(
+            chalk.dim(`   • ${p.name} (${p.frequency}x, ${p.metadata.confidence}% confidence)`)
+          );
+        });
       }
 
       if (learningResult.recommendations.length > 0) {

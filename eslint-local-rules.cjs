@@ -28,8 +28,7 @@ module.exports = {
     create(context) {
       // Only apply to test files
       const filename = context.getFilename();
-      const isTestFile =
-        /\.(test|spec)\.ts$/.test(filename) || filename.includes('/test/');
+      const isTestFile = /\.(test|spec)\.ts$/.test(filename) || filename.includes('/test/');
 
       if (!isTestFile) {
         return {};

@@ -35,9 +35,9 @@ export interface ShipRecordData {
   };
   commitMessage: string;
   // Commit tracking for toolchain file scoping (HODGE-341.2)
-  buildStartCommit?: string;  // First commit when build started
+  buildStartCommit?: string; // First commit when build started
   hardenStartCommit?: string; // First commit when harden started
-  shipCommit?: string;         // Commit SHA when shipped
+  shipCommit?: string; // Commit SHA when shipped
 }
 
 /**

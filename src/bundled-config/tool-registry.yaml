@@ -27,7 +27,15 @@ tools:
     languages: [typescript, javascript]
     detection:
       - type: config_file
-        paths: [.eslintrc.json, .eslintrc.js, .eslintrc.yaml, .eslintrc.cjs, .eslintrc.yml, eslint.config.js]
+        paths:
+          [
+            .eslintrc.json,
+            .eslintrc.js,
+            .eslintrc.yaml,
+            .eslintrc.cjs,
+            .eslintrc.yml,
+            eslint.config.js,
+          ]
       - type: package_json
         package: eslint
     installation:
@@ -46,7 +54,15 @@ tools:
     languages: [typescript, javascript, json, yaml, markdown, html, css]
     detection:
       - type: config_file
-        paths: [.prettierrc, .prettierrc.json, .prettierrc.js, .prettierrc.yaml, .prettierrc.yml, prettier.config.js]
+        paths:
+          [
+            .prettierrc,
+            .prettierrc.json,
+            .prettierrc.js,
+            .prettierrc.yaml,
+            .prettierrc.yml,
+            prettier.config.js,
+          ]
       - type: package_json
         package: prettier
     installation:
@@ -136,7 +152,7 @@ tools:
         command: semgrep
     installation:
       external: true
-      install_instructions: "Install from https://semgrep.dev/docs/getting-started/"
+      install_instructions: 'Install from https://semgrep.dev/docs/getting-started/'
     default_command: semgrep --config .hodge/semgrep-rules/ --config auto --quiet ${files}
     version_command: semgrep --version
     categories: [security, patterns]
@@ -296,7 +312,7 @@ tools:
         command: kotlinc
     installation:
       external: true
-      install_instructions: "Install Kotlin from https://kotlinlang.org/docs/command-line.html or use SDKMAN"
+      install_instructions: 'Install Kotlin from https://kotlinlang.org/docs/command-line.html or use SDKMAN'
     default_command: kotlinc -nowarn -d /tmp/hodge-kotlin-check ${files}
     version_command: kotlinc -version
     categories: [type_checking]
@@ -349,7 +365,7 @@ tools:
         paths: [build.gradle.kts, build.gradle, gradlew]
     installation:
       external: true
-      install_instructions: "Gradle wrapper should be in project (./gradlew)"
+      install_instructions: 'Gradle wrapper should be in project (./gradlew)'
     default_command: ./gradlew test --console=plain --quiet
     version_command: ./gradlew --version
     categories: [testing]
@@ -383,7 +399,7 @@ tools:
         command: javac
     installation:
       external: true
-      install_instructions: "Install JDK from https://adoptium.net/ or use SDKMAN"
+      install_instructions: 'Install JDK from https://adoptium.net/ or use SDKMAN'
     default_command: javac -Xlint:all -d /tmp/hodge-java-check ${files}
     version_command: javac -version
     categories: [type_checking]
@@ -454,7 +470,7 @@ tools:
         command: google-java-format
     installation:
       external: true
-      install_instructions: "Download from https://github.com/google/google-java-format/releases"
+      install_instructions: 'Download from https://github.com/google/google-java-format/releases'
     default_command: google-java-format --dry-run --set-exit-if-changed ${files}
     version_command: google-java-format --version
     categories: [formatting]
@@ -468,7 +484,7 @@ tools:
         paths: [pom.xml, mvnw]
     installation:
       external: true
-      install_instructions: "Maven wrapper should be in project (./mvnw)"
+      install_instructions: 'Maven wrapper should be in project (./mvnw)'
     default_command: ./mvnw test --batch-mode --quiet
     version_command: ./mvnw --version
     categories: [testing]
