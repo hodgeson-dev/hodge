@@ -3,16 +3,16 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: HODGE-343
+**Feature**: HODGE-341.6
 **Mode**: shipped
-**PM Issue**: HODGE-343
-**Last Updated**: 2025-10-13T22:32:26.457Z
+**PM Issue**: HODGE-341.6
+**Last Updated**: 2025-10-14T03:22:05.530Z
 ## Current Session
-**Resumed**: 7 hours ago
-**Progress**: Explored HODGE-343 - template ready for AI approach generation
-**Working on**: HODGE-343 (explore mode)
+**Resumed**: 4 hours ago
+**Progress**: Explored HODGE-341.6 - template ready for AI approach generation
+**Working on**: HODGE-341.6 (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-343. Explored HODGE-343 - template ready for AI approach generation
+You were helping with HODGE-341.6. Explored HODGE-341.6 - template ready for AI approach generation
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
@@ -216,9 +216,9 @@ Suggested next: Review exploration and decide with 'hodge decide'
 
 ## Working Files
 
-- `.hodge/features/HODGE-343/explore/exploration.md`
-- `.hodge/features/HODGE-343/explore/test-intentions.md`
-- `.hodge/features/HODGE-343/build/build-plan.md`
+- `.hodge/features/HODGE-341.6/explore/exploration.md`
+- `.hodge/features/HODGE-341.6/explore/test-intentions.md`
+- `.hodge/features/HODGE-341.6/build/build-plan.md`
 
 ## Next Steps
 

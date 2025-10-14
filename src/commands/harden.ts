@@ -21,10 +21,12 @@ import { CriticalFilesReportGenerator } from '../lib/critical-files-report-gener
 import * as yaml from 'js-yaml';
 import { ShipService } from '../lib/ship-service.js';
 import { getCurrentCommitSHA } from '../lib/git-utils.js';
+import { AutoFixService } from '../lib/auto-fix-service.js';
 
 export interface HardenOptions {
   skipTests?: boolean;
   autoFix?: boolean;
+  fix?: boolean; // HODGE-341.6: Run auto-fix on staged files only
   sequential?: boolean; // Run validations sequentially for debugging
   review?: boolean; // Return review context instead of running validations
 }
@@ -68,100 +70,19 @@ export class HardenCommand {
     // Update context for this command
     await contextManager.updateForCommand('harden', feature, 'harden');
 
+    // Validate inputs
+    if (!feature || typeof feature !== 'string') {
+      throw new Error('Feature name is required and must be a string');
+    }
+
+    // HODGE-341.6: Handle --fix flag (auto-fix staged files) - early return
+    if (options.fix) {
+      await this.handleAutoFix(feature);
+      return;
+    }
+
     try {
-      // Validate inputs
-      if (!feature || typeof feature !== 'string') {
-        throw new Error('Feature name is required and must be a string');
-      }
-
-      this.logger.info(chalk.magenta('🛡️  Entering Harden Mode'));
-      this.logger.info(chalk.gray(`Feature: ${feature}\n`));
-
-      // Update PM tracking - mark as hardening at START of phase
-      await this.pmHooks.onHarden(feature);
-
-      // Display AI context
-      this.displayAIContext(feature);
-
-      // Setup and validate
-      const setup = await this.setupHardenEnvironment(feature, options);
-      if (!setup.canProceed) {
-        return; // Setup handled the exit
-      }
-
-      const { hardenDir } = setup;
-
-      // Create harden context
-      this.logger.info(chalk.bold('In Harden Mode:'));
-      this.logger.info('  • Standards are ' + chalk.red('strictly enforced'));
-      this.logger.info('  • All tests must ' + chalk.red('pass'));
-      this.logger.info('  • Code must be ' + chalk.red('production-ready'));
-      this.logger.info('  • No warnings or errors ' + chalk.red('allowed') + '\n');
-
-      // Run validation checks using HardenService
-      this.logger.info(chalk.bold('Running validation checks...\n'));
-
-      if (options.sequential) {
-        this.logger.info(chalk.cyan('📝 Running validations sequentially (debug mode)...'));
-      } else {
-        this.logger.info(chalk.cyan('🚀 Running validations in parallel...'));
-      }
-
-      const parallelStartTime = Date.now();
-
-      // Delegate to HardenService for business logic
-      // HODGE-341.2: Pass feature name for commit range scoping
-      const results: ValidationResults = await this.hardenService.runValidations(feature, options);
-
-      const parallelEndTime = Date.now();
-      if (!options.sequential) {
-        this.logger.info(
-          chalk.dim(
-            `   Parallel validations completed in ${parallelEndTime - parallelStartTime}ms\n`
-          )
-        );
-      }
-
-      // Display validation status (presentation layer)
-      this.displayValidationStatus(results, options);
-
-      // Check if all validations passed
-      const allPassed = Object.values(results).every((r: ValidationResult) => r.passed);
-
-      // Save validation results
-      await fs.writeFile(
-        path.join(hardenDir, 'validation-results.json'),
-        JSON.stringify(results, null, 2)
-      );
-
-      // HODGE-341.2: Save ALL quality check results (including advanced checks) for AI review
-      const allQualityChecks = this.hardenService.getLastQualityCheckResults();
-      if (allQualityChecks && allQualityChecks.length > 0) {
-        const qualityChecksReport = this.generateQualityChecksReport(allQualityChecks);
-        await fs.writeFile(path.join(hardenDir, 'quality-checks.md'), qualityChecksReport);
-        this.logger.debug('Wrote quality checks report', {
-          checkCount: allQualityChecks.length,
-          path: path.join(hardenDir, 'quality-checks.md'),
-        });
-      }
-
-      // Generate and save report
-      const reportContent = this.generateReport(feature, results, options);
-      await fs.writeFile(path.join(hardenDir, 'harden-report.md'), reportContent);
-
-      // HODGE-341.5: If all errors fixed, prompt AI to review warnings
-      if (allPassed) {
-        await this.promptWarningReview(hardenDir);
-      }
-
-      // Display final summary
-      this.displaySummary(feature, results, hardenDir, options);
-
-      // Performance metrics (in development)
-      if (process.env.NODE_ENV === 'development' || process.env.HODGE_DEBUG) {
-        const elapsed = Date.now() - startTime;
-        this.logger.info(chalk.dim(`\nTotal execution time: ${elapsed}ms`));
-      }
+      await this.runHardenValidation(feature, options, startTime);
     } catch (error) {
       // Comprehensive error handling
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
@@ -175,6 +96,138 @@ export class HardenCommand {
 
       throw error;
     }
+  }
+
+  /**
+   * Run harden validation workflow (extracted to reduce cognitive complexity)
+   * @private
+   */
+  private async runHardenValidation(
+    feature: string,
+    options: HardenOptions,
+    startTime: number
+  ): Promise<void> {
+    this.logger.info(chalk.magenta('🛡️  Entering Harden Mode'));
+    this.logger.info(chalk.gray(`Feature: ${feature}\n`));
+
+    // Update PM tracking - mark as hardening at START of phase
+    await this.pmHooks.onHarden(feature);
+
+    // Display AI context
+    this.displayAIContext(feature);
+
+    // Setup and validate
+    const setup = await this.setupHardenEnvironment(feature, options);
+    if (!setup.canProceed) {
+      return; // Setup handled the exit
+    }
+
+    const { hardenDir } = setup;
+
+    // Display harden mode requirements
+    this.displayHardenRequirements();
+
+    // Run validations and get results
+    const results = await this.runValidationsWithTiming(feature, options);
+
+    // Display validation status (presentation layer)
+    this.displayValidationStatus(results, options);
+
+    // Save results and reports
+    await this.saveValidationResults(feature, hardenDir, results, options);
+
+    // Performance metrics (in development)
+    if (process.env.NODE_ENV === 'development' || process.env.HODGE_DEBUG) {
+      const elapsed = Date.now() - startTime;
+      this.logger.info(chalk.dim(`\nTotal execution time: ${elapsed}ms`));
+    }
+  }
+
+  /**
+   * Display harden mode requirements
+   * @private
+   */
+  private displayHardenRequirements(): void {
+    this.logger.info(chalk.bold('In Harden Mode:'));
+    this.logger.info('  • Standards are ' + chalk.red('strictly enforced'));
+    this.logger.info('  • All tests must ' + chalk.red('pass'));
+    this.logger.info('  • Code must be ' + chalk.red('production-ready'));
+    this.logger.info('  • No warnings or errors ' + chalk.red('allowed') + '\n');
+  }
+
+  /**
+   * Run validations with timing metrics
+   * @private
+   */
+  private async runValidationsWithTiming(
+    feature: string,
+    options: HardenOptions
+  ): Promise<ValidationResults> {
+    this.logger.info(chalk.bold('Running validation checks...\n'));
+
+    if (options.sequential) {
+      this.logger.info(chalk.cyan('📝 Running validations sequentially (debug mode)...'));
+    } else {
+      this.logger.info(chalk.cyan('🚀 Running validations in parallel...'));
+    }
+
+    const parallelStartTime = Date.now();
+
+    // Delegate to HardenService for business logic
+    // HODGE-341.2: Pass feature name for commit range scoping
+    const results: ValidationResults = await this.hardenService.runValidations(feature, options);
+
+    const parallelEndTime = Date.now();
+    if (!options.sequential) {
+      this.logger.info(
+        chalk.dim(`   Parallel validations completed in ${parallelEndTime - parallelStartTime}ms\n`)
+      );
+    }
+
+    return results;
+  }
+
+  /**
+   * Save validation results and generate reports
+   * @private
+   */
+  private async saveValidationResults(
+    feature: string,
+    hardenDir: string,
+    results: ValidationResults,
+    options: HardenOptions
+  ): Promise<void> {
+    // Check if all validations passed
+    const allPassed = Object.values(results).every((r: ValidationResult) => r.passed);
+
+    // Save validation results
+    await fs.writeFile(
+      path.join(hardenDir, 'validation-results.json'),
+      JSON.stringify(results, null, 2)
+    );
+
+    // HODGE-341.2: Save ALL quality check results (including advanced checks) for AI review
+    const allQualityChecks = this.hardenService.getLastQualityCheckResults();
+    if (allQualityChecks && allQualityChecks.length > 0) {
+      const qualityChecksReport = this.generateQualityChecksReport(allQualityChecks);
+      await fs.writeFile(path.join(hardenDir, 'quality-checks.md'), qualityChecksReport);
+      this.logger.debug('Wrote quality checks report', {
+        checkCount: allQualityChecks.length,
+        path: path.join(hardenDir, 'quality-checks.md'),
+      });
+    }
+
+    // Generate and save report
+    const reportContent = this.generateReport(feature, results, options);
+    await fs.writeFile(path.join(hardenDir, 'harden-report.md'), reportContent);
+
+    // HODGE-341.5: If all errors fixed, prompt AI to review warnings
+    if (allPassed) {
+      await this.promptWarningReview(hardenDir);
+    }
+
+    // Display final summary
+    this.displaySummary(feature, results, hardenDir, options);
   }
 
   /**
@@ -702,6 +755,58 @@ The AI will interpret these results to identify issues that need to be fixed bef
     } catch (error) {
       // Non-critical - log and continue
       this.logger.debug('Failed to check warning review config', { error: error as Error });
+    }
+  }
+
+  /**
+   * Handle auto-fix mode - run auto-fix on staged files
+   * HODGE-341.6: Auto-fix workflow
+   * @private
+   */
+  private async handleAutoFix(feature: string): Promise<void> {
+    this.logger.info(chalk.blue('🔧 Auto-Fix Mode: Running auto-fixable tools on staged files\n'));
+
+    try {
+      // Define paths
+      const featureDir = path.join('.hodge', 'features', feature);
+      const hardenDir = path.join(featureDir, 'harden');
+
+      // Create harden directory
+      await fs.mkdir(hardenDir, { recursive: true });
+
+      // Load toolchain config
+      const toolchainConfigPath = path.join(process.cwd(), '.hodge', 'toolchain.yaml');
+      if (!existsSync(toolchainConfigPath)) {
+        this.logger.error(chalk.red('❌ No toolchain.yaml found'));
+        this.logger.info(chalk.gray('   Run `hodge init` to create toolchain configuration'));
+        throw new Error('Toolchain configuration not found');
+      }
+
+      const toolchainYaml = await fs.readFile(toolchainConfigPath, 'utf-8');
+      const toolchainConfig = yaml.load(toolchainYaml) as ToolchainConfig;
+
+      // Run auto-fix
+      const autoFixService = new AutoFixService();
+      const report = await autoFixService.runAutoFix(toolchainConfig);
+
+      // Save report for reference
+      await fs.writeFile(
+        path.join(hardenDir, 'auto-fix-report.json'),
+        JSON.stringify(report, null, 2)
+      );
+
+      // Check for failures
+      if (report.failures.length > 0) {
+        this.logger.warn(
+          chalk.yellow(`\n⚠️  ${report.failures.length} tool(s) failed to auto-fix`)
+        );
+        this.logger.info(chalk.gray('Failures will be included in quality check report\n'));
+      }
+
+      this.logger.info(chalk.green('✅ Auto-fix complete\n'));
+    } catch (error) {
+      this.logger.error(chalk.red('❌ Auto-fix failed'), { error: error as Error });
+      throw error;
     }
   }
 }

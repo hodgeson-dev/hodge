@@ -111,30 +111,32 @@ export function analyzeBranch(branchName: string): BranchInfo {
   // Check if protected
   const isProtected = protectedBranches.includes(branchName);
 
-  // Determine branch type
+  // Determine branch type using RegExp.exec() (sonarjs/prefer-regexp-exec)
   let type: BranchInfo['type'] = 'other';
   if (isProtected) {
     type = 'main';
-  } else if (branchName.match(/^feature\//)) {
+  } else if (/^feature\//.exec(branchName)) {
     type = 'feature';
-  } else if (branchName.match(/^(fix|bugfix|hotfix)\//)) {
+  } else if (/^(?:fix|bugfix|hotfix)\//.exec(branchName)) {
     type = 'fix';
-  } else if (branchName.match(/^(release|rc)\//)) {
+  } else if (/^(?:release|rc)\//.exec(branchName)) {
     type = 'release';
   }
 
   // Extract issue ID if present
   // TODO: Make issue patterns configurable
+  // Simplified patterns to avoid backtracking (sonarjs/slow-regex)
   const issuePatterns = [
-    /(?:LIN|HOD)-\d+/i, // Linear
-    /[A-Z]{2,}-\d+/, // Jira
+    /LIN-\d+/i, // Linear (simplified - removed non-capturing group)
+    /HOD-\d+/i, // Hodge
+    /[A-Z]{2,10}-\d+/, // Jira (limit repetition)
     /#\d+/, // GitHub
     /PSILO-\d+/, // Custom example
   ];
 
   let issueId: string | undefined;
   for (const pattern of issuePatterns) {
-    const match = branchName.match(pattern);
+    const match = pattern.exec(branchName);
     if (match) {
       issueId = match[0];
       break;
@@ -316,4 +318,38 @@ export function formatPushSummary(result: PushResult, branchInfo: BranchInfo): s
   }
 
   return lines.join('\n');
+}
+
+/**
+ * Get list of staged files (files in git index)
+ * HODGE-341.6: Used by auto-fix to scope fixes to staged files only
+ */
+export async function getStagedFiles(): Promise<string[]> {
+  try {
+    const { stdout } = await execAsync('git diff --cached --name-only');
+    return stdout
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
+  } catch (error) {
+    throw new Error(`Failed to get staged files: ${String(error)}`);
+  }
+}
+
+/**
+ * Stage files (add to git index)
+ * HODGE-341.6: Used by auto-fix to re-stage files after applying fixes
+ */
+export async function stageFiles(files: string[]): Promise<void> {
+  if (files.length === 0) {
+    return;
+  }
+
+  try {
+    // Quote file paths to handle spaces/special characters
+    const quotedFiles = files.map((f) => `"${f}"`).join(' ');
+    await execAsync(`git add ${quotedFiles}`);
+  } catch (error) {
+    throw new Error(`Failed to stage files: ${String(error)}`);
+  }
 }

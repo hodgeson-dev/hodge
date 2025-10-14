@@ -1120,6 +1120,52 @@ Remember: The CLI handles all the file creation and PM integration. Focus on gen
       name: 'harden',
       content: `# Hodge Harden Mode
 
+## Step 0: Auto-Fix Simple Issues (HODGE-341.6)
+
+**Run auto-fix FIRST to fix simple formatting and linting issues automatically.**
+
+### Stage Your Changes
+\`\`\`bash
+git add .
+\`\`\`
+
+### Run Auto-Fix
+\`\`\`bash
+hodge harden {{feature}} --fix
+\`\`\`
+
+**What this does**:
+- Runs formatters first: prettier, black, ktlint, google-java-format
+- Then runs linters: eslint --fix, ruff --fix
+- Automatically re-stages modified files
+- Saves report to \`.hodge/features/{{feature}}/harden/auto-fix-report.json\`
+
+**Communication flow**: Tools → CLI → AI → User
+
+**What gets auto-fixed**:
+- Code formatting issues
+- Simple linting violations (unused imports, trailing whitespace, etc.)
+- Style inconsistencies
+
+**What requires manual fixing**:
+- Type errors (handled in review step)
+- Test failures (handled in review step)
+- Complex logic errors (AI assists via Edit tool)
+- Architectural issues (AI assists via Edit tool)
+
+### Review Auto-Fix Results
+\`\`\`bash
+git diff
+\`\`\`
+
+Check what was changed. If auto-fix made unexpected changes, you can:
+- Revert specific changes: \`git checkout -- <file>\`
+- Stage additional fixes manually: \`git add <file>\`
+
+**After auto-fix completes, proceed to Step 1 (Generate Review Manifest).**
+
+---
+
 ## ⚠️ REQUIRED: Pre-Harden Code Review
 
 **STOP! You MUST complete this AI Code Review BEFORE running the harden command.**
@@ -1129,7 +1175,7 @@ Remember: The CLI handles all the file creation and PM integration. Focus on gen
 **ERRORS MUST BE FIXED BEFORE VALIDATION**
 
 This workflow has a hard gate at Step 6:
-- If quality checks show ERRORS → STOP, fix them, re-run from Step 1
+- If quality checks show ERRORS → STOP, fix them, re-run from Step 0 (auto-fix)
 - If only WARNINGS → Proceed to validation (address warnings before ship)
 - If clean → Proceed to validation
 
@@ -1474,8 +1520,10 @@ hodge harden {{feature}}
 Options:
 \`\`\`bash
 hodge harden {{feature}} --skip-tests  # Skip test execution (not recommended)
-hodge harden {{feature}} --auto-fix    # Attempt to auto-fix linting issues
+hodge harden {{feature}} --fix         # Auto-fix staged files (see Step 0)
 \`\`\`
+
+**Note**: The \`--fix\` flag should be run as Step 0 (before review). See the top of this file for the complete auto-fix workflow.
 
 ## What The CLI Does
 1. Checks that feature has been built

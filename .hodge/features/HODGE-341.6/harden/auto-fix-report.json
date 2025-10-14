@@ -1,0 +1,44 @@
+{
+  "timestamp": "2025-10-14T03:24:58.535Z",
+  "stagedFiles": [
+    ".claude/commands/harden.md",
+    ".hodge/.session",
+    ".hodge/HODGE.md",
+    ".hodge/context.json",
+    ".hodge/features/HODGE-341.6/build/build-plan.md",
+    ".hodge/features/HODGE-341.6/explore/exploration.md",
+    ".hodge/features/HODGE-341.6/explore/test-intentions.md",
+    ".hodge/features/HODGE-341.6/issue-id.txt",
+    ".hodge/features/HODGE-341.6/ship-record.json",
+    ".hodge/id-mappings.json",
+    ".hodge/project_management.md",
+    ".hodge/toolchain.yaml",
+    "src/bundled-config/tool-registry.yaml",
+    "src/commands/harden.ts",
+    "src/lib/auto-fix-service.ts",
+    "src/lib/git-utils.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 14,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": ".hodge/toolchain.yaml 25ms (unchanged)\nsrc/bundled-config/tool-registry.yaml 41ms (unchanged)\nsrc/commands/harden.ts 146ms\nsrc/lib/auto-fix-service.ts 63ms\nsrc/lib/git-utils.ts 79ms\n",
+      "stderr": "",
+      "duration": 1096
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 3,
+      "issuesFixed": 25,
+      "success": true,
+      "stdout": "\n/Users/michaelkelly/Projects/hodge/src/commands/harden.ts\n   55:3   warning  Async method 'execute' has too many lines (84). Maximum allowed is 50                max-lines-per-function\n   55:9   error    Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed  sonarjs/cognitive-complexity\n  439:1   warning  File has too many lines (522). Maximum allowed is 300                                max-lines\n  463:14  warning  Unnecessary conditional, value is always falsy                                       @typescript-eslint/no-unnecessary-condition\n  524:3   warning  Async method 'handleReviewMode' has too many lines (94). Maximum allowed is 50       max-lines-per-function\n\n/Users/michaelkelly/Projects/hodge/src/lib/auto-fix-service.ts\n  123:3   warning  Async method 'runToolFix' has too many lines (55). Maximum allowed is 50                                                          max-lines-per-function\n  177:30  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                         @typescript-eslint/prefer-nullish-coalescing\n  187:28  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                         @typescript-eslint/prefer-nullish-coalescing\n  188:28  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                         @typescript-eslint/prefer-nullish-coalescing\n  188:43  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                         @typescript-eslint/prefer-nullish-coalescing\n  209:11  error    Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed                                               sonarjs/cognitive-complexity\n  289:12  warning  Unnecessary conditional, value is always truthy                                                                                   @typescript-eslint/no-unnecessary-condition\n  298:15  error    Make sure the regex used here, which is vulnerable to super-linear runtime due to backtracking, cannot lead to denial of service  sonarjs/slow-regex\n  299:17  error    Make sure the regex used here, which is vulnerable to super-linear runtime due to backtracking, cannot lead to denial of service  sonarjs/slow-regex\n  305:10  warning  Unnecessary conditional, value is always falsy                                                                                    @typescript-eslint/no-unnecessary-condition\n  310:26  error    Use the \"RegExp.exec()\" method instead                                                                                            sonarjs/prefer-regexp-exec\n\n/Users/michaelkelly/Projects/hodge/src/lib/git-utils.ts\n  108:6   warning  Complete the task associated to this \"TODO\" comment                                                                               sonarjs/todo-tag\n  118:25  error    Use the \"RegExp.exec()\" method instead                                                                                            sonarjs/prefer-regexp-exec\n  120:25  error    Use the \"RegExp.exec()\" method instead                                                                                            sonarjs/prefer-regexp-exec\n  122:25  error    Use the \"RegExp.exec()\" method instead                                                                                            sonarjs/prefer-regexp-exec\n  127:6   warning  Complete the task associated to this \"TODO\" comment                                                                               sonarjs/todo-tag\n  130:5   error    Make sure the regex used here, which is vulnerable to super-linear runtime due to backtracking, cannot lead to denial of service  sonarjs/slow-regex\n  137:30  error    Use the \"RegExp.exec()\" method instead                                                                                            sonarjs/prefer-regexp-exec\n  170:33  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                         @typescript-eslint/prefer-nullish-coalescing\n  171:33  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                         @typescript-eslint/prefer-nullish-coalescing\n\n✖ 25 problems (10 errors, 15 warnings)\n\n",
+      "stderr": "",
+      "duration": 4953
+    }
+  ],
+  "totalIssuesFixed": 25,
+  "totalFilesModified": 17,
+  "failures": []
+}

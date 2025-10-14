@@ -44,11 +44,13 @@ tools:
           package: eslint
           install_command: npm install --save-dev eslint
     default_command: npx eslint --format compact ${files}
+    fix_command: npx eslint --fix ${files}
     version_command: eslint --version
     categories: [linting, complexity, code_smells]
     # --format compact: One issue per line (file:line:col: message)
     # More concise than default 'stylish' format
     # ESLint with sonarjs plugin provides linting, complexity, and code smell checks
+    # --fix: Auto-fix issues (HODGE-341.6)
 
   prettier:
     languages: [typescript, javascript, json, yaml, markdown, html, css]
@@ -71,9 +73,11 @@ tools:
           package: prettier
           install_command: npm install --save-dev prettier
     default_command: npx prettier --check ${files}
+    fix_command: npx prettier --write ${files}
     version_command: prettier --version
     categories: [formatting]
     # --check: Exit with error if files are not formatted (lists unformatted files)
+    # --write: Auto-format files (HODGE-341.6)
 
   vitest:
     languages: [typescript, javascript]
@@ -196,9 +200,11 @@ tools:
           package: ruff
           install_command: poetry add --group dev ruff
     default_command: ruff check --output-format concise ${files}
+    fix_command: ruff check --fix ${files}
     version_command: ruff --version
     categories: [linting]
     # --output-format concise: One issue per line (file:line:col: code message)
+    # --fix: Auto-fix issues (HODGE-341.6)
 
   pylint:
     languages: [python]
@@ -259,10 +265,12 @@ tools:
           package: black
           install_command: poetry add --group dev black
     default_command: black --check --quiet ${files}
+    fix_command: black ${files}
     version_command: black --version
     categories: [formatting]
     # --check: Exit with error if files need formatting
     # --quiet: Only show files that would be reformatted
+    # Auto-fix: black formats files in-place by default (HODGE-341.6)
 
   radon:
     languages: [python]
@@ -354,9 +362,11 @@ tools:
             Add to build.gradle.kts:
             plugins { id("org.jlleitschuh.gradle.ktlint") version "11.6.0" }
     default_command: ktlint --reporter=plain ${files}
+    fix_command: ktlint -F ${files}
     version_command: ktlint --version
     categories: [formatting]
     # --reporter=plain: One issue per line, minimal formatting
+    # -F: Auto-format files (HODGE-341.6)
 
   gradle-test:
     languages: [kotlin, java]
@@ -472,10 +482,12 @@ tools:
       external: true
       install_instructions: 'Download from https://github.com/google/google-java-format/releases'
     default_command: google-java-format --dry-run --set-exit-if-changed ${files}
+    fix_command: google-java-format --replace ${files}
     version_command: google-java-format --version
     categories: [formatting]
     # --dry-run: Don't modify files, just check
     # --set-exit-if-changed: Exit with error if formatting needed
+    # --replace: Format files in-place (HODGE-341.6)
 
   maven-test:
     languages: [java]

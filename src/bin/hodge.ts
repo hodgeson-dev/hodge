@@ -71,11 +71,12 @@ const hardenCmd = program
   .description('[Internal] Harden a feature for production (uses current context if not specified)')
   .option('--skip-tests', 'Skip test execution')
   .option('--auto-fix', 'Attempt to auto-fix linting issues')
+  .option('--fix', 'Run auto-fix on staged files (HODGE-341.6)')
   .option('--review', 'Return review context for AI code review (does not run validations)')
   .action(
     async (
       feature: string | undefined,
-      options: { skipTests?: boolean; autoFix?: boolean; review?: boolean }
+      options: { skipTests?: boolean; autoFix?: boolean; fix?: boolean; review?: boolean }
     ) => {
       const { HardenCommand } = await import('../commands/harden.js');
       const hardenCommand = new HardenCommand();
