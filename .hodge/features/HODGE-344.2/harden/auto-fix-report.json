@@ -1,0 +1,38 @@
+{
+  "timestamp": "2025-10-14T06:04:44.644Z",
+  "stagedFiles": [
+    ".hodge/features/HODGE-344.2/build/build-plan.md",
+    ".hodge/features/HODGE-344.2/explore/exploration.md",
+    ".hodge/features/HODGE-344.2/explore/test-intentions.md",
+    ".hodge/features/HODGE-344.2/issue-id.txt",
+    ".hodge/features/HODGE-344.2/ship-record.json",
+    "src/lib/review-manifest-generator.smoke.test.ts",
+    "src/lib/review-manifest-generator.ts",
+    "src/lib/review-report-saver.smoke.test.ts",
+    "src/lib/review-report-saver.ts",
+    "src/types/review-manifest.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 9,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": "src/lib/review-manifest-generator.smoke.test.ts 92ms (unchanged)\nsrc/lib/review-manifest-generator.ts 46ms (unchanged)\nsrc/lib/review-report-saver.smoke.test.ts 20ms (unchanged)\nsrc/lib/review-report-saver.ts 8ms (unchanged)\nsrc/types/review-manifest.ts 3ms (unchanged)\n",
+      "stderr": "",
+      "duration": 857
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 5,
+      "issuesFixed": 3,
+      "success": true,
+      "stdout": "\n/Users/michaelkelly/Projects/hodge/src/lib/review-manifest-generator.smoke.test.ts\n  0:0  warning  File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override\n\n/Users/michaelkelly/Projects/hodge/src/lib/review-report-saver.smoke.test.ts\n  0:0  warning  File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override\n\n/Users/michaelkelly/Projects/hodge/src/lib/review-report-saver.ts\n  82:51  warning  'timestamp' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars\n\n✖ 3 problems (0 errors, 3 warnings)\n\n",
+      "stderr": "",
+      "duration": 4048
+    }
+  ],
+  "totalIssuesFixed": 3,
+  "totalFilesModified": 14,
+  "failures": []
+}

@@ -173,4 +173,115 @@ describe('ReviewManifestGenerator - Smoke Tests', () => {
     expect(profiles).toContain('languages/general-coding-standards.yaml');
     expect(profiles).toContain('testing/general-test-standards.yaml');
   });
+
+  // HODGE-344.2: File list and scope metadata tests
+  smokeTest('should accept explicit file list with scope metadata', () => {
+    const generator = new ReviewManifestGenerator();
+    const changes: GitDiffResult[] = [
+      { path: 'src/lib/test.ts', linesAdded: 10, linesDeleted: 5, linesChanged: 15 },
+    ];
+    const recommendation: TierRecommendation = {
+      tier: 'quick',
+      reason: 'Single file change',
+      metrics: {
+        totalFiles: 1,
+        totalLines: 15,
+        fileTypeBreakdown: { implementation: 1, test: 0, documentation: 0, config: 0 },
+        hasCriticalPaths: false,
+      },
+    };
+
+    const manifest = generator.generateManifest('TEST-001', changes, recommendation, {
+      fileList: ['src/lib/test.ts'],
+      scope: {
+        type: 'file',
+        target: 'src/lib/test.ts',
+      },
+    });
+
+    expect(manifest.scope).toBeDefined();
+    expect(manifest.scope?.type).toBe('file');
+    expect(manifest.scope?.target).toBe('src/lib/test.ts');
+    expect(manifest.scope?.fileCount).toBe(1);
+  });
+
+  smokeTest('should track directory scope metadata', () => {
+    const generator = new ReviewManifestGenerator();
+    const changes: GitDiffResult[] = [
+      { path: 'src/lib/a.ts', linesAdded: 10, linesDeleted: 5, linesChanged: 15 },
+      { path: 'src/lib/b.ts', linesAdded: 20, linesDeleted: 10, linesChanged: 30 },
+    ];
+    const recommendation: TierRecommendation = {
+      tier: 'standard',
+      reason: 'Directory changes',
+      metrics: {
+        totalFiles: 2,
+        totalLines: 45,
+        fileTypeBreakdown: { implementation: 2, test: 0, documentation: 0, config: 0 },
+        hasCriticalPaths: false,
+      },
+    };
+
+    const manifest = generator.generateManifest('TEST-002', changes, recommendation, {
+      fileList: ['src/lib/a.ts', 'src/lib/b.ts'],
+      scope: {
+        type: 'directory',
+        target: 'src/lib/',
+      },
+    });
+
+    expect(manifest.scope?.type).toBe('directory');
+    expect(manifest.scope?.target).toBe('src/lib/');
+    expect(manifest.scope?.fileCount).toBe(2);
+  });
+
+  smokeTest('should track commits scope metadata', () => {
+    const generator = new ReviewManifestGenerator();
+    const changes: GitDiffResult[] = [
+      { path: 'src/a.ts', linesAdded: 10, linesDeleted: 5, linesChanged: 15 },
+    ];
+    const recommendation: TierRecommendation = {
+      tier: 'standard',
+      reason: 'Recent commits',
+      metrics: {
+        totalFiles: 1,
+        totalLines: 15,
+        fileTypeBreakdown: { implementation: 1, test: 0, documentation: 0, config: 0 },
+        hasCriticalPaths: false,
+      },
+    };
+
+    const manifest = generator.generateManifest('TEST-003', changes, recommendation, {
+      fileList: ['src/a.ts'],
+      scope: {
+        type: 'commits',
+        target: '5',
+      },
+    });
+
+    expect(manifest.scope?.type).toBe('commits');
+    expect(manifest.scope?.target).toBe('5');
+  });
+
+  smokeTest('should not include scope metadata when file list not provided', () => {
+    const generator = new ReviewManifestGenerator();
+    const changes: GitDiffResult[] = [
+      { path: 'src/lib/test.ts', linesAdded: 10, linesDeleted: 5, linesChanged: 15 },
+    ];
+    const recommendation: TierRecommendation = {
+      tier: 'quick',
+      reason: 'Single file change',
+      metrics: {
+        totalFiles: 1,
+        totalLines: 15,
+        fileTypeBreakdown: { implementation: 1, test: 0, documentation: 0, config: 0 },
+        hasCriticalPaths: false,
+      },
+    };
+
+    const manifest = generator.generateManifest('TEST-004', changes, recommendation);
+
+    // No file list provided = feature-based review (backward compatibility)
+    expect(manifest.scope).toBeUndefined();
+  });
 });

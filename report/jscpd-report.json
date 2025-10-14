@@ -1,12 +1,12 @@
 {
   "statistics": {
-    "detectionDate": "2025-10-14T05:17:03.756Z",
+    "detectionDate": "2025-10-14T06:16:13.504Z",
     "formats": {
       "typescript": {
         "sources": {
-          "src/lib/git-utils.ts": {
-            "lines": 482,
-            "tokens": 3307,
+          "src/types/review-manifest.ts": {
+            "lines": 137,
+            "tokens": 475,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -16,9 +16,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/lib/git-file-scoping.smoke.test.ts": {
-            "lines": 77,
-            "tokens": 660,
+          "src/lib/review-report-saver.ts": {
+            "lines": 154,
+            "tokens": 985,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -27,34 +27,107 @@
             "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
+          },
+          "src/lib/review-report-saver.smoke.test.ts": {
+            "lines": 163,
+            "tokens": 1385,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/review-manifest-generator.ts": {
+            "lines": 439,
+            "tokens": 3182,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/review-manifest-generator.smoke.test.ts": {
+            "lines": 286,
+            "tokens": 2968,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 32,
+            "duplicatedTokens": 350,
+            "percentage": 11.19,
+            "percentageTokens": 11.79,
+            "newDuplicatedLines": 0,
+            "newClones": 0
           }
         },
         "total": {
-          "lines": 559,
-          "tokens": 3967,
-          "sources": 2,
-          "clones": 0,
-          "duplicatedLines": 0,
-          "duplicatedTokens": 0,
-          "percentage": 0,
-          "percentageTokens": 0,
+          "lines": 1179,
+          "tokens": 8995,
+          "sources": 5,
+          "clones": 1,
+          "duplicatedLines": 16,
+          "duplicatedTokens": 175,
+          "percentage": 1.36,
+          "percentageTokens": 1.95,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
       }
     },
     "total": {
-      "lines": 559,
-      "tokens": 3967,
-      "sources": 2,
-      "clones": 0,
-      "duplicatedLines": 0,
-      "duplicatedTokens": 0,
-      "percentage": 0,
-      "percentageTokens": 0,
+      "lines": 1179,
+      "tokens": 8995,
+      "sources": 5,
+      "clones": 1,
+      "duplicatedLines": 16,
+      "duplicatedTokens": 175,
+      "percentage": 1.36,
+      "percentageTokens": 1.95,
       "newDuplicatedLines": 0,
       "newClones": 0
     }
   },
-  "duplicates": []
+  "duplicates": [
+    {
+      "format": "typescript",
+      "lines": 17,
+      "fragment": ", () => {\n    const generator = new ReviewManifestGenerator();\n    const changes: GitDiffResult[] = [\n      { path: 'src/lib/test.ts', linesAdded: 10, linesDeleted: 5, linesChanged: 15 },\n    ];\n    const recommendation: TierRecommendation = {\n      tier: 'quick',\n      reason: 'Single file change',\n      metrics: {\n        totalFiles: 1,\n        totalLines: 15,\n        fileTypeBreakdown: { implementation: 1, test: 0, documentation: 0, config: 0 },\n        hasCriticalPaths: false,\n      },\n    };\n\n    const manifest = generator.generateManifest('TEST-004'",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/lib/review-manifest-generator.smoke.test.ts",
+        "start": 266,
+        "end": 282,
+        "startLoc": {
+          "line": 266,
+          "column": 64,
+          "position": 2759
+        },
+        "endLoc": {
+          "line": 282,
+          "column": 11,
+          "position": 2934
+        }
+      },
+      "secondFile": {
+        "name": "src/lib/review-manifest-generator.smoke.test.ts",
+        "start": 178,
+        "end": 194,
+        "startLoc": {
+          "line": 178,
+          "column": 55,
+          "position": 1873
+        },
+        "endLoc": {
+          "line": 194,
+          "column": 11,
+          "position": 2048
+        }
+      }
+    }
+  ]
 }

@@ -29,17 +29,33 @@ export class ReviewManifestGenerator {
   /**
    * Generate complete review manifest
    *
+   * HODGE-344.2: Enhanced to support optional file list for file-based reviews
+   *
    * @param feature - Feature ID
    * @param changedFiles - Git diff results
    * @param recommendation - Tier recommendation
+   * @param options - Optional configuration
+   * @param options.fileList - Optional explicit file list for file-based reviews
+   * @param options.scope - Optional scope metadata for traceability
    * @returns Review manifest
    */
   generateManifest(
     feature: string,
     changedFiles: GitDiffResult[],
-    recommendation: TierRecommendation
+    recommendation: TierRecommendation,
+    options?: {
+      fileList?: string[];
+      scope?: {
+        type: 'file' | 'directory' | 'commits' | 'feature';
+        target: string;
+      };
+    }
   ): ReviewManifest {
-    this.logger.debug('Generating review manifest', { feature, tier: recommendation.tier });
+    this.logger.debug('Generating review manifest', {
+      feature,
+      tier: recommendation.tier,
+      fileBasedReview: !!options?.fileList,
+    });
 
     // Build changed files list
     const changedFilesList = this.buildChangedFilesList(changedFiles);
@@ -60,6 +76,16 @@ export class ReviewManifestGenerator {
       changed_files: changedFilesList,
       context,
     };
+
+    // Add scope metadata if provided (HODGE-344.2)
+    if (options?.scope) {
+      manifest.scope = {
+        type: options.scope.type,
+        target: options.scope.target,
+        fileCount: changedFiles.length,
+      };
+      this.logger.debug('Added scope metadata to manifest', { scope: manifest.scope });
+    }
 
     this.logger.debug('Manifest generated', { tier: recommendation.tier });
 

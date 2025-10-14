@@ -10,6 +10,20 @@
 import type { ReviewTier, FileType } from '../lib/review-tier-classifier.js';
 
 /**
+ * Scope metadata for file-based reviews (HODGE-344.2)
+ */
+export interface ScopeMetadata {
+  /** Type of scope used */
+  type: 'file' | 'directory' | 'commits' | 'feature';
+
+  /** Target of the scope (file path, directory, commit count, or feature ID) */
+  target: string;
+
+  /** Number of files in scope */
+  fileCount: number;
+}
+
+/**
  * Complete review manifest structure
  */
 export interface ReviewManifest {
@@ -33,6 +47,9 @@ export interface ReviewManifest {
 
   /** Context files to load, organized by precedence */
   context: ManifestContext;
+
+  /** Optional scope metadata for file-based reviews (HODGE-344.2) */
+  scope?: ScopeMetadata;
 }
 
 /**
