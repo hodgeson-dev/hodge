@@ -1,0 +1,115 @@
+version: '1.0'
+feature: HODGE-344.1
+generated_at: '2025-10-14T05:14:07.675Z'
+recommended_tier: full
+change_analysis:
+  total_files: 18
+  total_lines: 2311
+  breakdown:
+    implementation: 11
+    test: 1
+    documentation: 6
+    config: 0
+changed_files:
+  - path: .hodge/.session
+    lines_changed: 24
+    change_type: implementation
+  - path: .hodge/context.json
+    lines_changed: 16
+    change_type: implementation
+  - path: .hodge/development-plan.json
+    lines_changed: 134
+    change_type: implementation
+  - path: .hodge/features/HODGE-344.1/build/build-plan.md
+    lines_changed: 158
+    change_type: documentation
+  - path: .hodge/features/HODGE-344.1/explore/exploration.md
+    lines_changed: 544
+    change_type: documentation
+  - path: .hodge/features/HODGE-344.1/explore/test-intentions.md
+    lines_changed: 98
+    change_type: documentation
+  - path: .hodge/features/HODGE-344.1/issue-id.txt
+    lines_changed: 2
+    change_type: implementation
+  - path: .hodge/features/HODGE-344.1/ship-record.json
+    lines_changed: 31
+    change_type: implementation
+  - path: .hodge/features/HODGE-344/explore/exploration.md
+    lines_changed: 468
+    change_type: documentation
+  - path: .hodge/features/HODGE-344/explore/test-intentions.md
+    lines_changed: 98
+    change_type: documentation
+  - path: .hodge/features/HODGE-344/issue-id.txt
+    lines_changed: 2
+    change_type: implementation
+  - path: .hodge/features/HODGE-344/plan.json
+    lines_changed: 124
+    change_type: implementation
+  - path: .hodge/id-counter.json
+    lines_changed: 8
+    change_type: implementation
+  - path: .hodge/id-mappings.json
+    lines_changed: 16
+    change_type: implementation
+  - path: .hodge/project_management.md
+    lines_changed: 52
+    change_type: documentation
+  - path: .hodge/temp/plan-interaction/HODGE-344/plan.json
+    lines_changed: 124
+    change_type: implementation
+  - path: src/lib/git-file-scoping.smoke.test.ts
+    lines_changed: 156
+    change_type: test
+  - path: src/lib/git-utils.ts
+    lines_changed: 256
+    change_type: implementation
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - test-pattern.md
+      - error-boundary.md
+      - input-validation.md
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - testing/vitest-3.x.yaml
+      - testing/general-test-standards.yaml
+      - languages/typescript-5.x.yaml
+      - languages/general-coding-standards.yaml
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed

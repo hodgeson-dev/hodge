@@ -353,3 +353,131 @@ export async function stageFiles(files: string[]): Promise<void> {
     throw new Error(`Failed to stage files: ${String(error)}`);
   }
 }
+
+/**
+ * Custom error for expected "no files found" cases in file scoping
+ * HODGE-344.1: Allows callers to distinguish expected empty results from unexpected failures
+ */
+export class FileScopingError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'FileScopingError';
+  }
+}
+
+/**
+ * Validate that a single file exists and is git-tracked
+ * HODGE-344.1: Used by `hodge review --file <path>`
+ *
+ * @param filePath - Path to file to validate
+ * @returns Array with single file path if valid
+ * @throws FileScopingError if file doesn't exist or isn't git-tracked
+ * @throws Error for unexpected git command failures
+ */
+export async function validateFile(filePath: string): Promise<string[]> {
+  try {
+    // Use git ls-files to check if file is tracked
+    const { stdout } = await execAsync(`git ls-files "${filePath}"`);
+    const trackedFiles = stdout.trim();
+
+    if (!trackedFiles) {
+      throw new FileScopingError(
+        `No files to review. File not found or not git-tracked: ${filePath}`
+      );
+    }
+
+    return [filePath];
+  } catch (error) {
+    // Re-throw FileScopingError as-is
+    if (error instanceof FileScopingError) {
+      throw error;
+    }
+    // Wrap unexpected errors
+    throw new Error(`Failed to validate file: ${String(error)}`);
+  }
+}
+
+/**
+ * Get all git-tracked files in a directory (recursive)
+ * HODGE-344.1: Used by `hodge review --directory <path>`
+ *
+ * Automatically respects .gitignore patterns and excludes build artifacts.
+ *
+ * @param directory - Directory path to search
+ * @returns Array of git-tracked file paths in directory
+ * @throws FileScopingError if no git-tracked files found
+ * @throws Error for unexpected git command failures
+ */
+export async function getFilesInDirectory(directory: string): Promise<string[]> {
+  try {
+    // Use git ls-files to get tracked files in directory
+    const { stdout } = await execAsync(`git ls-files "${directory}"`);
+    const files = stdout
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
+
+    if (files.length === 0) {
+      throw new FileScopingError(
+        `No files to review. No git-tracked files in directory: ${directory}`
+      );
+    }
+
+    return files;
+  } catch (error) {
+    // Re-throw FileScopingError as-is
+    if (error instanceof FileScopingError) {
+      throw error;
+    }
+    // Wrap unexpected errors
+    throw new Error(`Failed to get files in directory: ${String(error)}`);
+  }
+}
+
+/**
+ * Get files modified in last N commits (excluding deleted files)
+ * HODGE-344.1: Used by `hodge review --last <N>`
+ *
+ * Includes merge commits. Renamed files show as their new path.
+ *
+ * @param count - Number of commits to look back
+ * @returns Array of file paths modified in last N commits
+ * @throws FileScopingError if no commits or no files found
+ * @throws Error for unexpected git command failures
+ */
+export async function getFilesFromLastNCommits(count: number): Promise<string[]> {
+  // Warn for large values
+  if (count > 100) {
+    console.warn(
+      chalk.yellow(`⚠️  Reviewing files from ${count} commits. This may take a while...`)
+    );
+  }
+
+  try {
+    // Use git log with --diff-filter=d to exclude deleted files
+    // --name-only shows file names, --pretty=format: suppresses commit info
+    const { stdout } = await execAsync(
+      `git log -${count} --name-only --diff-filter=d --pretty=format: | sort -u`
+    );
+
+    const files = stdout
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
+
+    if (files.length === 0) {
+      throw new FileScopingError(
+        `No files to review. No commits found or no files modified in last ${count} commits.`
+      );
+    }
+
+    return files;
+  } catch (error) {
+    // Re-throw FileScopingError as-is
+    if (error instanceof FileScopingError) {
+      throw error;
+    }
+    // Wrap unexpected errors
+    throw new Error(`Failed to get files from last ${count} commits: ${String(error)}`);
+  }
+}

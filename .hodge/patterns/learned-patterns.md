@@ -1,7 +1,7 @@
 # Learned Patterns Summary
 
 ## Statistics
-- Total patterns detected: 1
+- Total patterns detected: 2
 - High confidence patterns: 0
 - Most frequent category: security
 
@@ -9,11 +9,16 @@
 
 
 ### Security
-- **Input Validation** (2x, 40% confidence)
+- **Input Validation** (3x, 60% confidence)
+
+
+### Error-handling
+- **Error Boundary** (1x, 20% confidence)
 
 
 ## Recommendations
+- Consider using Input Validation pattern (used 3 times)
 - Use Promise.all for parallel operations when possible
 
 ---
-*Generated: 2025-10-14T03:41:54.439Z*
+*Generated: 2025-10-14T05:24:13.943Z*

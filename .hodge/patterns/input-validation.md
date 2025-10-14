@@ -9,13 +9,6 @@ Input validation before processing
 
 ## Examples
 
-### src/commands/build.ts
-```typescript
-if (!resolvedFeature) {
-      throw new Error
-```
-
-
 ### src/commands/harden.ts
 ```typescript
 if (!resolvedFeature) {
@@ -23,10 +16,23 @@ if (!resolvedFeature) {
 ```
 
 
-### src/commands/ship.ts
+### src/lib/git-utils.ts
 ```typescript
-if (!resolvedFeature) {
-      throw new Error
+if (!trackedFiles) {
+      throw new FileScopingError(
+        `No files to review. File not found or not git-tracked: ${filePath}`
+      );
+    }
+
+    return [filePath];
+  } catch (error) {
+    // Re
+```
+
+
+### src/lib/git-utils.ts
+```typescript
+function validateFile
 ```
 
 
@@ -36,5 +42,5 @@ if (!resolvedFeature) {
 - 
 
 ---
-*First seen: 2025-10-09T19:06:40.721Z*
-*Last used: 2025-10-09T19:06:40.725Z*
+*First seen: 2025-10-14T05:24:13.935Z*
+*Last used: 2025-10-14T05:24:13.941Z*

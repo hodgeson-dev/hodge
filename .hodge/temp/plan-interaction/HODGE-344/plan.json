@@ -15,9 +15,7 @@
       "title": "Review manifest generation with file scoping support",
       "description": "Enhance manifest generator to work with arbitrary file lists (not just feature-based git diffs). Supports filtering quality checks to scoped files where tools allow it, documenting which tools run project-wide. Complete review-first workflow with report saving to .hodge/reviews/ using timestamp-based naming.",
       "effort": "medium",
-      "dependencies": [
-        "HODGE-344.1"
-      ],
+      "dependencies": ["HODGE-344.1"],
       "lane": 0
     },
     {
@@ -25,9 +23,7 @@
       "title": "ReviewEngineService - shared review workflow core",
       "description": "Extract and refactor common review logic from /harden into reusable ReviewEngineService. Handles manifest generation, quality checks, critical file selection (configurable - enabled for /harden, disabled for /review), and report generation. Designed to support both feature-based (harden) and file-based (review) modes with different report locations.",
       "effort": "large",
-      "dependencies": [
-        "HODGE-344.2"
-      ],
+      "dependencies": ["HODGE-344.2"],
       "lane": 0
     },
     {
@@ -35,10 +31,7 @@
       "title": "Enhanced ReviewCommand with interactive fix workflow",
       "description": "Complete implementation of enhanced ReviewCommand (hodge review CLI + /review slash command template) with --file, --directory, --last parameters. Implements review-first workflow sequence (manifest → AI review → interactive fix selection → optional auto-fix). Full integration with ReviewEngineService configured for file-based mode (no critical selection, reports to .hodge/reviews/, non-intrusive auto-fix).",
       "effort": "large",
-      "dependencies": [
-        "HODGE-344.3",
-        "HODGE-344.1"
-      ],
+      "dependencies": ["HODGE-344.3", "HODGE-344.1"],
       "lane": 1
     },
     {
@@ -46,17 +39,24 @@
       "title": "Migrate HardenCommand to use ReviewEngineService",
       "description": "Migrate existing HardenCommand (hodge harden CLI + /harden slash command) to use the new ReviewEngineService while preserving ALL current behavior: fix-first workflow sequence, mandatory error fixing, feature-based scoping, critical file selection enabled, reports to .hodge/features/{{feature}}/harden/, validation gates. Ensures zero regression through comprehensive testing.",
       "effort": "medium",
-      "dependencies": [
-        "HODGE-344.3"
-      ],
+      "dependencies": ["HODGE-344.3"],
       "lane": 2
     }
   ],
   "lanes": {
     "count": 3,
-    "assignments": {}
+    "assignments": {
+      "0": ["HODGE-344.1", "HODGE-344.2", "HODGE-344.3"],
+      "1": ["HODGE-344.4"],
+      "2": ["HODGE-344.5"]
+    }
   },
-  "dependencies": {},
+  "dependencies": {
+    "HODGE-344.2": ["HODGE-344.1"],
+    "HODGE-344.3": ["HODGE-344.2"],
+    "HODGE-344.4": ["HODGE-344.3", "HODGE-344.1"],
+    "HODGE-344.5": ["HODGE-344.3"]
+  },
   "estimatedDays": 9,
   "createdAt": "2025-10-14T04:25:00.000Z"
 }
