@@ -1,0 +1,33 @@
+{
+  "timestamp": "2025-10-15T05:22:15.833Z",
+  "stagedFiles": [
+    ".claude/commands/review.md",
+    ".hodge/features/HODGE-344.4/build/build-plan.md",
+    "src/bin/hodge.ts",
+    "src/commands/review.smoke.test.ts",
+    "src/commands/review.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 5,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": "src/bin/hodge.ts 182ms (unchanged)\nsrc/commands/review.smoke.test.ts 22ms\nsrc/commands/review.ts 71ms\n",
+      "stderr": "",
+      "duration": 1492
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 3,
+      "issuesFixed": 25,
+      "success": true,
+      "stdout": "\n/Users/michaelkelly/Projects/hodge/src/bin/hodge.ts\n  7:7  warning  Variable name `__filename` must match one of the following formats: camelCase, PascalCase  @typescript-eslint/naming-convention\n  8:7  warning  Variable name `__dirname` must match one of the following formats: camelCase, PascalCase   @typescript-eslint/naming-convention\n\n/Users/michaelkelly/Projects/hodge/src/commands/review.smoke.test.ts\n  0:0  warning  File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override\n\n/Users/michaelkelly/Projects/hodge/src/commands/review.ts\n   29:3   warning  'getFileChangeStats' is defined but never used. Allowed unused vars must match /^_/u                                              @typescript-eslint/no-unused-vars\n   29:3   error    Remove this unused import of 'getFileChangeStats'                                                                                 sonarjs/unused-import\n   39:15  warning  'ReviewOptions' is defined but never used. Allowed unused vars must match /^_/u                                                   @typescript-eslint/no-unused-vars\n   39:15  error    Remove this unused import of 'ReviewOptions'                                                                                      sonarjs/unused-import\n   79:3   warning  Async method 'execute' has too many lines (51). Maximum allowed is 50                                                             max-lines-per-function\n  197:11  error    Unexpected lexical declaration in case block                                                                                      no-case-declarations\n  237:13  error    Unsafe assignment of an `any` value                                                                                               @typescript-eslint/no-unsafe-assignment\n  237:28  error    Unsafe call of an `any` typed value                                                                                               @typescript-eslint/no-unsafe-call\n  241:52  error    Unsafe member access .formatters on an `any` value                                                                                @typescript-eslint/no-unsafe-member-access\n  242:49  error    Unsafe member access .linters on an `any` value                                                                                   @typescript-eslint/no-unsafe-member-access\n  294:40  error    Make sure the regex used here, which is vulnerable to super-linear runtime due to backtracking, cannot lead to denial of service  sonarjs/slow-regex\n  294:41  error    Group parts of the regex together to make the intended operator precedence explicit                                               sonarjs/anchor-precedence\n  310:60  error    Unexpected any. Specify a different type                                                                                          @typescript-eslint/no-explicit-any\n  321:68  error    Unexpected any. Specify a different type                                                                                          @typescript-eslint/no-explicit-any\n  330:31  error    Unsafe member access .tool on an `any` value                                                                                      @typescript-eslint/no-unsafe-member-access\n  330:47  error    Unsafe member access .checkType on an `any` value                                                                                 @typescript-eslint/no-unsafe-member-access\n  332:18  error    Unsafe member access .skipped on an `any` value                                                                                   @typescript-eslint/no-unsafe-member-access\n  334:42  error    Unsafe member access .reason on an `any` value                                                                                    @typescript-eslint/no-unsafe-member-access\n  338:40  error    Unsafe member access .success on an `any` value                                                                                   @typescript-eslint/no-unsafe-member-access\n  339:46  error    Unsafe member access .autoFixable on an `any` value                                                                               @typescript-eslint/no-unsafe-member-access\n  341:18  error    Unsafe member access .output on an `any` value                                                                                    @typescript-eslint/no-unsafe-member-access\n  343:27  error    Unsafe member access .output on an `any` value                                                                                    @typescript-eslint/no-unsafe-member-access\n\n✖ 25 problems (19 errors, 6 warnings)\n\n",
+      "stderr": "",
+      "duration": 5016
+    }
+  ],
+  "totalIssuesFixed": 25,
+  "totalFilesModified": 8,
+  "failures": []
+}

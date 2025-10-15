@@ -85,18 +85,16 @@ const hardenCmd = program
   );
 
 program
-  .command('review <scope> [path]')
-  .description('[Internal] AI-driven code review')
-  .option('--last <count>', 'Number of commits to review (for recent scope)', '1')
-  .action(async (scope: string, path: string | undefined, options: { last: string }) => {
+  .command('review')
+  .description('[Internal] AI-orchestrated code review with flexible file scoping (HODGE-344.4)')
+  .option('--file <path>', 'Review single file')
+  .option('--directory <path>', 'Review all git-tracked files in directory (recursive)')
+  .option('--last <count>', 'Review files from last N commits', parseInt)
+  .option('--fix', 'Run auto-fix on scoped files (formatters and linters)')
+  .action(async (options: { file?: string; directory?: string; last?: number; fix?: boolean }) => {
     const { ReviewCommand } = await import('../commands/review.js');
     const reviewCommand = new ReviewCommand();
-    const lastCount = scope === 'recent' ? parseInt(options.last, 10) : undefined;
-    const pathOrCount = path || (scope === 'recent' ? options.last : '');
-    if (!pathOrCount && scope !== 'recent') {
-      throw new Error(`Path argument is required for ${scope} scope`);
-    }
-    await reviewCommand.execute(scope, pathOrCount, { last: lastCount });
+    await reviewCommand.execute(options);
   });
 
 const statusCmd = program

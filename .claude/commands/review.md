@@ -1,335 +1,330 @@
-# Hodge Review - AI-Driven Code Quality Analysis
+# Hodge Review Mode (HODGE-344.4)
 
-## Purpose
-The `/review` command performs AI-driven architectural code review to identify quality issues that automated tools cannot detect: coupling violations, single responsibility problems, DRY violations across files, naming inconsistencies, complexity hotspots, and lessons-learned violations.
+## Overview
 
-## Command Usage
+The `/review` command provides AI-orchestrated advisory code reviews for arbitrary file scopes with a review-first workflow. Unlike `/harden` which focuses on production readiness, `/review` helps you understand code quality issues before deciding what to fix.
 
+**Supported Scopes:**
+- `--file <path>` - Review single file
+- `--directory <path>` - Review directory (all git-tracked files recursively)
+- `--last <N>` - Review files from last N commits
+
+**Workflow:**
+1. **Review First**: CLI generates manifest and runs quality checks
+2. **AI Interprets**: You read findings and explain issues conversationally
+3. **Optional Fixes**: User chooses what to fix (if anything)
+4. **Verify**: Re-run checks after fixes to confirm they worked
+
+## Step 1: Execute Review Command
+
+Parse the user's scope flags and execute the appropriate command:
+
+**For single file review:**
 ```bash
-/review file <path>              # Review single file
-/review directory <path>         # Review directory (future: HODGE-327.3)
-/review pattern <glob>           # Review by pattern (future: HODGE-327.3)
-/review recent --last N          # Review recent changes (future: HODGE-327.3)
+hodge review --file src/lib/config.ts
 ```
 
-**For HODGE-327.1**: Only `/review file <path>` is supported.
-
-## What This Command Does
-
-### 1. Load Project Context (Automatic Merge)
-The review engine ALWAYS loads these project files regardless of profile:
-
-**Standards** (Layer 1 - Highest Priority):
+**For directory review:**
 ```bash
-cat .hodge/standards.md
-```
-Project-specific enforceable rules that MUST be followed. These override profile recommendations.
-
-**Principles** (Layer 1):
-```bash
-cat .hodge/principles.md
-```
-Project philosophy and values that guide interpretation of quality criteria.
-
-**Patterns** (Layer 1):
-```bash
-ls .hodge/patterns/*.md
-# Load each pattern file for reference
-```
-Project-specific solutions and expected implementation patterns.
-
-**Lessons** (Layer 1):
-```bash
-ls .hodge/lessons/*.md
-# Load ALL lesson files for violation checking
-```
-Hard-won knowledge from past mistakes. Violations are BLOCKERS.
-
-### 2. Load Review Profile
-```bash
-cat .hodge/review-profiles/default.yml
+hodge review --directory src/commands/
 ```
 
-The profile provides Layer 2 criteria (domain defaults) and Layer 3 criteria (universal baseline).
-
-### 3. Analyze Target File
-Read the file to review:
+**For recent commits review:**
 ```bash
-cat {{file_path}}
+hodge review --last 3
 ```
 
-### 4. Perform Layered Analysis
+The CLI will:
+- Discover files using git utilities (validates tracked files)
+- Generate review manifest with FULL tier and scope metadata
+- Run quality checks (scoped where possible, project-wide for tools like tsc)
+- Create review directory at `.hodge/reviews/review-{scope}-{target}-{timestamp}/`
+- Write `review-manifest.yaml` and `quality-checks.md`
+- Output directory path for you to read
 
-**IMPORTANT**: Apply review criteria in layered priority order:
+## Step 2: Read Review Files
 
-**Layer 1: Project-Specific (Overrides Everything)**
-1. Check if code violates `.hodge/standards.md` → BLOCKER
-2. Check if code violates `.hodge/lessons/` → BLOCKER
-3. Check if code follows `.hodge/patterns/` → WARNING if violated
-4. Use `.hodge/principles.md` to guide interpretation
+The CLI outputs the review directory path. Read the generated files:
 
-**Layer 2: Profile Domain Defaults**
-5. Apply profile criteria patterns
-6. Use profile custom_instructions for analysis guidance
+```bash
+cat .hodge/reviews/review-{scope}-{target}-{timestamp}/review-manifest.yaml
+cat .hodge/reviews/review-{scope}-{target}-{timestamp}/quality-checks.md
+```
 
-**Layer 3: Universal Baseline**
-7. Check basic code quality (coupling, SRP, DRY, complexity, naming)
+**Important**: The exact directory name will be in the CLI output. Use that path.
 
-**Conflict Resolution**:
-If a profile criterion conflicts with a standard, the STANDARD wins. For example:
-- Profile says "Use functional components" (warning)
-- Standard says "This project uses class components for legacy compatibility"
-- Result: Do NOT flag class components (standard overrides profile)
+## Step 3: Load Context Files (Based on Manifest)
 
-### 5. Generate Report
+The review manifest includes context files to load. For `/review`, always use **FULL tier** context:
 
-**Output Format**: Grouped findings with medium verbosity (blocker/warning/suggestion)
+**MUST load (from manifest)**:
+1. `.hodge/standards.md` (project standards)
+2. `.hodge/principles.md` (project principles)
+3. `.hodge/decisions.md` (project decisions)
+4. Each file in `matched_patterns.files[]` (prepend `.hodge/patterns/`)
+5. Each file in `matched_profiles.files[]` (prepend `.hodge/review-profiles/`)
+6. Each file in `lessons_learned.files[]` (prepend `.hodge/lessons/`)
 
-For each finding, include:
-- **Severity**: blocker | warning | suggestion
-- **Criteria**: Which criteria triggered this finding
-- **Description**: What's the issue
-- **Location**: file:line (if line number can be determined)
-- **Rationale**: Why this matters (reference standard/lesson/pattern if applicable)
-- **Suggested Action**: `/explore "{{feature_description}}"` command to fix
+**Context Application Precedence** (when conflicts arise):
+1. **standards.md** = HIGHEST - Always takes precedence
+2. **principles.md** = Guide interpretation of standards
+3. **decisions.md** = Project-specific choices
+4. **patterns/** = Reference implementations
+5. **review-profiles/** = External best practices (lowest precedence)
 
-**Report Structure**:
+## Step 4: Interpret Findings and Present to User
+
+Parse `quality-checks.md` to understand what tools found:
+
+**Your Analysis**:
+- Identify issues by severity (errors vs warnings)
+- Explain what each issue means in plain language
+- Reference relevant standards/patterns/profiles
+- Distinguish auto-fixable issues (formatters, linters) from manual issues (type errors, logic bugs)
+- Consider scope context (user chose these specific files for a reason)
+
+**Present Findings Conversationally**:
+```
+I reviewed {N} files in {scope} and found:
+
+**Blockers** (must fix):
+- {issue 1} in {file}:{line} - {explanation}
+- {issue 2} in {file}:{line} - {explanation}
+
+**Warnings** (should address):
+- {issue 3} in {file}:{line} - {explanation}
+
+**Suggestions** (optional improvements):
+- {issue 4} in {file}:{line} - {explanation}
+
+{Provide context about why these issues matter, reference standards/patterns}
+```
+
+**No Issues Found**:
+If quality checks show all tools passed with no output, celebrate!
+```
+✅ No issues found! All {N} files in {scope} meet quality standards.
+
+- Type checking: ✓ Passed
+- Linting: ✓ Passed
+- Testing: ✓ Passed
+- Formatting: ✓ Passed
+
+{Brief summary of what was checked}
+```
+
+## Step 5: Facilitate Fix Selection
+
+Ask the user which issues they want to fix:
+
+```
+Would you like to fix any of these issues?
+
+You can:
+a) Fix all auto-fixable issues (formatters + linters)
+b) Select specific issues to fix
+c) Skip fixes and just document findings
+
+Your choice (or ask questions for more detail):
+```
+
+**Handle User Response**:
+- **Option (a)**: Proceed to Step 6 with all auto-fixable issues
+- **Option (b)**: Let user specify (e.g., "1, 3, 5" or "issues in config.ts" or "just the blockers")
+- **Option (c)**: Skip to Step 8 (write report, no fixes)
+- **Questions**: If user asks for clarification, provide detailed analysis conversationally, then return to this question
+
+## Step 6: Apply Fixes (If User Chooses)
+
+### Step 6a: Auto-Fix First
+
+Run auto-fix for formatters and linters:
+
+```bash
+hodge review --file src/lib/config.ts --fix
+```
+
+Use the **same scope flags** as Step 1. The `--fix` flag runs:
+- Formatters first (prettier, black, google-java-format, ktlint)
+- Then linters (eslint --fix, ruff --fix)
+
+**Note**: Auto-fix modifies files but doesn't stage them (non-intrusive).
+
+### Step 6b: Manual Fixes (If Needed)
+
+For issues that can't be auto-fixed (type errors, logic bugs, complex refactoring):
+
+Use the **Edit tool** to apply fixes:
+```typescript
+// Example: Fix type error
+Edit({
+  file_path: "src/lib/config.ts",
+  old_string: "const value: string = 123;",
+  new_string: "const value: number = 123;"
+});
+```
+
+**Important**: Apply fixes thoughtfully. Explain changes to the user as you make them.
+
+## Step 7: Re-run Quality Checks
+
+After applying fixes, verify they worked:
+
+```bash
+hodge review --file src/lib/config.ts
+```
+
+Use the **same scope flags** as Step 1 (without `--fix`).
+
+This will:
+- Create a new review directory with fresh results
+- Show updated quality check output
+- Confirm fixes resolved the issues
+
+Read the new results and report back to the user:
+```
+✅ Fixes verified! Re-running quality checks shows:
+
+{Summary of what changed}
+- Type errors: {N} → 0
+- Linting issues: {N} → 0
+
+{Confirmation that specific issues are resolved}
+```
+
+## Step 8: Write Review Report
+
+Use the **Write tool** to create a review report documenting findings and fixes:
+
 ```markdown
-# Code Review Report: {{file_path}}
+# Code Review Report: {scope} - {target}
 
-**Profile**: {{profile_name}}
-**Reviewed**: {{timestamp}}
+**Reviewed**: {ISO timestamp}
+**Scope**: {scope type} - {target}
+**Files Reviewed**: {N} files
 
-## Blockers ({{count}})
+## Summary
+- 🚫 **{N} Blockers** (must fix)
+- ⚠️ **{N} Warnings** (should address)
+- 💡 **{N} Suggestions** (optional improvements)
 
-### 1. Lessons Learned Violation: Subprocess Spawning
-- **Location**: src/example.ts:45
-- **Description**: Uses `execSync()` to spawn subprocess
-- **Rationale**: Violates HODGE-317.1 - subprocess spawning creates hung processes
-- **Suggested Action**: `/explore "Refactor subprocess spawning to direct function calls in src/example.ts"`
+## Findings
 
-## Warnings ({{count}})
+### Blockers
 
-### 1. Single Responsibility Violation
-- **Location**: src/example.ts:23-67
-- **Description**: `UserService` class handles authentication, validation, and database operations
-- **Rationale**: Class should have one reason to change (SRP principle)
-- **Suggested Action**: `/explore "Extract authentication and validation logic from UserService"`
+[List blocker issues found, with file:line references]
 
-## Suggestions ({{count}})
+### Warnings
 
-### 1. DRY Violation
-- **Location**: src/example.ts:12, src/another.ts:34
-- **Description**: Validation logic duplicated across files
-- **Rationale**: Repeated code makes maintenance harder
-- **Suggested Action**: `/explore "Extract shared validation logic into ValidationService"`
+[List warning issues found]
 
----
+### Suggestions
 
-**Summary**: {{total}} findings ({{blockers}} blockers, {{warnings}} warnings, {{suggestions}} suggestions)
+[List suggestion-level issues]
+
+## Fixes Applied
+
+{If fixes were applied:}
+- Auto-fixed: {list of formatter/linter fixes}
+- Manual fixes: {list of Edit tool changes}
+- Verification: All fixes verified via re-run
+
+{If no fixes applied:}
+No fixes applied at user's request. Issues documented for future reference.
+
+## Conclusion
+
+{Overall assessment of code quality}
+{Recommendations for next steps if any issues remain}
 ```
 
-## AI Analysis Guidelines
+Save the report to the review directory:
 
-### What to Look For (Based on Profile Criteria)
-
-The profile defines criteria with:
-- **name**: Criteria being checked (e.g., "Single Responsibility Principle")
-- **severity**: blocker | warning | suggestion
-- **patterns**: Natural language descriptions of what to check
-- **reference**: Optional path to project files (e.g., ".hodge/lessons/")
-- **custom_instructions**: Optional analysis guidance
-
-**Example Profile Criteria**:
-```yaml
-criteria:
-  - name: "Lessons Learned Violations"
-    severity: blocker
-    reference: ".hodge/lessons/"
-    patterns:
-      - "Check for subprocess spawning in tests (HODGE-317.1)"
-      - "Verify test isolation - no .hodge modification (HODGE-308)"
+```typescript
+Write({
+  file_path: ".hodge/reviews/review-{scope}-{target}-{timestamp}/review-report.md",
+  content: "{report content from above}"
+});
 ```
 
-For each criteria:
-1. Read the patterns (simple strings, interpret naturally)
-2. If `reference` exists, cross-check against referenced files
-3. If `custom_instructions` exist, use as analysis guidance
-4. Check the target file for violations
-5. Report findings with specified severity
+## Step 9: Conclude Review
 
-### Quality Analysis Framework
+Inform the user that the review is complete:
 
-**Coupling & Cohesion**:
-- Are modules/classes dependent on internal details of other modules?
-- Are unrelated responsibilities grouped together?
+```
+✅ Review complete!
 
-**Single Responsibility**:
-- Does each class/function have one clear purpose?
-- Would this need to change for multiple reasons?
+**Summary**:
+- Reviewed {N} files in {scope}: {target}
+- {Issues summary}
+- {Fixes summary if applicable}
 
-**DRY Violations**:
-- Is the same logic repeated in multiple places?
-- Are there patterns that could be extracted?
+**Review report saved** to:
+.hodge/reviews/review-{scope}-{target}-{timestamp}/review-report.md
 
-**Naming**:
-- Do names clearly convey intent?
-- Are names consistent with project conventions?
+You can reference this review later or delete the directory if no longer needed.
 
-**Complexity**:
-- Are there deeply nested conditionals (4+ levels)?
-- Are functions too long (>50 lines)?
-- Is logic easy to understand?
+{If issues remain, provide guidance on next steps}
+```
 
-**Maintainability**:
-- Would this confuse a new team member?
-- Is there "clever" code that sacrifices clarity?
+## Important Notes
+
+### Review vs Harden
+
+`/review` is **advisory** (understand → optionally fix):
+- Review first, fix optionally
+- All files reviewed equally (no critical selection)
+- Always FULL tier (comprehensive analysis)
+- User controls what gets fixed
+
+`/harden` is **production validation** (fix → validate):
+- Auto-fix first, then validate
+- Critical files prioritized by risk
+- Tier varies based on change size
+- Errors must be fixed before shipping
+
+### Edge Cases
+
+**Empty File Lists**:
+If CLI reports "No files to review", explain why:
+- File not found or not git-tracked → Suggest `git add`
+- Directory has no tracked files → Check `.gitignore`
+- No commits in range → Verify git history
+
+**Large Scope Warnings**:
+If CLI warns about large scope (e.g., `--last 100` with 500 files), acknowledge:
+- Processing may take time
+- Consider reducing scope if it's too much
+- User explicitly chose this scope, so respect their decision
+
+**Tool Failures**:
+If quality-checks.md shows tools skipped or failed:
+- Explain what happened (tool not found, configuration issue)
+- Note that findings may be incomplete
+- Suggest installing missing tools if needed
+
+### Quality Check Scoping
+
+Some tools receive scoped file lists, others run project-wide:
+
+**Scoped** (only check specified files):
+- eslint
+- prettier
+- black
+- ruff
+
+**Project-wide** (always check entire project):
+- tsc (TypeScript)
+- vitest (tests need full context)
+
+This is documented in quality-checks.md for each tool.
 
 ## Error Handling
 
-**Missing Profile**:
-```
-❌ Error: Profile not found at .hodge/review-profiles/default.yml
+If the command fails:
+- Check error message for specific issue
+- Common causes: invalid path, file not tracked, git command failed
+- Provide guidance based on error type
+- Don't crash the conversation - help user recover
 
-Please ensure the profile exists or specify a different profile.
-```
-
-**Missing File**:
-```
-❌ Error: File not found: {{file_path}}
-
-Please check the file path and try again.
-```
-
-**Malformed Profile**:
-```
-❌ Error: Invalid profile syntax in default.yml: {{details}}
-
-Please check the YAML syntax and required fields.
-```
-
-## Implementation Notes (HODGE-327.1)
-
-**CLI Command** (`hodge review`):
-1. Parse arguments (file <path>)
-2. Load profile using ProfileLoader
-3. Load context using ContextAggregator
-4. Read target file
-5. Output context and file to this slash command template
-6. Capture AI-generated report
-7. Display report to user
-
-**Slash Command** (this template):
-1. Receive context and file from CLI
-2. Perform layered analysis
-3. Generate markdown report
-4. Return to CLI for output
-
-## Step 6: Save Review Report (Optional)
-
-After displaying the review report, prompt the user:
-
-```
-Would you like to save this review report? (s/d)
-  s) Save report to .hodge/reviews/
-  d) Discard (exit without saving)
-
-Your choice:
-```
-
-### If user chooses 's' (Save):
-
-1. **Generate filename** from file path and timestamp:
-```bash
-# Convert file path to slug (replace slashes and special chars with dashes)
-FILE_SLUG=$(echo "{{file_path}}" | sed 's|^\./||' | sed 's|/|-|g' | sed 's|\\|-|g' | sed 's|[^a-zA-Z0-9._-]|-|g' | sed 's|-\+|-|g' | sed 's|^-||' | sed 's|-$||')
-
-# Generate ISO timestamp for filename (replace colons with dashes)
-TIMESTAMP=$(date -u +"%Y-%m-%dT%H-%M-%S")
-
-# Construct filename (omit "file-" prefix for file scope)
-FILENAME="${FILE_SLUG}-${TIMESTAMP}.md"
-
-echo "Saving to: .hodge/reviews/${FILENAME}"
-```
-
-2. **Detect feature context** (optional, best-effort):
-```bash
-# Attempt to detect HODGE-XXX feature from git blame
-FEATURE=$(git blame --line-porcelain "{{file_path}}" 2>/dev/null | grep "^summary" | grep -oE "HODGE-[0-9]+(\.[0-9]+)?" | sort | uniq -c | sort -rn | head -1 | awk '{print $2}')
-
-# If no feature detected, leave empty
-if [ -z "$FEATURE" ]; then
-  FEATURE_LINE=""
-else
-  FEATURE_LINE="feature: $FEATURE"
-fi
-```
-
-3. **Extract finding counts** from generated report:
-```bash
-# Count findings by severity from the markdown report
-BLOCKERS=$(echo "$REPORT" | grep -oE "## Blockers \(([0-9]+)\)" | grep -oE "[0-9]+")
-WARNINGS=$(echo "$REPORT" | grep -oE "## Warnings \(([0-9]+)\)" | grep -oE "[0-9]+")
-SUGGESTIONS=$(echo "$REPORT" | grep -oE "## Suggestions \(([0-9]+)\)" | grep -oE "[0-9]+")
-
-# Default to 0 if not found
-BLOCKERS=${BLOCKERS:-0}
-WARNINGS=${WARNINGS:-0}
-SUGGESTIONS=${SUGGESTIONS:-0}
-```
-
-4. **Use Write tool to save report** with YAML frontmatter:
-
-Create the full report content with metadata header, then use the Write tool:
-
-**File path**: `.hodge/reviews/{{filename}}`
-
-**Content structure**:
-```markdown
----
-reviewed_at: {{iso_timestamp}}
-scope: file
-target: {{file_path}}
-profile: default.yml
-{{feature_line}}
-findings:
-  blockers: {{blocker_count}}
-  warnings: {{warning_count}}
-  suggestions: {{suggestion_count}}
----
-
-{{full_report_content}}
-```
-
-After writing, confirm to user:
-```
-✅ Review saved to: .hodge/reviews/{{filename}}
-```
-
-### If user chooses 'd' (Discard):
-
-Exit silently with no output. User can regenerate the review if needed later.
-
-## Next Steps
-
-After review complete (whether saved or discarded):
-```
-Review complete. You can now:
-- Fix issues using suggested `/explore` commands from the report
-- Review another file with `/review file <path>`
-- Continue development
-```
-
-## Future Enhancements (Later Stories)
-
-- **HODGE-327.3**: Support directory, pattern, and recent scopes
-- **HODGE-327.4**: Additional profiles (React, API, test quality)
-- **HODGE-327.5**: Integration with `/harden` command
-- **HODGE-327.6**: Comprehensive documentation
-
----
-
-Remember: Review is advisory, not blocking. Users decide which findings to act on.
-
-ARGUMENTS: {{file_path}}
+ARGUMENTS: {{flags}}

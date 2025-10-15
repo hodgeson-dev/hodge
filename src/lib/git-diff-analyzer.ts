@@ -48,8 +48,9 @@ export class GitDiffAnalyzer {
       // Get both staged and unstaged changes
       // Staged: files that were added with 'git add'
       // Unstaged: modified tracked files not yet staged
-      const { stdout: staged } = await execAsync('git diff --staged --numstat');
-      const { stdout: unstaged } = await execAsync('git diff HEAD --numstat');
+      // --diff-filter=d excludes deleted files (prevents checking non-existent files)
+      const { stdout: staged } = await execAsync('git diff --staged --numstat --diff-filter=d');
+      const { stdout: unstaged } = await execAsync('git diff HEAD --numstat --diff-filter=d');
 
       const combined = [staged, unstaged].filter((s) => s.trim()).join('\n');
 

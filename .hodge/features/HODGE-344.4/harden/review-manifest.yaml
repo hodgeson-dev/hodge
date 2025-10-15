@@ -1,0 +1,88 @@
+version: '1.0'
+feature: HODGE-344.4
+generated_at: '2025-10-15T05:23:17.697Z'
+recommended_tier: full
+change_analysis:
+  total_files: 9
+  total_lines: 2763
+  breakdown:
+    implementation: 5
+    test: 1
+    documentation: 3
+    config: 0
+changed_files:
+  - path: .claude/commands/review.md
+    lines_changed: 954
+    change_type: documentation
+  - path: .hodge/features/HODGE-344.4/build/build-plan.md
+    lines_changed: 202
+    change_type: documentation
+  - path: src/bin/hodge.ts
+    lines_changed: 36
+    change_type: implementation
+  - path: src/commands/review.smoke.test.ts
+    lines_changed: 668
+    change_type: test
+  - path: src/commands/review.ts
+    lines_changed: 868
+    change_type: implementation
+  - path: .hodge/.session
+    lines_changed: 10
+    change_type: implementation
+  - path: .hodge/context.json
+    lines_changed: 8
+    change_type: implementation
+  - path: .hodge/id-mappings.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/project_management.md
+    lines_changed: 13
+    change_type: documentation
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - test-pattern.md
+      - error-boundary.md
+      - input-validation.md
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - testing/vitest-3.x.yaml
+      - testing/general-test-standards.yaml
+      - languages/typescript-5.x.yaml
+      - languages/general-coding-standards.yaml
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed

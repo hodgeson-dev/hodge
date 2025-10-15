@@ -451,9 +451,13 @@ export class ToolchainService {
 
       // Get all files changed since buildStartCommit (includes working tree)
       // Using single dot (..) to include uncommitted changes
-      const { stdout } = await exec(`git diff ${shipRecord.buildStartCommit} --name-only`, {
-        cwd: this.cwd,
-      });
+      // --diff-filter=d excludes deleted files (prevents checking non-existent files)
+      const { stdout } = await exec(
+        `git diff ${shipRecord.buildStartCommit} --name-only --diff-filter=d`,
+        {
+          cwd: this.cwd,
+        }
+      );
 
       const allFiles = stdout.split('\n').filter(Boolean);
 

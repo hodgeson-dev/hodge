@@ -325,7 +325,7 @@ module.exports = {
          the extensions you actually use (e.g. [".js", ".jsx"]). This can speed
          up module resolution, which is the most expensive step.
        */
-      extensions: ['.ts'],
+      extensions: ['.ts', '.js'],
       /* What to consider a 'main' field in package.json */
       mainFields: ['module', 'main', 'types', 'typings'],
       /* A list of alias fields in package.jsons
