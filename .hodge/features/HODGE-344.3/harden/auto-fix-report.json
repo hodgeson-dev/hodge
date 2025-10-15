@@ -1,0 +1,43 @@
+{
+  "timestamp": "2025-10-14T19:10:50.562Z",
+  "stagedFiles": [
+    ".hodge/.session",
+    ".hodge/HODGE.md",
+    ".hodge/context.json",
+    ".hodge/features/HODGE-344.3/build/build-plan.md",
+    ".hodge/features/HODGE-344.3/explore/exploration.md",
+    ".hodge/features/HODGE-344.3/explore/test-intentions.md",
+    ".hodge/features/HODGE-344.3/issue-id.txt",
+    ".hodge/features/HODGE-344.3/ship-record.json",
+    ".hodge/id-mappings.json",
+    ".hodge/project_management.md",
+    "src/lib/git-utils.ts",
+    "src/lib/review-engine-service.smoke.test.ts",
+    "src/lib/review-engine-service.ts",
+    "src/lib/toolchain-service.ts",
+    "src/types/review-engine.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 13,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": "src/lib/git-utils.ts 107ms (unchanged)\nsrc/lib/review-engine-service.smoke.test.ts 26ms\nsrc/lib/review-engine-service.ts 14ms\nsrc/lib/toolchain-service.ts 27ms\nsrc/types/review-engine.ts 3ms (unchanged)\n",
+      "stderr": "",
+      "duration": 1196
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 5,
+      "issuesFixed": 10,
+      "success": true,
+      "stdout": "\n/Users/michaelkelly/Projects/hodge/src/lib/git-utils.ts\n  109:6   warning  Complete the task associated to this \"TODO\" comment                                                        sonarjs/todo-tag\n  128:6   warning  Complete the task associated to this \"TODO\" comment                                                        sonarjs/todo-tag\n  173:33  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  174:33  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  465:1   warning  File has too many lines (353). Maximum allowed is 300                                                      max-lines\n\n/Users/michaelkelly/Projects/hodge/src/lib/review-engine-service.smoke.test.ts\n  0:0  warning  File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override\n\n/Users/michaelkelly/Projects/hodge/src/lib/toolchain-service.ts\n  325:12  warning  Unnecessary conditional, value is always falsy         @typescript-eslint/no-unnecessary-condition\n  454:1   warning  File has too many lines (320). Maximum allowed is 300  max-lines\n\n/Users/michaelkelly/Projects/hodge/src/types/review-engine.ts\n  6:15  warning  'RawToolResult' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars\n  6:15  error    Remove this unused import of 'RawToolResult'                                     sonarjs/unused-import\n\n✖ 10 problems (1 error, 9 warnings)\n\n",
+      "stderr": "",
+      "duration": 4396
+    }
+  ],
+  "totalIssuesFixed": 10,
+  "totalFilesModified": 18,
+  "failures": []
+}

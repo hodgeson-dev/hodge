@@ -1,6 +1,7 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import chalk from 'chalk';
+import type { GitDiffResult } from './git-diff-analyzer.js';
 
 const execAsync = promisify(exec);
 
@@ -479,5 +480,65 @@ export async function getFilesFromLastNCommits(count: number): Promise<string[]>
     }
     // Wrap unexpected errors
     throw new Error(`Failed to get files from last ${count} commits: ${String(error)}`);
+  }
+}
+
+/**
+ * Get change statistics for specific files
+ * HODGE-344.3: Used by ReviewEngineService to get real change metrics for risk scoring
+ *
+ * @param filePaths - Array of file paths to analyze
+ * @returns Promise resolving to array of GitDiffResult with line change stats
+ * @throws Error if git command fails
+ */
+export async function getFileChangeStats(filePaths: string[]): Promise<GitDiffResult[]> {
+  if (filePaths.length === 0) {
+    return [];
+  }
+
+  try {
+    // Use git diff --numstat HEAD to get working tree changes for these files
+    // Format: <linesAdded>\t<linesDeleted>\t<filePath>
+    const fileArgs = filePaths.join(' ');
+    const { stdout } = await execAsync(`git diff --numstat HEAD -- ${fileArgs}`);
+
+    if (!stdout.trim()) {
+      // No changes for these files (they match HEAD)
+      // Return zero-change stats for each file
+      return filePaths.map((path) => ({
+        path,
+        linesAdded: 0,
+        linesDeleted: 0,
+        linesChanged: 0,
+      }));
+    }
+
+    // Parse numstat output
+    const results: GitDiffResult[] = [];
+    const lines = stdout.trim().split('\n');
+
+    for (const line of lines) {
+      const parts = line.split('\t');
+      if (parts.length !== 3) {
+        continue; // Skip malformed lines
+      }
+
+      const [added, deleted, path] = parts;
+
+      // Handle binary files (show as "-")
+      const linesAdded = added === '-' ? 0 : Number.parseInt(added, 10);
+      const linesDeleted = deleted === '-' ? 0 : Number.parseInt(deleted, 10);
+
+      results.push({
+        path,
+        linesAdded,
+        linesDeleted,
+        linesChanged: linesAdded + linesDeleted,
+      });
+    }
+
+    return results;
+  } catch (error) {
+    throw new Error(`Failed to get file change stats: ${String(error)}`);
   }
 }

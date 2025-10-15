@@ -9,13 +9,6 @@ Input validation before processing
 
 ## Examples
 
-### src/commands/harden.ts
-```typescript
-if (!resolvedFeature) {
-      throw new Error
-```
-
-
 ### src/lib/git-utils.ts
 ```typescript
 if (!trackedFiles) {
@@ -36,11 +29,18 @@ function validateFile
 ```
 
 
+### src/lib/toolchain-service.ts
+```typescript
+if (!feature) {
+          throw new Error
+```
+
+
 ## When to Use
 - 
 - When handling user input
 - 
 
 ---
-*First seen: 2025-10-14T05:24:13.935Z*
-*Last used: 2025-10-14T05:24:13.941Z*
+*First seen: 2025-10-15T01:23:06.859Z*
+*Last used: 2025-10-15T01:23:06.863Z*

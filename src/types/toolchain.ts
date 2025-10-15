@@ -119,6 +119,8 @@ export interface ToolRegistryEntry {
   installation: ToolInstallation;
   /** Default command template (null if runs via another tool) */
   default_command: string | null;
+  /** Command to auto-fix issues (optional, HODGE-341.6) */
+  fix_command?: string;
   /** Command to detect tool version */
   version_command?: string;
   /** Quality check categories this tool provides */

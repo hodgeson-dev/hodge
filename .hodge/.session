@@ -1,10 +1,9 @@
 {
   "v": 1,
-  "ts": 1760419510865,
-  "feature": "HODGE-344.2",
+  "ts": 1760453633757,
+  "feature": "HODGE-344.3",
   "mode": "explore",
   "recentCommands": [
-    "hodge explore HODGE-341.3",
     "hodge explore HODGE-341.4",
     "hodge explore HODGE-341.4",
     "hodge explore HODGE-341.5",
@@ -13,9 +12,10 @@
     "hodge explore HODGE-344",
     "hodge explore HODGE-344.1",
     "hodge explore HODGE-345",
-    "hodge explore HODGE-344.2"
+    "hodge explore HODGE-344.2",
+    "hodge explore HODGE-344.3"
   ],
   "recentDecisions": [],
-  "summary": "Explored HODGE-344.2 - template ready for AI approach generation",
+  "summary": "Explored HODGE-344.3 - template ready for AI approach generation",
   "nextAction": "Review exploration and decide with 'hodge decide'"
 }

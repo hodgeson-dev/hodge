@@ -51,11 +51,11 @@ quality_checks:
 
 commands:
   typescript:
-    command: npx tsc -p tsconfig.build.json --noEmit --pretty
+    command: npx tsc -p tsconfig.build.json --noEmit
     provides:
       - type_checking
-    # --pretty: Formatted, colored output for easier reading
     # Note: TypeScript project mode doesn't accept ${files} - uses tsconfig include/exclude
+    # Removed --pretty flag to avoid ANSI color codes in quality-checks.md (HODGE-344.3)
   eslint:
     command: npx eslint --format compact ${files}
     fix_command: npx eslint --fix ${files}

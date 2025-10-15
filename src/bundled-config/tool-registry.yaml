@@ -17,11 +17,11 @@ tools:
         npm:
           package: typescript
           install_command: npm install --save-dev typescript
-    default_command: npx tsc -p tsconfig.build.json --noEmit --pretty
+    default_command: npx tsc -p tsconfig.build.json --noEmit
     version_command: tsc --version
     categories: [type_checking]
-    # --pretty: Formatted, colored output for easier reading
     # Note: TypeScript project mode doesn't accept ${files} - uses tsconfig include/exclude
+    # Removed --pretty flag to avoid ANSI color codes in quality-checks.md (HODGE-344.3)
 
   eslint:
     languages: [typescript, javascript]

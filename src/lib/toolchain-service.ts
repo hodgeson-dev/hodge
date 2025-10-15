@@ -257,22 +257,30 @@ export class ToolchainService {
   /**
    * Run all quality checks based on configuration
    * HODGE-341.2: Added 'feature' scope support using commit range tracking
+   * HODGE-344.3: Extended to accept explicit file lists for file-based reviews
    */
-  async runQualityChecks(scope: FileScope, feature?: string): Promise<RawToolResult[]> {
+  async runQualityChecks(scope: FileScope | string[], feature?: string): Promise<RawToolResult[]> {
     const config = await this.loadConfig();
     let files: string[] | undefined;
 
-    if (scope === 'uncommitted') {
-      files = await this.getUncommittedFiles();
-    } else if (scope === 'feature') {
-      if (!feature) {
-        throw new Error('Feature name required for "feature" scope');
+    // Handle explicit file list (HODGE-344.3)
+    if (Array.isArray(scope)) {
+      files = scope;
+      logger.info('Running quality checks', { scope: 'explicit-files', fileCount: files.length });
+    } else {
+      // Handle existing FileScope enum values
+      if (scope === 'uncommitted') {
+        files = await this.getUncommittedFiles();
+      } else if (scope === 'feature') {
+        if (!feature) {
+          throw new Error('Feature name required for "feature" scope');
+        }
+        files = await this.getFeatureFiles(feature);
       }
-      files = await this.getFeatureFiles(feature);
-    }
-    // scope === 'all' => files = undefined (check all files)
+      // scope === 'all' => files = undefined (check all files)
 
-    logger.info('Running quality checks', { scope, feature, fileCount: files?.length });
+      logger.info('Running quality checks', { scope, feature, fileCount: files?.length });
+    }
 
     const results = await Promise.all([
       this.runCheckType('type_checking', config, files),
