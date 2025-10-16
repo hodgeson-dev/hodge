@@ -1,12 +1,12 @@
 {
   "statistics": {
-    "detectionDate": "2025-10-15T16:03:44.835Z",
+    "detectionDate": "2025-10-16T03:58:49.158Z",
     "formats": {
       "typescript": {
         "sources": {
-          "src/lib/toolchain-service.ts": {
-            "lines": 482,
-            "tokens": 3682,
+          "src/commands/harden.ts": {
+            "lines": 837,
+            "tokens": 6579,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -16,45 +16,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/lib/git-diff-analyzer.ts": {
-            "lines": 151,
-            "tokens": 1058,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/commands/review.ts": {
-            "lines": 405,
-            "tokens": 3179,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/commands/review.smoke.test.ts": {
-            "lines": 189,
-            "tokens": 1707,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/bin/hodge.ts": {
-            "lines": 260,
-            "tokens": 2452,
+          "src/commands/harden.smoke.test.ts": {
+            "lines": 288,
+            "tokens": 2686,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -66,9 +30,9 @@
           }
         },
         "total": {
-          "lines": 1487,
-          "tokens": 12078,
-          "sources": 5,
+          "lines": 1125,
+          "tokens": 9265,
+          "sources": 2,
           "clones": 0,
           "duplicatedLines": 0,
           "duplicatedTokens": 0,
@@ -80,9 +44,9 @@
       }
     },
     "total": {
-      "lines": 1487,
-      "tokens": 12078,
-      "sources": 5,
+      "lines": 1125,
+      "tokens": 9265,
+      "sources": 2,
       "clones": 0,
       "duplicatedLines": 0,
       "duplicatedTokens": 0,

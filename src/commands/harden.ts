@@ -12,16 +12,20 @@ import {
 import type { RawToolResult, ToolchainConfig } from '../types/toolchain.js';
 import { createCommandLogger } from '../lib/logger.js';
 import { GitDiffAnalyzer } from '../lib/git-diff-analyzer.js';
-import { ReviewTierClassifier } from '../lib/review-tier-classifier.js';
 import { ReviewManifestGenerator } from '../lib/review-manifest-generator.js';
 import { ImportAnalyzer } from '../lib/import-analyzer.js';
 import { SeverityExtractor } from '../lib/severity-extractor.js';
-import { CriticalFileSelector } from '../lib/critical-file-selector.js';
+import { CriticalFileSelector, type CriticalFilesReport } from '../lib/critical-file-selector.js';
 import { CriticalFilesReportGenerator } from '../lib/critical-files-report-generator.js';
 import * as yaml from 'js-yaml';
 import { ShipService } from '../lib/ship-service.js';
 import { getCurrentCommitSHA } from '../lib/git-utils.js';
 import { AutoFixService } from '../lib/auto-fix-service.js';
+import { ReviewEngineService } from '../lib/review-engine-service.js';
+import { ToolchainService } from '../lib/toolchain-service.js';
+import { ToolRegistryLoader } from '../lib/tool-registry-loader.js';
+import type { EnrichedToolResult } from '../types/review-engine.js';
+import type { QualityChecksMapping } from '../types/toolchain.js';
 
 export interface HardenOptions {
   skipTests?: boolean;
@@ -44,6 +48,24 @@ export class HardenCommand {
   private hardenService = new HardenService();
   private logger = createCommandLogger('harden', { enableConsole: true });
   private shipService = new ShipService();
+  private reviewEngineService: ReviewEngineService;
+
+  constructor() {
+    // HODGE-344.5: Initialize ReviewEngineService for unified review workflows
+    const manifestGenerator = new ReviewManifestGenerator();
+    const toolchainService = new ToolchainService();
+    const importAnalyzer = new ImportAnalyzer();
+    const severityExtractor = new SeverityExtractor();
+    const criticalFileSelector = new CriticalFileSelector(importAnalyzer, severityExtractor);
+    const toolRegistryLoader = new ToolRegistryLoader();
+
+    this.reviewEngineService = new ReviewEngineService(
+      manifestGenerator,
+      toolchainService,
+      criticalFileSelector,
+      toolRegistryLoader
+    );
+  }
 
   /**
    * Execute the harden command for a feature
@@ -572,10 +594,12 @@ The AI will interpret these results to identify issues that need to be fixed bef
     );
 
     try {
-      // 1. Get changed files with line counts using GitDiffAnalyzer
+      // HODGE-344.5: Use ReviewEngineService for unified review workflow
+      // 1. Get changed files using GitDiffAnalyzer
       const gitAnalyzer = new GitDiffAnalyzer();
       const changedFiles = await gitAnalyzer.getChangedFiles();
 
+      // Display file summary to user
       if (changedFiles.length === 0) {
         this.logger.info(chalk.yellow('⚠️  No changed files found in current branch'));
         this.logger.info(chalk.gray('   Review manifest will still be generated\n'));
@@ -592,83 +616,29 @@ The AI will interpret these results to identify issues that need to be fixed bef
         this.logger.info('');
       }
 
-      // 2. Run quality checks (HODGE-341.3: Moved to review mode for complete context)
-      this.logger.info(chalk.blue('🔍 Running quality checks...\n'));
-      const qualityCheckResults = await this.hardenService.runQualityChecks(feature);
+      // 2. Extract file list and call ReviewEngineService
+      const fileList = changedFiles.map((f) => f.path);
+      const findings = await this.reviewEngineService.analyzeFiles(fileList, {
+        scope: {
+          type: 'feature',
+          target: feature,
+        },
+        enableCriticalSelection: true, // Harden policy: always select critical files
+      });
 
-      // Generate quality-checks.md
-      const qualityChecksReport = this.generateQualityChecksReport(qualityCheckResults);
-      await fs.writeFile(path.join(hardenDir, 'quality-checks.md'), qualityChecksReport);
-      this.logger.info(chalk.green('✓ Quality checks complete\n'));
-
-      // 3. Run critical file selection (HODGE-341.3)
-      if (changedFiles.length > 0) {
-        this.logger.info(chalk.blue('🎯 Selecting critical files...\n'));
-
-        // Load toolchain config for max_critical_files and critical_paths
-        const toolchainConfigPath = path.join(process.cwd(), '.hodge', 'toolchain.yaml');
-        let maxCriticalFiles = 10;
-        let criticalPaths: string[] = [];
-
-        if (existsSync(toolchainConfigPath)) {
-          const toolchainYaml = await fs.readFile(toolchainConfigPath, 'utf-8');
-          const toolchainConfig = yaml.load(toolchainYaml) as Record<string, unknown>;
-          maxCriticalFiles =
-            typeof toolchainConfig.max_critical_files === 'number'
-              ? toolchainConfig.max_critical_files
-              : 10;
-          criticalPaths = Array.isArray(toolchainConfig.critical_paths)
-            ? toolchainConfig.critical_paths.filter((p): p is string => typeof p === 'string')
-            : [];
-        }
-
-        const selector = new CriticalFileSelector(new ImportAnalyzer(), new SeverityExtractor());
-
-        const criticalFilesReport = selector.selectCriticalFiles(
-          changedFiles,
-          qualityCheckResults,
-          {
-            maxFiles: maxCriticalFiles,
-            criticalPaths: criticalPaths,
-          }
-        );
-
-        // Generate critical-files.md
-        const reportGen = new CriticalFilesReportGenerator();
-        const criticalFilesMarkdown = reportGen.generateReport(
-          criticalFilesReport,
-          new Date().toISOString()
-        );
-        await fs.writeFile(path.join(hardenDir, 'critical-files.md'), criticalFilesMarkdown);
-
-        this.logger.info(
-          chalk.green(`✓ Selected ${criticalFilesReport.topFiles.length} critical files\n`)
-        );
+      // 3. Write reports using extracted methods
+      await this.writeQualityChecks(hardenDir, findings.toolResults);
+      await this.writeManifest(hardenDir, findings.manifest);
+      if (findings.criticalFiles) {
+        await this.writeCriticalFiles(hardenDir, findings.criticalFiles);
       }
 
-      // 4. Classify changes into review tier
-      this.logger.info(chalk.blue('🔍 Analyzing changes...'));
-      const classifier = new ReviewTierClassifier();
-      const recommendation = classifier.classifyChanges(changedFiles);
-
+      // 4. Display tier classification
       this.logger.info(chalk.green(`✓ Classification complete`));
-      this.logger.info(chalk.bold(`   Recommended tier: ${recommendation.tier.toUpperCase()}`));
-      this.logger.info(chalk.gray(`   Reason: ${recommendation.reason}`));
+      this.logger.info(chalk.bold(`   Recommended tier: ${findings.metadata.tier.toUpperCase()}`));
       this.logger.info('');
 
-      // 5. Generate review manifest
-      this.logger.info(chalk.blue('📚 Generating review manifest...'));
-      const manifestGen = new ReviewManifestGenerator();
-      const manifest = manifestGen.generateManifest(feature, changedFiles, recommendation);
-
-      // 6. Write manifest YAML
-      const manifestPath = path.join(hardenDir, 'review-manifest.yaml');
-      await fs.writeFile(manifestPath, yaml.dump(manifest, { lineWidth: 120, noRefs: true }));
-
-      this.logger.info(chalk.green(`✓ Review manifest generated`));
-      this.logger.info('');
-
-      // 7. Output summary for AI
+      // 5. Output summary for AI
       this.logger.info(chalk.bold('Review Context Ready:'));
       this.logger.info(chalk.gray(`   review-manifest.yaml - Context files to load`));
       this.logger.info(chalk.gray(`   quality-checks.md - Tool diagnostics`));
@@ -686,6 +656,62 @@ The AI will interpret these results to identify issues that need to be fixed bef
       );
       throw error;
     }
+  }
+
+  /**
+   * Write quality checks report to quality-checks.md
+   * HODGE-344.5: Extracted method for reduced complexity
+   * @private
+   */
+  private async writeQualityChecks(
+    hardenDir: string,
+    enrichedResults: EnrichedToolResult[]
+  ): Promise<void> {
+    this.logger.info(chalk.blue('🔍 Running quality checks...\n'));
+
+    // Convert EnrichedToolResult to RawToolResult for report generation
+    const rawResults: RawToolResult[] = enrichedResults.map((enriched) => ({
+      type: enriched.checkType as keyof QualityChecksMapping,
+      tool: enriched.tool,
+      success: enriched.success,
+      stdout: enriched.output,
+      stderr: '',
+      skipped: enriched.skipped,
+      reason: enriched.reason,
+    }));
+
+    const qualityChecksReport = this.generateQualityChecksReport(rawResults);
+    await fs.writeFile(path.join(hardenDir, 'quality-checks.md'), qualityChecksReport);
+    this.logger.info(chalk.green('✓ Quality checks complete\n'));
+  }
+
+  /**
+   * Write review manifest to review-manifest.yaml
+   * HODGE-344.5: Extracted method for reduced complexity
+   * @private
+   */
+  private async writeManifest(hardenDir: string, manifest: unknown): Promise<void> {
+    this.logger.info(chalk.blue('📚 Generating review manifest...'));
+    const manifestPath = path.join(hardenDir, 'review-manifest.yaml');
+    await fs.writeFile(manifestPath, yaml.dump(manifest, { lineWidth: 120, noRefs: true }));
+    this.logger.info(chalk.green(`✓ Review manifest generated`));
+    this.logger.info('');
+  }
+
+  /**
+   * Write critical files report to critical-files.md
+   * HODGE-344.5: Extracted method for reduced complexity
+   * @private
+   */
+  private async writeCriticalFiles(
+    hardenDir: string,
+    criticalFiles: CriticalFilesReport
+  ): Promise<void> {
+    this.logger.info(chalk.blue('🎯 Selecting critical files...\n'));
+    const reportGen = new CriticalFilesReportGenerator();
+    const criticalFilesMarkdown = reportGen.generateReport(criticalFiles, new Date().toISOString());
+    await fs.writeFile(path.join(hardenDir, 'critical-files.md'), criticalFilesMarkdown);
+    this.logger.info(chalk.green(`✓ Selected ${criticalFiles.topFiles.length} critical files\n`));
   }
 
   /**
