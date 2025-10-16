@@ -136,7 +136,7 @@ describe('Profile Loading - Smoke Tests', () => {
 
   smokeTest('should count expected number of profiles', async () => {
     const allProfiles = findAllYamlProfiles(profilesDir);
-    const expectedCount = 43;
+    const expectedCount = 44; // Updated for HODGE-346.1 (added ux-patterns/claude-code-slash-commands.yaml)
 
     if (allProfiles.length !== expectedCount) {
       throw new Error(`Expected ${expectedCount} profiles, found ${allProfiles.length}`);

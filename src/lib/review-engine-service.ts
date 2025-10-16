@@ -165,6 +165,7 @@ export class ReviewEngineService {
     toolRegistry: Record<string, import('../types/toolchain.js').ToolRegistryEntry>
   ): boolean {
     const toolInfo = toolRegistry[toolName];
+    if (!toolInfo) return false;
     return !!toolInfo.fix_command;
   }
 }

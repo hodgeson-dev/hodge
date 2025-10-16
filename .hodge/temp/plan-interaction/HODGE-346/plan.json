@@ -15,9 +15,7 @@
       "title": "Core visual language patterns (interaction starts, response indicators)",
       "description": "Update all 10 command files with consistent interaction starts (box pattern) and response indicators (🔔 YOUR RESPONSE NEEDED)",
       "effort": "medium",
-      "dependencies": [
-        "HODGE-346.1"
-      ],
+      "dependencies": ["HODGE-346.1"],
       "lane": 0
     },
     {
@@ -25,9 +23,7 @@
       "title": "Choice formatting and recommendations (alphabetized lists, ⭐ marking)",
       "description": "Standardize all option lists to alphabetized format (a/b/c/d) with clear recommendation marking using ⭐ emoji",
       "effort": "medium",
-      "dependencies": [
-        "HODGE-346.2"
-      ],
+      "dependencies": ["HODGE-346.2"],
       "lane": 0
     },
     {
@@ -35,9 +31,7 @@
       "title": "Next steps formatting (bulleted slash commands, context-aware filtering)",
       "description": "Standardize What's Next sections with bulleted slash commands and implement smart command filtering based on project state",
       "effort": "medium",
-      "dependencies": [
-        "HODGE-346.3"
-      ],
+      "dependencies": ["HODGE-346.3"],
       "lane": 0
     },
     {
@@ -45,17 +39,22 @@
       "title": "Tone and personality refinement (knowledgeable peer, error recovery)",
       "description": "Update all text to knowledgeable peer tone and add collaborative error recovery hints throughout commands",
       "effort": "medium",
-      "dependencies": [
-        "HODGE-346.4"
-      ],
+      "dependencies": ["HODGE-346.4"],
       "lane": 0
     }
   ],
   "lanes": {
     "count": 1,
-    "assignments": {}
+    "assignments": {
+      "0": ["HODGE-346.1", "HODGE-346.2", "HODGE-346.3", "HODGE-346.4", "HODGE-346.5"]
+    }
   },
-  "dependencies": {},
+  "dependencies": {
+    "HODGE-346.2": ["HODGE-346.1"],
+    "HODGE-346.3": ["HODGE-346.2"],
+    "HODGE-346.4": ["HODGE-346.3"],
+    "HODGE-346.5": ["HODGE-346.4"]
+  },
   "estimatedDays": 9,
   "createdAt": "2025-10-16T05:30:00.000Z"
 }

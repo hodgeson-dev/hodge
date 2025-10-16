@@ -1,0 +1,174 @@
+meta:
+  version: '1.0.0'
+  category: ux-patterns
+  applies_to:
+    - '.claude/commands/*.md'
+  description: 'Unified UX System for Claude Code slash command templates - The Conversational Companion design pattern'
+
+rules:
+  - id: interaction-start-box
+    name: 'Consistent Interaction Start Pattern'
+    enforcement: MANDATORY
+    severity: BLOCKER
+    desc: 'Every command starts with box pattern containing emoji + purpose'
+    example: |
+      ┌─────────────────────────────────────────────────────────┐
+      │ 🔍 Exploring Feature Discovery                          │
+      └─────────────────────────────────────────────────────────┘
+    guidance: 'Box width: 60 chars. Title centered with padding. Emoji chosen for command context.'
+
+  - id: response-indicator-emoji
+    name: 'Emoji-Based Response Indicator'
+    enforcement: MANDATORY
+    severity: BLOCKER
+    desc: 'Use 🔔 YOUR RESPONSE NEEDED when user input required'
+    example: |
+      🔔 YOUR RESPONSE NEEDED
+
+      [content with options]
+
+      👉 Your choice [a/b/c/d]:
+    guidance: 'Always use bell emoji + ALL CAPS text. Follow with blank line before content.'
+
+  - id: alphabetized-choice-lists
+    name: 'Alphabetized Choice Format'
+    enforcement: MANDATORY
+    severity: BLOCKER
+    desc: 'Present options as alphabetized lists (a/b/c/d) for single-keystroke response'
+    example: 'a) First option\nb) Second option\nc) Third option'
+    guidance: 'Use lowercase letters. One blank line between options. Support modifications like "a, but add X".'
+
+  - id: recommendation-marking
+    name: 'Clear Recommendation Marking'
+    enforcement: MANDATORY
+    severity: BLOCKER
+    desc: 'Mark recommended options with ⭐ emoji + "(Recommended)" text'
+    example: 'a) ⭐ First option (Recommended)\nb) Second option\nc) Third option'
+    guidance: 'Star emoji immediately after letter. Text annotation for clarity. Only one recommendation per list.'
+
+  - id: bulleted-slash-commands
+    name: 'Bulleted Slash Command Format'
+    enforcement: MANDATORY
+    severity: BLOCKER
+    desc: 'Slash command suggestions use bullets (•), never alphabetized choice lists'
+    example: |
+      ### What's Next?
+
+      • `/build HODGE-003` - Start implementation
+      • `/status` - Check progress
+    guidance: 'Use bullet character (•), not asterisk. Commands must be typed, not single-keystroke selections.'
+
+  - id: context-aware-filtering
+    name: 'Smart Command Filtering (Basic)'
+    enforcement: SUGGESTED
+    severity: WARNING
+    desc: 'Hide irrelevant commands from suggestions based on project state'
+    guidance: 'Example: no /decide if no decisions needed. Reduces cognitive load, shows only relevant next steps.'
+    xref: 'ux-patterns/predictive-suggestions'
+
+  - id: predictive-suggestions
+    name: 'Predictive Command Suggestions'
+    enforcement: SUGGESTED
+    severity: SUGGESTION
+    desc: 'Highlight next logical command when user patterns detected'
+    example: '• `/harden HODGE-003` - Run quality checks (Suggested next based on your workflow)'
+    guidance: 'Build on basic filtering. Add context hints like "based on your workflow" or "you shipped 3 this week".'
+    xref: 'ux-patterns/adaptive-guidance'
+
+  - id: adaptive-guidance
+    name: 'Proactive Adaptive Guidance'
+    enforcement: SUGGESTED
+    severity: SUGGESTION
+    desc: 'Offer choices to address project conditions before proceeding'
+    example: |
+      ⚡ Quick note: I see 5 TODOs. Want to address them before deciding?
+      a) ⭐ Yes (Recommended)
+      b) No, proceed anyway
+    guidance: 'Highest intelligence level. Reshapes interaction based on state. Use sparingly - only when truly helpful.'
+
+  - id: collaborative-error-recovery
+    name: 'Collaborative Error Recovery'
+    enforcement: MANDATORY
+    severity: WARNING
+    desc: 'Offer helpful clarification when user input suggests uncertainty or is invalid'
+    example: |
+      Hmm, I got "maybe b?" - sounds uncertain. Let me help clarify:
+      a) ⭐ Continue with b
+      b) Explain options better
+      c) Start over
+    guidance: 'Detect patterns: "maybe", "?", invalid choices. Offer repair options, never just reject.'
+
+  - id: hybrid-information-display
+    name: 'Hybrid Information Density'
+    enforcement: SUGGESTED
+    severity: WARNING
+    desc: 'Complex commands show overview at start, then progressive disclosure with breadcrumbs'
+    example: |
+      Steps overview:
+      1. Quality checks
+      2. Critical files
+      ...
+
+      ────────────────────────────────────────────────────────────
+      📍 Step 1 of 7: Quality Checks
+      ────────────────────────────────────────────────────────────
+    guidance: 'Overview lists all steps. Breadcrumbs show current position. Balance context with focus.'
+
+  - id: progress-celebration
+    name: 'Achievement and Progress Celebration'
+    enforcement: SUGGESTED
+    severity: SUGGESTION
+    desc: 'Display achievement box with stats after significant milestones'
+    example: |
+      ┌─────────────────────────────────────────────────────────┐
+      │ 🎉 HODGE-003 Shipped!                                   │
+      └─────────────────────────────────────────────────────────┘
+
+      📊 Your Momentum:
+      • 3 features shipped this week
+      • 85% test coverage maintained
+
+      🏆 Achievement Unlocked: "Shipping Streak"
+    guidance: 'After /ship, major milestones. Show relevant stats. Calibrate to feel earned, not gimmicky.'
+
+  - id: contextual-tips
+    name: 'Pattern-Based Contextual Tips'
+    enforcement: SUGGESTED
+    severity: SUGGESTION
+    desc: 'Offer optional tips when workflow matches lessons from previous features'
+    example: |
+      💡 Pattern from HODGE-289: Check for zombie processes when spawning subprocesses.
+
+      a) ⭐ Yes, check now
+      b) Skip, I know it's safe
+      c) Tell me more
+    guidance: "Reference specific feature IDs. Make optional with choices. Don't interrupt flow unnecessarily."
+
+  - id: smart-shortcuts
+    name: 'Learned Pattern Shortcuts'
+    enforcement: SUGGESTED
+    severity: SUGGESTION
+    desc: 'Offer to set defaults when user consistently chooses same option'
+    example: |
+      I notice you always choose conversational exploration. Want to:
+
+      a) ⭐ Set as default
+      b) Keep choosing each time
+    guidance: 'Detect patterns after 3+ consistent choices. Make optional. Clear how to change later.'
+
+  - id: knowledgeable-peer-tone
+    name: 'Conversational Knowledgeable Peer Tone'
+    enforcement: MANDATORY
+    severity: WARNING
+    desc: 'Use conversational language, not formal commands - pair programming style'
+    example: |
+      Good: "Let me help clarify" Bad: "System will now process"
+      Good: "Here's what we'll do" Bad: "User must"
+    guidance: 'Occasionally witty, always helpful. Never condescending. First person ("Let''s", "I notice") feels collaborative.'
+
+  - id: pattern-consistency
+    name: 'Cross-Command Pattern Consistency'
+    enforcement: MANDATORY
+    severity: BLOCKER
+    desc: 'All 10 command files follow same visual patterns, tone, and interaction structures'
+    guidance: 'Review all commands together. Consistency builds familiarity. Users learn once, apply everywhere.'

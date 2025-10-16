@@ -1,12 +1,12 @@
 {
   "statistics": {
-    "detectionDate": "2025-10-16T03:58:49.158Z",
+    "detectionDate": "2025-10-16T14:02:01.234Z",
     "formats": {
       "typescript": {
         "sources": {
-          "src/commands/harden.ts": {
-            "lines": 837,
-            "tokens": 6579,
+          "src/test/profile-loading.smoke.test.ts": {
+            "lines": 166,
+            "tokens": 1559,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -16,9 +16,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/commands/harden.smoke.test.ts": {
-            "lines": 288,
-            "tokens": 2686,
+          "src/lib/ux-profile-validation.smoke.test.ts": {
+            "lines": 144,
+            "tokens": 1341,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -27,34 +27,119 @@
             "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
+          },
+          "src/lib/toolchain-service.ts": {
+            "lines": 517,
+            "tokens": 3941,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 30,
+            "duplicatedTokens": 192,
+            "percentage": 5.8,
+            "percentageTokens": 4.87,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/review-engine-service.ts": {
+            "lines": 170,
+            "tokens": 1135,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/git-utils.ts": {
+            "lines": 544,
+            "tokens": 3782,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/git-diff-analyzer.ts": {
+            "lines": 176,
+            "tokens": 1261,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 30,
+            "duplicatedTokens": 192,
+            "percentage": 17.05,
+            "percentageTokens": 15.23,
+            "newDuplicatedLines": 0,
+            "newClones": 0
           }
         },
         "total": {
-          "lines": 1125,
-          "tokens": 9265,
-          "sources": 2,
-          "clones": 0,
-          "duplicatedLines": 0,
-          "duplicatedTokens": 0,
-          "percentage": 0,
-          "percentageTokens": 0,
+          "lines": 1717,
+          "tokens": 13019,
+          "sources": 6,
+          "clones": 1,
+          "duplicatedLines": 30,
+          "duplicatedTokens": 192,
+          "percentage": 1.75,
+          "percentageTokens": 1.47,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
       }
     },
     "total": {
-      "lines": 1125,
-      "tokens": 9265,
-      "sources": 2,
-      "clones": 0,
-      "duplicatedLines": 0,
-      "duplicatedTokens": 0,
-      "percentage": 0,
-      "percentageTokens": 0,
+      "lines": 1717,
+      "tokens": 13019,
+      "sources": 6,
+      "clones": 1,
+      "duplicatedLines": 30,
+      "duplicatedTokens": 192,
+      "percentage": 1.75,
+      "percentageTokens": 1.47,
       "newDuplicatedLines": 0,
       "newClones": 0
     }
   },
-  "duplicates": []
+  "duplicates": [
+    {
+      "format": "typescript",
+      "lines": 31,
+      "fragment": ");\n  }\n\n  /**\n   * Parse git rename notation to extract the actual file path\n   * Git shows renames as: path/{old => new}/file or {old => new}path/file\n   * We need to extract the new path: path/new/file or newpath/file\n   */\n  private parseRenamedPath(gitPath: string): string {\n    // Match rename pattern: {old => new}\n    const startBrace = gitPath.indexOf('{');\n    const arrow = gitPath.indexOf(' => ', startBrace);\n    const endBrace = gitPath.indexOf('}', arrow);\n\n    if (startBrace !== -1 && arrow !== -1 && endBrace !== -1) {\n      // Extract the new name from {old => new}\n      const newName = gitPath.substring(arrow + 4, endBrace); // +4 to skip ' => '\n      // Replace the entire {old => new} with just the new part\n      return gitPath.substring(0, startBrace) + newName + gitPath.substring(endBrace + 1);\n    }\n\n    // Not a rename, return as-is\n    return gitPath;\n  }\n\n  /**\n   * Parse git diff --numstat output\n   *\n   * @param output - Raw stdout from git diff --numstat\n   * @returns Parsed results\n   */",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/lib/git-diff-analyzer.ts",
+        "start": 108,
+        "end": 138,
+        "startLoc": {
+          "line": 108,
+          "column": 2,
+          "position": 731
+        },
+        "endLoc": {
+          "line": 138,
+          "column": 6,
+          "position": 923
+        }
+      },
+      "secondFile": {
+        "name": "src/lib/toolchain-service.ts",
+        "start": 398,
+        "end": 425,
+        "startLoc": {
+          "line": 398,
+          "column": 9,
+          "position": 2942
+        },
+        "endLoc": {
+          "line": 425,
+          "column": 6,
+          "position": 3134
+        }
+      }
+    }
+  ]
 }

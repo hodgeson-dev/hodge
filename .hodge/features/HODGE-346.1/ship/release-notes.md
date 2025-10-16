@@ -1,11 +1,9 @@
-## HODGE-003
+## HODGE-346.1
 
-**PM Issue**: HODGE-003
-
-**Shipped**: 9/18/2025
+**Shipped**: 10/16/2025
 
 ### What's New
-- HODGE-003 implementation complete
+- HODGE-346.1 implementation complete
 - Full test coverage
 - Production ready
 

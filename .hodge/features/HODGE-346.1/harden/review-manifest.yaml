@@ -1,0 +1,137 @@
+version: '1.0'
+feature: HODGE-346.1
+generated_at: '2025-10-16T13:46:38.854Z'
+recommended_tier: full
+change_analysis:
+  total_files: 24
+  total_lines: 2720
+  breakdown:
+    implementation: 15
+    test: 2
+    documentation: 6
+    config: 1
+changed_files:
+  - path: .hodge/HODGE.md
+    lines_changed: 21
+    change_type: documentation
+  - path: .hodge/context.json
+    lines_changed: 8
+    change_type: implementation
+  - path: .hodge/development-plan.json
+    lines_changed: 55
+    change_type: implementation
+  - path: .hodge/features/HODGE-346.1/build/build-plan.md
+    lines_changed: 95
+    change_type: documentation
+  - path: .hodge/features/HODGE-346.1/ship-record.json
+    lines_changed: 16
+    change_type: implementation
+  - path: .hodge/features/HODGE-346/explore/context.json
+    lines_changed: 49
+    change_type: implementation
+  - path: .hodge/features/HODGE-346/explore/exploration.md
+    lines_changed: 745
+    change_type: documentation
+  - path: .hodge/features/HODGE-346/explore/test-intentions.md
+    lines_changed: 48
+    change_type: documentation
+  - path: .hodge/features/HODGE-346/issue-id.txt
+    lines_changed: 1
+    change_type: implementation
+  - path: .hodge/features/HODGE-346/plan.json
+    lines_changed: 61
+    change_type: implementation
+  - path: .hodge/id-counter.json
+    lines_changed: 6
+    change_type: implementation
+  - path: .hodge/id-mappings.json
+    lines_changed: 8
+    change_type: implementation
+  - path: .hodge/project_management.md
+    lines_changed: 2
+    change_type: documentation
+  - path: .hodge/review-profiles/ux-patterns/claude-code-slash-commands.md
+    lines_changed: 512
+    change_type: documentation
+  - path: .hodge/review-profiles/ux-patterns/claude-code-slash-commands.yaml
+    lines_changed: 174
+    change_type: implementation
+  - path: .hodge/temp/plan-interaction/HODGE-346/plan.json
+    lines_changed: 60
+    change_type: implementation
+  - path: package.json
+    lines_changed: 2
+    change_type: config
+  - path: report/jscpd-report.json
+    lines_changed: 631
+    change_type: implementation
+  - path: src/lib/git-diff-analyzer.ts
+    lines_changed: 27
+    change_type: implementation
+  - path: src/lib/git-utils.ts
+    lines_changed: 3
+    change_type: implementation
+  - path: src/lib/review-engine-service.ts
+    lines_changed: 2
+    change_type: implementation
+  - path: src/lib/toolchain-service.ts
+    lines_changed: 47
+    change_type: implementation
+  - path: src/lib/ux-profile-validation.smoke.test.ts
+    lines_changed: 145
+    change_type: test
+  - path: src/test/profile-loading.smoke.test.ts
+    lines_changed: 2
+    change_type: test
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - test-pattern.md
+      - error-boundary.md
+      - input-validation.md
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - testing/vitest-3.x.yaml
+      - testing/general-test-standards.yaml
+      - languages/typescript-5.x.yaml
+      - languages/general-coding-standards.yaml
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed
+scope:
+  type: feature
+  target: HODGE-346.1
+  fileCount: 24

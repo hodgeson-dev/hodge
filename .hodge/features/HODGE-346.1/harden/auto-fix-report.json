@@ -1,0 +1,52 @@
+{
+  "timestamp": "2025-10-16T06:29:26.549Z",
+  "stagedFiles": [
+    ".hodge/HODGE.md",
+    ".hodge/context.json",
+    ".hodge/development-plan.json",
+    ".hodge/features/HODGE-003/decision.md",
+    ".hodge/features/HODGE-003/explore/exploration.md",
+    ".hodge/features/HODGE-003/harden/context.json",
+    ".hodge/features/HODGE-003/harden/harden-report.md",
+    ".hodge/features/HODGE-003/harden/validation-results.json",
+    ".hodge/features/HODGE-003/ship/release-notes.md",
+    ".hodge/features/HODGE-003/ship/ship-record.json",
+    ".hodge/features/HODGE-346.1/build/build-plan.md",
+    ".hodge/features/HODGE-346.1/ship-record.json",
+    ".hodge/features/HODGE-346/explore/context.json",
+    ".hodge/features/HODGE-346/explore/exploration.md",
+    ".hodge/features/HODGE-346/explore/test-intentions.md",
+    ".hodge/features/HODGE-346/issue-id.txt",
+    ".hodge/features/HODGE-346/plan.json",
+    ".hodge/id-counter.json",
+    ".hodge/id-mappings.json",
+    ".hodge/project_management.md",
+    ".hodge/review-profiles/ux-patterns/claude-code-slash-commands.md",
+    ".hodge/review-profiles/ux-patterns/claude-code-slash-commands.yaml",
+    ".hodge/temp/plan-interaction/HODGE-346/plan.json",
+    "src/lib/ux-profile-validation.smoke.test.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 23,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": ".hodge/review-profiles/ux-patterns/claude-code-slash-commands.yaml 33ms\nsrc/lib/ux-profile-validation.smoke.test.ts 59ms\n",
+      "stderr": "[error] No files matching the pattern were found: \".hodge/features/HODGE-003/decision.md\".\n[error] No files matching the pattern were found: \".hodge/features/HODGE-003/explore/exploration.md\".\n[error] No files matching the pattern were found: \".hodge/features/HODGE-003/harden/context.json\".\n[error] No files matching the pattern were found: \".hodge/features/HODGE-003/harden/harden-report.md\".\n[error] No files matching the pattern were found: \".hodge/features/HODGE-003/harden/validation-results.json\".\n[error] No files matching the pattern were found: \".hodge/features/HODGE-003/ship/release-notes.md\".\n[error] No files matching the pattern were found: \".hodge/features/HODGE-003/ship/ship-record.json\".\n",
+      "duration": 923
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 1,
+      "issuesFixed": 1,
+      "success": true,
+      "stdout": "\n/Users/michaelkelly/Projects/hodge/src/lib/ux-profile-validation.smoke.test.ts\n  0:0  warning  File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override\n\n✖ 1 problem (0 errors, 1 warning)\n\n",
+      "stderr": "",
+      "duration": 1564
+    }
+  ],
+  "totalIssuesFixed": 1,
+  "totalFilesModified": 24,
+  "failures": []
+}

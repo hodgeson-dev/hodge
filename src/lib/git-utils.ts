@@ -106,7 +106,7 @@ export async function getGitStatus(): Promise<GitStatus> {
  * Analyze branch to determine type and extract metadata
  */
 export function analyzeBranch(branchName: string): BranchInfo {
-  // TODO: Make protected branch patterns configurable
+  // TODO: [ship] Make protected branch patterns configurable
   const protectedBranches = ['main', 'master', 'develop', 'staging', 'production'];
 
   // Check if protected
@@ -125,7 +125,7 @@ export function analyzeBranch(branchName: string): BranchInfo {
   }
 
   // Extract issue ID if present
-  // TODO: Make issue patterns configurable
+  // TODO: [ship] Make issue patterns configurable
   // Simplified patterns to avoid backtracking (sonarjs/slow-regex)
   const issuePatterns = [
     /LIN-\d+/i, // Linear (simplified - removed non-capturing group)
@@ -170,8 +170,8 @@ export async function gitPush(options: {
   setUpstream?: boolean;
   dryRun?: boolean;
 }): Promise<PushResult> {
-  const branch = options.branch || (await getCurrentBranch());
-  const remote = options.remote || 'origin';
+  const branch = options.branch ?? (await getCurrentBranch());
+  const remote = options.remote ?? 'origin';
 
   // Build push command
   let pushCommand = `git push`;
@@ -499,7 +499,8 @@ export async function getFileChangeStats(filePaths: string[]): Promise<GitDiffRe
   try {
     // Use git diff --numstat HEAD to get working tree changes for these files
     // Format: <linesAdded>\t<linesDeleted>\t<filePath>
-    const fileArgs = filePaths.join(' ');
+    // Properly quote each file path to avoid shell expansion issues (e.g., {old => new} in renames)
+    const fileArgs = filePaths.map((f) => `'${f.replace(/'/g, "'\\''")}'`).join(' ');
     const { stdout } = await execAsync(`git diff --numstat HEAD -- ${fileArgs}`);
 
     if (!stdout.trim()) {

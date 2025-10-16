@@ -322,11 +322,7 @@ export class ToolchainService {
     const results = [];
     for (const toolName of toolNames) {
       const toolConfig = config.commands[toolName];
-      if (!toolConfig) {
-        logger.warn(`Tool ${toolName} not found in commands configuration`);
-        continue;
-      }
-
+      // Tool should exist in commands if it's in quality_checks (config validation ensures this)
       const result = await this.executeTool(checkType, toolName, toolConfig.command, files);
       results.push(result);
     }
@@ -386,6 +382,7 @@ export class ToolchainService {
 
   /**
    * Substitute ${files} placeholder in command template
+   * Properly escapes file paths to avoid shell expansion issues (e.g., braces in git renames)
    */
   private substituteFiles(commandTemplate: string, files?: string[]): string {
     if (!commandTemplate.includes('${files}')) {
@@ -394,8 +391,33 @@ export class ToolchainService {
     }
 
     // Replace ${files} with file list or '.' for all files
-    const filesArg = files?.length ? files.join(' ') : '.';
+    // Properly quote each file path to avoid shell expansion (e.g., {old => new} in renames)
+    const filesArg = files?.length
+      ? files.map((f) => `'${f.replace(/'/g, "'\\''")}'`).join(' ')
+      : '.';
     return commandTemplate.replace(/\$\{files\}/g, filesArg);
+  }
+
+  /**
+   * Parse git rename notation to extract the actual file path
+   * Git shows renames as: path/{old => new}/file or {old => new}path/file
+   * We need to extract the new path: path/new/file or newpath/file
+   */
+  private parseRenamedPath(gitPath: string): string {
+    // Match rename pattern: {old => new}
+    const startBrace = gitPath.indexOf('{');
+    const arrow = gitPath.indexOf(' => ', startBrace);
+    const endBrace = gitPath.indexOf('}', arrow);
+
+    if (startBrace !== -1 && arrow !== -1 && endBrace !== -1) {
+      // Extract the new name from {old => new}
+      const newName = gitPath.substring(arrow + 4, endBrace); // +4 to skip ' => '
+      // Replace the entire {old => new} with just the new part
+      return gitPath.substring(0, startBrace) + newName + gitPath.substring(endBrace + 1);
+    }
+
+    // Not a rename, return as-is
+    return gitPath;
   }
 
   /**
@@ -411,9 +433,18 @@ export class ToolchainService {
         cwd: this.cwd,
       });
 
-      // Combine and dedupe
+      // Combine, parse renames, and dedupe
       const allFiles = [
-        ...new Set([...working.split('\n').filter(Boolean), ...staged.split('\n').filter(Boolean)]),
+        ...new Set([
+          ...working
+            .split('\n')
+            .filter(Boolean)
+            .map((f) => this.parseRenamedPath(f)),
+          ...staged
+            .split('\n')
+            .filter(Boolean)
+            .map((f) => this.parseRenamedPath(f)),
+        ]),
       ];
 
       // Filter by extension
@@ -459,7 +490,11 @@ export class ToolchainService {
         }
       );
 
-      const allFiles = stdout.split('\n').filter(Boolean);
+      // Parse renamed files to extract actual paths
+      const allFiles = stdout
+        .split('\n')
+        .filter(Boolean)
+        .map((f) => this.parseRenamedPath(f));
 
       // Filter by extension
       const filteredFiles = allFiles.filter(

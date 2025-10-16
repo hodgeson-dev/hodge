@@ -109,6 +109,28 @@ export class GitDiffAnalyzer {
   }
 
   /**
+   * Parse git rename notation to extract the actual file path
+   * Git shows renames as: path/{old => new}/file or {old => new}path/file
+   * We need to extract the new path: path/new/file or newpath/file
+   */
+  private parseRenamedPath(gitPath: string): string {
+    // Match rename pattern: {old => new}
+    const startBrace = gitPath.indexOf('{');
+    const arrow = gitPath.indexOf(' => ', startBrace);
+    const endBrace = gitPath.indexOf('}', arrow);
+
+    if (startBrace !== -1 && arrow !== -1 && endBrace !== -1) {
+      // Extract the new name from {old => new}
+      const newName = gitPath.substring(arrow + 4, endBrace); // +4 to skip ' => '
+      // Replace the entire {old => new} with just the new part
+      return gitPath.substring(0, startBrace) + newName + gitPath.substring(endBrace + 1);
+    }
+
+    // Not a rename, return as-is
+    return gitPath;
+  }
+
+  /**
    * Parse git diff --numstat output
    *
    * @param output - Raw stdout from git diff --numstat
@@ -128,7 +150,10 @@ export class GitDiffAnalyzer {
         continue;
       }
 
-      const [addedStr, deletedStr, filePath] = parts;
+      const [addedStr, deletedStr, rawFilePath] = parts;
+
+      // Parse renamed files to extract actual path
+      const filePath = this.parseRenamedPath(rawFilePath);
 
       // Handle binary files (shows '-' for added/deleted)
       const linesAdded = addedStr === '-' ? 0 : parseInt(addedStr, 10);

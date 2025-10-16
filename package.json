@@ -11,7 +11,7 @@
   "scripts": {
     "sync:commands": "node scripts/sync-claude-commands.js",
     "sync:profiles": "node scripts/sync-review-profiles.js",
-    "build": "npm run sync:commands && npm run sync:profiles && tsc -p tsconfig.build.json && cp package.json dist/ && cp -r src/templates dist/src/ && cp -r review-profiles dist/",
+    "build": "npm run sync:commands && npm run sync:profiles && tsc -p tsconfig.build.json && cp package.json dist/ && cp -r src/templates dist/src/ && cp -r src/bundled-config dist/src/ && cp -r review-profiles dist/",
     "build:watch": "tsc -p tsconfig.build.json --watch",
     "dev": "tsx watch src/bin/hodge.ts",
     "dev:link": "npm run build:watch & npm link",
