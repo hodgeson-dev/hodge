@@ -1,4 +1,6 @@
-# Hodge Harden Mode
+┌─────────────────────────────────────────────────────────┐
+│ 🔧 Harden: Production Readiness                        │
+└─────────────────────────────────────────────────────────┘
 
 ## Step 0: Auto-Fix Simple Issues (HODGE-341.6)
 
@@ -469,22 +471,16 @@ Before proceeding to ship, ensure:
 - [ ] Performance standards met
 - [ ] Documentation updated if needed
 
-## Next Steps Menu
-After hardening is complete, suggest:
-```
-### Next Steps
-Choose your next action:
-a) Ship to production → `/ship {{feature}}`
-b) Run additional tests
-c) Request code review
-d) Generate documentation
-e) Back to build for fixes → `/build {{feature}}`
-f) Check status → `/status {{feature}}`
-g) Save progress → `/save`
-h) Done for now
+## Next Steps
 
-Enter your choice (a-h):
-```
+After hardening is complete, you can:
+
+- Ship to production with `/ship {{feature}}`
+- Run additional tests with `npm test`
+- Request code review with `/review`
+- Back to build for fixes with `/build {{feature}}`
+- Check status with `/status {{feature}}`
+- Save progress with `/save`
 
 ## Important Notes
 1. **The AI Standards Pre-Check is MANDATORY** - Never skip it

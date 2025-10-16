@@ -1,0 +1,55 @@
+{
+  "timestamp": "2025-10-16T20:56:11.766Z",
+  "stagedFiles": [
+    ".claude/commands/build.md",
+    ".claude/commands/codify.md",
+    ".claude/commands/decide.md",
+    ".claude/commands/explore.md",
+    ".claude/commands/harden.md",
+    ".claude/commands/hodge.md",
+    ".claude/commands/plan.md",
+    ".claude/commands/review.md",
+    ".claude/commands/ship.md",
+    ".claude/commands/status.md",
+    ".claude/commands/visual-patterns.smoke.test.ts",
+    ".claude/commands/visual-rendering.smoke.test.ts",
+    ".hodge/.session",
+    ".hodge/HODGE.md",
+    ".hodge/context.json",
+    ".hodge/features/HODGE-346.2/build/ai-diff-analysis.md",
+    ".hodge/features/HODGE-346.2/build/build-plan.md",
+    ".hodge/features/HODGE-346.2/explore/exploration.md",
+    ".hodge/features/HODGE-346.2/explore/test-intentions.md",
+    ".hodge/features/HODGE-346.2/issue-id.txt",
+    ".hodge/features/HODGE-346.2/ship-record.json",
+    ".hodge/features/HODGE-346/decisions.md",
+    ".hodge/id-mappings.json",
+    ".hodge/patterns/slash-command-verification-pattern.md",
+    ".hodge/project_management.md",
+    "src/lib/claude-commands.ts",
+    "src/lib/hodge-md-generator.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 25,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": ".claude/commands/visual-patterns.smoke.test.ts 74ms\n.claude/commands/visual-rendering.smoke.test.ts 40ms (unchanged)\nsrc/lib/claude-commands.ts 16ms (unchanged)\nsrc/lib/hodge-md-generator.ts 74ms (unchanged)\n",
+      "stderr": "",
+      "duration": 1009
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 4,
+      "issuesFixed": 11,
+      "success": true,
+      "stdout": "\n/Users/michaelkelly/Projects/hodge/.claude/commands/visual-patterns.smoke.test.ts\n  0:0  warning  File ignored by default.  Use a negated ignore pattern (like \"--ignore-pattern '!<relative/path/to/filename>'\") to override\n\n/Users/michaelkelly/Projects/hodge/.claude/commands/visual-rendering.smoke.test.ts\n  0:0  warning  File ignored by default.  Use a negated ignore pattern (like \"--ignore-pattern '!<relative/path/to/filename>'\") to override\n\n/Users/michaelkelly/Projects/hodge/src/lib/claude-commands.ts\n   13:8  warning  Function 'getClaudeCommands' has too many lines (2435). Maximum allowed is 50  max-lines-per-function\n  406:1  warning  File has too many lines (2439). Maximum allowed is 300                         max-lines\n\n/Users/michaelkelly/Projects/hodge/src/lib/hodge-md-generator.ts\n   70:24  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n   86:17  error    Unsafe assignment of an `any` value                                                                        @typescript-eslint/no-unsafe-assignment\n   88:26  error    Unsafe member access .validationPassed on an `any` value                                                   @typescript-eslint/no-unsafe-member-access\n  138:28  error    Use the \"RegExp.exec()\" method instead                                                                     sonarjs/prefer-regexp-exec\n  309:43  error    Use the \"RegExp.exec()\" method instead                                                                     sonarjs/prefer-regexp-exec\n  381:1   warning  File has too many lines (456). Maximum allowed is 300                                                      max-lines\n  402:68  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n\n✖ 11 problems (4 errors, 7 warnings)\n\n",
+      "stderr": "",
+      "duration": 6728
+    }
+  ],
+  "totalIssuesFixed": 11,
+  "totalFilesModified": 29,
+  "failures": []
+}

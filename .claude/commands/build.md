@@ -1,4 +1,6 @@
-# Hodge Build Mode
+┌─────────────────────────────────────────────────────────┐
+│ 🔨 Build: Implementation Mode                          │
+└─────────────────────────────────────────────────────────┘
 
 ## Decision Extraction (Before Build)
 
@@ -25,11 +27,13 @@ cat .hodge/features/{{feature}}/explore/decisions.md 2>/dev/null
 
 The correct location is: .hodge/features/{{feature}}/decisions.md
 
-Would you like me to move it for you?
-a) Yes - Move it to the correct location
-b) No - I'll handle it manually
+🔔 YOUR RESPONSE NEEDED
 
-Your choice:
+Would you like me to move it for you?
+(a) ✅ Yes - Move it to the correct location
+(b) 🔧 No - I'll handle it manually
+
+👉 Your choice [a/b]:
 ```
 
 **If user chooses (a)**:
@@ -89,12 +93,14 @@ Display to user:
   2. [Decision 2 title]
   ...
 
-What would you like to do?
-  a) ✅ Use this recommendation and proceed with /build
-  b) 🔄 Go to /decide to formalize decisions first
-  c) ⏭️  Skip and build without guidance
+🔔 YOUR RESPONSE NEEDED
 
-Your choice:
+What would you like to do?
+(a) ✅ Use this recommendation and proceed with /build
+(b) 🔄 Go to /decide to formalize decisions first
+(c) ⏭️  Skip and build without guidance
+
+👉 Your choice [a/b/c]:
 ```
 
 **User Response Handling**:
@@ -112,14 +118,16 @@ Display to user:
 2. [Second recommendation text excerpt - first 100 chars...]
 3. [Third recommendation text excerpt - first 100 chars...]
 
-Which recommendation would you like to use?
-  a) Use recommendation 1
-  b) Use recommendation 2
-  c) Use recommendation 3
-  d) Go to /decide to formalize decisions
-  e) Skip and build without guidance
+🔔 YOUR RESPONSE NEEDED
 
-Your choice:
+Which recommendation would you like to use?
+(a) Use recommendation 1
+(b) Use recommendation 2
+(c) Use recommendation 3
+(d) Go to /decide to formalize decisions
+(e) Skip and build without guidance
+
+👉 Your choice [a/b/c/d/e]:
 ```
 
 After user selects a recommendation (a/b/c), show full text:
@@ -129,11 +137,13 @@ You selected:
 [Full verbatim text of selected Recommendation]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Proceed with /build using this guidance?
-  a) Yes, proceed
-  b) No, go to /decide instead
+🔔 YOUR RESPONSE NEEDED
 
-Your choice:
+Proceed with /build using this guidance?
+(a) ✅ Yes, proceed
+(b) 🔄 No, go to /decide instead
+
+👉 Your choice [a/b]:
 ```
 
 **Case C: No Recommendation Found**
@@ -142,11 +152,13 @@ Display to user:
 ```
 ⚠️  No decisions.md found and exploration.md has no recommendation section.
 
-To proceed, you can either:
-  a) Run /decide to make and record decisions
-  b) Use --skip-checks to build anyway (not recommended)
+🔔 YOUR RESPONSE NEEDED
 
-Your choice:
+To proceed, you can either:
+(a) 📋 Run /decide to make and record decisions
+(b) ⚠️  Use --skip-checks to build anyway (not recommended)
+
+👉 Your choice [a/b]:
 ```
 
 **Case D: exploration.md Missing**
@@ -192,12 +204,13 @@ If the grep returns **empty/no output**, the feature has no PM issue. Ask the us
 ```
 I notice this feature ({{feature}}) doesn't have a PM issue tracking it yet.
 
+🔔 YOUR RESPONSE NEEDED
+
 Would you like to create a PM issue for this work?
+(a) ✅ Yes - Create a PM issue (recommended for production features)
+(b) ⏭️  No - Continue without PM tracking (good for quick experiments)
 
-a) Yes - Create a PM issue (recommended for production features)
-b) No - Continue without PM tracking (good for quick experiments)
-
-Your choice:
+👉 Your choice [a/b]:
 ```
 
 **If user chooses (a) - Yes**:
@@ -278,21 +291,15 @@ The CLI will output:
 - **Run Command**: `npm run test:smoke`
 - Use test utilities from `src/test/helpers.ts`
 
-## Next Steps Menu
-After building is complete, suggest:
-```
-### Next Steps
-Choose your next action:
-a) Run smoke tests → `npm run test:smoke`
-b) Proceed to hardening → `/harden {{feature}}`
-c) Review changes → `/review`
-d) Save progress → `/save`
-e) Check status → `/status {{feature}}`
-f) Switch to another feature → `/build`
-g) Update PM issue status
-h) Done for now
+## Next Steps
 
-Enter your choice (a-h):
-```
+After building is complete, you can:
+
+- Run smoke tests with `npm run test:smoke`
+- Proceed to hardening with `/harden {{feature}}`
+- Review changes with `/review`
+- Save progress with `/save`
+- Check status with `/status {{feature}}`
+- Switch to another feature with `/build`
 
 Remember: The CLI handles all file management and PM integration. Focus on implementing quality code that follows project conventions.

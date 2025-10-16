@@ -77,11 +77,20 @@ export class HodgeMDGenerator {
 
     try {
       // Check for mode indicators in order
-      // First check if feature has been shipped (has ship-record.json)
+      // First check if feature has been shipped (has ship-record.json with validationPassed: true)
       // HODGE-341.2: ship-record.json moved to feature root
       const shipRecordPath = path.join(featurePath, 'ship-record.json');
       if (await this.fileExists(shipRecordPath)) {
-        return 'shipped';
+        try {
+          const shipRecordContent = await fs.readFile(shipRecordPath, 'utf-8');
+          const shipRecord = JSON.parse(shipRecordContent) as { validationPassed?: boolean };
+          // Only consider it shipped if validation passed
+          if (shipRecord.validationPassed === true) {
+            return 'shipped';
+          }
+        } catch {
+          // If we can't read/parse the file, fall through to check other modes
+        }
       }
 
       if (await this.fileExists(path.join(featurePath, 'ship'))) {
@@ -123,10 +132,11 @@ export class HodgeMDGenerator {
       const lines = content.split('\n');
 
       // Parse decisions from markdown
+      const decisionPattern = /^###\s+(\d{4}-\d{2}-\d{2})\s+-\s+(.+)/;
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         // Look for date headers like "### 2025-01-16 - Decision text"
-        const match = line.match(/^###\s+(\d{4}-\d{2}-\d{2})\s+-\s+(.+)/);
+        const match = decisionPattern.exec(line);
         if (match) {
           decisions.push({
             date: match[1],
@@ -297,7 +307,8 @@ export class HodgeMDGenerator {
       const principles: Array<{ title: string; description: string }> = [];
 
       // Parse the Core Principles section
-      const corePrinciplesMatch = content.match(/## Core Principles\n\n([\s\S]*?)(?=\n##|$)/);
+      const corePrinciplesPattern = /## Core Principles\n\n([\s\S]*?)(?=\n##|$)/;
+      const corePrinciplesMatch = corePrinciplesPattern.exec(content);
       if (!corePrinciplesMatch) return undefined;
 
       const principlesText = corePrinciplesMatch[1];

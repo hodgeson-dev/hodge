@@ -1,4 +1,6 @@
-# 🚀 Ship Command - Interactive Commit & Ship
+┌─────────────────────────────────────────────────────────┐
+│ 🚀 Ship: Interactive Commit & Ship                     │
+└─────────────────────────────────────────────────────────┘
 
 ## Standards Review Process
 
@@ -83,13 +85,15 @@ COMMIT MESSAGE FOR REVIEW:
 [Display the generated message from Step 2]
 ════════════════════════════════════════════════════════════
 
+🔔 YOUR RESPONSE NEEDED
+
 Options:
 (a) ✅ Approve - Use this message
 (r) 🔄 Regenerate - Create a different message
-(e) ✏️ Edit - Let me modify this message
+(e) ✏️  Edit - Let me modify this message
 (c) ❌ Cancel - Stop the ship process
 
-Your choice [a/r/e/c]:
+👉 Your choice [a/r/e/c]:
 ```
 
 ### Based on User Choice:
@@ -389,13 +393,15 @@ I've analyzed the lesson and identified the following recommendation:
 
 ════════════════════════════════════════════════════════════
 
+🔔 YOUR RESPONSE NEEDED
+
 Would you like to:
 (a) ✅ Approve - Add this to {{target_file}}
-(b) ✏️ Modify - Let me adjust the recommendation
-(c) ⏭️ Skip - Keep it as a lesson only
+(b) ✏️  Modify - Let me adjust the recommendation
+(c) ⏭️  Skip - Keep it as a lesson only
 (d) 💭 Discuss - I have questions or want to explore this more
 
-Your choice [a/b/c/d]:
+👉 Your choice [a/b/c/d]:
 ```
 
 **Based on User Choice:**

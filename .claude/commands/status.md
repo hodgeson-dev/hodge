@@ -1,4 +1,6 @@
-# Hodge Status - Feature Overview and Context Management
+┌─────────────────────────────────────────────────────────┐
+│ 📊 Status: Feature Overview and Context Management     │
+└─────────────────────────────────────────────────────────┘
 
 ## Command Execution
 
@@ -70,19 +72,14 @@ The status command helps you:
 - Maintain context when switching tasks
 - See what needs attention
 
-## Next Steps Menu
-After checking status:
-```
-### Next Steps
-Choose your next action:
-a) Continue with suggested feature
-b) Start new feature → `/explore`
-c) Resume active feature → `/build {{feature}}`
-d) Review decisions → `hodge decide`
-e) Check specific feature → `/status {{feature}}`
-f) Done for now
+## Next Steps
 
-Enter your choice (a-f):
-```
+After checking status, you can:
+
+- Continue with the suggested feature
+- Start a new feature with `/explore`
+- Resume an active feature with `/build {{feature}}`
+- Review and record decisions with `/decide`
+- Check a specific feature with `/status {{feature}}`
 
 Remember: The CLI tracks all feature progress automatically. Use status to stay oriented and make informed decisions about what to work on next.

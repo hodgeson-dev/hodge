@@ -1,4 +1,6 @@
-# Hodge Plan - Work Organization & PM Integration
+┌─────────────────────────────────────────────────────────┐
+│ 📊 Plan: Work Organization & PM Integration            │
+└─────────────────────────────────────────────────────────┘
 
 ## Purpose
 The `/plan` command transforms technical decisions into organized, executable work. It handles epic/story breakdown, dependency analysis, parallel lane allocation, and PM tool integration.
@@ -406,16 +408,22 @@ c) Proceed anyway (explain why this breakdown is correct)
 ```
 
 ### Step 3: Present to User
-Display the proposed plan and ask:
-```
-Review the plan above. Would you like to:
-a) Approve and save plan locally
-b) Approve and create PM issues in Linear
-c) Modify the plan (adjust stories, dependencies, etc.)
-d) Cancel
 
-Your choice:
-```
+┌─────────────────────────────────────────────────────────┐
+│ 📊 Plan: Review & Approval                             │
+└─────────────────────────────────────────────────────────┘
+
+Display the proposed plan and ask:
+
+🔔 YOUR RESPONSE NEEDED
+
+Review the plan above. Would you like to:
+(a) ✅ Approve and save plan locally
+(b) 🔗 Approve and create PM issues in Linear
+(c) ✏️  Modify the plan (adjust stories, dependencies, etc.)
+(d) ❌ Cancel
+
+👉 Your choice [a/b/c/d]:
 
 ### Step 4: Save AI-Generated Plan Structure
 
@@ -508,17 +516,12 @@ rm -rf .hodge/temp/plan-interaction/{{feature}}
 
 ## Next Steps After Planning
 
-After plan is saved and/or PM issues created:
-```
-### What would you like to do?
-a) Start building first story → `/build {{first_story}}`
-b) Review plan details → `cat .hodge/development-plan.json`
-c) Regenerate plan → `/plan {{feature}} --lanes N`
-d) View in Linear → [provide Linear URL if PM issues created]
-e) Continue development
-f) Done for now
+After plan is saved and/or PM issues created, you can:
 
-Your choice:
-```
+- Start building first story with `/build {{first_story}}`
+- Review plan details with `cat .hodge/development-plan.json`
+- Regenerate plan with `/plan {{feature}} --lanes N`
+- View in Linear [provide Linear URL if PM issues created]
+- Continue development
 
 Remember: `/plan` bridges the gap between decisions and implementation, turning ideas into actionable, parallel work streams.

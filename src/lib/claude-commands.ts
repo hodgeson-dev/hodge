@@ -14,7 +14,9 @@ export function getClaudeCommands(): ClaudeCommand[] {
   return [
     {
       name: 'build',
-      content: `# Hodge Build Mode
+      content: `┌─────────────────────────────────────────────────────────┐
+│ 🔨 Build: Implementation Mode                          │
+└─────────────────────────────────────────────────────────┘
 
 ## Decision Extraction (Before Build)
 
@@ -41,11 +43,13 @@ cat .hodge/features/{{feature}}/explore/decisions.md 2>/dev/null
 
 The correct location is: .hodge/features/{{feature}}/decisions.md
 
-Would you like me to move it for you?
-a) Yes - Move it to the correct location
-b) No - I'll handle it manually
+🔔 YOUR RESPONSE NEEDED
 
-Your choice:
+Would you like me to move it for you?
+(a) ✅ Yes - Move it to the correct location
+(b) 🔧 No - I'll handle it manually
+
+👉 Your choice [a/b]:
 \`\`\`
 
 **If user chooses (a)**:
@@ -105,12 +109,14 @@ Display to user:
   2. [Decision 2 title]
   ...
 
-What would you like to do?
-  a) ✅ Use this recommendation and proceed with /build
-  b) 🔄 Go to /decide to formalize decisions first
-  c) ⏭️  Skip and build without guidance
+🔔 YOUR RESPONSE NEEDED
 
-Your choice:
+What would you like to do?
+(a) ✅ Use this recommendation and proceed with /build
+(b) 🔄 Go to /decide to formalize decisions first
+(c) ⏭️  Skip and build without guidance
+
+👉 Your choice [a/b/c]:
 \`\`\`
 
 **User Response Handling**:
@@ -128,14 +134,16 @@ Display to user:
 2. [Second recommendation text excerpt - first 100 chars...]
 3. [Third recommendation text excerpt - first 100 chars...]
 
-Which recommendation would you like to use?
-  a) Use recommendation 1
-  b) Use recommendation 2
-  c) Use recommendation 3
-  d) Go to /decide to formalize decisions
-  e) Skip and build without guidance
+🔔 YOUR RESPONSE NEEDED
 
-Your choice:
+Which recommendation would you like to use?
+(a) Use recommendation 1
+(b) Use recommendation 2
+(c) Use recommendation 3
+(d) Go to /decide to formalize decisions
+(e) Skip and build without guidance
+
+👉 Your choice [a/b/c/d/e]:
 \`\`\`
 
 After user selects a recommendation (a/b/c), show full text:
@@ -145,11 +153,13 @@ You selected:
 [Full verbatim text of selected Recommendation]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Proceed with /build using this guidance?
-  a) Yes, proceed
-  b) No, go to /decide instead
+🔔 YOUR RESPONSE NEEDED
 
-Your choice:
+Proceed with /build using this guidance?
+(a) ✅ Yes, proceed
+(b) 🔄 No, go to /decide instead
+
+👉 Your choice [a/b]:
 \`\`\`
 
 **Case C: No Recommendation Found**
@@ -158,11 +168,13 @@ Display to user:
 \`\`\`
 ⚠️  No decisions.md found and exploration.md has no recommendation section.
 
-To proceed, you can either:
-  a) Run /decide to make and record decisions
-  b) Use --skip-checks to build anyway (not recommended)
+🔔 YOUR RESPONSE NEEDED
 
-Your choice:
+To proceed, you can either:
+(a) 📋 Run /decide to make and record decisions
+(b) ⚠️  Use --skip-checks to build anyway (not recommended)
+
+👉 Your choice [a/b]:
 \`\`\`
 
 **Case D: exploration.md Missing**
@@ -208,12 +220,13 @@ If the grep returns **empty/no output**, the feature has no PM issue. Ask the us
 \`\`\`
 I notice this feature ({{feature}}) doesn't have a PM issue tracking it yet.
 
+🔔 YOUR RESPONSE NEEDED
+
 Would you like to create a PM issue for this work?
+(a) ✅ Yes - Create a PM issue (recommended for production features)
+(b) ⏭️  No - Continue without PM tracking (good for quick experiments)
 
-a) Yes - Create a PM issue (recommended for production features)
-b) No - Continue without PM tracking (good for quick experiments)
-
-Your choice:
+👉 Your choice [a/b]:
 \`\`\`
 
 **If user chooses (a) - Yes**:
@@ -294,28 +307,24 @@ The CLI will output:
 - **Run Command**: \`npm run test:smoke\`
 - Use test utilities from \`src/test/helpers.ts\`
 
-## Next Steps Menu
-After building is complete, suggest:
-\`\`\`
-### Next Steps
-Choose your next action:
-a) Run smoke tests → \`npm run test:smoke\`
-b) Proceed to hardening → \`/harden {{feature}}\`
-c) Review changes → \`/review\`
-d) Save progress → \`/save\`
-e) Check status → \`/status {{feature}}\`
-f) Switch to another feature → \`/build\`
-g) Update PM issue status
-h) Done for now
+## Next Steps
 
-Enter your choice (a-h):
-\`\`\`
+After building is complete, you can:
+
+- Run smoke tests with \`npm run test:smoke\`
+- Proceed to hardening with \`/harden {{feature}}\`
+- Review changes with \`/review\`
+- Save progress with \`/save\`
+- Check status with \`/status {{feature}}\`
+- Switch to another feature with \`/build\`
 
 Remember: The CLI handles all file management and PM integration. Focus on implementing quality code that follows project conventions.`,
     },
     {
       name: 'codify',
-      content: `# Codify - Add Rules to Project
+      content: `┌─────────────────────────────────────────────────────────┐
+│ 📝 Codify: Add Rules to Project                        │
+└─────────────────────────────────────────────────────────┘
 
 ## Purpose
 
@@ -410,9 +419,12 @@ find .hodge/review-profiles/ -name "*.yaml" | head -10
 
 ### Step 3: Present Recommendation
 
+┌─────────────────────────────────────────────────────────┐
+│ 📝 Codify: Recommendation                              │
+└─────────────────────────────────────────────────────────┘
+
 Show your analysis:
 
-\`\`\`
 I recommend this as a **[TYPE]** in \`[FILE PATH]\`
 
 Rationale:
@@ -423,11 +435,14 @@ Rationale:
 Proposed content:
 [Show what you would add, following the format for that type]
 
+🔔 YOUR RESPONSE NEEDED
+
 Approve? Or would you prefer:
-a) Store as [alternative type] instead
-b) Different wording/structure
-c) Ask me clarifying questions first
-\`\`\`
+(a) 🔄 Store as [alternative type] instead
+(b) ✏️  Different wording/structure
+(c) ❓ Ask me clarifying questions first
+
+👉 Your choice [a/b/c] or approve:
 
 ### Step 4: Handle User Response
 
@@ -709,7 +724,9 @@ c) Change enforcement to MANDATORY
     },
     {
       name: 'decide',
-      content: `# Hodge Decide - Decision Management
+      content: `┌─────────────────────────────────────────────────────────┐
+│ 📋 Decide: Decision Management                         │
+└─────────────────────────────────────────────────────────┘
 
 ## ⚠️ DEFAULT BEHAVIOR: Interactive Decision Mode
 
@@ -762,8 +779,10 @@ When \`/decide\` is invoked, follow this process:
    **IMPORTANT**: Try to find at least 2-3 decisions. If fewer exist, that's okay, but always check all categories.
 
 3. **Present each decision with Principle Alignment**:
-   \`\`\`
-   ## Decision {{number}} of {{total}}
+
+   ┌─────────────────────────────────────────────────────────┐
+   │ 📋 Decide: Decision {{number}} of {{total}}            │
+   └─────────────────────────────────────────────────────────┘
 
    **Topic**: {{decision_topic}}
 
@@ -792,8 +811,9 @@ When \`/decide\` is invoked, follow this process:
    **d) Skip for now**
    **e) Need more exploration**
 
-   Your choice:
-   \`\`\`
+   🔔 YOUR RESPONSE NEEDED
+
+   👉 Your choice [a/b/c/d/e]:
 
    **REQUIREMENT**: Always mark one option as "(Recommended)" based on your analysis.
 
@@ -833,25 +853,21 @@ After making decisions, use the \`/plan\` command to:
 See \`/plan\` for detailed work organization capabilities.
 
 ## Next Steps
-After decisions are recorded:
-\`\`\`
-### Next Steps
-Choose your next action:
-a) Plan work structure → \`/plan {{feature}}\`
-b) Start building → \`/build {{feature}}\`
-c) Review all decisions → \`/status\`
-d) View project roadmap → \`hodge status\`
-e) Continue development
-f) Done for now
 
-Enter your choice (a-f):
-\`\`\`
+After decisions are recorded, you can:
+
+- Plan work structure with \`/plan {{feature}}\`
+- Start building with \`/build {{feature}}\`
+- Review all decisions with \`/status\`
+- Continue development
 
 Remember: The \`/decide\` command focuses purely on recording technical and architectural decisions. Use \`/plan\` to organize work into epics, stories, and development lanes.`,
     },
     {
       name: 'explore',
-      content: `# Hodge Explore Mode
+      content: `┌─────────────────────────────────────────────────────────┐
+│ 🔍 Explore: Feature Discovery                          │
+└─────────────────────────────────────────────────────────┘
 
 ## IMPORTANT: Template Compliance
 When presenting exploration results, you MUST follow this template EXACTLY:
@@ -953,6 +969,10 @@ cat .hodge/decisions.md | tail -50   # Recent decisions
 \`\`\`
 
 ### Phase 2: Conversational Discovery (REQUIRED)
+
+┌─────────────────────────────────────────────────────────┐
+│ 🔍 Explore: Conversational Discovery                   │
+└─────────────────────────────────────────────────────────┘
 
 **IMPORTANT**: Engage in natural dialogue to deeply understand the feature before documenting anything.
 
@@ -1118,7 +1138,9 @@ Remember: The CLI handles all the file creation and PM integration. Focus on gen
     },
     {
       name: 'harden',
-      content: `# Hodge Harden Mode
+      content: `┌─────────────────────────────────────────────────────────┐
+│ 🔧 Harden: Production Readiness                        │
+└─────────────────────────────────────────────────────────┘
 
 ## Step 0: Auto-Fix Simple Issues (HODGE-341.6)
 
@@ -1589,22 +1611,16 @@ Before proceeding to ship, ensure:
 - [ ] Performance standards met
 - [ ] Documentation updated if needed
 
-## Next Steps Menu
-After hardening is complete, suggest:
-\`\`\`
-### Next Steps
-Choose your next action:
-a) Ship to production → \`/ship {{feature}}\`
-b) Run additional tests
-c) Request code review
-d) Generate documentation
-e) Back to build for fixes → \`/build {{feature}}\`
-f) Check status → \`/status {{feature}}\`
-g) Save progress → \`/save\`
-h) Done for now
+## Next Steps
 
-Enter your choice (a-h):
-\`\`\`
+After hardening is complete, you can:
+
+- Ship to production with \`/ship {{feature}}\`
+- Run additional tests with \`npm test\`
+- Request code review with \`/review\`
+- Back to build for fixes with \`/build {{feature}}\`
+- Check status with \`/status {{feature}}\`
+- Save progress with \`/save\`
 
 ## Important Notes
 1. **The AI Standards Pre-Check is MANDATORY** - Never skip it
@@ -1618,7 +1634,9 @@ ARGUMENTS: {{feature}}`,
     },
     {
       name: 'hodge',
-      content: `# Hodge - Session & Context Manager
+      content: `┌─────────────────────────────────────────────────────────┐
+│ 🎯 Hodge: Session & Context Manager                    │
+└─────────────────────────────────────────────────────────┘
 
 ## Purpose
 Initialize or resume your Hodge development session with appropriate context.
@@ -1773,15 +1791,19 @@ The \`/hodge\` command coordinates with the Hodge CLI to:
 - Load feature-specific files from \`.hodge/features/\`
 - Ensure principles and standards are available
 
-## Context Loading Complete
+┌─────────────────────────────────────────────────────────┐
+│ 🎯 Hodge: Context Loading Complete                     │
+└─────────────────────────────────────────────────────────┘
 
 **This command has finished loading context. No actions have been taken.**
 
-What would you like to do next?`,
+💬 Your response:`,
     },
     {
       name: 'plan',
-      content: `# Hodge Plan - Work Organization & PM Integration
+      content: `┌─────────────────────────────────────────────────────────┐
+│ 📊 Plan: Work Organization & PM Integration            │
+└─────────────────────────────────────────────────────────┘
 
 ## Purpose
 The \`/plan\` command transforms technical decisions into organized, executable work. It handles epic/story breakdown, dependency analysis, parallel lane allocation, and PM tool integration.
@@ -2189,16 +2211,22 @@ c) Proceed anyway (explain why this breakdown is correct)
 \`\`\`
 
 ### Step 3: Present to User
-Display the proposed plan and ask:
-\`\`\`
-Review the plan above. Would you like to:
-a) Approve and save plan locally
-b) Approve and create PM issues in Linear
-c) Modify the plan (adjust stories, dependencies, etc.)
-d) Cancel
 
-Your choice:
-\`\`\`
+┌─────────────────────────────────────────────────────────┐
+│ 📊 Plan: Review & Approval                             │
+└─────────────────────────────────────────────────────────┘
+
+Display the proposed plan and ask:
+
+🔔 YOUR RESPONSE NEEDED
+
+Review the plan above. Would you like to:
+(a) ✅ Approve and save plan locally
+(b) 🔗 Approve and create PM issues in Linear
+(c) ✏️  Modify the plan (adjust stories, dependencies, etc.)
+(d) ❌ Cancel
+
+👉 Your choice [a/b/c/d]:
 
 ### Step 4: Save AI-Generated Plan Structure
 
@@ -2291,24 +2319,21 @@ rm -rf .hodge/temp/plan-interaction/{{feature}}
 
 ## Next Steps After Planning
 
-After plan is saved and/or PM issues created:
-\`\`\`
-### What would you like to do?
-a) Start building first story → \`/build {{first_story}}\`
-b) Review plan details → \`cat .hodge/development-plan.json\`
-c) Regenerate plan → \`/plan {{feature}} --lanes N\`
-d) View in Linear → [provide Linear URL if PM issues created]
-e) Continue development
-f) Done for now
+After plan is saved and/or PM issues created, you can:
 
-Your choice:
-\`\`\`
+- Start building first story with \`/build {{first_story}}\`
+- Review plan details with \`cat .hodge/development-plan.json\`
+- Regenerate plan with \`/plan {{feature}} --lanes N\`
+- View in Linear [provide Linear URL if PM issues created]
+- Continue development
 
 Remember: \`/plan\` bridges the gap between decisions and implementation, turning ideas into actionable, parallel work streams.`,
     },
     {
       name: 'review',
-      content: `# Hodge Review Mode (HODGE-344.4)
+      content: `┌─────────────────────────────────────────────────────────┐
+│ 🔍 Review: Advisory Code Review                        │
+└─────────────────────────────────────────────────────────┘
 
 ## Overview
 
@@ -2430,12 +2455,14 @@ Ask the user which issues they want to fix:
 \`\`\`
 Would you like to fix any of these issues?
 
-You can:
-a) Fix all auto-fixable issues (formatters + linters)
-b) Select specific issues to fix
-c) Skip fixes and just document findings
+🔔 YOUR RESPONSE NEEDED
 
-Your choice (or ask questions for more detail):
+You can:
+(a) ✅ Fix all auto-fixable issues (formatters + linters)
+(b) 🎯 Select specific issues to fix
+(c) 📝 Skip fixes and just document findings
+
+👉 Your choice [a/b/c] (or ask questions for more detail):
 \`\`\`
 
 **Handle User Response**:
@@ -2642,7 +2669,9 @@ ARGUMENTS: {{flags}}
     },
     {
       name: 'ship',
-      content: `# 🚀 Ship Command - Interactive Commit & Ship
+      content: `┌─────────────────────────────────────────────────────────┐
+│ 🚀 Ship: Interactive Commit & Ship                     │
+└─────────────────────────────────────────────────────────┘
 
 ## Standards Review Process
 
@@ -2727,13 +2756,15 @@ COMMIT MESSAGE FOR REVIEW:
 [Display the generated message from Step 2]
 ════════════════════════════════════════════════════════════
 
+🔔 YOUR RESPONSE NEEDED
+
 Options:
 (a) ✅ Approve - Use this message
 (r) 🔄 Regenerate - Create a different message
-(e) ✏️ Edit - Let me modify this message
+(e) ✏️  Edit - Let me modify this message
 (c) ❌ Cancel - Stop the ship process
 
-Your choice [a/r/e/c]:
+👉 Your choice [a/r/e/c]:
 \`\`\`
 
 ### Based on User Choice:
@@ -3033,13 +3064,15 @@ I've analyzed the lesson and identified the following recommendation:
 
 ════════════════════════════════════════════════════════════
 
+🔔 YOUR RESPONSE NEEDED
+
 Would you like to:
 (a) ✅ Approve - Add this to {{target_file}}
-(b) ✏️ Modify - Let me adjust the recommendation
-(c) ⏭️ Skip - Keep it as a lesson only
+(b) ✏️  Modify - Let me adjust the recommendation
+(c) ⏭️  Skip - Keep it as a lesson only
 (d) 💭 Discuss - I have questions or want to explore this more
 
-Your choice [a/b/c/d]:
+👉 Your choice [a/b/c/d]:
 \`\`\`
 
 **Based on User Choice:**
@@ -3095,7 +3128,9 @@ After successful shipping:
     },
     {
       name: 'status',
-      content: `# Hodge Status - Feature Overview and Context Management
+      content: `┌─────────────────────────────────────────────────────────┐
+│ 📊 Status: Feature Overview and Context Management     │
+└─────────────────────────────────────────────────────────┘
 
 ## Command Execution
 
@@ -3167,20 +3202,15 @@ The status command helps you:
 - Maintain context when switching tasks
 - See what needs attention
 
-## Next Steps Menu
-After checking status:
-\`\`\`
-### Next Steps
-Choose your next action:
-a) Continue with suggested feature
-b) Start new feature → \`/explore\`
-c) Resume active feature → \`/build {{feature}}\`
-d) Review decisions → \`hodge decide\`
-e) Check specific feature → \`/status {{feature}}\`
-f) Done for now
+## Next Steps
 
-Enter your choice (a-f):
-\`\`\`
+After checking status, you can:
+
+- Continue with the suggested feature
+- Start a new feature with \`/explore\`
+- Resume an active feature with \`/build {{feature}}\`
+- Review and record decisions with \`/decide\`
+- Check a specific feature with \`/status {{feature}}\`
 
 Remember: The CLI tracks all feature progress automatically. Use status to stay oriented and make informed decisions about what to work on next.`,
     },

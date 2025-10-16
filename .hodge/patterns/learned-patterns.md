@@ -2,18 +2,18 @@
 
 ## Statistics
 - Total patterns detected: 3
-- High confidence patterns: 1
-- Most frequent category: security
+- High confidence patterns: 0
+- Most frequent category: error-handling
 
 ## Patterns by Category
 
 
-### Security
-- **Input Validation** (4x, 80% confidence)
-
-
 ### Error-handling
 - **Error Boundary** (1x, 20% confidence)
+
+
+### Security
+- **Input Validation** (3x, 60% confidence)
 
 
 ### Performance
@@ -21,7 +21,7 @@
 
 
 ## Recommendations
-- Consider using Input Validation pattern (used 4 times)
+- Consider using Input Validation pattern (used 3 times)
 
 ---
-*Generated: 2025-10-16T14:08:40.419Z*
+*Generated: 2025-10-16T21:24:11.970Z*

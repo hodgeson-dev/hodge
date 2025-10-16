@@ -1,4 +1,6 @@
-# Hodge - Session & Context Manager
+┌─────────────────────────────────────────────────────────┐
+│ 🎯 Hodge: Session & Context Manager                    │
+└─────────────────────────────────────────────────────────┘
 
 ## Purpose
 Initialize or resume your Hodge development session with appropriate context.
@@ -153,8 +155,10 @@ The `/hodge` command coordinates with the Hodge CLI to:
 - Load feature-specific files from `.hodge/features/`
 - Ensure principles and standards are available
 
-## Context Loading Complete
+┌─────────────────────────────────────────────────────────┐
+│ 🎯 Hodge: Context Loading Complete                     │
+└─────────────────────────────────────────────────────────┘
 
 **This command has finished loading context. No actions have been taken.**
 
-What would you like to do next?
+💬 Your response:

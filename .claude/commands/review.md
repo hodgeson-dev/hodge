@@ -1,4 +1,6 @@
-# Hodge Review Mode (HODGE-344.4)
+┌─────────────────────────────────────────────────────────┐
+│ 🔍 Review: Advisory Code Review                        │
+└─────────────────────────────────────────────────────────┘
 
 ## Overview
 
@@ -120,12 +122,14 @@ Ask the user which issues they want to fix:
 ```
 Would you like to fix any of these issues?
 
-You can:
-a) Fix all auto-fixable issues (formatters + linters)
-b) Select specific issues to fix
-c) Skip fixes and just document findings
+🔔 YOUR RESPONSE NEEDED
 
-Your choice (or ask questions for more detail):
+You can:
+(a) ✅ Fix all auto-fixable issues (formatters + linters)
+(b) 🎯 Select specific issues to fix
+(c) 📝 Skip fixes and just document findings
+
+👉 Your choice [a/b/c] (or ask questions for more detail):
 ```
 
 **Handle User Response**:

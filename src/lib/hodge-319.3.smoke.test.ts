@@ -63,7 +63,7 @@ describe('[smoke] HODGE-319.3: Smart Decision Extraction Template', () => {
     const content = await fs.readFile(buildTemplatePath, 'utf-8');
     expect(content).toContain('**Case C: No Recommendation Found**');
     expect(content).toContain('No decisions.md found and exploration.md has no recommendation');
-    expect(content).toContain('a) Run /decide to make and record decisions');
+    expect(content).toContain('(a) 📋 Run /decide to make and record decisions');
   });
 
   it('should handle Case D: exploration.md Missing', async () => {

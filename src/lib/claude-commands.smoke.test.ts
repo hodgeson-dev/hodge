@@ -19,8 +19,8 @@ describe('[smoke] build.md template - PM issue check', () => {
 
     expect(buildTemplate).toContain("doesn't have a PM issue tracking it yet");
     expect(buildTemplate).toContain('Would you like to create a PM issue for this work?');
-    expect(buildTemplate).toContain('a) Yes - Create a PM issue');
-    expect(buildTemplate).toContain('b) No - Continue without PM tracking');
+    expect(buildTemplate).toContain('(a) ✅ Yes - Create a PM issue');
+    expect(buildTemplate).toContain('(b) ⏭️  No - Continue without PM tracking');
   });
 
   it('should reference /plan command for single issue creation', () => {
@@ -170,7 +170,7 @@ describe('[smoke] decide.md template - decision prompt formatting', () => {
     );
 
     // Verify decision prompt structure
-    expect(decideTemplate).toContain('## Decision {{number}} of {{total}}');
+    expect(decideTemplate).toContain('📋 Decide: Decision {{number}} of {{total}}');
     expect(decideTemplate).toContain('**Topic**: {{decision_topic}}');
     expect(decideTemplate).toContain('**Context**: {{brief_context}}');
     expect(decideTemplate).toContain('**Principle Consideration**:');

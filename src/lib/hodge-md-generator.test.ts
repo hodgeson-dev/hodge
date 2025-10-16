@@ -200,7 +200,12 @@ describe('HodgeMDGenerator', () => {
         throw new Error('File not found');
       });
 
-      vi.mocked(fs.readFile).mockResolvedValue('');
+      vi.mocked(fs.readFile).mockImplementation(async (path) => {
+        if (path.toString().includes('ship-record.json')) {
+          return JSON.stringify({ validationPassed: true });
+        }
+        return '';
+      });
       vi.mocked(fs.readdir).mockResolvedValue([] as any);
 
       const result = await generator.generate('shipped-feature');

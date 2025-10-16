@@ -1,4 +1,6 @@
-# Hodge Decide - Decision Management
+┌─────────────────────────────────────────────────────────┐
+│ 📋 Decide: Decision Management                         │
+└─────────────────────────────────────────────────────────┘
 
 ## ⚠️ DEFAULT BEHAVIOR: Interactive Decision Mode
 
@@ -51,8 +53,10 @@ When `/decide` is invoked, follow this process:
    **IMPORTANT**: Try to find at least 2-3 decisions. If fewer exist, that's okay, but always check all categories.
 
 3. **Present each decision with Principle Alignment**:
-   ```
-   ## Decision {{number}} of {{total}}
+
+   ┌─────────────────────────────────────────────────────────┐
+   │ 📋 Decide: Decision {{number}} of {{total}}            │
+   └─────────────────────────────────────────────────────────┘
 
    **Topic**: {{decision_topic}}
 
@@ -81,8 +85,9 @@ When `/decide` is invoked, follow this process:
    **d) Skip for now**
    **e) Need more exploration**
 
-   Your choice:
-   ```
+   🔔 YOUR RESPONSE NEEDED
+
+   👉 Your choice [a/b/c/d/e]:
 
    **REQUIREMENT**: Always mark one option as "(Recommended)" based on your analysis.
 
@@ -122,18 +127,12 @@ After making decisions, use the `/plan` command to:
 See `/plan` for detailed work organization capabilities.
 
 ## Next Steps
-After decisions are recorded:
-```
-### Next Steps
-Choose your next action:
-a) Plan work structure → `/plan {{feature}}`
-b) Start building → `/build {{feature}}`
-c) Review all decisions → `/status`
-d) View project roadmap → `hodge status`
-e) Continue development
-f) Done for now
 
-Enter your choice (a-f):
-```
+After decisions are recorded, you can:
+
+- Plan work structure with `/plan {{feature}}`
+- Start building with `/build {{feature}}`
+- Review all decisions with `/status`
+- Continue development
 
 Remember: The `/decide` command focuses purely on recording technical and architectural decisions. Use `/plan` to organize work into epics, stories, and development lanes.

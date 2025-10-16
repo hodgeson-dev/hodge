@@ -1,4 +1,6 @@
-# Codify - Add Rules to Project
+┌─────────────────────────────────────────────────────────┐
+│ 📝 Codify: Add Rules to Project                        │
+└─────────────────────────────────────────────────────────┘
 
 ## Purpose
 
@@ -93,9 +95,12 @@ find .hodge/review-profiles/ -name "*.yaml" | head -10
 
 ### Step 3: Present Recommendation
 
+┌─────────────────────────────────────────────────────────┐
+│ 📝 Codify: Recommendation                              │
+└─────────────────────────────────────────────────────────┘
+
 Show your analysis:
 
-```
 I recommend this as a **[TYPE]** in `[FILE PATH]`
 
 Rationale:
@@ -106,11 +111,14 @@ Rationale:
 Proposed content:
 [Show what you would add, following the format for that type]
 
+🔔 YOUR RESPONSE NEEDED
+
 Approve? Or would you prefer:
-a) Store as [alternative type] instead
-b) Different wording/structure
-c) Ask me clarifying questions first
-```
+(a) 🔄 Store as [alternative type] instead
+(b) ✏️  Different wording/structure
+(c) ❓ Ask me clarifying questions first
+
+👉 Your choice [a/b/c] or approve:
 
 ### Step 4: Handle User Response
 
