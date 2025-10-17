@@ -1,6 +1,20 @@
+---
+description: Add integration tests and validate production readiness
+argument-hint: <feature-id>
+---
+
 ┌─────────────────────────────────────────────────────────┐
 │ 🔧 Harden: Production Readiness                        │
 └─────────────────────────────────────────────────────────┘
+
+## Response Parsing (AI Instructions)
+
+When user responds to choice prompts:
+- "a" or "b" etc. → select single option
+- "a,b" or "a, b" → select multiple options (comma-separated, if applicable)
+- "r" → select all options marked with ⭐ (when 2+ recommendations exist)
+- "a, and [modification]" → select option with user's changes applied
+- Invalid (e.g., "7" when options are a-d) → use collaborative error recovery
 
 ## Step 0: Auto-Fix Simple Issues (HODGE-341.6)
 
@@ -277,29 +291,87 @@ DO NOT proceed to Step 7 until all errors are resolved.
 
 **Why this blocks**: Harden phase is "discipline mode". Errors indicate code that doesn't meet basic standards. The CLI validation will fail anyway, so catching errors early saves time.
 
-#### If NO (Only Warnings or Clean) → Proceed to Step 7 ✅
+#### If NO (Only Warnings or Clean) → Get User Decision on Fixes ✅
 
-Choose the appropriate status:
+Present findings to the user and let them choose what to fix:
 
-**Option A: No Issues Found**
+**Scenario A: Mandatory + Warnings Found**
+```
+🔔 YOUR RESPONSE NEEDED
+
+I found issues in your code:
+
+**Mandatory (blocking ship):**
+- [list each mandatory issue with file:line]
+
+**Warnings:**
+- [list each warning with file:line]
+
+What would you like to do?
+
+a) ⭐ Fix mandatory issues (Recommended)
+b) ⭐ Fix mandatory + warnings (Recommended)
+c) Review issues first, then decide
+d) Skip for now (ship will be blocked)
+
+💡 Tip: You can modify any choice, e.g., "a, and also run tests after"
+
+👉 Your choice [a/b/c/d or r for all recommended]:
+```
+
+**Scenario B: Only Mandatory Issues Found**
+```
+🔔 YOUR RESPONSE NEEDED
+
+I found mandatory issues in your code:
+
+**Mandatory (blocking ship):**
+- [list each mandatory issue with file:line]
+
+What would you like to do?
+
+a) ⭐ Fix mandatory issues (Recommended - required for ship)
+b) Review issues first, then decide
+c) Skip for now (ship will be blocked)
+
+💡 Tip: You can modify any choice, e.g., "a, and run tests after"
+
+👉 Your choice [a/b/c]:
+```
+
+**Scenario C: Only Warnings Found**
+```
+🔔 YOUR RESPONSE NEEDED
+
+I found warnings in your code:
+
+**Warnings:**
+- [list each warning with file:line]
+
+What would you like to do?
+
+a) ⭐ Fix all warnings (Recommended)
+b) Select specific warnings to fix
+c) Review issues first, then decide
+d) Skip warnings (you can ship without fixing these)
+
+💡 Tip: You can modify any choice, e.g., "b, just the file length warnings"
+
+👉 Your choice [a/b/c/d]:
+```
+
+**Scenario D: No Issues Found**
 ```
 ✅ STANDARDS PRE-CHECK PASSED
 All standards requirements appear to be met.
 No errors or warnings found. Ready to proceed with validation.
 ```
 
-**Option B: Warnings Only**
-```
-⚠️ STANDARDS PRE-CHECK - Warnings Found:
-
-[List specific warnings, e.g.:]
-1. File length warnings in src/commands/harden.ts:445
-2. Cognitive complexity in src/lib/critical-file-selector.ts:127
-3. TODO comments need phase markers
-
-These are WARNINGS (not blockers). Proceeding with harden validation.
-Should address before ship phase.
-```
+**After User Choice:**
+- **(a) Fix mandatory** → Use Edit tool to fix mandatory issues, then proceed to Step 7
+- **(b) Fix mandatory + warnings** → Use Edit tool to fix all issues, then proceed to Step 7
+- **(c) Review first** → Show detailed analysis of each issue, then re-present the choice
+- **(d) Skip** → Proceed to Step 7 (document that issues remain)
 
 ### Step 7: Generate Review Report
 **IMPORTANT**: After conducting your review, you MUST write a review-report.md file documenting your findings.

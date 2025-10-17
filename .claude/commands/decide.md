@@ -1,6 +1,20 @@
+---
+description: Make and record architectural decisions for a feature
+argument-hint: <feature-id>
+---
+
 ┌─────────────────────────────────────────────────────────┐
 │ 📋 Decide: Decision Management                         │
 └─────────────────────────────────────────────────────────┘
+
+## Response Parsing (AI Instructions)
+
+When user responds to choice prompts:
+- "a" or "b" etc. → select single option
+- "a,b" or "a, b" → select multiple options (comma-separated, if applicable)
+- "r" → select all options marked with ⭐ (when 2+ recommendations exist)
+- "a, and [modification]" → select option with user's changes applied
+- Invalid (e.g., "7" when options are a-e) → use collaborative error recovery
 
 ## ⚠️ DEFAULT BEHAVIOR: Interactive Decision Mode
 
@@ -67,23 +81,25 @@ When `/decide` is invoked, follow this process:
 
    **Options:**
 
-   **a) {{option_1}}** (Recommended)
+   a) ⭐ {{option_1}} (Recommended)
       - Pros: {{pros}}
       - Cons: {{cons}}
       - Alignment: [Aligns with "Progressive Enhancement" principle]
 
-   **b) {{option_2}}**
+   b) {{option_2}}
       - Pros: {{pros}}
       - Cons: {{cons}}
       - Alignment: [May conflict with "Behavior-Focused Testing"]
 
-   **c) {{option_3}}** (if applicable)
+   c) {{option_3}} (if applicable)
       - Pros: {{pros}}
       - Cons: {{cons}}
       - Alignment: [Describe alignment]
 
-   **d) Skip for now**
-   **e) Need more exploration**
+   d) Skip for now
+   e) Need more exploration
+
+   💡 Tip: You can modify any choice, e.g., "a, and also document the rationale in decisions.md"
 
    🔔 YOUR RESPONSE NEEDED
 

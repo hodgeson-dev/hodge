@@ -40,15 +40,16 @@ describe('[smoke] HODGE-319.3: Smart Decision Extraction Template', () => {
     expect(content).toContain('### Step 4: Handle Extraction Results');
   });
 
-  it('should handle Case A: Single Recommendation with 3 options', async () => {
+  it('should handle Case A: Single Recommendation with 3 options (HODGE-346.3 format)', async () => {
     const content = await fs.readFile(buildTemplatePath, 'utf-8');
     // Updated in HODGE-326: Case A now handles empty decisions (silent proceed)
     // Case B handles non-empty decisions (show prompt with 3 options)
     expect(content).toContain('**Case A: Recommendation Found + Decisions Needed is EMPTY**');
     expect(content).toContain('**Case B: Recommendation Found + Decisions Needed HAS items**');
-    expect(content).toContain('a) ✅ Use this recommendation and proceed with /build');
-    expect(content).toContain('b) 🔄 Go to /decide to formalize decisions first');
-    expect(content).toContain('c) ⏭️  Skip and build without guidance');
+    // HODGE-346.3: Changed to a) ⭐ format
+    expect(content).toMatch(/a\) ⭐ Use this recommendation and proceed with \/build/);
+    expect(content).toMatch(/b\) Go to \/decide to formalize decisions first/);
+    expect(content).toMatch(/c\) Skip and build without guidance/);
   });
 
   it('should handle Case B: Multiple Recommendations with pick-one flow', async () => {
@@ -59,11 +60,12 @@ describe('[smoke] HODGE-319.3: Smart Decision Extraction Template', () => {
     expect(content).toContain('Proceed with /build using this guidance?');
   });
 
-  it('should handle Case C: No Recommendation Found', async () => {
+  it('should handle Case C: No Recommendation Found (HODGE-346.3 format)', async () => {
     const content = await fs.readFile(buildTemplatePath, 'utf-8');
     expect(content).toContain('**Case C: No Recommendation Found**');
     expect(content).toContain('No decisions.md found and exploration.md has no recommendation');
-    expect(content).toContain('(a) 📋 Run /decide to make and record decisions');
+    // HODGE-346.3: Changed format - now uses bulleted slash commands, not choice menu
+    expect(content).toMatch(/• `\/decide`/);
   });
 
   it('should handle Case D: exploration.md Missing', async () => {

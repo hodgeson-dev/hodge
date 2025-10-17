@@ -1,6 +1,20 @@
+---
+description: Create commit, run final checks, and ship feature
+argument-hint: <feature-id>
+---
+
 ┌─────────────────────────────────────────────────────────┐
 │ 🚀 Ship: Interactive Commit & Ship                     │
 └─────────────────────────────────────────────────────────┘
+
+## Response Parsing (AI Instructions)
+
+When user responds to choice prompts:
+- "a" or "b" etc. → select single option
+- "a,b" or "a, b" → select multiple options (comma-separated, if applicable)
+- "r" → select all options marked with ⭐ (when 2+ recommendations exist)
+- "a, and [modification]" → select option with user's changes applied
+- Invalid (e.g., "7" when options are a-d) → use collaborative error recovery
 
 ## Standards Review Process
 
@@ -88,10 +102,13 @@ COMMIT MESSAGE FOR REVIEW:
 🔔 YOUR RESPONSE NEEDED
 
 Options:
-(a) ✅ Approve - Use this message
-(r) 🔄 Regenerate - Create a different message
-(e) ✏️  Edit - Let me modify this message
-(c) ❌ Cancel - Stop the ship process
+
+a) ⭐ Approve - Use this message (Recommended)
+r) Regenerate - Create a different message
+e) Edit - Let me modify this message
+c) Cancel - Stop the ship process
+
+💡 Tip: You can modify any choice, e.g., "a, and add a breaking change note"
 
 👉 Your choice [a/r/e/c]:
 ```
@@ -396,10 +413,13 @@ I've analyzed the lesson and identified the following recommendation:
 🔔 YOUR RESPONSE NEEDED
 
 Would you like to:
-(a) ✅ Approve - Add this to {{target_file}}
-(b) ✏️  Modify - Let me adjust the recommendation
-(c) ⏭️  Skip - Keep it as a lesson only
-(d) 💭 Discuss - I have questions or want to explore this more
+
+a) ⭐ Approve - Add this to {{target_file}} (Recommended)
+b) Modify - Let me adjust the recommendation
+c) Skip - Keep it as a lesson only
+d) Discuss - I have questions or want to explore this more
+
+💡 Tip: You can modify any choice, e.g., "a, and also add it to the project README"
 
 👉 Your choice [a/b/c/d]:
 ```

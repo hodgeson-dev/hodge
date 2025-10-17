@@ -14,9 +14,23 @@ export function getClaudeCommands(): ClaudeCommand[] {
   return [
     {
       name: 'build',
-      content: `┌─────────────────────────────────────────────────────────┐
+      content: `---
+description: Start building a feature with smoke tests
+argument-hint: <feature-id>
+---
+
+┌─────────────────────────────────────────────────────────┐
 │ 🔨 Build: Implementation Mode                          │
 └─────────────────────────────────────────────────────────┘
+
+## Response Parsing (AI Instructions)
+
+When user responds to choice prompts:
+- "a" or "b" etc. → select single option
+- "a,b" or "a, b" → select multiple options (comma-separated, if applicable)
+- "r" → select all options marked with ⭐ (when 2+ recommendations exist)
+- "a, and [modification]" → select option with user's changes applied
+- Invalid (e.g., "7" when options are a-e) → use collaborative error recovery
 
 ## Decision Extraction (Before Build)
 
@@ -46,8 +60,11 @@ The correct location is: .hodge/features/{{feature}}/decisions.md
 🔔 YOUR RESPONSE NEEDED
 
 Would you like me to move it for you?
-(a) ✅ Yes - Move it to the correct location
-(b) 🔧 No - I'll handle it manually
+
+a) ⭐ Yes - Move it to the correct location (Recommended)
+b) No - I'll handle it manually
+
+💡 Tip: You can modify any choice, e.g., "a, and also check for other misplaced files"
 
 👉 Your choice [a/b]:
 \`\`\`
@@ -112,9 +129,12 @@ Display to user:
 🔔 YOUR RESPONSE NEEDED
 
 What would you like to do?
-(a) ✅ Use this recommendation and proceed with /build
-(b) 🔄 Go to /decide to formalize decisions first
-(c) ⏭️  Skip and build without guidance
+
+a) ⭐ Use this recommendation and proceed with /build (Recommended)
+b) Go to /decide to formalize decisions first
+c) Skip and build without guidance
+
+💡 Tip: You can modify any choice, e.g., "a, and also review test intentions"
 
 👉 Your choice [a/b/c]:
 \`\`\`
@@ -137,11 +157,14 @@ Display to user:
 🔔 YOUR RESPONSE NEEDED
 
 Which recommendation would you like to use?
-(a) Use recommendation 1
-(b) Use recommendation 2
-(c) Use recommendation 3
-(d) Go to /decide to formalize decisions
-(e) Skip and build without guidance
+
+a) Use recommendation 1
+b) Use recommendation 2
+c) Use recommendation 3
+d) Go to /decide to formalize decisions
+e) Skip and build without guidance
+
+💡 Tip: You can modify any choice, e.g., "a, and combine ideas from option 2"
 
 👉 Your choice [a/b/c/d/e]:
 \`\`\`
@@ -156,8 +179,11 @@ You selected:
 🔔 YOUR RESPONSE NEEDED
 
 Proceed with /build using this guidance?
-(a) ✅ Yes, proceed
-(b) 🔄 No, go to /decide instead
+
+a) ⭐ Yes, proceed (Recommended)
+b) No, go to /decide instead
+
+💡 Tip: You can modify any choice, e.g., "a, and create detailed task breakdown"
 
 👉 Your choice [a/b]:
 \`\`\`
@@ -168,13 +194,12 @@ Display to user:
 \`\`\`
 ⚠️  No decisions.md found and exploration.md has no recommendation section.
 
-🔔 YOUR RESPONSE NEEDED
+I can't proceed with \`/build\` without guidance. Here are your options:
 
-To proceed, you can either:
-(a) 📋 Run /decide to make and record decisions
-(b) ⚠️  Use --skip-checks to build anyway (not recommended)
+• \`/decide\` - Make and record decisions first (Recommended)
+• \`/build {{feature}} --skip-checks\` - Build anyway without guidance (not recommended)
 
-👉 Your choice [a/b]:
+Please run one of these commands to continue.
 \`\`\`
 
 **Case D: exploration.md Missing**
@@ -223,8 +248,11 @@ I notice this feature ({{feature}}) doesn't have a PM issue tracking it yet.
 🔔 YOUR RESPONSE NEEDED
 
 Would you like to create a PM issue for this work?
-(a) ✅ Yes - Create a PM issue (recommended for production features)
-(b) ⏭️  No - Continue without PM tracking (good for quick experiments)
+
+a) ⭐ Yes - Create a PM issue (Recommended for production features)
+b) No - Continue without PM tracking (good for quick experiments)
+
+💡 Tip: You can modify any choice, e.g., "a, and link it to epic HODGE-XXX"
 
 👉 Your choice [a/b]:
 \`\`\`
@@ -322,9 +350,24 @@ Remember: The CLI handles all file management and PM integration. Focus on imple
     },
     {
       name: 'codify',
-      content: `┌─────────────────────────────────────────────────────────┐
+      content: `---
+description: Add a rule, standard, principle, decision, pattern, or profile
+argument-hint: "<rule or practice>"
+---
+
+┌─────────────────────────────────────────────────────────┐
 │ 📝 Codify: Add Rules to Project                        │
 └─────────────────────────────────────────────────────────┘
+
+## Response Parsing (AI Instructions)
+
+When user responds to choice prompts:
+- "a" or "b" etc. → select single option
+- "approve" → approve the proposed content as-is
+- "a,b" or "a, b" → select multiple options (comma-separated, if applicable)
+- "r" → select all options marked with ⭐ (when 2+ recommendations exist)
+- "a, and [modification]" → select option with user's changes applied
+- Invalid (e.g., "7" when options are a-c) → use collaborative error recovery
 
 ## Purpose
 
@@ -438,11 +481,14 @@ Proposed content:
 🔔 YOUR RESPONSE NEEDED
 
 Approve? Or would you prefer:
-(a) 🔄 Store as [alternative type] instead
-(b) ✏️  Different wording/structure
-(c) ❓ Ask me clarifying questions first
 
-👉 Your choice [a/b/c] or approve:
+a) Store as [alternative type] instead
+b) Different wording/structure
+c) Ask me clarifying questions first
+
+💡 Tip: You can modify any choice, e.g., "approve, and also add examples"
+
+👉 Your choice [a/b/c] or type "approve":
 
 ### Step 4: Handle User Response
 
@@ -724,9 +770,23 @@ c) Change enforcement to MANDATORY
     },
     {
       name: 'decide',
-      content: `┌─────────────────────────────────────────────────────────┐
+      content: `---
+description: Make and record architectural decisions for a feature
+argument-hint: <feature-id>
+---
+
+┌─────────────────────────────────────────────────────────┐
 │ 📋 Decide: Decision Management                         │
 └─────────────────────────────────────────────────────────┘
+
+## Response Parsing (AI Instructions)
+
+When user responds to choice prompts:
+- "a" or "b" etc. → select single option
+- "a,b" or "a, b" → select multiple options (comma-separated, if applicable)
+- "r" → select all options marked with ⭐ (when 2+ recommendations exist)
+- "a, and [modification]" → select option with user's changes applied
+- Invalid (e.g., "7" when options are a-e) → use collaborative error recovery
 
 ## ⚠️ DEFAULT BEHAVIOR: Interactive Decision Mode
 
@@ -793,23 +853,25 @@ When \`/decide\` is invoked, follow this process:
 
    **Options:**
 
-   **a) {{option_1}}** (Recommended)
+   a) ⭐ {{option_1}} (Recommended)
       - Pros: {{pros}}
       - Cons: {{cons}}
       - Alignment: [Aligns with "Progressive Enhancement" principle]
 
-   **b) {{option_2}}**
+   b) {{option_2}}
       - Pros: {{pros}}
       - Cons: {{cons}}
       - Alignment: [May conflict with "Behavior-Focused Testing"]
 
-   **c) {{option_3}}** (if applicable)
+   c) {{option_3}} (if applicable)
       - Pros: {{pros}}
       - Cons: {{cons}}
       - Alignment: [Describe alignment]
 
-   **d) Skip for now**
-   **e) Need more exploration**
+   d) Skip for now
+   e) Need more exploration
+
+   💡 Tip: You can modify any choice, e.g., "a, and also document the rationale in decisions.md"
 
    🔔 YOUR RESPONSE NEEDED
 
@@ -865,7 +927,12 @@ Remember: The \`/decide\` command focuses purely on recording technical and arch
     },
     {
       name: 'explore',
-      content: `┌─────────────────────────────────────────────────────────┐
+      content: `---
+description: Explore a feature idea and create test intentions
+argument-hint: <feature-id>
+---
+
+┌─────────────────────────────────────────────────────────┐
 │ 🔍 Explore: Feature Discovery                          │
 └─────────────────────────────────────────────────────────┘
 
@@ -1138,9 +1205,23 @@ Remember: The CLI handles all the file creation and PM integration. Focus on gen
     },
     {
       name: 'harden',
-      content: `┌─────────────────────────────────────────────────────────┐
+      content: `---
+description: Add integration tests and validate production readiness
+argument-hint: <feature-id>
+---
+
+┌─────────────────────────────────────────────────────────┐
 │ 🔧 Harden: Production Readiness                        │
 └─────────────────────────────────────────────────────────┘
+
+## Response Parsing (AI Instructions)
+
+When user responds to choice prompts:
+- "a" or "b" etc. → select single option
+- "a,b" or "a, b" → select multiple options (comma-separated, if applicable)
+- "r" → select all options marked with ⭐ (when 2+ recommendations exist)
+- "a, and [modification]" → select option with user's changes applied
+- Invalid (e.g., "7" when options are a-d) → use collaborative error recovery
 
 ## Step 0: Auto-Fix Simple Issues (HODGE-341.6)
 
@@ -1417,29 +1498,87 @@ DO NOT proceed to Step 7 until all errors are resolved.
 
 **Why this blocks**: Harden phase is "discipline mode". Errors indicate code that doesn't meet basic standards. The CLI validation will fail anyway, so catching errors early saves time.
 
-#### If NO (Only Warnings or Clean) → Proceed to Step 7 ✅
+#### If NO (Only Warnings or Clean) → Get User Decision on Fixes ✅
 
-Choose the appropriate status:
+Present findings to the user and let them choose what to fix:
 
-**Option A: No Issues Found**
+**Scenario A: Mandatory + Warnings Found**
+\`\`\`
+🔔 YOUR RESPONSE NEEDED
+
+I found issues in your code:
+
+**Mandatory (blocking ship):**
+- [list each mandatory issue with file:line]
+
+**Warnings:**
+- [list each warning with file:line]
+
+What would you like to do?
+
+a) ⭐ Fix mandatory issues (Recommended)
+b) ⭐ Fix mandatory + warnings (Recommended)
+c) Review issues first, then decide
+d) Skip for now (ship will be blocked)
+
+💡 Tip: You can modify any choice, e.g., "a, and also run tests after"
+
+👉 Your choice [a/b/c/d or r for all recommended]:
+\`\`\`
+
+**Scenario B: Only Mandatory Issues Found**
+\`\`\`
+🔔 YOUR RESPONSE NEEDED
+
+I found mandatory issues in your code:
+
+**Mandatory (blocking ship):**
+- [list each mandatory issue with file:line]
+
+What would you like to do?
+
+a) ⭐ Fix mandatory issues (Recommended - required for ship)
+b) Review issues first, then decide
+c) Skip for now (ship will be blocked)
+
+💡 Tip: You can modify any choice, e.g., "a, and run tests after"
+
+👉 Your choice [a/b/c]:
+\`\`\`
+
+**Scenario C: Only Warnings Found**
+\`\`\`
+🔔 YOUR RESPONSE NEEDED
+
+I found warnings in your code:
+
+**Warnings:**
+- [list each warning with file:line]
+
+What would you like to do?
+
+a) ⭐ Fix all warnings (Recommended)
+b) Select specific warnings to fix
+c) Review issues first, then decide
+d) Skip warnings (you can ship without fixing these)
+
+💡 Tip: You can modify any choice, e.g., "b, just the file length warnings"
+
+👉 Your choice [a/b/c/d]:
+\`\`\`
+
+**Scenario D: No Issues Found**
 \`\`\`
 ✅ STANDARDS PRE-CHECK PASSED
 All standards requirements appear to be met.
 No errors or warnings found. Ready to proceed with validation.
 \`\`\`
 
-**Option B: Warnings Only**
-\`\`\`
-⚠️ STANDARDS PRE-CHECK - Warnings Found:
-
-[List specific warnings, e.g.:]
-1. File length warnings in src/commands/harden.ts:445
-2. Cognitive complexity in src/lib/critical-file-selector.ts:127
-3. TODO comments need phase markers
-
-These are WARNINGS (not blockers). Proceeding with harden validation.
-Should address before ship phase.
-\`\`\`
+**After User Choice:**
+- **(a) Fix mandatory** → Use Edit tool to fix mandatory issues, then proceed to Step 7
+- **(b) Fix mandatory + warnings** → Use Edit tool to fix all issues, then proceed to Step 7
+- **(c) Review first** → Show detailed analysis of each issue, then re-present the choice
+- **(d) Skip** → Proceed to Step 7 (document that issues remain)
 
 ### Step 7: Generate Review Report
 **IMPORTANT**: After conducting your review, you MUST write a review-report.md file documenting your findings.
@@ -1634,7 +1773,12 @@ ARGUMENTS: {{feature}}`,
     },
     {
       name: 'hodge',
-      content: `┌─────────────────────────────────────────────────────────┐
+      content: `---
+description: Load context for a feature or view workflow status
+argument-hint: [feature-id]
+---
+
+┌─────────────────────────────────────────────────────────┐
 │ 🎯 Hodge: Session & Context Manager                    │
 └─────────────────────────────────────────────────────────┘
 
@@ -1801,9 +1945,23 @@ The \`/hodge\` command coordinates with the Hodge CLI to:
     },
     {
       name: 'plan',
-      content: `┌─────────────────────────────────────────────────────────┐
+      content: `---
+description: Generate project management issues from exploration
+argument-hint: <feature-id>
+---
+
+┌─────────────────────────────────────────────────────────┐
 │ 📊 Plan: Work Organization & PM Integration            │
 └─────────────────────────────────────────────────────────┘
+
+## Response Parsing (AI Instructions)
+
+When user responds to choice prompts:
+- "a" or "b" etc. → select single option
+- "a,b" or "a, b" → select multiple options (comma-separated, if applicable)
+- "r" → select all options marked with ⭐ (when 2+ recommendations exist)
+- "a, and [modification]" → select option with user's changes applied
+- Invalid (e.g., "7" when options are a-d) → use collaborative error recovery
 
 ## Purpose
 The \`/plan\` command transforms technical decisions into organized, executable work. It handles epic/story breakdown, dependency analysis, parallel lane allocation, and PM tool integration.
@@ -2205,9 +2363,12 @@ Lane 2: HODGE-XXX.2
 - Consider revising breakdown or creating single issue
 
 Would you like to:
-a) Revise the plan to use vertical slices
+
+a) ⭐ Revise the plan to use vertical slices (Recommended)
 b) Create as single issue instead
 c) Proceed anyway (explain why this breakdown is correct)
+
+💡 Tip: You can modify any choice, e.g., "a, and add acceptance criteria to each story"
 \`\`\`
 
 ### Step 3: Present to User
@@ -2221,10 +2382,13 @@ Display the proposed plan and ask:
 🔔 YOUR RESPONSE NEEDED
 
 Review the plan above. Would you like to:
-(a) ✅ Approve and save plan locally
-(b) 🔗 Approve and create PM issues in Linear
-(c) ✏️  Modify the plan (adjust stories, dependencies, etc.)
-(d) ❌ Cancel
+
+a) ⭐ Approve and save plan locally (Recommended)
+b) Approve and create PM issues in Linear
+c) Modify the plan (adjust stories, dependencies, etc.)
+d) Cancel
+
+💡 Tip: You can modify any choice, e.g., "b, and add story point estimates"
 
 👉 Your choice [a/b/c/d]:
 
@@ -2331,9 +2495,23 @@ Remember: \`/plan\` bridges the gap between decisions and implementation, turnin
     },
     {
       name: 'review',
-      content: `┌─────────────────────────────────────────────────────────┐
+      content: `---
+description: Run quality checks and analyze code changes
+argument-hint: [--file <path>] [--directory <path>] [--last <N>]
+---
+
+┌─────────────────────────────────────────────────────────┐
 │ 🔍 Review: Advisory Code Review                        │
 └─────────────────────────────────────────────────────────┘
+
+## Response Parsing (AI Instructions)
+
+When user responds to choice prompts:
+- "a" or "b" etc. → select single option
+- "a,b" or "a, b" → select multiple options (comma-separated, if applicable)
+- "r" → select all options marked with ⭐ (when 2+ recommendations exist)
+- "a, and [modification]" → select option with user's changes applied
+- Invalid (e.g., "7" when options are a-c) → use collaborative error recovery
 
 ## Overview
 
@@ -2458,11 +2636,14 @@ Would you like to fix any of these issues?
 🔔 YOUR RESPONSE NEEDED
 
 You can:
-(a) ✅ Fix all auto-fixable issues (formatters + linters)
-(b) 🎯 Select specific issues to fix
-(c) 📝 Skip fixes and just document findings
 
-👉 Your choice [a/b/c] (or ask questions for more detail):
+a) ⭐ Fix all auto-fixable issues (Recommended)
+b) Select specific issues to fix
+c) Skip fixes and just document findings
+
+💡 Tip: You can modify any choice, e.g., "a, and also run tests after fixing"
+
+👉 Your choice [a/b/c]:
 \`\`\`
 
 **Handle User Response**:
@@ -2669,9 +2850,23 @@ ARGUMENTS: {{flags}}
     },
     {
       name: 'ship',
-      content: `┌─────────────────────────────────────────────────────────┐
+      content: `---
+description: Create commit, run final checks, and ship feature
+argument-hint: <feature-id>
+---
+
+┌─────────────────────────────────────────────────────────┐
 │ 🚀 Ship: Interactive Commit & Ship                     │
 └─────────────────────────────────────────────────────────┘
+
+## Response Parsing (AI Instructions)
+
+When user responds to choice prompts:
+- "a" or "b" etc. → select single option
+- "a,b" or "a, b" → select multiple options (comma-separated, if applicable)
+- "r" → select all options marked with ⭐ (when 2+ recommendations exist)
+- "a, and [modification]" → select option with user's changes applied
+- Invalid (e.g., "7" when options are a-d) → use collaborative error recovery
 
 ## Standards Review Process
 
@@ -2759,10 +2954,13 @@ COMMIT MESSAGE FOR REVIEW:
 🔔 YOUR RESPONSE NEEDED
 
 Options:
-(a) ✅ Approve - Use this message
-(r) 🔄 Regenerate - Create a different message
-(e) ✏️  Edit - Let me modify this message
-(c) ❌ Cancel - Stop the ship process
+
+a) ⭐ Approve - Use this message (Recommended)
+r) Regenerate - Create a different message
+e) Edit - Let me modify this message
+c) Cancel - Stop the ship process
+
+💡 Tip: You can modify any choice, e.g., "a, and add a breaking change note"
 
 👉 Your choice [a/r/e/c]:
 \`\`\`
@@ -3067,10 +3265,13 @@ I've analyzed the lesson and identified the following recommendation:
 🔔 YOUR RESPONSE NEEDED
 
 Would you like to:
-(a) ✅ Approve - Add this to {{target_file}}
-(b) ✏️  Modify - Let me adjust the recommendation
-(c) ⏭️  Skip - Keep it as a lesson only
-(d) 💭 Discuss - I have questions or want to explore this more
+
+a) ⭐ Approve - Add this to {{target_file}} (Recommended)
+b) Modify - Let me adjust the recommendation
+c) Skip - Keep it as a lesson only
+d) Discuss - I have questions or want to explore this more
+
+💡 Tip: You can modify any choice, e.g., "a, and also add it to the project README"
 
 👉 Your choice [a/b/c/d]:
 \`\`\`
@@ -3128,7 +3329,12 @@ After successful shipping:
     },
     {
       name: 'status',
-      content: `┌─────────────────────────────────────────────────────────┐
+      content: `---
+description: Check status of a feature across all phases
+argument-hint: <feature-id>
+---
+
+┌─────────────────────────────────────────────────────────┐
 │ 📊 Status: Feature Overview and Context Management     │
 └─────────────────────────────────────────────────────────┘
 

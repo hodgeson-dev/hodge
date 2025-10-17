@@ -15,21 +15,31 @@ const COMMANDS_DIR = join(__dirname);
 
 describe('[smoke] Visual Rendering Verification (HODGE-346.2 Layer 3)', () => {
   describe('Mock Command Execution: /status', () => {
-    it('should render box header correctly', () => {
+    it('should render box header correctly (after YAML frontmatter)', () => {
       const template = readFileSync(join(COMMANDS_DIR, 'status.md'), 'utf-8');
       const lines = template.split('\n');
 
-      // Simulate rendering first 10 lines
-      const rendering = lines.slice(0, 10).join('\n');
+      // Skip YAML frontmatter if present
+      let startIndex = 0;
+      if (lines[0] === '---') {
+        const closingIndex = lines.findIndex((line, i) => i > 0 && line === '---');
+        if (closingIndex !== -1) {
+          startIndex = closingIndex + 1;
+          if (lines[startIndex] === '') startIndex++;
+        }
+      }
+
+      // Simulate rendering first 10 lines after frontmatter
+      const rendering = lines.slice(startIndex, startIndex + 10).join('\n');
 
       // Box should be visible
       expect(rendering).toContain('┌───');
       expect(rendering).toContain('│ 📊 Status:');
       expect(rendering).toContain('└───');
 
-      // Box should be on first lines
-      expect(lines[0]).toMatch(/^┌/);
-      expect(lines[2]).toMatch(/^└/);
+      // Box should be on first lines (after frontmatter)
+      expect(lines[startIndex]).toMatch(/^┌/);
+      expect(lines[startIndex + 2]).toMatch(/^└/);
     });
 
     it('should render next steps as bullets (not choice menu)', () => {
@@ -63,14 +73,24 @@ describe('[smoke] Visual Rendering Verification (HODGE-346.2 Layer 3)', () => {
   });
 
   describe('Mock Command Execution: /build', () => {
-    it('should render box header at start', () => {
+    it('should render box header at start (after YAML frontmatter)', () => {
       const template = readFileSync(join(COMMANDS_DIR, 'build.md'), 'utf-8');
       const lines = template.split('\n');
 
-      // First three lines should be box
-      expect(lines[0]).toContain('┌───');
-      expect(lines[1]).toContain('│ 🔨 Build:');
-      expect(lines[2]).toContain('└───');
+      // Skip YAML frontmatter
+      let startIndex = 0;
+      if (lines[0] === '---') {
+        const closingIndex = lines.findIndex((line, i) => i > 0 && line === '---');
+        if (closingIndex !== -1) {
+          startIndex = closingIndex + 1;
+          if (lines[startIndex] === '') startIndex++;
+        }
+      }
+
+      // First three lines after frontmatter should be box
+      expect(lines[startIndex]).toContain('┌───');
+      expect(lines[startIndex + 1]).toContain('│ 🔨 Build:');
+      expect(lines[startIndex + 2]).toContain('└───');
     });
 
     it('should render choice blocks with visual indicators', () => {
@@ -90,19 +110,18 @@ describe('[smoke] Visual Rendering Verification (HODGE-346.2 Layer 3)', () => {
       );
       expect(choiceBlock).toBeTruthy();
 
-      // Should have proper format
+      // Should have proper format (HODGE-346.3: a) format, not (a))
       if (choiceBlock) {
-        expect(choiceBlock[0]).toContain('(a)');
-        expect(choiceBlock[0]).toContain('(b)');
+        expect(choiceBlock[0]).toMatch(/^a\)\s/m);
+        expect(choiceBlock[0]).toMatch(/^b\)\s/m);
       }
     });
 
-    it('should render choice options with emojis', () => {
+    it('should render choice options with ⭐ for recommendations (HODGE-346.3)', () => {
       const template = readFileSync(join(COMMANDS_DIR, 'build.md'), 'utf-8');
 
-      // Choice options should have emojis
-      expect(template).toMatch(/\(a\)\s*[✅🔄➕✏️📋⏭️❌]/);
-      expect(template).toMatch(/\(b\)\s*[✅🔄➕✏️📋⏭️❌]/);
+      // Choice options should have ⭐ for recommended options (HODGE-346.3 change)
+      expect(template).toMatch(/^a\) ⭐/m);
     });
 
     it('should preserve workflow logic in rendered output', () => {
@@ -237,12 +256,13 @@ describe('[smoke] Visual Rendering Verification (HODGE-346.2 Layer 3)', () => {
       expect(template).toContain('│ 🔍 Review: Advisory Code Review');
     });
 
-    it('should render fix options choice block', () => {
+    it('should render fix options choice block (HODGE-346.3 format)', () => {
       const template = readFileSync(join(COMMANDS_DIR, 'review.md'), 'utf-8');
 
       expect(template).toContain('🔔 YOUR RESPONSE NEEDED');
       expect(template).toContain('👉 Your choice [a/b/c]');
-      expect(template).toContain('(a) ✅ Fix all auto-fixable issues');
+      // HODGE-346.3: Changed to a) ⭐ format
+      expect(template).toMatch(/a\) ⭐ Fix all auto-fixable issues/);
     });
   });
 
@@ -414,7 +434,7 @@ describe('[smoke] Visual Rendering Verification (HODGE-346.2 Layer 3)', () => {
       }
     });
 
-    it('scenario: user runs /build - should see clear choice when decisions missing', () => {
+    it('scenario: user runs /build - should see clear choice when decisions missing (HODGE-346.3)', () => {
       const template = readFileSync(join(COMMANDS_DIR, 'build.md'), 'utf-8');
 
       // Find Case B (recommendation with unresolved decisions)
@@ -426,10 +446,10 @@ describe('[smoke] Visual Rendering Verification (HODGE-346.2 Layer 3)', () => {
       if (caseB) {
         const block = caseB[0];
 
-        // Should be clear what options are
-        expect(block).toContain('(a)');
-        expect(block).toContain('(b)');
-        expect(block).toContain('(c)');
+        // Should be clear what options are (HODGE-346.3: a) format, not (a))
+        expect(block).toMatch(/^a\)\s/m);
+        expect(block).toMatch(/^b\)\s/m);
+        expect(block).toMatch(/^c\)\s/m);
 
         // Should have visual indicator
         expect(block).toContain('🔔');

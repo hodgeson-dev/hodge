@@ -1,6 +1,20 @@
+---
+description: Generate project management issues from exploration
+argument-hint: <feature-id>
+---
+
 ┌─────────────────────────────────────────────────────────┐
 │ 📊 Plan: Work Organization & PM Integration            │
 └─────────────────────────────────────────────────────────┘
+
+## Response Parsing (AI Instructions)
+
+When user responds to choice prompts:
+- "a" or "b" etc. → select single option
+- "a,b" or "a, b" → select multiple options (comma-separated, if applicable)
+- "r" → select all options marked with ⭐ (when 2+ recommendations exist)
+- "a, and [modification]" → select option with user's changes applied
+- Invalid (e.g., "7" when options are a-d) → use collaborative error recovery
 
 ## Purpose
 The `/plan` command transforms technical decisions into organized, executable work. It handles epic/story breakdown, dependency analysis, parallel lane allocation, and PM tool integration.
@@ -402,9 +416,12 @@ Lane 2: HODGE-XXX.2
 - Consider revising breakdown or creating single issue
 
 Would you like to:
-a) Revise the plan to use vertical slices
+
+a) ⭐ Revise the plan to use vertical slices (Recommended)
 b) Create as single issue instead
 c) Proceed anyway (explain why this breakdown is correct)
+
+💡 Tip: You can modify any choice, e.g., "a, and add acceptance criteria to each story"
 ```
 
 ### Step 3: Present to User
@@ -418,10 +435,13 @@ Display the proposed plan and ask:
 🔔 YOUR RESPONSE NEEDED
 
 Review the plan above. Would you like to:
-(a) ✅ Approve and save plan locally
-(b) 🔗 Approve and create PM issues in Linear
-(c) ✏️  Modify the plan (adjust stories, dependencies, etc.)
-(d) ❌ Cancel
+
+a) ⭐ Approve and save plan locally (Recommended)
+b) Approve and create PM issues in Linear
+c) Modify the plan (adjust stories, dependencies, etc.)
+d) Cancel
+
+💡 Tip: You can modify any choice, e.g., "b, and add story point estimates"
 
 👉 Your choice [a/b/c/d]:
 

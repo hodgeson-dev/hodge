@@ -14,13 +14,14 @@ describe('[smoke] build.md template - PM issue check', () => {
     expect(buildTemplate).toContain('.hodge/id-mappings.json');
   });
 
-  it('should contain user prompt for unmapped features', () => {
+  it('should contain user prompt for unmapped features (HODGE-346.3 format)', () => {
     const buildTemplate = readFileSync(join(__dirname, '../../.claude/commands/build.md'), 'utf-8');
 
     expect(buildTemplate).toContain("doesn't have a PM issue tracking it yet");
     expect(buildTemplate).toContain('Would you like to create a PM issue for this work?');
-    expect(buildTemplate).toContain('(a) ✅ Yes - Create a PM issue');
-    expect(buildTemplate).toContain('(b) ⏭️  No - Continue without PM tracking');
+    // HODGE-346.3: Changed to a) ⭐ format
+    expect(buildTemplate).toMatch(/a\) ⭐ Yes - Create a PM issue/);
+    expect(buildTemplate).toMatch(/b\) No - Continue without PM tracking/);
   });
 
   it('should reference /plan command for single issue creation', () => {

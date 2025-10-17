@@ -1,6 +1,20 @@
+---
+description: Run quality checks and analyze code changes
+argument-hint: [--file <path>] [--directory <path>] [--last <N>]
+---
+
 ┌─────────────────────────────────────────────────────────┐
 │ 🔍 Review: Advisory Code Review                        │
 └─────────────────────────────────────────────────────────┘
+
+## Response Parsing (AI Instructions)
+
+When user responds to choice prompts:
+- "a" or "b" etc. → select single option
+- "a,b" or "a, b" → select multiple options (comma-separated, if applicable)
+- "r" → select all options marked with ⭐ (when 2+ recommendations exist)
+- "a, and [modification]" → select option with user's changes applied
+- Invalid (e.g., "7" when options are a-c) → use collaborative error recovery
 
 ## Overview
 
@@ -125,11 +139,14 @@ Would you like to fix any of these issues?
 🔔 YOUR RESPONSE NEEDED
 
 You can:
-(a) ✅ Fix all auto-fixable issues (formatters + linters)
-(b) 🎯 Select specific issues to fix
-(c) 📝 Skip fixes and just document findings
 
-👉 Your choice [a/b/c] (or ask questions for more detail):
+a) ⭐ Fix all auto-fixable issues (Recommended)
+b) Select specific issues to fix
+c) Skip fixes and just document findings
+
+💡 Tip: You can modify any choice, e.g., "a, and also run tests after fixing"
+
+👉 Your choice [a/b/c]:
 ```
 
 **Handle User Response**:

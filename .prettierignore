@@ -6,3 +6,6 @@ coverage/
 .hodge/saves/
 .hodge/features/*/explore/
 package-lock.json
+.hodge/.session
+.hodge/features/*/issue-id.txt
+.prettierignore

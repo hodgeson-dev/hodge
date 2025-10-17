@@ -1,0 +1,50 @@
+{
+  "timestamp": "2025-10-17T10:58:31.888Z",
+  "stagedFiles": [
+    ".claude/commands/build.md",
+    ".claude/commands/choice-formatting.smoke.test.ts",
+    ".claude/commands/codify.md",
+    ".claude/commands/decide.md",
+    ".claude/commands/explore.md",
+    ".claude/commands/harden.md",
+    ".claude/commands/hodge.md",
+    ".claude/commands/plan.md",
+    ".claude/commands/review.md",
+    ".claude/commands/ship.md",
+    ".claude/commands/status.md",
+    ".hodge/.session",
+    ".hodge/HODGE.md",
+    ".hodge/context.json",
+    ".hodge/features/HODGE-346.3/build/build-plan.md",
+    ".hodge/features/HODGE-346.3/explore/exploration.md",
+    ".hodge/features/HODGE-346.3/explore/test-intentions.md",
+    ".hodge/features/HODGE-346.3/issue-id.txt",
+    ".hodge/features/HODGE-346.3/ship-record.json",
+    ".hodge/id-mappings.json",
+    ".hodge/project_management.md",
+    ".hodge/review-profiles/ux-patterns/claude-code-slash-commands.yaml"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 20,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": ".claude/commands/choice-formatting.smoke.test.ts 91ms\n.hodge/review-profiles/ux-patterns/claude-code-slash-commands.yaml 29ms (unchanged)\n",
+      "stderr": "",
+      "duration": 871
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 1,
+      "issuesFixed": 1,
+      "success": true,
+      "stdout": "\n/Users/michaelkelly/Projects/hodge/.claude/commands/choice-formatting.smoke.test.ts\n  0:0  warning  File ignored by default.  Use a negated ignore pattern (like \"--ignore-pattern '!<relative/path/to/filename>'\") to override\n\n✖ 1 problem (0 errors, 1 warning)\n\n",
+      "stderr": "",
+      "duration": 1622
+    }
+  ],
+  "totalIssuesFixed": 1,
+  "totalFilesModified": 21,
+  "failures": []
+}

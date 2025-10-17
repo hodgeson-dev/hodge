@@ -1,6 +1,20 @@
+---
+description: Start building a feature with smoke tests
+argument-hint: <feature-id>
+---
+
 ┌─────────────────────────────────────────────────────────┐
 │ 🔨 Build: Implementation Mode                          │
 └─────────────────────────────────────────────────────────┘
+
+## Response Parsing (AI Instructions)
+
+When user responds to choice prompts:
+- "a" or "b" etc. → select single option
+- "a,b" or "a, b" → select multiple options (comma-separated, if applicable)
+- "r" → select all options marked with ⭐ (when 2+ recommendations exist)
+- "a, and [modification]" → select option with user's changes applied
+- Invalid (e.g., "7" when options are a-e) → use collaborative error recovery
 
 ## Decision Extraction (Before Build)
 
@@ -30,8 +44,11 @@ The correct location is: .hodge/features/{{feature}}/decisions.md
 🔔 YOUR RESPONSE NEEDED
 
 Would you like me to move it for you?
-(a) ✅ Yes - Move it to the correct location
-(b) 🔧 No - I'll handle it manually
+
+a) ⭐ Yes - Move it to the correct location (Recommended)
+b) No - I'll handle it manually
+
+💡 Tip: You can modify any choice, e.g., "a, and also check for other misplaced files"
 
 👉 Your choice [a/b]:
 ```
@@ -96,9 +113,12 @@ Display to user:
 🔔 YOUR RESPONSE NEEDED
 
 What would you like to do?
-(a) ✅ Use this recommendation and proceed with /build
-(b) 🔄 Go to /decide to formalize decisions first
-(c) ⏭️  Skip and build without guidance
+
+a) ⭐ Use this recommendation and proceed with /build (Recommended)
+b) Go to /decide to formalize decisions first
+c) Skip and build without guidance
+
+💡 Tip: You can modify any choice, e.g., "a, and also review test intentions"
 
 👉 Your choice [a/b/c]:
 ```
@@ -121,11 +141,14 @@ Display to user:
 🔔 YOUR RESPONSE NEEDED
 
 Which recommendation would you like to use?
-(a) Use recommendation 1
-(b) Use recommendation 2
-(c) Use recommendation 3
-(d) Go to /decide to formalize decisions
-(e) Skip and build without guidance
+
+a) Use recommendation 1
+b) Use recommendation 2
+c) Use recommendation 3
+d) Go to /decide to formalize decisions
+e) Skip and build without guidance
+
+💡 Tip: You can modify any choice, e.g., "a, and combine ideas from option 2"
 
 👉 Your choice [a/b/c/d/e]:
 ```
@@ -140,8 +163,11 @@ You selected:
 🔔 YOUR RESPONSE NEEDED
 
 Proceed with /build using this guidance?
-(a) ✅ Yes, proceed
-(b) 🔄 No, go to /decide instead
+
+a) ⭐ Yes, proceed (Recommended)
+b) No, go to /decide instead
+
+💡 Tip: You can modify any choice, e.g., "a, and create detailed task breakdown"
 
 👉 Your choice [a/b]:
 ```
@@ -152,13 +178,12 @@ Display to user:
 ```
 ⚠️  No decisions.md found and exploration.md has no recommendation section.
 
-🔔 YOUR RESPONSE NEEDED
+I can't proceed with `/build` without guidance. Here are your options:
 
-To proceed, you can either:
-(a) 📋 Run /decide to make and record decisions
-(b) ⚠️  Use --skip-checks to build anyway (not recommended)
+• `/decide` - Make and record decisions first (Recommended)
+• `/build {{feature}} --skip-checks` - Build anyway without guidance (not recommended)
 
-👉 Your choice [a/b]:
+Please run one of these commands to continue.
 ```
 
 **Case D: exploration.md Missing**
@@ -207,8 +232,11 @@ I notice this feature ({{feature}}) doesn't have a PM issue tracking it yet.
 🔔 YOUR RESPONSE NEEDED
 
 Would you like to create a PM issue for this work?
-(a) ✅ Yes - Create a PM issue (recommended for production features)
-(b) ⏭️  No - Continue without PM tracking (good for quick experiments)
+
+a) ⭐ Yes - Create a PM issue (Recommended for production features)
+b) No - Continue without PM tracking (good for quick experiments)
+
+💡 Tip: You can modify any choice, e.g., "a, and link it to epic HODGE-XXX"
 
 👉 Your choice [a/b]:
 ```

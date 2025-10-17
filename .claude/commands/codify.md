@@ -1,6 +1,21 @@
+---
+description: Add a rule, standard, principle, decision, pattern, or profile
+argument-hint: "<rule or practice>"
+---
+
 ┌─────────────────────────────────────────────────────────┐
 │ 📝 Codify: Add Rules to Project                        │
 └─────────────────────────────────────────────────────────┘
+
+## Response Parsing (AI Instructions)
+
+When user responds to choice prompts:
+- "a" or "b" etc. → select single option
+- "approve" → approve the proposed content as-is
+- "a,b" or "a, b" → select multiple options (comma-separated, if applicable)
+- "r" → select all options marked with ⭐ (when 2+ recommendations exist)
+- "a, and [modification]" → select option with user's changes applied
+- Invalid (e.g., "7" when options are a-c) → use collaborative error recovery
 
 ## Purpose
 
@@ -114,11 +129,14 @@ Proposed content:
 🔔 YOUR RESPONSE NEEDED
 
 Approve? Or would you prefer:
-(a) 🔄 Store as [alternative type] instead
-(b) ✏️  Different wording/structure
-(c) ❓ Ask me clarifying questions first
 
-👉 Your choice [a/b/c] or approve:
+a) Store as [alternative type] instead
+b) Different wording/structure
+c) Ask me clarifying questions first
+
+💡 Tip: You can modify any choice, e.g., "approve, and also add examples"
+
+👉 Your choice [a/b/c] or type "approve":
 
 ### Step 4: Handle User Response
 

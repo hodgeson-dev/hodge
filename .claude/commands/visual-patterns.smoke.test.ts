@@ -31,20 +31,32 @@ const BOX_PATTERN = /│\s*[^\n]+\s*│/;
 describe('[smoke] Visual Pattern Compliance (HODGE-346.2)', () => {
   describe('Test Intention 1: All 10 commands start with box header', () => {
     COMMAND_FILES.forEach((file) => {
-      it(`${file} should start with box header`, () => {
+      it(`${file} should start with box header (after YAML frontmatter)`, () => {
         const content = readFileSync(join(COMMANDS_DIR, file), 'utf-8');
         const lines = content.split('\n');
 
-        // First line should be box top
-        expect(lines[0]).toBe(BOX_TOP);
+        // Skip YAML frontmatter if present (lines 0-4: ---, description, argument-hint, ---, blank)
+        let startIndex = 0;
+        if (lines[0] === '---') {
+          // Find closing ---
+          const closingIndex = lines.findIndex((line, i) => i > 0 && line === '---');
+          if (closingIndex !== -1) {
+            startIndex = closingIndex + 1;
+            // Skip blank line after frontmatter
+            if (lines[startIndex] === '') startIndex++;
+          }
+        }
+
+        // First line (after frontmatter) should be box top
+        expect(lines[startIndex]).toBe(BOX_TOP);
 
         // Second line should be box content with emoji and command name
-        expect(lines[1]).toMatch(BOX_PATTERN);
+        expect(lines[startIndex + 1]).toMatch(BOX_PATTERN);
         // Just verify it has an emoji and text (emojis are multi-byte Unicode)
-        expect(lines[1]).toMatch(/│\s*.+:\s+.+\s+│/);
+        expect(lines[startIndex + 1]).toMatch(/│\s*.+:\s+.+\s+│/);
 
         // Third line should be box bottom
-        expect(lines[2]).toBe(BOX_BOTTOM);
+        expect(lines[startIndex + 2]).toBe(BOX_BOTTOM);
       });
     });
   });
@@ -151,12 +163,15 @@ describe('[smoke] Visual Pattern Compliance (HODGE-346.2)', () => {
       });
     });
 
-    it('choice options should use (a/b/c) format with emojis', () => {
+    it('choice options should use a/b/c format with ⭐ for recommendations (HODGE-346.3)', () => {
       const content = readFileSync(join(COMMANDS_DIR, 'build.md'), 'utf-8');
 
-      // Should use (a) format, not a) format
-      expect(content).toMatch(/\(a\)\s*[✅🔄➕✏️📋⏭️❌]/);
-      expect(content).toMatch(/\(b\)\s*[✅🔄➕✏️📋⏭️❌]/);
+      // Should use a) format, not (a) format (HODGE-346.3 change)
+      expect(content).toMatch(/^a\)\s/m);
+      expect(content).toMatch(/^b\)\s/m);
+
+      // Recommended options should have ⭐ emoji
+      expect(content).toMatch(/a\) ⭐/);
     });
   });
 

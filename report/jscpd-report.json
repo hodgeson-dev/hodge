@@ -1,36 +1,12 @@
 {
   "statistics": {
-    "detectionDate": "2025-10-16T21:08:36.555Z",
+    "detectionDate": "2025-10-17T11:13:46.609Z",
     "formats": {
       "typescript": {
         "sources": {
-          "src/lib/hodge-md-generator.ts": {
-            "lines": 593,
-            "tokens": 5162,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/lib/hodge-md-generator.test.ts": {
-            "lines": 236,
-            "tokens": 2303,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "src/lib/hodge-319.3.smoke.test.ts": {
-            "lines": 107,
-            "tokens": 1184,
+            "lines": 109,
+            "tokens": 1190,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -41,8 +17,8 @@
             "newClones": 0
           },
           "src/lib/claude-commands.smoke.test.ts": {
-            "lines": 260,
-            "tokens": 2026,
+            "lines": 261,
+            "tokens": 2029,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -53,8 +29,8 @@
             "newClones": 0
           },
           ".claude/commands/visual-rendering.smoke.test.ts": {
-            "lines": 459,
-            "tokens": 3909,
+            "lines": 479,
+            "tokens": 4148,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -65,8 +41,20 @@
             "newClones": 0
           },
           ".claude/commands/visual-patterns.smoke.test.ts": {
-            "lines": 274,
-            "tokens": 2419,
+            "lines": 289,
+            "tokens": 2569,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".claude/commands/choice-formatting.smoke.test.ts": {
+            "lines": 164,
+            "tokens": 1349,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -78,373 +66,9 @@
           }
         },
         "total": {
-          "lines": 1929,
-          "tokens": 17003,
-          "sources": 6,
-          "clones": 0,
-          "duplicatedLines": 0,
-          "duplicatedTokens": 0,
-          "percentage": 0,
-          "percentageTokens": 0,
-          "newDuplicatedLines": 0,
-          "newClones": 0
-        }
-      },
-      "json": {
-        "sources": {
-          "report/jscpd-report.json": {
-            "lines": 371,
-            "tokens": 2397,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".hodge/features/HODGE-346.2/ship-record.json": {
-            "lines": 15,
-            "tokens": 94,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".hodge/features/HODGE-346.2/harden/auto-fix-report.json": {
-            "lines": 54,
-            "tokens": 266,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".hodge/id-mappings.json": {
-            "lines": 21,
-            "tokens": 116,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          }
-        },
-        "total": {
-          "lines": 461,
-          "tokens": 2873,
-          "sources": 4,
-          "clones": 0,
-          "duplicatedLines": 0,
-          "duplicatedTokens": 0,
-          "percentage": 0,
-          "percentageTokens": 0,
-          "newDuplicatedLines": 0,
-          "newClones": 0
-        }
-      },
-      "markdown": {
-        "sources": {
-          ".hodge/patterns/slash-command-verification-pattern.md": {
-            "lines": 412,
-            "tokens": 2916,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".hodge/features/HODGE-346/decisions.md": {
-            "lines": 38,
-            "tokens": 490,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".hodge/features/HODGE-346.2/harden/critical-files.md": {
-            "lines": 69,
-            "tokens": 1040,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".hodge/features/HODGE-346.2/explore/test-intentions.md": {
-            "lines": 45,
-            "tokens": 456,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".hodge/features/HODGE-346.2/explore/exploration.md": {
-            "lines": 361,
-            "tokens": 3726,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".hodge/features/HODGE-346.2/build/build-plan.md": {
-            "lines": 122,
-            "tokens": 1430,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".hodge/features/HODGE-346.2/build/ai-diff-analysis.md": {
-            "lines": 312,
-            "tokens": 2801,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".hodge/project_management.md": {
-            "lines": 64,
-            "tokens": 366,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".hodge/HODGE.md": {
-            "lines": 229,
-            "tokens": 3593,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/status.md": {
-            "lines": 84,
-            "tokens": 604,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/ship.md": {
-            "lines": 455,
-            "tokens": 3431,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/review.md": {
-            "lines": 333,
-            "tokens": 2643,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/plan.md": {
-            "lines": 522,
-            "tokens": 3869,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/hodge.md": {
-            "lines": 163,
-            "tokens": 1177,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/harden.md": {
-            "lines": 492,
-            "tokens": 4342,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/explore.md": {
-            "lines": 269,
-            "tokens": 2468,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/decide.md": {
-            "lines": 137,
-            "tokens": 966,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/codify.md": {
-            "lines": 397,
-            "tokens": 2960,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/build.md": {
-            "lines": 304,
-            "tokens": 2481,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          }
-        },
-        "total": {
-          "lines": 4808,
-          "tokens": 41759,
-          "sources": 19,
-          "clones": 0,
-          "duplicatedLines": 0,
-          "duplicatedTokens": 0,
-          "percentage": 0,
-          "percentageTokens": 0,
-          "newDuplicatedLines": 0,
-          "newClones": 0
-        }
-      },
-      "yaml": {
-        "sources": {
-          ".hodge/features/HODGE-346.2/harden/review-manifest.yaml": {
-            "lines": 144,
-            "tokens": 945,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          }
-        },
-        "total": {
-          "lines": 144,
-          "tokens": 945,
-          "sources": 1,
-          "clones": 0,
-          "duplicatedLines": 0,
-          "duplicatedTokens": 0,
-          "percentage": 0,
-          "percentageTokens": 0,
-          "newDuplicatedLines": 0,
-          "newClones": 0
-        }
-      },
-      "url": {
-        "sources": {
-          ".claude/commands/ship.md": {
-            "lines": 0,
-            "tokens": 4,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          }
-        },
-        "total": {
-          "lines": 0,
-          "tokens": 4,
-          "sources": 1,
+          "lines": 1302,
+          "tokens": 11285,
+          "sources": 5,
           "clones": 0,
           "duplicatedLines": 0,
           "duplicatedTokens": 0,
@@ -456,9 +80,9 @@
       }
     },
     "total": {
-      "lines": 7342,
-      "tokens": 62584,
-      "sources": 31,
+      "lines": 1302,
+      "tokens": 11285,
+      "sources": 5,
       "clones": 0,
       "duplicatedLines": 0,
       "duplicatedTokens": 0,

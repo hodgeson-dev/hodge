@@ -44,7 +44,46 @@ rules:
     severity: BLOCKER
     desc: 'Mark recommended options with ⭐ emoji + "(Recommended)" text'
     example: 'a) ⭐ First option (Recommended)\nb) Second option\nc) Third option'
-    guidance: 'Star emoji immediately after letter. Text annotation for clarity. Only one recommendation per list.'
+    guidance: 'Star emoji immediately after letter. Text annotation for clarity. Can have multiple recommendations when appropriate.'
+
+  - id: multi-recommendation-shortcut
+    name: 'Multiple Recommendation Shortcut'
+    enforcement: MANDATORY
+    severity: BLOCKER
+    desc: 'When 2+ options marked ⭐, add "r" shortcut to prompt for selecting all recommended'
+    example: '👉 Your choice [a/b/c/d or r for all recommended]:'
+    guidance: 'Only show "r" when 2+ recommendations exist. Omit when 0-1 recommendations.'
+
+  - id: modification-tip
+    name: 'Choice Modification Tip'
+    enforcement: MANDATORY
+    severity: BLOCKER
+    desc: 'Every choice prompt includes tip teaching modification pattern'
+    example: '💡 Tip: You can modify any choice, e.g., "a, and also check dependencies"'
+    guidance: 'Shows on every choice block. Uses "and" (additive) not "but" (replacement). Example should match context.'
+
+  - id: multi-select-syntax
+    name: 'Multiple Selection Support'
+    enforcement: SUGGESTED
+    severity: WARNING
+    desc: 'For choices where multiple selections make sense, document comma syntax'
+    example: '👉 Your choice [single: a/b/c, multiple: a,b]:'
+    guidance: 'Not all choices support multi-select. Use when selecting multiple items from list is logical.'
+
+  - id: ai-parsing-guidance
+    name: 'AI Response Parsing Instructions'
+    enforcement: MANDATORY
+    severity: BLOCKER
+    desc: 'Each command template includes parsing rules for choice responses'
+    example: |
+      ## Response Parsing (AI Instructions)
+      When user responds to choice prompts:
+      - "a" or "b" → select single option
+      - "a,b" or "a, b" → multi-select (comma-separated)
+      - "r" → all ⭐ options (when 2+ exist)
+      - "a, and [mod]" → option with user's changes
+      - Invalid → collaborative error recovery
+    guidance: 'Add to internal template section. AI reads but not shown to user. Prevents inconsistent parsing.'
 
   - id: bulleted-slash-commands
     name: 'Bulleted Slash Command Format'
