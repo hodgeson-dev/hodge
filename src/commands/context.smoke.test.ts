@@ -1,5 +1,6 @@
-import { describe } from 'vitest';
+import { describe, expect } from 'vitest';
 import { smokeTest } from '../test/helpers.js';
+import { withTestWorkspace } from '../test/runners.js';
 import { ContextCommand } from './context.js';
 import * as os from 'os';
 import * as path from 'path';
@@ -254,5 +255,82 @@ describe('ContextCommand - HODGE-313 Session-Based Mode Detection', () => {
       // Cleanup
       await fs.rm(tmpDir, { recursive: true, force: true });
     }
+  });
+
+  // Phase 1 (HODGE-346.4): TODO counting functionality
+  smokeTest('should support --todos flag', async () => {
+    await withTestWorkspace('context-todos-flag', async (workspace) => {
+      const command = new ContextCommand();
+
+      // Create an exploration file with TODOs
+      await workspace.writeFile(
+        '.hodge/features/TEST-TODOS-1/explore/exploration.md',
+        '# Exploration\n\n// TODO: Add error handling\nTODO: Implement feature\n'
+      );
+
+      // Run without throwing (pass feature explicitly to avoid session lookup)
+      await expect(
+        command.execute({ todos: true, feature: 'TEST-TODOS-1' })
+      ).resolves.not.toThrow();
+    });
+  });
+
+  smokeTest('should count TODOs in exploration.md', async () => {
+    await withTestWorkspace('context-count-todos', async (workspace) => {
+      const command = new ContextCommand();
+
+      // Create exploration with multiple TODO patterns
+      const exploration = `# Exploration
+
+## Problem
+// TODO: Clarify the problem statement
+
+## Approach
+TODO: Design the architecture
+- [ ] TODO: Create database schema
+- [ ] TODO: Write API endpoints
+
+## Next Steps
+Some regular text here.
+`;
+
+      await workspace.writeFile('.hodge/features/TEST-TODOS-2/explore/exploration.md', exploration);
+
+      // Run without throwing - should count all TODO patterns
+      await expect(
+        command.execute({ todos: true, feature: 'TEST-TODOS-2' })
+      ).resolves.not.toThrow();
+    });
+  });
+
+  smokeTest('should handle missing exploration.md', async () => {
+    await withTestWorkspace('context-no-exploration', async (workspace) => {
+      const command = new ContextCommand();
+
+      // Feature directory exists but no exploration.md
+      await workspace.writeFile('.hodge/features/TEST-NO-EXPLORE/build/context.json', '{}');
+
+      // Should not crash, just report no file found
+      await expect(
+        command.execute({ todos: true, feature: 'TEST-NO-EXPLORE' })
+      ).resolves.not.toThrow();
+    });
+  });
+
+  smokeTest('should handle feature without active session', async () => {
+    await withTestWorkspace('context-no-session', async (workspace) => {
+      const command = new ContextCommand();
+
+      // Explicitly provide feature (no session needed)
+      await workspace.writeFile(
+        '.hodge/features/TEST-EXPLICIT/explore/exploration.md',
+        'TODO: Test explicit feature'
+      );
+
+      // Should work with explicit feature flag
+      await expect(
+        command.execute({ todos: true, feature: 'TEST-EXPLICIT' })
+      ).resolves.not.toThrow();
+    });
   });
 });

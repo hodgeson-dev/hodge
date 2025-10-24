@@ -1,3 +1,11 @@
+---
+feature: HODGE-341.5
+title: Test Infrastructure - TempDirectoryFixture Pattern
+severity: critical
+tags: [testing, temp-directory, race-conditions, flakiness, uuid, parallel-tests]
+related_files: [src/test/*.test.ts, src/test/temp-directory-fixture.ts]
+---
+
 # Lessons Learned: HODGE-341.5
 
 ## Feature: Multi-Language Toolchain Support + Test Infrastructure Fix

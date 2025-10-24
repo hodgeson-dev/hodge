@@ -1,12 +1,12 @@
 {
   "statistics": {
-    "detectionDate": "2025-10-17T11:13:46.609Z",
+    "detectionDate": "2025-10-24T09:19:17.430Z",
     "formats": {
-      "typescript": {
+      "json": {
         "sources": {
-          "src/lib/hodge-319.3.smoke.test.ts": {
-            "lines": 109,
-            "tokens": 1190,
+          "report/jscpd-report.json": {
+            "lines": 296,
+            "tokens": 1883,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -16,9 +16,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/lib/claude-commands.smoke.test.ts": {
-            "lines": 261,
-            "tokens": 2029,
+          ".hodge/features/HODGE-346.4/ship-record.json": {
+            "lines": 15,
+            "tokens": 94,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -28,33 +28,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          ".claude/commands/visual-rendering.smoke.test.ts": {
-            "lines": 479,
-            "tokens": 4148,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/visual-patterns.smoke.test.ts": {
-            "lines": 289,
-            "tokens": 2569,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/choice-formatting.smoke.test.ts": {
-            "lines": 164,
-            "tokens": 1349,
+          ".hodge/id-mappings.json": {
+            "lines": 29,
+            "tokens": 162,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -66,9 +42,209 @@
           }
         },
         "total": {
-          "lines": 1302,
-          "tokens": 11285,
-          "sources": 5,
+          "lines": 340,
+          "tokens": 2139,
+          "sources": 3,
+          "clones": 0,
+          "duplicatedLines": 0,
+          "duplicatedTokens": 0,
+          "percentage": 0,
+          "percentageTokens": 0,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      },
+      "typescript": {
+        "sources": {
+          "src/commands/status.ts": {
+            "lines": 520,
+            "tokens": 5071,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/commands/status.smoke.test.ts": {
+            "lines": 141,
+            "tokens": 1273,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/commands/lessons.ts": {
+            "lines": 334,
+            "tokens": 2669,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/commands/lessons.smoke.test.ts": {
+            "lines": 159,
+            "tokens": 1060,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/commands/context.ts": {
+            "lines": 551,
+            "tokens": 4896,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/commands/context.smoke.test.ts": {
+            "lines": 336,
+            "tokens": 2837,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 22,
+            "duplicatedTokens": 218,
+            "percentage": 6.55,
+            "percentageTokens": 7.68,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/bin/hodge.ts": {
+            "lines": 276,
+            "tokens": 2629,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 2317,
+          "tokens": 20435,
+          "sources": 7,
+          "clones": 1,
+          "duplicatedLines": 11,
+          "duplicatedTokens": 109,
+          "percentage": 0.47,
+          "percentageTokens": 0.53,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      },
+      "markdown": {
+        "sources": {
+          ".hodge/lessons/HODGE-341.5-test-infrastructure-fix.md": {
+            "lines": 254,
+            "tokens": 2290,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".hodge/lessons/HODGE-317.1-eliminate-hung-test-processes.md": {
+            "lines": 292,
+            "tokens": 2918,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".hodge/features/HODGE-346.4/explore/test-intentions.md": {
+            "lines": 45,
+            "tokens": 456,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".hodge/features/HODGE-346.4/explore/exploration.md": {
+            "lines": 750,
+            "tokens": 7983,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".hodge/features/HODGE-346.4/build/build-plan.md": {
+            "lines": 534,
+            "tokens": 4678,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".hodge/project_management.md": {
+            "lines": 64,
+            "tokens": 366,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".hodge/HODGE.md": {
+            "lines": 228,
+            "tokens": 3589,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 2167,
+          "tokens": 22280,
+          "sources": 7,
           "clones": 0,
           "duplicatedLines": 0,
           "duplicatedTokens": 0,
@@ -80,17 +256,54 @@
       }
     },
     "total": {
-      "lines": 1302,
-      "tokens": 11285,
-      "sources": 5,
-      "clones": 0,
-      "duplicatedLines": 0,
-      "duplicatedTokens": 0,
-      "percentage": 0,
-      "percentageTokens": 0,
+      "lines": 4824,
+      "tokens": 44854,
+      "sources": 17,
+      "clones": 1,
+      "duplicatedLines": 11,
+      "duplicatedTokens": 109,
+      "percentage": 0.23,
+      "percentageTokens": 0.24,
       "newDuplicatedLines": 0,
       "newClones": 0
     }
   },
-  "duplicates": []
+  "duplicates": [
+    {
+      "format": "typescript",
+      "lines": 12,
+      "fragment": "const hodgeMdExists = await fs\n        .access(path.join(hodgeDir, 'HODGE.md'))\n        .then(() => true)\n        .catch(() => false);\n      expect(hodgeMdExists).toBe(true);\n    } finally {\n      // Cleanup\n      await fs.rm(tmpDir, { recursive: true, force: true });\n    }\n  });\n\n  // Phase 1 (HODGE-346.4): TODO counting functionality",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/commands/context.smoke.test.ts",
+        "start": 249,
+        "end": 260,
+        "startLoc": {
+          "line": 249,
+          "column": 7,
+          "position": 2209
+        },
+        "endLoc": {
+          "line": 260,
+          "column": 54,
+          "position": 2318
+        }
+      },
+      "secondFile": {
+        "name": "src/commands/context.smoke.test.ts",
+        "start": 218,
+        "end": 229,
+        "startLoc": {
+          "line": 218,
+          "column": 7,
+          "position": 1921
+        },
+        "endLoc": {
+          "line": 229,
+          "column": 10,
+          "position": 2030
+        }
+      }
+    }
+  ]
 }

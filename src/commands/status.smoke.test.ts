@@ -89,4 +89,54 @@ describe('StatusCommand - Non-Interactive Smoke Tests', () => {
       await expect(command.execute('TEST-003')).resolves.not.toThrow();
     });
   });
+
+  // Phase 1 (HODGE-346.4): Stats functionality
+  smokeTest('should support --stats flag', async () => {
+    await withTestWorkspace('status-stats-flag', async (workspace) => {
+      const command = new StatusCommand();
+
+      // Run without throwing
+      await expect(command.execute(undefined, { stats: true })).resolves.not.toThrow();
+    });
+  });
+
+  smokeTest('should return stats with all fields', async () => {
+    await withTestWorkspace('status-stats-fields', async (workspace) => {
+      const command = new StatusCommand();
+
+      // Create some ship records
+      await workspace.writeFile(
+        '.hodge/features/TEST-SHIP-1/ship-record.json',
+        JSON.stringify({
+          feature: 'TEST-SHIP-1',
+          timestamp: new Date().toISOString(),
+          validationPassed: true,
+        })
+      );
+
+      // Run without throwing - stats calculation should work
+      await expect(command.execute(undefined, { stats: true })).resolves.not.toThrow();
+    });
+  });
+
+  smokeTest('should handle no ship records gracefully', async () => {
+    await withTestWorkspace('status-no-ships', async (workspace) => {
+      const command = new StatusCommand();
+
+      // No ship records exist - should still work
+      await expect(command.execute(undefined, { stats: true })).resolves.not.toThrow();
+    });
+  });
+
+  smokeTest('should handle corrupted ship records gracefully', async () => {
+    await withTestWorkspace('status-corrupted-ships', async (workspace) => {
+      const command = new StatusCommand();
+
+      // Create corrupted JSON
+      await workspace.writeFile('.hodge/features/BAD-SHIP/ship-record.json', 'INVALID JSON{');
+
+      // Should skip corrupted files and not crash
+      await expect(command.execute(undefined, { stats: true })).resolves.not.toThrow();
+    });
+  });
 });

@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { promises as fs } from 'fs';
+import { promises as fs, existsSync } from 'fs';
 import path from 'path';
 import { HodgeMDGenerator } from '../lib/hodge-md-generator.js';
 import { sessionManager } from '../lib/session-manager.js';
@@ -10,6 +10,7 @@ export interface ContextOptions {
   recent?: boolean;
   feature?: string;
   verbose?: boolean;
+  todos?: boolean;
 }
 
 interface SavedContext {
@@ -44,7 +45,9 @@ export class ContextCommand {
 
   async execute(options: ContextOptions = {}): Promise<void> {
     try {
-      if (options.list) {
+      if (options.todos) {
+        await this.countTodos(options.feature);
+      } else if (options.list) {
         await this.listSaves();
       } else if (options.recent) {
         await this.loadRecentSave();
@@ -175,7 +178,8 @@ export class ContextCommand {
     try {
       const snapshot = await fs.readFile(snapshotPath, 'utf-8');
       this.logger.info(snapshot);
-    } catch (error) {
+    } catch {
+      // Snapshot file missing or unreadable - not critical
       this.logger.info(chalk.yellow('Could not load snapshot.md'));
     }
 
@@ -261,7 +265,8 @@ export class ContextCommand {
       const principles = await fs.readFile(principlesPath, 'utf-8');
 
       // Extract just core principles section
-      const coreMatch = principles.match(/## Core Principles\n\n([\s\S]*?)(?=\n##|$)/);
+      const coreRegex = /## Core Principles\n\n([\s\S]*?)(?=\n##|$)/;
+      const coreMatch = coreRegex.exec(principles);
 
       if (coreMatch) {
         this.logger.info('');
@@ -377,9 +382,10 @@ export class ContextCommand {
       const lines = content.split('\n');
 
       // Find decision headers (### YYYY-MM-DD - Title)
+      const decisionRegex = /^###\s+\d{4}-\d{2}-\d{2}\s+-\s+/;
       const decisionIndices: number[] = [];
       lines.forEach((line, index) => {
-        if (line.match(/^###\s+\d{4}-\d{2}-\d{2}\s+-\s+/)) {
+        if (decisionRegex.exec(line)) {
           decisionIndices.push(index);
         }
       });
@@ -395,7 +401,7 @@ export class ContextCommand {
       // Find end of last decision (next decision or end of file)
       let endIndex = lines.length;
       for (let i = lastDecisionIndex + 1; i < lines.length; i++) {
-        if (lines[i].match(/^###\s+\d{4}-\d{2}-\d{2}\s+-\s+/)) {
+        if (decisionRegex.exec(lines[i])) {
           endIndex = i;
           break;
         }
@@ -476,6 +482,73 @@ export class ContextCommand {
         .map((entry) => entry.name);
     } catch {
       return [];
+    }
+  }
+
+  /**
+   * Count TODO comments in exploration.md
+   */
+  private async countTodos(featureArg?: string): Promise<void> {
+    try {
+      // Determine which feature to check
+      let feature = featureArg;
+      if (!feature) {
+        const session = await sessionManager.load();
+        feature = session?.feature;
+      }
+
+      if (!feature) {
+        this.logger.error(chalk.red('No feature specified and no active session found'));
+        this.logger.info('Usage: hodge context --todos [--feature HODGE-XXX]');
+        throw new Error('No feature specified and no active session found');
+      }
+
+      // Check if exploration.md exists
+      const explorationPath = path.join('.hodge', 'features', feature, 'explore', 'exploration.md');
+
+      if (!existsSync(explorationPath)) {
+        this.logger.info(chalk.yellow(`No exploration.md found for ${feature}`));
+        this.logger.info(chalk.gray(`Expected at: ${explorationPath}`));
+        return;
+      }
+
+      // Read exploration.md
+      const content = await fs.readFile(explorationPath, 'utf-8');
+
+      // Count TODOs using various patterns
+      const todoPatterns = [
+        /\/\/\s*TODO:/gi, // // TODO:
+        /TODO:/gi, // TODO: (standalone)
+        /\[ \]\s*TODO/gi, // [ ] TODO (checklist)
+        /-\s*\[ \]\s*TODO/gi, // - [ ] TODO (markdown checklist)
+      ];
+
+      let totalCount = 0;
+
+      for (const pattern of todoPatterns) {
+        const found = content.match(pattern);
+        if (found) {
+          totalCount += found.length;
+        }
+      }
+
+      // Display results
+      this.logger.info(chalk.blue('📝 TODO Count\n'));
+      this.logger.info(chalk.bold(`TODOs Found: ${chalk.yellow(totalCount.toString())}`));
+      this.logger.info(`Feature: ${chalk.cyan(feature)}`);
+      this.logger.info(`Location: ${chalk.gray(explorationPath)}`);
+
+      if (totalCount > 0) {
+        this.logger.info(
+          chalk.gray(`\n  ℹ  Use 'grep -n "TODO:" ${explorationPath}' to see specific items`)
+        );
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(chalk.red(`Failed to count TODOs: ${errorMessage}`), {
+        error: error as Error,
+      });
+      throw error;
     }
   }
 }

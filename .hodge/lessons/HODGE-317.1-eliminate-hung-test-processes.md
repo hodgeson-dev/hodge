@@ -1,3 +1,11 @@
+---
+feature: HODGE-317.1
+title: Test Isolation - Subprocess Spawning Ban
+severity: critical
+tags: [testing, subprocess, zombie-processes, test-isolation, vitest, execSync]
+related_files: [src/test/*.test.ts, src/test/*.integration.test.ts, src/commands/*.ts]
+---
+
 # Lessons Learned: HODGE-317.1
 
 ## Feature: Eliminate Hung Node Processes in Test Isolation Tests

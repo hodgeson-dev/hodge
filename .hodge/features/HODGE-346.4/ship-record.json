@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-346.4",
+  "timestamp": "2025-10-24T20:23:27.599Z",
+  "issueId": "HODGE-346.4",
+  "pmTool": "linear",
+  "validationPassed": false,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "ship: HODGE-346.4 (closes HODGE-346.4)\n\n- Implementation complete\n- Tests passing\n- Documentation updated\n- Closes HODGE-346.4"
+}

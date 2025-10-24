@@ -100,10 +100,22 @@ program
 const statusCmd = program
   .command('status [feature]')
   .description('[Internal] Show status of features')
-  .action(async (feature?: string) => {
+  .option('--stats', 'Show velocity statistics (ships per week/month, streaks)')
+  .action(async (feature?: string, options?: { stats?: boolean }) => {
     const { StatusCommand } = await import('../commands/status.js');
     const statusCommand = new StatusCommand();
-    await statusCommand.execute(feature);
+    await statusCommand.execute(feature, options);
+  });
+
+const lessonsCmd = program
+  .command('lessons')
+  .description('[Internal] Match lessons based on keywords and file changes')
+  .option('--match <keywords>', 'Comma-separated keywords to search for')
+  .option('--files <file-paths>', 'Comma-separated file paths to check overlap')
+  .action(async (options: { match?: string; files?: string }) => {
+    const { LessonsCommand } = await import('../commands/lessons.js');
+    const lessonsCommand = new LessonsCommand();
+    await lessonsCommand.execute(options);
   });
 
 const contextCmd = program
@@ -112,11 +124,14 @@ const contextCmd = program
   .option('--list', 'List all saved sessions')
   .option('--recent', 'Load most recent saved session')
   .option('--feature <feature>', 'Load context for specific feature')
-  .action(async (options: { list?: boolean; recent?: boolean; feature?: string }) => {
-    const { ContextCommand } = await import('../commands/context.js');
-    const contextCommand = new ContextCommand();
-    await contextCommand.execute(options);
-  });
+  .option('--todos', 'Count TODO comments in exploration.md')
+  .action(
+    async (options: { list?: boolean; recent?: boolean; feature?: string; todos?: boolean }) => {
+      const { ContextCommand } = await import('../commands/context.js');
+      const contextCommand = new ContextCommand();
+      await contextCommand.execute(options);
+    }
+  );
 
 const decideCmd = program
   .command('decide <decision>')
@@ -234,6 +249,7 @@ if (!showInternal) {
     buildCmd,
     hardenCmd,
     statusCmd,
+    lessonsCmd,
     contextCmd,
     decideCmd,
     shipCmd,
