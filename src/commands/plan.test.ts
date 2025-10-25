@@ -76,8 +76,8 @@ describe('PlanCommand - Smoke Tests', () => {
     // Execute without --create-pm flag
     await command.execute({ feature, lanes: 1 });
 
-    // Verify plan was saved locally
-    const planFile = path.join(tmpDir, '.hodge', 'development-plan.json');
+    // Verify plan was saved locally in feature directory
+    const planFile = path.join(tmpDir, '.hodge', 'features', feature, 'plan.json');
     expect(existsSync(planFile)).toBe(true);
 
     const plan = JSON.parse(await fs.readFile(planFile, 'utf-8'));
@@ -115,7 +115,7 @@ describe('PlanCommand - Smoke Tests', () => {
     await command.execute({ feature, lanes: 1 });
 
     // Verify description was extracted
-    const planFile = path.join(tmpDir, '.hodge', 'development-plan.json');
+    const planFile = path.join(tmpDir, '.hodge', 'features', feature, 'plan.json');
     const plan = JSON.parse(await fs.readFile(planFile, 'utf-8'));
 
     // The command should have extracted the description
@@ -153,7 +153,7 @@ describe('PlanCommand - Smoke Tests', () => {
     await expect(command.execute({ feature, lanes: 2 })).resolves.not.toThrow();
 
     // Verify plan was created
-    const planFile = path.join(tmpDir, '.hodge', 'development-plan.json');
+    const planFile = path.join(tmpDir, '.hodge', 'features', feature, 'plan.json');
     expect(existsSync(planFile)).toBe(true);
 
     const plan = JSON.parse(await fs.readFile(planFile, 'utf-8'));
@@ -186,7 +186,7 @@ describe('PlanCommand - Smoke Tests', () => {
     // Execute with 3 lanes
     await command.execute({ feature, lanes: 3 });
 
-    const planFile = path.join(tmpDir, '.hodge', 'development-plan.json');
+    const planFile = path.join(tmpDir, '.hodge', 'features', feature, 'plan.json');
     const plan = JSON.parse(await fs.readFile(planFile, 'utf-8'));
 
     // Verify lane count is respected
@@ -223,7 +223,7 @@ describe('PlanCommand - Smoke Tests', () => {
     await expect(command.execute({ feature, createPm: true })).resolves.not.toThrow();
 
     // Verify plan was still saved locally
-    const planFile = path.join(tmpDir, '.hodge', 'development-plan.json');
+    const planFile = path.join(tmpDir, '.hodge', 'features', feature, 'plan.json');
     expect(existsSync(planFile)).toBe(true);
   });
 });
@@ -323,8 +323,8 @@ describe('PlanCommand - AI-Generated Plan Detection', () => {
     // Execute plan command
     await command.execute({ feature, lanes: 1 });
 
-    // Verify the development-plan.json was created using AI plan
-    const planFile = path.join(tmpDir, '.hodge', 'development-plan.json');
+    // Verify the plan.json was created using AI plan
+    const planFile = path.join(tmpDir, '.hodge', 'features', feature, 'plan.json');
     expect(existsSync(planFile)).toBe(true);
 
     const savedPlan = JSON.parse(await fs.readFile(planFile, 'utf-8'));
@@ -388,7 +388,7 @@ describe('PlanCommand - AI-Generated Plan Detection', () => {
     await command.execute({ feature, lanes: 1 });
 
     // Verify the AI plan was used
-    const planFile = path.join(tmpDir, '.hodge', 'development-plan.json');
+    const planFile = path.join(tmpDir, '.hodge', 'features', feature, 'plan.json');
     const savedPlan = JSON.parse(await fs.readFile(planFile, 'utf-8'));
 
     expect(savedPlan.type).toBe('epic');
@@ -419,7 +419,7 @@ describe('PlanCommand - AI-Generated Plan Detection', () => {
     await expect(command.execute({ feature, lanes: 1 })).resolves.not.toThrow();
 
     // Verify a plan was still created (using keyword matching)
-    const planFile = path.join(tmpDir, '.hodge', 'development-plan.json');
+    const planFile = path.join(tmpDir, '.hodge', 'features', feature, 'plan.json');
     expect(existsSync(planFile)).toBe(true);
   });
 
@@ -441,7 +441,7 @@ describe('PlanCommand - AI-Generated Plan Detection', () => {
     await command.execute({ feature, lanes: 1 });
 
     // Verify plan was created using keyword matching
-    const planFile = path.join(tmpDir, '.hodge', 'development-plan.json');
+    const planFile = path.join(tmpDir, '.hodge', 'features', feature, 'plan.json');
     expect(existsSync(planFile)).toBe(true);
 
     const savedPlan = JSON.parse(await fs.readFile(planFile, 'utf-8'));

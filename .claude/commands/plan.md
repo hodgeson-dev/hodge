@@ -256,7 +256,7 @@ Estimated Timeline: 4 days
 ================
 
 ✓ Created epic with 5 stories in Linear
-✓ Plan saved to .hodge/development-plan.json
+✓ Plan saved to .hodge/features/{{feature}}/plan.json
 
 Next Steps:
 
@@ -291,7 +291,7 @@ Next Steps:
 
 ## Output Files
 
-### `.hodge/development-plan.json`
+### `.hodge/features/{{feature}}/plan.json`
 ```json
 {
   "feature": "HODGE-296",
@@ -539,7 +539,7 @@ rm -rf .hodge/temp/plan-interaction/{{feature}}
 After planning is complete, check what was created:
 
 ```bash
-cat .hodge/development-plan.json
+cat .hodge/features/{{feature}}/plan.json
 ```
 
 **If PM issues were created:**
@@ -563,7 +563,7 @@ Work structure created! Stories are ready to build.
 Development plan saved locally.
 
 • `/build {{first_story}}` - Start implementing first story (Recommended)
-• Review plan: `cat .hodge/development-plan.json`
+• Review plan: `cat .hodge/features/{{feature}}/plan.json`
 • Create PM issues later if needed
 • `/status {{feature}}` - Check feature status
 

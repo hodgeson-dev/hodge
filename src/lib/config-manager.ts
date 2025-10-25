@@ -9,8 +9,7 @@ import { createCommandLogger } from './logger.js';
  * Implements layered configuration:
  * 1. Environment variables (highest priority)
  * 2. hodge.json (user config, committed to git)
- * 3. .hodge/config.json (generated metadata, not in git)
- * 4. Built-in defaults (lowest priority)
+ * 3. Built-in defaults (lowest priority)
  */
 
 export interface PushConfig {
@@ -59,14 +58,6 @@ export interface HodgeConfig {
   };
 }
 
-export interface GeneratedConfig {
-  projectName?: string;
-  projectType?: string;
-  detectedTools?: Record<string, unknown>;
-  createdAt?: string;
-  version?: string;
-}
-
 /**
  * Manages Hodge configuration with layered approach
  */
@@ -74,15 +65,12 @@ export class ConfigManager {
   private logger = createCommandLogger('config-manager', { enableConsole: false });
 
   private userConfigPath: string;
-  private generatedConfigPath: string;
   private userConfig: HodgeConfig | null = null;
-  private generatedConfig: GeneratedConfig | null = null;
   private configLoaded = false;
 
   constructor(basePath?: string) {
-    const base = basePath || process.cwd();
+    const base = basePath ?? process.cwd();
     this.userConfigPath = path.join(base, 'hodge.json');
-    this.generatedConfigPath = path.join(base, '.hodge', 'project-meta.json');
   }
 
   /**
@@ -91,7 +79,6 @@ export class ConfigManager {
   async load(): Promise<HodgeConfig> {
     if (!this.configLoaded) {
       await this.loadUserConfig();
-      await this.loadGeneratedConfig();
       this.configLoaded = true;
     }
 
@@ -116,24 +103,6 @@ export class ConfigManager {
     } catch (error) {
       if (process.env.DEBUG) {
         this.logger.warn(chalk.yellow('Failed to load hodge.json:', String(error)));
-      }
-    }
-  }
-
-  /**
-   * Load generated configuration from .hodge/config.json
-   */
-  private async loadGeneratedConfig(): Promise<void> {
-    if (!existsSync(this.generatedConfigPath)) {
-      return; // Generated config might not exist yet
-    }
-
-    try {
-      const content = await fs.readFile(this.generatedConfigPath, 'utf-8');
-      this.generatedConfig = JSON.parse(content) as GeneratedConfig;
-    } catch (error) {
-      if (process.env.DEBUG) {
-        this.logger.warn(chalk.yellow('Failed to load .hodge/config.json:', String(error)));
       }
     }
   }
@@ -185,23 +154,6 @@ export class ConfigManager {
   }
 
   /**
-   * Update generated configuration
-   */
-  async updateGeneratedConfig(updates: Partial<GeneratedConfig>): Promise<void> {
-    // Ensure directory exists
-    const configDir = path.dirname(this.generatedConfigPath);
-    await fs.mkdir(configDir, { recursive: true });
-
-    // Merge with existing
-    const config = { ...this.generatedConfig, ...updates };
-
-    // Save
-    await fs.writeFile(this.generatedConfigPath, JSON.stringify(config, null, 2) + '\n', 'utf-8');
-
-    this.generatedConfig = config;
-  }
-
-  /**
    * Get a specific configuration value
    */
   async get<K extends keyof HodgeConfig>(key: K): Promise<HodgeConfig[K]> {
@@ -235,13 +187,13 @@ export class ConfigManager {
    * Get PM API key (always from environment)
    */
   getPMApiKey(tool?: string): string | undefined {
-    const pmTool = tool || process.env.HODGE_PM_TOOL;
+    const pmTool = tool ?? process.env.HODGE_PM_TOOL;
 
     switch (pmTool) {
       case 'linear':
         return process.env.LINEAR_API_KEY;
       case 'github':
-        return process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+        return process.env.GITHUB_TOKEN ?? process.env.GH_TOKEN;
       case 'jira':
         return process.env.JIRA_API_TOKEN;
       default:
@@ -285,7 +237,7 @@ export class ConfigManager {
    */
   async getPushConfig(): Promise<PushConfig> {
     const config = await this.load();
-    return config.ship?.push || this.getDefaultPushConfig();
+    return config.ship?.push ?? this.getDefaultPushConfig();
   }
 
   /**
@@ -293,7 +245,7 @@ export class ConfigManager {
    */
   async isProtectedBranch(branch: string): Promise<boolean> {
     const pushConfig = await this.getPushConfig();
-    const protectedBranches = pushConfig.protectedBranches || ['main', 'master', 'develop'];
+    const protectedBranches = pushConfig.protectedBranches ?? ['main', 'master', 'develop'];
 
     return protectedBranches.includes(branch);
   }
@@ -303,7 +255,7 @@ export class ConfigManager {
    */
   async isAutoPushEnabled(): Promise<boolean> {
     const config = await this.load();
-    return config.ship?.autoPush || false;
+    return config.ship?.autoPush ?? false;
   }
 
   /**
@@ -311,7 +263,7 @@ export class ConfigManager {
    */
   async getCommitTypes(): Promise<string[]> {
     const config = await this.load();
-    return config.commitTypes || this.getDefaultCommitTypes();
+    return config.commitTypes ?? this.getDefaultCommitTypes();
   }
 
   /**

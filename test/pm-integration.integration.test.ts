@@ -196,8 +196,8 @@ Different feature decision
   // Execute plan command
   await planCommand.execute({ feature: 'FEAT-001', localOnly: true });
 
-  // Verify plan was created
-  const planFile = path.join(hodgeDir, 'development-plan.json');
+  // Verify plan was created in feature directory
+  const planFile = path.join(hodgeDir, 'features', 'FEAT-001', 'plan.json');
   expect(existsSync(planFile)).toBe(true);
 
   const plan = JSON.parse(await fs.readFile(planFile, 'utf-8')) as any;

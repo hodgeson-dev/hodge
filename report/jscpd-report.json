@@ -1,12 +1,72 @@
 {
   "statistics": {
-    "detectionDate": "2025-10-25T08:20:41.616Z",
+    "detectionDate": "2025-10-25T20:35:20.369Z",
     "formats": {
       "typescript": {
         "sources": {
-          "src/test/explore-template-what-vs-how.smoke.test.ts": {
-            "lines": 177,
-            "tokens": 1320,
+          "test/pm-integration.integration.test.ts": {
+            "lines": 281,
+            "tokens": 1996,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/test/file-consolidation.smoke.test.ts": {
+            "lines": 140,
+            "tokens": 1170,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/config-manager.ts": {
+            "lines": 408,
+            "tokens": 2817,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/commands/plan.ts": {
+            "lines": 790,
+            "tokens": 6908,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/commands/plan.test.ts": {
+            "lines": 450,
+            "tokens": 4159,
+            "sources": 1,
+            "clones": 6,
+            "duplicatedLines": 80,
+            "duplicatedTokens": 706,
+            "percentage": 17.78,
+            "percentageTokens": 16.98,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/commands/hodge-319.4.smoke.test.ts": {
+            "lines": 59,
+            "tokens": 418,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -18,31 +78,140 @@
           }
         },
         "total": {
-          "lines": 177,
-          "tokens": 1320,
-          "sources": 1,
-          "clones": 0,
-          "duplicatedLines": 0,
-          "duplicatedTokens": 0,
-          "percentage": 0,
-          "percentageTokens": 0,
+          "lines": 2128,
+          "tokens": 17468,
+          "sources": 6,
+          "clones": 3,
+          "duplicatedLines": 40,
+          "duplicatedTokens": 353,
+          "percentage": 1.88,
+          "percentageTokens": 2.02,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
       }
     },
     "total": {
-      "lines": 177,
-      "tokens": 1320,
-      "sources": 1,
-      "clones": 0,
-      "duplicatedLines": 0,
-      "duplicatedTokens": 0,
-      "percentage": 0,
-      "percentageTokens": 0,
+      "lines": 2128,
+      "tokens": 17468,
+      "sources": 6,
+      "clones": 3,
+      "duplicatedLines": 40,
+      "duplicatedTokens": 353,
+      "percentage": 1.88,
+      "percentageTokens": 2.02,
       "newDuplicatedLines": 0,
       "newClones": 0
     }
   },
-  "duplicates": []
+  "duplicates": [
+    {
+      "format": "typescript",
+      "lines": 12,
+      "fragment": "mkdirSync(path.join(tmpDir, '.hodge'), { recursive: true });\n    mkdirSync(path.join(tmpDir, '.hodge', 'features'), { recursive: true });\n\n    command = new PlanCommand(tmpDir);\n  });\n\n  afterEach(async () => {\n    // Cleanup temp directory\n    await fixture.cleanup();\n  });\n\n  smokeTest('should detect and use AI-generated plan file'",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/commands/plan.test.ts",
+        "start": 287,
+        "end": 298,
+        "startLoc": {
+          "line": 287,
+          "column": 5,
+          "position": 2596
+        },
+        "endLoc": {
+          "line": 298,
+          "column": 47,
+          "position": 2702
+        }
+      },
+      "secondFile": {
+        "name": "src/commands/plan.test.ts",
+        "start": 20,
+        "end": 31,
+        "startLoc": {
+          "line": 20,
+          "column": 5,
+          "position": 185
+        },
+        "endLoc": {
+          "line": 31,
+          "column": 56,
+          "position": 291
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 19,
+      "fragment": ",\n      createdAt: new Date().toISOString(),\n    };\n\n    await fs.writeFile(path.join(aiPlanDir, 'plan.json'), JSON.stringify(aiPlan, null, 2));\n\n    // Create minimal required files\n    const featureDir = path.join(tmpDir, '.hodge', 'features', feature);\n    mkdirSync(featureDir, { recursive: true });\n\n    await fs.writeFile(\n      path.join(tmpDir, '.hodge', 'decisions.md'),\n      `# Decisions\\n\\n### 2025-09-30 - Test\\n\\n**Context**:\\nFeature: ${feature}\\n\\n**Decision**:\\nTest\\n\\n---\\n`\n    );\n\n    // Execute plan command\n    await command.execute({ feature, lanes: 1 });\n\n    // Verify the AI plan was used",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/commands/plan.test.ts",
+        "start": 372,
+        "end": 390,
+        "startLoc": {
+          "line": 372,
+          "column": 2,
+          "position": 3370
+        },
+        "endLoc": {
+          "line": 390,
+          "column": 31,
+          "position": 3532
+        }
+      },
+      "secondFile": {
+        "name": "src/commands/plan.test.ts",
+        "start": 308,
+        "end": 326,
+        "startLoc": {
+          "line": 308,
+          "column": 2,
+          "position": 2801
+        },
+        "endLoc": {
+          "line": 326,
+          "column": 50,
+          "position": 2963
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 12,
+      "fragment": ");\n\n    // Create minimal required files\n    const featureDir = path.join(tmpDir, '.hodge', 'features', feature);\n    mkdirSync(featureDir, { recursive: true });\n\n    await fs.writeFile(\n      path.join(tmpDir, '.hodge', 'decisions.md'),\n      `# Decisions\\n\\n### 2025-09-30 - Test\\n\\n**Context**:\\nFeature: ${feature}\\n\\n**Decision**:\\nTest\\n\\n---\\n`\n    );\n\n    // Should not crash, should fall back to keyword matching",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/commands/plan.test.ts",
+        "start": 407,
+        "end": 418,
+        "startLoc": {
+          "line": 407,
+          "column": 19,
+          "position": 3758
+        },
+        "endLoc": {
+          "line": 418,
+          "column": 58,
+          "position": 3843
+        }
+      },
+      "secondFile": {
+        "name": "src/commands/plan.test.ts",
+        "start": 312,
+        "end": 323,
+        "startLoc": {
+          "line": 312,
+          "column": 2,
+          "position": 2853
+        },
+        "endLoc": {
+          "line": 323,
+          "column": 24,
+          "position": 2938
+        }
+      }
+    }
+  ]
 }

@@ -141,6 +141,57 @@ Follow conventional commit format:
 
 5. **Create a Pull Request**
 
+## Dogfooding Hodge
+
+Hodge uses itself for development. This creates some special workflows:
+
+### PM Scripts Workflow
+
+PM scripts are generated from templates during `hodge init`:
+- **Templates**: `src/lib/pm-scripts-templates.ts` (source of truth)
+- **Generated**: `.hodge/pm-scripts/` (project-specific)
+
+When you modify PM script templates:
+```bash
+# After modifying pm-scripts-templates.ts
+npm run update-pm-scripts
+```
+
+This command rebuilds the project and regenerates `.hodge/pm-scripts/` from the latest templates.
+
+### Dogfooding Workflow
+
+1. Make changes to source code in `src/`
+2. Build the project: `npm run build`
+3. If you changed PM scripts templates: `npm run update-pm-scripts`
+4. Test using compiled version: `node dist/src/bin/hodge.js [command]`
+5. Or use linked version: `hodge [command]` (after `npm link`)
+
+Always test your changes using Hodge itself:
+```bash
+# Use Hodge to explore a feature
+hodge explore my-new-feature
+
+# Use Hodge to build the implementation
+hodge build
+
+# Use Hodge to ship the changes
+hodge ship
+```
+
+### Debugging
+
+For debugging Hodge while developing:
+
+```bash
+# Run with debug output
+DEBUG=hodge:* node dist/src/bin/hodge.js [command]
+
+# Use VS Code debugger with launch.json configuration
+# Or use Chrome DevTools
+node --inspect dist/src/bin/hodge.js [command]
+```
+
 ## Project Structure
 
 ```

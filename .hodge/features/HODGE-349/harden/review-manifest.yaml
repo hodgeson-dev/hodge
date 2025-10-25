@@ -1,0 +1,123 @@
+version: '1.0'
+feature: HODGE-349
+generated_at: '2025-10-25T20:00:17.150Z'
+recommended_tier: full
+change_analysis:
+  total_files: 19
+  total_lines: 973
+  breakdown:
+    implementation: 9
+    test: 3
+    documentation: 7
+    config: 0
+changed_files:
+  - path: .claude/commands/plan.md
+    lines_changed: 8
+    change_type: documentation
+  - path: .hodge/.session
+    lines_changed: 9
+    change_type: implementation
+  - path: .hodge/HODGE.md
+    lines_changed: 27
+    change_type: documentation
+  - path: .hodge/context.json
+    lines_changed: 8
+    change_type: implementation
+  - path: .hodge/features/HODGE-349/build/build-plan.md
+    lines_changed: 46
+    change_type: documentation
+  - path: .hodge/features/HODGE-349/explore/exploration.md
+    lines_changed: 236
+    change_type: documentation
+  - path: .hodge/features/HODGE-349/explore/test-intentions.md
+    lines_changed: 49
+    change_type: documentation
+  - path: .hodge/features/HODGE-349/issue-id.txt
+    lines_changed: 1
+    change_type: implementation
+  - path: .hodge/features/HODGE-349/ship-record.json
+    lines_changed: 16
+    change_type: implementation
+  - path: .hodge/id-counter.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/id-mappings.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/project_management.md
+    lines_changed: 4
+    change_type: documentation
+  - path: CONTRIBUTING.md
+    lines_changed: 51
+    change_type: documentation
+  - path: report/jscpd-report.json
+    lines_changed: 196
+    change_type: implementation
+  - path: src/commands/plan.test.ts
+    lines_changed: 22
+    change_type: test
+  - path: src/commands/plan.ts
+    lines_changed: 83
+    change_type: implementation
+  - path: src/lib/config-manager.ts
+    lines_changed: 64
+    change_type: implementation
+  - path: src/test/file-consolidation.smoke.test.ts
+    lines_changed: 141
+    change_type: test
+  - path: test/pm-integration.integration.test.ts
+    lines_changed: 4
+    change_type: test
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - test-pattern.md
+      - error-boundary.md
+      - input-validation.md
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - ux-patterns/claude-code-slash-commands.yaml
+      - testing/vitest-3.x.yaml
+      - testing/general-test-standards.yaml
+      - languages/typescript-5.x.yaml
+      - languages/general-coding-standards.yaml
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed
+scope:
+  type: feature
+  target: HODGE-349
+  fileCount: 19
