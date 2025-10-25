@@ -38,10 +38,10 @@ git push --no-verify origin main
 ```
 
 ## Caching
-npm audit results are cached in `.hodge/.cache/` for 24 hours. The cache is automatically invalidated when:
+npm audit results are cached in `.cache/` for 24 hours. The cache is automatically invalidated when:
 - package-lock.json changes
 - Cache expires (>24 hours old)
-- Manual cache clear: `rm -rf .hodge/.cache/`
+- Manual cache clear: `rm -rf .cache/`
 
 ## Troubleshooting
 
@@ -87,5 +87,5 @@ The pre-push hook configuration is based on decisions made in HODGE-295:
 ## Implementation Details
 - Location: `.husky/pre-push`
 - Language: Bash (for portability and performance)
-- Cache: `.hodge/.cache/npm-audit-cache.json`
+- Cache: `.cache/npm-audit-cache.json`
 - Tests: `test/pre-push-hook.test.ts`
