@@ -171,7 +171,6 @@ hodge context
 ## Core Principles
 Before starting work, remember:
 - **AI analyzes, backend executes** - You design, hodge implements
-- **Complex data through files** - Use .hodge/tmp/ for structured data
 - **Templates guide conversations** - Don't document hodge internals
 - **Progressive development** - Explore freely, ship strictly
 

@@ -299,6 +299,55 @@ The CLI will output:
 - Build guidelines (SHOULD follow standards)
 - Created files location
 
+## Check for Relevant Lessons
+
+Before starting implementation, check if there are lessons from past features that might be relevant:
+
+\`\`\`bash
+# Check for lessons related to the files you'll be modifying
+# Example: if modifying command execution code
+hodge lessons --match "subprocess,command,execution" --files "src/commands/build.ts"
+\`\`\`
+
+**If lessons are found, display them based on confidence and severity:**
+
+**High confidence + Critical severity → Proactive (interrupt with choice):**
+\`\`\`
+🔔 YOUR RESPONSE NEEDED
+
+💡 Pattern from {{lesson.feature}}: {{lesson.relevance}}
+
+Should I check for {{lesson.title}} before we start building?
+
+a) ⭐ Yes, check now (~30s) (Recommended)
+b) Skip, I know it's safe
+c) Tell me more about the pattern
+
+💡 Tip: You can modify any choice, e.g., "a, and also check for related patterns"
+
+👉 Your choice [a/b/c]:
+\`\`\`
+
+**Medium confidence OR Warning severity → Reactive (callout box):**
+\`\`\`
+┌─────────────────────────────────────────────────────────┐
+│ 💡 Relevant Pattern: {{lesson.title}}                  │
+├─────────────────────────────────────────────────────────┤
+│ {{lesson.excerpt}}                                      │
+│                                                          │
+│ Consider: {{lesson.suggestion}}                         │
+│ Pattern: .hodge/lessons/{{lesson.feature}}.md         │
+└─────────────────────────────────────────────────────────┘
+\`\`\`
+
+**Low confidence → Inline mention:**
+\`\`\`
+💡 Related: See .hodge/lessons/{{lesson.feature}}.md for {{lesson.topic}}
+\`\`\`
+
+**If no relevant lessons found:**
+Continue with implementation (no interruption).
+
 ## Your Tasks After CLI Command
 1. Review the build plan at \`.hodge/features/{{feature}}/build/build-plan.md\`
 2. Implement the feature following:
@@ -335,16 +384,53 @@ The CLI will output:
 - **Run Command**: \`npm run test:smoke\`
 - Use test utilities from \`src/test/helpers.ts\`
 
-## Next Steps
+## What's Next?
 
-After building is complete, you can:
+After implementing, check feature status to provide smart suggestions:
 
-- Run smoke tests with \`npm run test:smoke\`
-- Proceed to hardening with \`/harden {{feature}}\`
-- Review changes with \`/review\`
-- Save progress with \`/save\`
-- Check status with \`/status {{feature}}\`
-- Switch to another feature with \`/build\`
+\`\`\`bash
+hodge status {{feature}}
+\`\`\`
+
+Based on the status output and implementation progress:
+
+**If smoke tests haven't been run yet:**
+\`\`\`
+### What's Next?
+
+• \`npm run test:smoke\` - Run smoke tests to verify basic functionality (Recommended first step)
+• \`/harden {{feature}}\` - Add integration tests and validate production readiness
+• \`/review\` - Get code review feedback
+• \`/save\` - Save your progress
+
+💡 Tip: Run smoke tests first to catch basic issues before hardening.
+\`\`\`
+
+**If smoke tests pass and implementation looks complete:**
+\`\`\`
+### What's Next?
+
+Great work! Your implementation is ready for the next phase.
+
+• \`/harden {{feature}}\` - Add integration tests and validate production readiness (Recommended)
+• \`/review\` - Get code review feedback
+• \`/save\` - Save your progress
+• \`/status {{feature}}\` - Check overall feature status
+
+💡 Tip: Hardening adds integration tests and validates all quality gates.
+\`\`\`
+
+**If still implementing or tests failing:**
+\`\`\`
+### What's Next?
+
+• Continue implementing - Fix failing tests or complete remaining work
+• \`npm run test:smoke\` - Re-run smoke tests after changes
+• \`/build {{feature}}\` - Review build plan or continue implementation
+• \`/save\` - Save your progress
+
+💡 Tip: Get smoke tests passing before moving to harden phase.
+\`\`\`
 
 Remember: The CLI handles all file management and PM integration. Focus on implementing quality code that follows project conventions.`,
     },
@@ -764,6 +850,25 @@ c) Change enforcement to MANDATORY
 
 ---
 
+## What's Next?
+
+After codifying knowledge:
+
+\`\`\`
+### What's Next?
+
+Knowledge captured! The rule/pattern/profile is now part of your project.
+
+• Continue with current work
+• \`/codify "another rule"\` - Capture more learnings
+• \`/status\` - Check overall project status
+• Review what you've codified in \`.hodge/\` directories
+
+💡 Tip: Codify insights as you discover them - don't wait until the end.
+\`\`\`
+
+---
+
 *Command created: 2025-10-12*
 *Part of HODGE-341.4: AI Review Profile Compression*
 `,
@@ -914,14 +1019,40 @@ After making decisions, use the \`/plan\` command to:
 
 See \`/plan\` for detailed work organization capabilities.
 
-## Next Steps
+## What's Next?
 
-After decisions are recorded, you can:
+After recording decisions, check feature status:
 
-- Plan work structure with \`/plan {{feature}}\`
-- Start building with \`/build {{feature}}\`
-- Review all decisions with \`/status\`
-- Continue development
+\`\`\`bash
+hodge status {{feature}}
+\`\`\`
+
+**If PM tracking is needed:**
+\`\`\`
+### What's Next?
+
+Decisions recorded! Now you can structure the work.
+
+• \`/plan {{feature}}\` - Create PM issues and work breakdown (Recommended if complex)
+• \`/build {{feature}}\` - Start implementing (Recommended if straightforward)
+• \`/status {{feature}}\` - Check overall feature status
+• Continue refining - Add more decisions if needed
+
+💡 Tip: Use /plan for complex features that need multiple sub-tasks. Use /build for simple features.
+\`\`\`
+
+**If already planned or PM tracked:**
+\`\`\`
+### What's Next?
+
+Decisions are recorded and feature is tracked.
+
+• \`/build {{feature}}\` - Start implementing (Recommended)
+• \`/plan {{feature}}\` - Refine work breakdown if needed
+• \`/status {{feature}}\` - Check current progress
+
+💡 Tip: You're ready to build! The approach is clear and decisions are documented.
+\`\`\`
 
 Remember: The \`/decide\` command focuses purely on recording technical and architectural decisions. Use \`/plan\` to organize work into epics, stories, and development lanes.`,
     },
@@ -1186,19 +1317,54 @@ If user skips conversation or provides complete requirements upfront, fall back 
 \`\`\`
 
 ## Next Steps Menu
-After exploration is complete, suggest:
+
+After exploration is complete, check feature status to provide smart suggestions:
+
+\`\`\`bash
+hodge status {{feature}}
 \`\`\`
-### Next Steps
-Type one of these commands:
-• \`/decide\` - Review and decide on approach
-• \`/build {{feature}}\` - Start building with [recommended approach name]
+
+Based on the status output, suggest relevant next steps:
+
+**If "Decisions Needed" section in exploration has items:**
+\`\`\`
+### What's Next?
+
+I see you have decisions to make. Here are your options:
+
+• \`/decide\` - Make and record architectural decisions (Recommended)
+• \`/build {{feature}}\` - Start building with recommended approach (decisions can be made later)
 • \`/save\` - Save your progress
-• \`/status {{feature}}\` - Check current status
 • Continue exploring - Just describe what else to explore
 
-Or type your next request.
+💡 Tip: Making decisions now helps clarify the implementation approach.
+\`\`\`
 
-Note: \`/build\` will use the recommended approach. Use \`/decide\` to choose a different approach.
+**If "No Decisions Needed" (exploration shows all decisions made):**
+\`\`\`
+### What's Next?
+
+Your exploration is complete and all decisions are made! 🎉
+
+• \`/build {{feature}}\` - Start building with [recommended approach name] (Recommended)
+• \`/save\` - Save your progress
+• Continue exploring - Just describe what else to explore
+
+💡 Tip: You're ready to build! The recommended approach is clearly defined.
+\`\`\`
+
+**If feature already has build started (status shows Build ✓):**
+\`\`\`
+### What's Next?
+
+I see you've already started building this feature.
+
+• \`/build {{feature}}\` - Continue building
+• \`/harden {{feature}}\` - Add integration tests and validate
+• \`/status {{feature}}\` - Check current progress
+• Continue exploring - Refine the approach based on what you've learned
+
+💡 Tip: Building while exploring is fine - update the exploration as you learn.
 \`\`\`
 
 Remember: The CLI handles all the file creation and PM integration. Focus on generating creative solutions and documenting approaches.`,
@@ -1284,6 +1450,29 @@ This workflow has a hard gate at Step 6:
 
 The CLI validation will fail on errors anyway. Catching them in pre-check saves time.
 
+────────────────────────────────────────────────────────────
+📍 Step 1 of 7: Generate Review Manifest
+────────────────────────────────────────────────────────────
+
+Remaining:
+  ○ Read Review Manifest
+  ○ Choose Review Tier
+  ○ Load Context Files
+  ○ Conduct AI Review
+  ○ Assess Findings
+  ○ Generate Review Report
+
+## Check for Relevant Lessons
+
+Before starting the harden workflow, check for lessons related to the changes:
+
+\`\`\`bash
+# Check for lessons based on modified files
+git diff --name-only | xargs -I {} hodge lessons --match "testing,quality,validation" --files "{}"
+\`\`\`
+
+**Display any high-confidence + critical lessons as proactive prompts** (see /build template for format).
+
 ### Step 1: Generate Review Manifest
 **Analyze changes and generate tiered review manifest:**
 
@@ -1302,6 +1491,20 @@ This command will:
    - Changed files list with line counts
    - Context files to load (organized by precedence)
    - Matched patterns and profiles
+
+────────────────────────────────────────────────────────────
+📍 Step 2 of 7: Read Review Manifest
+────────────────────────────────────────────────────────────
+
+Previously completed:
+  ✓ Generate Review Manifest
+
+Remaining:
+  ○ Choose Review Tier
+  ○ Load Context Files
+  ○ Conduct AI Review
+  ○ Assess Findings
+  ○ Generate Review Report
 
 ### Step 2: Read Review Manifest
 \`\`\`bash
@@ -1350,6 +1553,20 @@ The report shows:
 - Inferred critical paths (files with >20 imports)
 - Configured critical paths (from .hodge/toolchain.yaml)
 
+────────────────────────────────────────────────────────────
+📍 Step 3 of 7: Choose Review Tier
+────────────────────────────────────────────────────────────
+
+Previously completed:
+  ✓ Generate Review Manifest
+  ✓ Read Review Manifest
+
+Remaining:
+  ○ Load Context Files
+  ○ Conduct AI Review
+  ○ Assess Findings
+  ○ Generate Review Report
+
 ### Step 3: Choose Review Tier
 Based on the manifest's \`recommended_tier\`, choose your review tier:
 
@@ -1360,6 +1577,20 @@ Based on the manifest's \`recommended_tier\`, choose your review tier:
 - **FULL**: Major changes or critical paths (~8K lines of context)
 
 **Default**: Use the recommended tier unless you have a reason to override.
+
+────────────────────────────────────────────────────────────
+📍 Step 4 of 7: Load Context Files
+────────────────────────────────────────────────────────────
+
+Previously completed:
+  ✓ Generate Review Manifest
+  ✓ Read Review Manifest
+  ✓ Choose Review Tier
+
+Remaining:
+  ○ Conduct AI Review
+  ○ Assess Findings
+  ○ Generate Review Report
 
 ### Step 4: Load Context Files (MANDATORY)
 
@@ -1427,6 +1658,20 @@ Before proceeding to Step 5, confirm you loaded:
 
 **Example**: If a review profile suggests "always use async", but standards.md says "only use async when necessary", the standard wins.
 
+────────────────────────────────────────────────────────────
+📍 Step 5 of 7: Conduct AI Code Review
+────────────────────────────────────────────────────────────
+
+Previously completed:
+  ✓ Generate Review Manifest
+  ✓ Read Review Manifest
+  ✓ Choose Review Tier
+  ✓ Load Context Files
+
+Remaining:
+  ○ Assess Findings
+  ○ Generate Review Report
+
 ### Step 5: Conduct AI Code Review
 
 **Review Strategy**: Use the context files you loaded in Step 4 to assess the code.
@@ -1471,6 +1716,20 @@ Before moving to Step 6, confirm you actually USED the context files:
 **If you can't answer YES to these questions, return to Step 4 and re-load context.**
 
 The purpose of loading context is to APPLY it, not just read it.
+
+────────────────────────────────────────────────────────────
+📍 Step 6 of 7: Assess Review Findings
+────────────────────────────────────────────────────────────
+
+Previously completed:
+  ✓ Generate Review Manifest
+  ✓ Read Review Manifest
+  ✓ Choose Review Tier
+  ✓ Load Context Files
+  ✓ Conduct AI Review
+
+Remaining:
+  ○ Generate Review Report
 
 ### Step 6: Assess Review Findings
 
@@ -1579,6 +1838,18 @@ No errors or warnings found. Ready to proceed with validation.
 - **(b) Fix mandatory + warnings** → Use Edit tool to fix all issues, then proceed to Step 7
 - **(c) Review first** → Show detailed analysis of each issue, then re-present the choice
 - **(d) Skip** → Proceed to Step 7 (document that issues remain)
+
+────────────────────────────────────────────────────────────
+📍 Step 7 of 7: Generate Review Report
+────────────────────────────────────────────────────────────
+
+Previously completed:
+  ✓ Generate Review Manifest
+  ✓ Read Review Manifest
+  ✓ Choose Review Tier
+  ✓ Load Context Files
+  ✓ Conduct AI Review
+  ✓ Assess Findings
 
 ### Step 7: Generate Review Report
 **IMPORTANT**: After conducting your review, you MUST write a review-report.md file documenting your findings.
@@ -1750,16 +2021,56 @@ Before proceeding to ship, ensure:
 - [ ] Performance standards met
 - [ ] Documentation updated if needed
 
-## Next Steps
+## What's Next?
 
-After hardening is complete, you can:
+After completing the harden workflow, check validation status:
 
-- Ship to production with \`/ship {{feature}}\`
-- Run additional tests with \`npm test\`
-- Request code review with \`/review\`
-- Back to build for fixes with \`/build {{feature}}\`
-- Check status with \`/status {{feature}}\`
-- Save progress with \`/save\`
+\`\`\`bash
+hodge status {{feature}}
+\`\`\`
+
+Based on the status output:
+
+**If "Production Ready" shows ✓ (all validation passed):**
+\`\`\`
+### What's Next?
+
+🎉 Feature is production-ready! All quality gates passed.
+
+• \`/ship {{feature}}\` - Ship to production (Recommended)
+• \`/review\` - Optional final code review
+• \`/status {{feature}}\` - Check overall feature status
+• \`/save\` - Save your progress
+
+💡 Tip: You're ready to ship! All tests pass and quality gates are green.
+\`\`\`
+
+**If "Production Ready" shows ○ (validation issues remain):**
+\`\`\`
+### What's Next?
+
+There are still issues blocking production readiness.
+
+• Review quality-checks.md for specific issues
+• Fix failing tests or quality checks
+• Re-run \`/harden {{feature}} --fix\` to auto-fix simple issues
+• Re-run \`/harden {{feature}} --review\` after fixes
+• \`/build {{feature}}\` - Return to build if major changes needed
+
+💡 Tip: Address all ERRORS before shipping. Warnings can be addressed but won't block.
+\`\`\`
+
+**If harden workflow was interrupted:**
+\`\`\`
+### What's Next?
+
+• \`/harden {{feature}}\` - Continue or restart harden workflow
+• \`/status {{feature}}\` - Check what's been completed
+• \`/build {{feature}}\` - Return to build if needed
+• \`/save\` - Save your progress
+
+💡 Tip: Complete the full harden workflow to validate production readiness.
+\`\`\`
 
 ## Important Notes
 1. **The AI Standards Pre-Check is MANDATORY** - Never skip it
@@ -1859,17 +2170,77 @@ After loading context, these files are available:
 
 **STOP HERE and present the context to the user.**
 
-Based on what you find, present the current state:
-- If exploration exists → "Exploration complete"
-- If decision exists → "Decision made: [brief summary]"
-- If build started → "Build in progress"
-- If nothing exists → "No work started yet"
+Check feature status to provide smart suggestions:
+\`\`\`bash
+hodge status {{feature}}
+\`\`\`
 
-Then list available options WITHOUT taking action:
-- "Continue with \`/explore {{feature}}\`" (if not explored)
-- "Continue with \`/build {{feature}}\`" (if explored and decided)
-- "Continue with \`/harden {{feature}}\`" (if built)
-- "Review existing work at \`.hodge/features/{{feature}}/\`"
+Based on the status output, present context-aware options:
+
+**If Exploration ✓, Decision ○, Build ○:**
+\`\`\`
+### Current State
+Exploration complete. Ready to make decisions or start building.
+
+### What's Next?
+- \`/decide\` - Make architectural decisions (if needed)
+- \`/build {{feature}}\` - Start building (Recommended)
+- \`/status {{feature}}\` - Check detailed progress
+
+💡 Tip: You can start building immediately or record decisions first.
+\`\`\`
+
+**If Exploration ✓, Build ✓, Harden ○:**
+\`\`\`
+### Current State
+Build phase complete. Ready for integration tests and validation.
+
+### What's Next?
+- \`/harden {{feature}}\` - Add integration tests and validate (Recommended)
+- \`/build {{feature}}\` - Continue building if needed
+- \`/status {{feature}}\` - Check detailed progress
+
+💡 Tip: Hardening validates production readiness with quality gates.
+\`\`\`
+
+**If Harden ✓, Production Ready ✓:**
+\`\`\`
+### Current State
+Feature is production-ready! All quality gates passed.
+
+### What's Next?
+- \`/ship {{feature}}\` - Ship to production (Recommended)
+- \`/review\` - Optional final review
+- \`/status {{feature}}\` - Check detailed progress
+
+💡 Tip: You're ready to ship! 🚀
+\`\`\`
+
+**If already Shipped ✓:**
+\`\`\`
+### Current State
+Feature has been shipped. Great work! 🎉
+
+### What's Next?
+- \`/explore <new-feature>\` - Start your next feature (Recommended)
+- \`git push\` - Push to remote if not done
+- \`/status\` - Check overall project status
+
+💡 Tip: Time to start something new or take a well-deserved break!
+\`\`\`
+
+**If no work started yet:**
+\`\`\`
+### Current State
+No work started on {{feature}} yet.
+
+### What's Next?
+- \`/explore {{feature}}\` - Start exploring this feature (Recommended)
+- \`/status\` - Check overall project status
+- Choose a different feature to work on
+
+💡 Tip: Begin with exploration to understand the problem space.
+\`\`\`
 
 **Wait for explicit user direction before proceeding.**
 
@@ -1886,7 +2257,6 @@ hodge context
 ## Core Principles
 Before starting work, remember:
 - **AI analyzes, backend executes** - You design, hodge implements
-- **Complex data through files** - Use .hodge/tmp/ for structured data
 - **Templates guide conversations** - Don't document hodge internals
 - **Progressive development** - Explore freely, ship strictly
 
@@ -2481,15 +2851,41 @@ rm -rf .hodge/temp/plan-interaction/{{feature}}
 - **Warn users** if stories appear to be horizontal slices (layer-based)
 - **Suggest single issue** when vertical slicing is not feasible
 
-## Next Steps After Planning
+## What's Next?
 
-After plan is saved and/or PM issues created, you can:
+After planning is complete, check what was created:
 
-- Start building first story with \`/build {{first_story}}\`
-- Review plan details with \`cat .hodge/development-plan.json\`
-- Regenerate plan with \`/plan {{feature}} --lanes N\`
-- View in Linear [provide Linear URL if PM issues created]
-- Continue development
+\`\`\`bash
+cat .hodge/development-plan.json
+\`\`\`
+
+**If PM issues were created:**
+\`\`\`
+### What's Next?
+
+Work structure created! Stories are ready to build.
+
+• \`/build {{first_story}}\` - Start with the first story (Recommended)
+• View in Linear - [provide Linear URL from command output]
+• \`/status {{feature}}\` - Check overall feature status
+• Regenerate plan with \`/plan {{feature}} --lanes N\` if needed
+
+💡 Tip: Build stories in dependency order. Parallel lanes let you work on independent stories simultaneously.
+\`\`\`
+
+**If only plan file created (no PM tracking):**
+\`\`\`
+### What's Next?
+
+Development plan saved locally.
+
+• \`/build {{first_story}}\` - Start implementing first story (Recommended)
+• Review plan: \`cat .hodge/development-plan.json\`
+• Create PM issues later if needed
+• \`/status {{feature}}\` - Check feature status
+
+💡 Tip: You can still break features into sub-features manually without PM integration.
+\`\`\`
 
 Remember: \`/plan\` bridges the gap between decisions and implementation, turning ideas into actionable, parallel work streams.`,
     },
@@ -2845,6 +3241,23 @@ If the command fails:
 - Provide guidance based on error type
 - Don't crash the conversation - help user recover
 
+## What's Next?
+
+After review completes:
+
+\`\`\`
+### What's Next?
+
+Review findings documented in \`.hodge/reviews/{{filename}}.md\`
+
+• Address critical issues found in the review
+• Continue with current workflow (\`/build\`, \`/harden\`, \`/ship\`)
+• Run another review: \`/review --file <path>\` or \`/review --directory <path>\`
+• \`/status {{feature}}\` - Check feature progress
+
+💡 Tip: Use /review anytime to get targeted code quality feedback.
+\`\`\`
+
 ARGUMENTS: {{flags}}
 `,
     },
@@ -2882,6 +3295,15 @@ Before shipping, you MUST ensure all standards are met at the **BLOCKING Level**
 
 If any BLOCKING standards are not met, return to \`/harden\` phase.
 
+────────────────────────────────────────────────────────────
+📍 Step 1 of 4: Analyze Changes
+────────────────────────────────────────────────────────────
+
+Remaining:
+  ○ Generate Rich Commit Message
+  ○ Interactive Approval & Lessons
+  ○ Ship Quality Checks & Commit
+
 ## Step 1: Analyze Changes
 First, analyze the git changes to understand what was modified:
 
@@ -2904,6 +3326,17 @@ echo ""
 echo "📄 File-by-file changes:"
 git diff --name-status
 \`\`\`
+
+────────────────────────────────────────────────────────────
+📍 Step 2 of 4: Generate Rich Commit Message
+────────────────────────────────────────────────────────────
+
+Previously completed:
+  ✓ Analyze Changes
+
+Remaining:
+  ○ Interactive Approval & Lessons
+  ○ Ship Quality Checks & Commit
 
 ## Step 2: Generate Rich Commit Message
 
@@ -2939,6 +3372,17 @@ If it's a bug fix, explain what was broken and how it's fixed.
 - [Developer experience improvements]
 - [Performance or reliability changes]
 \`\`\`
+
+────────────────────────────────────────────────────────────
+📍 Step 3 of 4: Interactive Approval & Lessons
+────────────────────────────────────────────────────────────
+
+Previously completed:
+  ✓ Analyze Changes
+  ✓ Generate Rich Commit Message
+
+Remaining:
+  ○ Ship Quality Checks & Commit
 
 ## Step 3: Interactive Approval
 
@@ -3303,6 +3747,15 @@ d) Discuss - I have questions or want to explore this more
 - Standards are mandatory (enforced), patterns are guidance (suggested)
 - Multiple elevations possible (e.g., both a standard AND a pattern)
 
+────────────────────────────────────────────────────────────
+📍 Step 4 of 4: Ship Quality Checks & Commit
+────────────────────────────────────────────────────────────
+
+Previously completed:
+  ✓ Analyze Changes
+  ✓ Generate Rich Commit Message
+  ✓ Interactive Approval & Lessons
+
 ## Step 4: Ship Quality Checks & Commit
 
 The ship command will:
@@ -3314,13 +3767,123 @@ The ship command will:
 - ✅ Update PM tracking
 - ✅ Learn patterns from shipped code
 
-## Post-Ship Actions
-After successful shipping:
-1. Push to remote: \`git push\`
-2. Create PR if needed
-3. Monitor production metrics
-4. Review and document lessons learned
-5. Start next feature with \`/explore\`
+## What's Next?
+
+After successful shipping, check your velocity:
+
+\`\`\`bash
+hodge status --stats
+\`\`\`
+
+**After ship completes successfully:**
+
+Parse the stats output and display celebration based on achievements:
+
+**If ships_this_week >= 5:**
+\`\`\`
+┌─────────────────────────────────────────────────────────┐
+│ 🎉 {{feature}} Shipped!                                 │
+└─────────────────────────────────────────────────────────┘
+
+Wow! You're absolutely unstoppable! 🚀
+
+📊 Your Momentum:
+• {{ships_this_week}} features shipped this week
+• {{ships_this_month}} features shipped this month
+• {{total_shipped}} total features shipped
+{{#if streak >= 2}}• {{streak}} consecutive weeks shipping{{/if}}
+{{#if coverage_trend}}• {{average_coverage}}% test coverage ({{coverage_trend >= 0 ? '+' : ''}}{{coverage_trend}}% trend){{/if}}
+
+🏆 Achievement Unlocked: "Unstoppable" (5+ features in one week)
+
+### What's Next?
+
+• \`git push\` - Push to remote repository (Recommended next)
+• Create PR if needed for team review
+• \`/explore <new-feature>\` - Keep the momentum going!
+• \`/status\` - Check overall project status
+
+💡 Tip: You're on fire! Consider taking a break or starting something new. 🔥
+\`\`\`
+
+**Else if ships_this_week >= 3:**
+\`\`\`
+┌─────────────────────────────────────────────────────────┐
+│ 🎉 {{feature}} Shipped!                                 │
+└─────────────────────────────────────────────────────────┘
+
+Nice work! That's your {{ships_this_week}}{{ordinal_suffix}} ship this week. 🚢
+
+📊 Your Momentum:
+• {{ships_this_week}} features shipped this week
+• {{ships_this_month}} features shipped this month
+• {{total_shipped}} total features shipped
+{{#if streak >= 2}}• {{streak}} consecutive weeks shipping{{/if}}
+{{#if coverage_trend}}• {{average_coverage}}% test coverage ({{coverage_trend >= 0 ? '+' : ''}}{{coverage_trend}}% trend){{/if}}
+
+🏆 Achievement Unlocked: "Shipping Machine" (3+ features in one week)
+
+### What's Next?
+
+• \`git push\` - Push to remote repository (Recommended next)
+• Create PR if needed for team review
+• \`/explore <new-feature>\` - Start your next feature
+• \`/status\` - Check overall project status
+
+💡 Tip: Great velocity! You're shipping consistently. 🎯
+\`\`\`
+
+**Else if streak >= 4:**
+\`\`\`
+┌─────────────────────────────────────────────────────────┐
+│ 🎉 {{feature}} Shipped!                                 │
+└─────────────────────────────────────────────────────────┘
+
+Excellent consistency! {{streak}} consecutive weeks shipping. 📈
+
+📊 Your Momentum:
+• {{ships_this_week}} features shipped this week
+• {{ships_this_month}} features shipped this month
+• {{total_shipped}} total features shipped
+• {{streak}} consecutive weeks shipping
+{{#if coverage_trend}}• {{average_coverage}}% test coverage ({{coverage_trend >= 0 ? '+' : ''}}{{coverage_trend}}% trend){{/if}}
+
+🏆 Achievement Unlocked: "Velocity Master" (4+ consecutive weeks)
+
+### What's Next?
+
+• \`git push\` - Push to remote repository (Recommended next)
+• Create PR if needed for team review
+• \`/explore <new-feature>\` - Start your next feature
+• \`/status\` - Check overall project status
+
+💡 Tip: Your consistency is impressive! Keep the streak alive. ⚡
+\`\`\`
+
+**Else (no special achievements):**
+\`\`\`
+┌─────────────────────────────────────────────────────────┐
+│ 🎉 {{feature}} Shipped!                                 │
+└─────────────────────────────────────────────────────────┘
+
+Great work! Feature successfully shipped. ✅
+
+📊 Your Stats:
+• {{ships_this_week}} features shipped this week
+• {{ships_this_month}} features shipped this month
+• {{total_shipped}} total features shipped
+{{#if streak >= 2}}• {{streak}} consecutive weeks shipping{{/if}}
+{{#if coverage_trend}}• {{average_coverage}}% test coverage ({{coverage_trend >= 0 ? '+' : ''}}{{coverage_trend}}% trend){{/if}}
+
+### What's Next?
+
+• \`git push\` - Push to remote repository (Recommended next)
+• Create PR if needed for team review
+• \`/explore <new-feature>\` - Start your next feature
+• \`/status\` - Check overall project status
+
+💡 Tip: Push your changes and celebrate the win! 🚀
+\`\`\`
 
 ## Troubleshooting
 - **Tests failing?** Fix them first with \`/build {{feature}}\`
@@ -3408,15 +3971,45 @@ The status command helps you:
 - Maintain context when switching tasks
 - See what needs attention
 
-## Next Steps
+## What's Next?
 
-After checking status, you can:
+Based on the status output, suggest context-aware next steps:
 
-- Continue with the suggested feature
-- Start a new feature with \`/explore\`
-- Resume an active feature with \`/build {{feature}}\`
-- Review and record decisions with \`/decide\`
-- Check a specific feature with \`/status {{feature}}\`
+**If showing overall status (no specific feature):**
+\`\`\`
+### What's Next?
+
+{{#if active_features.length > 0}}
+You have {{active_features.length}} active feature(s):
+{{#each active_features}}
+• {{this}} - Continue with \`/build {{this}}\` or \`/harden {{this}}\`
+{{/each}}
+
+Or start fresh:
+• \`/explore <new-feature>\` - Start a new feature
+• \`/status {{feature}}\` - Check specific feature details
+
+💡 Tip: Focus on completing active features before starting new ones.
+{{else}}
+No active features. Ready to start something new!
+
+• \`/explore <feature>\` - Start exploring a new feature
+• Check velocity with \`hodge status --stats\`
+
+💡 Tip: Use status --stats to see your shipping velocity and momentum.
+{{/if}}
+\`\`\`
+
+**If showing specific feature status:**
+\`\`\`
+### What's Next?
+
+Based on "{{feature}}" progress, use the "Next Step" suggestion shown above.
+
+The status command has already analyzed your feature state and provided the optimal next command.
+
+💡 Tip: Follow the suggested next step for the smoothest workflow progression.
+\`\`\`
 
 Remember: The CLI tracks all feature progress automatically. Use status to stay oriented and make informed decisions about what to work on next.`,
     },
