@@ -881,7 +881,7 @@ argument-hint: <feature-id>
 ---
 
 ┌─────────────────────────────────────────────────────────┐
-│ 📋 Decide: Decision Management                         │
+│ 📋 Decide: Decision Management                          │
 └─────────────────────────────────────────────────────────┘
 
 ## Response Parsing (AI Instructions)
@@ -946,7 +946,7 @@ When \`/decide\` is invoked, follow this process:
 3. **Present each decision with Principle Alignment**:
 
    ┌─────────────────────────────────────────────────────────┐
-   │ 📋 Decide: Decision {{number}} of {{total}}            │
+   │ 📋 Decide: Decision {{number}} of {{total}}             │
    └─────────────────────────────────────────────────────────┘
 
    **Topic**: {{decision_topic}}
@@ -1174,6 +1174,34 @@ cat .hodge/decisions.md | tail -50   # Recent decisions
 
 **IMPORTANT**: Engage in natural dialogue to deeply understand the feature before documenting anything.
 
+**FOCUS**: This phase focuses on the **"what"** (requirements, behavior, scope) with minimal technical detail - only enough to validate feasibility and understand constraints/opportunities. Save the **"how"** (implementation details) for \`/decide\`.
+
+#### "What" vs "How" Decision Framework
+
+**Explore in /explore** (affects what's possible):
+- Architecture choices that affect capabilities (REST vs GraphQL, monolith vs microservices)
+- Technology decisions that constrain or enable features (database choice affects query capabilities)
+- High-level approach options (batch vs real-time processing)
+- Technical feasibility validation (can we do X with our current stack?)
+- Integration patterns that affect user experience (sync vs async workflows)
+
+**Defer to /decide** (implementation details):
+- Specific library/framework choices (which GraphQL library, which validation library)
+- Code organization patterns (folder structure, module boundaries)
+- Validation strategies (Zod vs Yup, where to validate)
+- Authentication/authorization mechanisms (JWT vs sessions, where to check)
+- Error handling approaches (error codes, message formats)
+- Caching strategies (what to cache, when to invalidate)
+- Naming conventions and code style details
+
+**Examples**:
+- ✅ Explore: "Should we use REST or GraphQL?" (affects API capabilities)
+- ❌ Explore: "Which GraphQL library should we use?" → Defer to /decide
+- ✅ Explore: "Do we need real-time updates or is polling sufficient?" (affects UX)
+- ❌ Explore: "How should we structure the WebSocket connection logic?" → Defer to /decide
+- ✅ Explore: "Should authentication be required for this feature?" (affects requirements)
+- ❌ Explore: "Should we use JWT or sessions for authentication?" → Defer to /decide
+
 #### Required Coverage Areas (MUST ask about ALL of these):
 1. **What & Why** (Requirements and Context)
    - What is the feature trying to accomplish? (high-level, not implementation details)
@@ -1195,13 +1223,32 @@ cat .hodge/decisions.md | tail -50   # Recent decisions
    - Propose test intentions and solicit feedback
    - Test intentions must be finalized during conversation
 
+   **Test Intention Depth**:
+   - **Parent features** (e.g., HODGE-348): High-level behavioral expectations only (e.g., "exploration completes within context limits", "AI recommends /plan when appropriate")
+   - **Sub-features** (e.g., HODGE-348.1 after /plan): More specific test intentions including edge cases (e.g., "handles invalid input gracefully", "persists state correctly")
+
 #### Conversation Guidelines:
 - **Natural dialogue style** (not rigid Q&A interview)
 - **Provide periodic summaries** of what you've learned to confirm understanding
 - **Present options** when user is unsure of answers to help guide thinking
 - **Ask about scope** if feature might affect other areas or relate to existing functionality
 - **Scale to complexity**: Simple features = 1-2 quick questions; Complex features = extensive discussion
+- **Conversation pacing**: Aim for 5-7 exchanges to keep exploration focused, but conclude earlier if understanding is complete
 - **Conversation ends when**: Either AI feels satisfied OR user says to proceed (whichever comes first)
+- **Stop before "how" details**: If conversation drifts into implementation specifics (library choices, code organization), acknowledge them but note they're for \`/decide\` phase
+
+#### Complexity Signals (When to Recommend /plan):
+Watch for these signals that indicate feature breakdown might be beneficial:
+- **Multiple components**: Feature touches 3+ distinct areas of the codebase
+- **Long conversations**: Discussion exceeds 7-8 exchanges and scope keeps expanding
+- **User cues**: User mentions "phases", "stages", "first we need to...", or "depends on..."
+- **Integration complexity**: Feature requires coordinating multiple systems or services
+- **Unclear dependencies**: Parts of the feature have unclear order or dependencies
+
+When you notice 2+ complexity signals, explicitly recommend:
+\`\`\`
+This feels like a larger feature that might benefit from breakdown. Consider using \`/plan {{feature}}\` to create sub-issues that can be explored and built independently.
+\`\`\`
 
 #### Error Handling:
 - If conversation goes off track, user can provide direction or request restart

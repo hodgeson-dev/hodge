@@ -1,96 +1,12 @@
 {
   "statistics": {
-    "detectionDate": "2025-10-25T06:39:29.295Z",
+    "detectionDate": "2025-10-25T08:20:41.616Z",
     "formats": {
       "typescript": {
         "sources": {
-          "src/lib/pm/local-pm-adapter.ts": {
-            "lines": 545,
-            "tokens": 3993,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/lib/pm/index.ts": {
-            "lines": 126,
-            "tokens": 690,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/lib/pm/index.test.ts": {
-            "lines": 149,
-            "tokens": 1274,
-            "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 30,
-            "duplicatedTokens": 252,
-            "percentage": 20.13,
-            "percentageTokens": 19.78,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/lib/pm/base-adapter.ts": {
-            "lines": 179,
-            "tokens": 1501,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/lib/pm/base-adapter.test.ts": {
-            "lines": 214,
-            "tokens": 1988,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/lib/logger.ts": {
-            "lines": 352,
-            "tokens": 2992,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/lib/logger.smoke.test.ts": {
-            "lines": 207,
-            "tokens": 1825,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/lib/harden-service.ts": {
-            "lines": 386,
-            "tokens": 2658,
+          "src/test/explore-template-what-vs-how.smoke.test.ts": {
+            "lines": 177,
+            "tokens": 1320,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -102,68 +18,31 @@
           }
         },
         "total": {
-          "lines": 2158,
-          "tokens": 16921,
-          "sources": 8,
-          "clones": 1,
-          "duplicatedLines": 15,
-          "duplicatedTokens": 126,
-          "percentage": 0.7,
-          "percentageTokens": 0.74,
+          "lines": 177,
+          "tokens": 1320,
+          "sources": 1,
+          "clones": 0,
+          "duplicatedLines": 0,
+          "duplicatedTokens": 0,
+          "percentage": 0,
+          "percentageTokens": 0,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
       }
     },
     "total": {
-      "lines": 2158,
-      "tokens": 16921,
-      "sources": 8,
-      "clones": 1,
-      "duplicatedLines": 15,
-      "duplicatedTokens": 126,
-      "percentage": 0.7,
-      "percentageTokens": 0.74,
+      "lines": 177,
+      "tokens": 1320,
+      "sources": 1,
+      "clones": 0,
+      "duplicatedLines": 0,
+      "duplicatedTokens": 0,
+      "percentage": 0,
+      "percentageTokens": 0,
       "newDuplicatedLines": 0,
       "newClones": 0
     }
   },
-  "duplicates": [
-    {
-      "format": "typescript",
-      "lines": 16,
-      "fragment": ");\n      vi.mocked(LinearAdapter).mockImplementationOnce(\n        () =>\n          ({\n            transitionIssue: mockTransition,\n            fetchStates: vi.fn(),\n            getIssue: vi.fn(),\n            updateIssueState: vi.fn(),\n            searchIssues: vi.fn(),\n            createIssue: vi.fn(),\n          }) as unknown as LinearAdapter\n      );\n\n      const result = await transitionIssueForMode('issue-1', 'explore', 'build');\n\n      // Test behavior: function should return false when transition fails",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/lib/pm/index.test.ts",
-        "start": 130,
-        "end": 145,
-        "startLoc": {
-          "line": 130,
-          "column": 2,
-          "position": 1111
-        },
-        "endLoc": {
-          "line": 145,
-          "column": 69,
-          "position": 1237
-        }
-      },
-      "secondFile": {
-        "name": "src/lib/pm/index.test.ts",
-        "start": 106,
-        "end": 121,
-        "startLoc": {
-          "line": 106,
-          "column": 10,
-          "position": 877
-        },
-        "endLoc": {
-          "line": 121,
-          "column": 7,
-          "position": 1003
-        }
-      }
-    }
-  ]
+  "duplicates": []
 }

@@ -1,0 +1,109 @@
+version: '1.0'
+feature: HODGE-348
+generated_at: '2025-10-25T08:16:29.020Z'
+recommended_tier: full
+change_analysis:
+  total_files: 15
+  total_lines: 619
+  breakdown:
+    implementation: 6
+    test: 1
+    documentation: 8
+    config: 0
+changed_files:
+  - path: .claude/commands/decide.md
+    lines_changed: 4
+    change_type: documentation
+  - path: .claude/commands/explore.md
+    lines_changed: 47
+    change_type: documentation
+  - path: .hodge/.session
+    lines_changed: 9
+    change_type: implementation
+  - path: .hodge/HODGE.md
+    lines_changed: 27
+    change_type: documentation
+  - path: .hodge/context.json
+    lines_changed: 8
+    change_type: implementation
+  - path: .hodge/features/HODGE-348/build/build-plan.md
+    lines_changed: 57
+    change_type: documentation
+  - path: .hodge/features/HODGE-348/decisions.md
+    lines_changed: 65
+    change_type: documentation
+  - path: .hodge/features/HODGE-348/explore/exploration.md
+    lines_changed: 137
+    change_type: documentation
+  - path: .hodge/features/HODGE-348/explore/test-intentions.md
+    lines_changed: 49
+    change_type: documentation
+  - path: .hodge/features/HODGE-348/issue-id.txt
+    lines_changed: 1
+    change_type: implementation
+  - path: .hodge/features/HODGE-348/ship-record.json
+    lines_changed: 16
+    change_type: implementation
+  - path: .hodge/id-counter.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/id-mappings.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/project_management.md
+    lines_changed: 13
+    change_type: documentation
+  - path: src/test/explore-template-what-vs-how.smoke.test.ts
+    lines_changed: 178
+    change_type: test
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - test-pattern.md
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - ux-patterns/claude-code-slash-commands.yaml
+      - testing/vitest-3.x.yaml
+      - testing/general-test-standards.yaml
+      - languages/typescript-5.x.yaml
+      - languages/general-coding-standards.yaml
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed
+scope:
+  type: feature
+  target: HODGE-348
+  fileCount: 15

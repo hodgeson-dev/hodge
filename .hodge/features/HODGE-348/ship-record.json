@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-348",
+  "timestamp": "2025-10-25T08:30:48.320Z",
+  "issueId": "HODGE-348",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "feat(explore): refine /explore workflow to focus on \"what\" rather than \"how\"\n\n## What Changed\n- Enhanced `.claude/commands/explore.md` template with \"what\" vs \"how\" decision framework (+47 lines)\n- Added concrete examples distinguishing exploration topics from implementation details\n- Included soft conversation pacing guidance (5-7 exchanges) with flexibility\n- Added complexity signals section to help AI recognize when to recommend /plan\n- Added test intention depth guidance for parent vs sub-feature context\n- Created comprehensive smoke test suite (14 tests, 178 lines) in `src/test/explore-template-what-vs-how.smoke.test.ts`\n- Updated synced command metadata in `src/lib/claude-commands.ts` (+49 lines)\n- Created feature documentation:\n  - Exploration with approach analysis (137 lines)\n  - Feature-specific decisions (65 lines)  \n  - Build plan and checklist (57 lines)\n  - Test intentions (49 lines)\n\n## Why This Change\nThe previous `/explore` command attempted to answer every question before proceeding, leading to marathon conversations that risked context limit compaction for larger features. This didn't support role separation between Product Owners (who define \"what\") and Developers (who decide \"how\").\n\nThe refined workflow now:\n- Focuses exploration on high-level requirements with minimal technical detail\n- Defers implementation details (library choices, validation structure, auth mechanisms) to `/decide`\n- Provides clear guidelines with examples to help AI distinguish between the two phases\n- Enables better conversation pacing without rigid constraints\n- Supports recognition of when feature breakdown via `/plan` is beneficial\n\n## Impact\n- ✅ Shorter, more focused exploration conversations\n- ✅ Clear separation of concerns (requirements vs implementation)\n- ✅ Better support for large features that need breakdown via `/plan`\n- ✅ Maintains conversational flexibility while providing structure\n- ✅ All 14 smoke tests passing, validating template changes\n- ✅ Full test suite passing (122 test files, 1254 tests)\n\nRelated: HODGE-348\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}
