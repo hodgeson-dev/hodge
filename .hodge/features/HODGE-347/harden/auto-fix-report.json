@@ -1,0 +1,44 @@
+{
+  "timestamp": "2025-10-25T05:44:51.011Z",
+  "stagedFiles": [
+    ".hodge/.session",
+    ".hodge/HODGE.md",
+    ".hodge/context.json",
+    ".hodge/features/HODGE-347/build/build-plan.md",
+    ".hodge/features/HODGE-347/explore/exploration.md",
+    ".hodge/features/HODGE-347/explore/test-intentions.md",
+    ".hodge/features/HODGE-347/issue-id.txt",
+    ".hodge/features/HODGE-347/ship-record.json",
+    ".hodge/id-counter.json",
+    ".hodge/id-mappings.json",
+    ".hodge/project_management.md",
+    "src/lib/harden-service.ts",
+    "src/lib/logger.smoke.test.ts",
+    "src/lib/logger.ts",
+    "src/lib/pm/base-adapter.ts",
+    "src/lib/pm/index.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 14,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": "src/lib/harden-service.ts 88ms\nsrc/lib/logger.smoke.test.ts 25ms (unchanged)\nsrc/lib/logger.ts 53ms (unchanged)\nsrc/lib/pm/base-adapter.ts 13ms (unchanged)\nsrc/lib/pm/index.ts 5ms\n",
+      "stderr": "",
+      "duration": 1352
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 5,
+      "issuesFixed": 16,
+      "success": true,
+      "stdout": "\n/Users/michaelkelly/Projects/hodge/src/lib/harden-service.ts\n  188:54  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  243:36  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n\n/Users/michaelkelly/Projects/hodge/src/lib/logger.smoke.test.ts\n  0:0  warning  File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override\n\n/Users/michaelkelly/Projects/hodge/src/lib/logger.ts\n   52:13  error    Unsafe assignment of an `any` value                                                                        @typescript-eslint/no-unsafe-assignment\n   53:18  error    Unsafe member access .logLevel on an `any` value                                                           @typescript-eslint/no-unsafe-member-access\n   54:9   error    Unsafe return of an `any` typed value                                                                      @typescript-eslint/no-unsafe-return\n   54:23  error    Unsafe member access .logLevel on an `any` value                                                           @typescript-eslint/no-unsafe-member-access\n  234:43  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  241:7   error    Handle this exception or don't catch it at all                                                             sonarjs/no-ignored-exceptions\n\n/Users/michaelkelly/Projects/hodge/src/lib/pm/base-adapter.ts\n  22:46  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  49:35  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  70:32  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n\n/Users/michaelkelly/Projects/hodge/src/lib/pm/index.ts\n  44:10  warning  Complete the task associated to this \"TODO\" comment                                                        sonarjs/todo-tag\n  48:10  warning  Complete the task associated to this \"TODO\" comment                                                        sonarjs/todo-tag\n  70:8   warning  Unnecessary conditional, value is always falsy                                                             @typescript-eslint/no-unnecessary-condition\n  76:40  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n\n✖ 16 problems (5 errors, 11 warnings)\n\n",
+      "stderr": "",
+      "duration": 6361
+    }
+  ],
+  "totalIssuesFixed": 16,
+  "totalFilesModified": 19,
+  "failures": []
+}

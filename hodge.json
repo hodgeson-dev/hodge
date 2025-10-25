@@ -23,6 +23,7 @@
     "autoSave": true,
     "debugMode": false
   },
+  "logLevel": "info",
   "commitTypes": [
     "feat",
     "fix",

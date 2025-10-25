@@ -5,6 +5,9 @@
 import { LinearAdapter } from './linear-adapter.js';
 import { BasePMAdapter } from './base-adapter.js';
 import { PMTool, PMConfig, PMOverrides, HodgeMode } from './types.js';
+import { createCommandLogger } from '../logger.js';
+
+const logger = createCommandLogger('pm');
 
 export * from './types.js';
 export { BasePMAdapter } from './base-adapter.js';
@@ -70,21 +73,21 @@ export function getPMAdapterFromEnv(): BasePMAdapter | null {
 
   const config: PMConfig = {
     tool,
-    apiKey: process.env.LINEAR_API_KEY || process.env.GITHUB_TOKEN,
+    apiKey: process.env.LINEAR_API_KEY ?? process.env.GITHUB_TOKEN,
     teamId: process.env.LINEAR_TEAM_ID,
     projectId: process.env.LINEAR_PROJECT_ID,
   };
 
   // Validate required fields
   if (tool === 'linear' && (!config.apiKey || !config.teamId)) {
-    console.warn('Linear requires LINEAR_API_KEY and LINEAR_TEAM_ID environment variables');
+    logger.warn('Linear requires LINEAR_API_KEY and LINEAR_TEAM_ID environment variables');
     return null;
   }
 
   try {
     return createPMAdapter(tool, config);
   } catch (error) {
-    console.warn(`Failed to create PM adapter: ${String(error)}`);
+    logger.warn('Failed to create PM adapter', { error: error as Error });
     return null;
   }
 }
@@ -113,7 +116,12 @@ export async function transitionIssueForMode(
     await adapter.transitionIssue(issueId, fromMode, toMode);
     return true;
   } catch (error) {
-    console.error(`Failed to transition issue: ${String(error)}`);
+    logger.error('Failed to transition issue', {
+      error: error as Error,
+      issueId,
+      fromMode,
+      toMode,
+    });
     return false;
   }
 }

@@ -1,276 +1,12 @@
 {
   "statistics": {
-    "detectionDate": "2025-10-25T00:30:18.558Z",
+    "detectionDate": "2025-10-25T06:39:29.295Z",
     "formats": {
-      "json": {
-        "sources": {
-          "report/jscpd-report.json": {
-            "lines": 468,
-            "tokens": 2915,
-            "sources": 1,
-            "clones": 4,
-            "duplicatedLines": 94,
-            "duplicatedTokens": 530,
-            "percentage": 20.09,
-            "percentageTokens": 18.18,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".hodge/features/HODGE-346.4/harden/auto-fix-report.json": {
-            "lines": 43,
-            "tokens": 222,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".hodge/features/HODGE-346.4/ship-record.json": {
-            "lines": 15,
-            "tokens": 94,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          }
-        },
-        "total": {
-          "lines": 526,
-          "tokens": 3231,
-          "sources": 3,
-          "clones": 2,
-          "duplicatedLines": 47,
-          "duplicatedTokens": 265,
-          "percentage": 8.94,
-          "percentageTokens": 8.2,
-          "newDuplicatedLines": 0,
-          "newClones": 0
-        }
-      },
-      "yaml": {
-        "sources": {
-          ".hodge/features/HODGE-346.4/harden/review-manifest.yaml": {
-            "lines": 114,
-            "tokens": 719,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          }
-        },
-        "total": {
-          "lines": 114,
-          "tokens": 719,
-          "sources": 1,
-          "clones": 0,
-          "duplicatedLines": 0,
-          "duplicatedTokens": 0,
-          "percentage": 0,
-          "percentageTokens": 0,
-          "newDuplicatedLines": 0,
-          "newClones": 0
-        }
-      },
-      "markdown": {
-        "sources": {
-          ".hodge/features/HODGE-346.4/harden/quality-checks.md": {
-            "lines": 344,
-            "tokens": 3600,
-            "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 26,
-            "duplicatedTokens": 236,
-            "percentage": 7.56,
-            "percentageTokens": 6.56,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".hodge/features/HODGE-346.4/harden/critical-files.md": {
-            "lines": 59,
-            "tokens": 878,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".hodge/project_management.md": {
-            "lines": 64,
-            "tokens": 366,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".hodge/HODGE.md": {
-            "lines": 223,
-            "tokens": 3500,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/status.md": {
-            "lines": 118,
-            "tokens": 829,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/ship.md": {
-            "lines": 624,
-            "tokens": 4713,
-            "sources": 1,
-            "clones": 5,
-            "duplicatedLines": 61,
-            "duplicatedTokens": 664,
-            "percentage": 9.78,
-            "percentageTokens": 14.09,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/review.md": {
-            "lines": 366,
-            "tokens": 2918,
-            "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 10,
-            "duplicatedTokens": 123,
-            "percentage": 2.73,
-            "percentageTokens": 4.22,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/plan.md": {
-            "lines": 567,
-            "tokens": 4248,
-            "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 13,
-            "duplicatedTokens": 137,
-            "percentage": 2.29,
-            "percentageTokens": 3.23,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/hodge.md": {
-            "lines": 227,
-            "tokens": 1540,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/harden.md": {
-            "lines": 708,
-            "tokens": 5939,
-            "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 14,
-            "duplicatedTokens": 138,
-            "percentage": 1.98,
-            "percentageTokens": 2.32,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/explore.md": {
-            "lines": 308,
-            "tokens": 2759,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/decide.md": {
-            "lines": 178,
-            "tokens": 1361,
-            "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 10,
-            "duplicatedTokens": 123,
-            "percentage": 5.62,
-            "percentageTokens": 9.04,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/codify.md": {
-            "lines": 433,
-            "tokens": 3276,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/build.md": {
-            "lines": 417,
-            "tokens": 3364,
-            "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 14,
-            "duplicatedTokens": 143,
-            "percentage": 3.36,
-            "percentageTokens": 4.25,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          }
-        },
-        "total": {
-          "lines": 4636,
-          "tokens": 39291,
-          "sources": 14,
-          "clones": 6,
-          "duplicatedLines": 74,
-          "duplicatedTokens": 782,
-          "percentage": 1.6,
-          "percentageTokens": 1.99,
-          "newDuplicatedLines": 0,
-          "newClones": 0
-        }
-      },
       "typescript": {
         "sources": {
-          "src/commands/visual-rendering.smoke.test.ts": {
-            "lines": 471,
-            "tokens": 4069,
+          "src/lib/pm/local-pm-adapter.ts": {
+            "lines": 545,
+            "tokens": 3993,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -280,9 +16,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/commands/visual-patterns.smoke.test.ts": {
-            "lines": 299,
-            "tokens": 2643,
+          "src/lib/pm/index.ts": {
+            "lines": 126,
+            "tokens": 690,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -292,9 +28,21 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/commands/hodge-324.smoke.test.ts": {
-            "lines": 156,
-            "tokens": 1575,
+          "src/lib/pm/index.test.ts": {
+            "lines": 149,
+            "tokens": 1274,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 30,
+            "duplicatedTokens": 252,
+            "percentage": 20.13,
+            "percentageTokens": 19.78,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/pm/base-adapter.ts": {
+            "lines": 179,
+            "tokens": 1501,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -304,9 +52,45 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/commands/choice-formatting.smoke.test.ts": {
-            "lines": 164,
-            "tokens": 1361,
+          "src/lib/pm/base-adapter.test.ts": {
+            "lines": 214,
+            "tokens": 1988,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/logger.ts": {
+            "lines": 352,
+            "tokens": 2992,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/logger.smoke.test.ts": {
+            "lines": 207,
+            "tokens": 1825,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/harden-service.ts": {
+            "lines": 386,
+            "tokens": 2658,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -318,346 +102,66 @@
           }
         },
         "total": {
-          "lines": 1090,
-          "tokens": 9648,
-          "sources": 4,
-          "clones": 0,
-          "duplicatedLines": 0,
-          "duplicatedTokens": 0,
-          "percentage": 0,
-          "percentageTokens": 0,
-          "newDuplicatedLines": 0,
-          "newClones": 0
-        }
-      },
-      "url": {
-        "sources": {
-          ".claude/commands/ship.md": {
-            "lines": 0,
-            "tokens": 4,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          }
-        },
-        "total": {
-          "lines": 0,
-          "tokens": 4,
-          "sources": 1,
-          "clones": 0,
-          "duplicatedLines": 0,
-          "duplicatedTokens": 0,
-          "percentage": 0,
-          "percentageTokens": 0,
+          "lines": 2158,
+          "tokens": 16921,
+          "sources": 8,
+          "clones": 1,
+          "duplicatedLines": 15,
+          "duplicatedTokens": 126,
+          "percentage": 0.7,
+          "percentageTokens": 0.74,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
       }
     },
     "total": {
-      "lines": 6366,
-      "tokens": 52893,
-      "sources": 23,
-      "clones": 8,
-      "duplicatedLines": 121,
-      "duplicatedTokens": 1047,
-      "percentage": 1.9,
-      "percentageTokens": 1.98,
+      "lines": 2158,
+      "tokens": 16921,
+      "sources": 8,
+      "clones": 1,
+      "duplicatedLines": 15,
+      "duplicatedTokens": 126,
+      "percentage": 0.7,
+      "percentageTokens": 0.74,
       "newDuplicatedLines": 0,
       "newClones": 0
     }
   },
   "duplicates": [
     {
-      "format": "json",
-      "lines": 21,
-      "fragment": "}\n      },\n      \"secondFile\": {\n        \"name\": \".claude/commands/ship.md\",\n        \"start\": 6,\n        \"end\": 21,\n        \"startLoc\": {\n          \"line\": 6,\n          \"column\": 22,\n          \"position\": 38\n        },\n        \"endLoc\": {\n          \"line\": 21,\n          \"column\": 7,\n          \"position\": 177\n        }\n      }\n    },\n    {\n      \"format\": \"markdown\",\n      \"lines\": 11",
+      "format": "typescript",
+      "lines": 16,
+      "fragment": ");\n      vi.mocked(LinearAdapter).mockImplementationOnce(\n        () =>\n          ({\n            transitionIssue: mockTransition,\n            fetchStates: vi.fn(),\n            getIssue: vi.fn(),\n            updateIssueState: vi.fn(),\n            searchIssues: vi.fn(),\n            createIssue: vi.fn(),\n          }) as unknown as LinearAdapter\n      );\n\n      const result = await transitionIssueForMode('issue-1', 'explore', 'build');\n\n      // Test behavior: function should return false when transition fails",
       "tokens": 0,
       "firstFile": {
-        "name": "report/jscpd-report.json",
-        "start": 378,
-        "end": 398,
+        "name": "src/lib/pm/index.test.ts",
+        "start": 130,
+        "end": 145,
         "startLoc": {
-          "line": 378,
-          "column": 9,
-          "position": 2386
-        },
-        "endLoc": {
-          "line": 398,
-          "column": 3,
-          "position": 2499
-        }
-      },
-      "secondFile": {
-        "name": "report/jscpd-report.json",
-        "start": 342,
-        "end": 362,
-        "startLoc": {
-          "line": 342,
-          "column": 9,
-          "position": 2172
-        },
-        "endLoc": {
-          "line": 362,
-          "column": 3,
-          "position": 2285
-        }
-      }
-    },
-    {
-      "format": "json",
-      "lines": 28,
-      "fragment": ",\n          \"position\": 34\n        },\n        \"endLoc\": {\n          \"line\": 16,\n          \"column\": 5,\n          \"position\": 157\n        }\n      },\n      \"secondFile\": {\n        \"name\": \".claude/commands/ship.md\",\n        \"start\": 6,\n        \"end\": 16,\n        \"startLoc\": {\n          \"line\": 6,\n          \"column\": 22,\n          \"position\": 38\n        },\n        \"endLoc\": {\n          \"line\": 16,\n          \"column\": 5,\n          \"position\": 161\n        }\n      }\n    },\n    {\n      \"format\": \"markdown\",\n      \"lines\": 15",
-      "tokens": 0,
-      "firstFile": {
-        "name": "report/jscpd-report.json",
-        "start": 407,
-        "end": 434,
-        "startLoc": {
-          "line": 407,
-          "column": 3,
-          "position": 2561
-        },
-        "endLoc": {
-          "line": 434,
-          "column": 3,
-          "position": 2713
-        }
-      },
-      "secondFile": {
-        "name": "report/jscpd-report.json",
-        "start": 299,
-        "end": 326,
-        "startLoc": {
-          "line": 299,
-          "column": 3,
-          "position": 1919
-        },
-        "endLoc": {
-          "line": 326,
-          "column": 3,
-          "position": 2071
-        }
-      }
-    },
-    {
-      "format": "markdown",
-      "lines": 14,
-      "fragment": " tools...\n⚠ No development tools detected\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n- Detecting project configuration...\n✔ Project detecti",
-      "tokens": 0,
-      "firstFile": {
-        "name": ".hodge/features/HODGE-346.4/harden/quality-checks.md",
-        "start": 100,
-        "end": 113,
-        "startLoc": {
-          "line": 100,
-          "column": 1,
-          "position": 1738
-        },
-        "endLoc": {
-          "line": 113,
-          "column": 13,
-          "position": 1856
-        }
-      },
-      "secondFile": {
-        "name": ".hodge/features/HODGE-346.4/harden/quality-checks.md",
-        "start": 92,
-        "end": 105,
-        "startLoc": {
-          "line": 92,
-          "column": 1,
-          "position": 1662
-        },
-        "endLoc": {
-          "line": 105,
+          "line": 130,
           "column": 2,
-          "position": 1780
-        }
-      }
-    },
-    {
-      "format": "markdown",
-      "lines": 11,
-      "fragment": "─────────┐\n│ 🔍 Review: Advisory Code Review                        │\n└─────────────────────────────────────────────────────────┘\n\n## Response Parsing (AI Instructions)\n\nWhen user responds to choice prompts:\n- \"a\" or \"b\" etc. → select single option\n- \"a,b\" or \"a, b\" → select multiple options (comma-separated, if applicable)\n- \"r\" → select all options marked with ⭐ (when 2+ recommendations exist)\n- \"a, a",
-      "tokens": 0,
-      "firstFile": {
-        "name": ".claude/commands/review.md",
-        "start": 6,
-        "end": 16,
-        "startLoc": {
-          "line": 6,
-          "column": 25,
-          "position": 34
+          "position": 1111
         },
         "endLoc": {
-          "line": 16,
-          "column": 5,
-          "position": 157
+          "line": 145,
+          "column": 69,
+          "position": 1237
         }
       },
       "secondFile": {
-        "name": ".claude/commands/ship.md",
-        "start": 6,
-        "end": 16,
+        "name": "src/lib/pm/index.test.ts",
+        "start": 106,
+        "end": 121,
         "startLoc": {
-          "line": 6,
-          "column": 22,
-          "position": 38
+          "line": 106,
+          "column": 10,
+          "position": 877
         },
         "endLoc": {
-          "line": 16,
-          "column": 5,
-          "position": 161
-        }
-      }
-    },
-    {
-      "format": "markdown",
-      "lines": 14,
-      "fragment": "on & PM Integration            │\n└─────────────────────────────────────────────────────────┘\n\n## Response Parsing (AI Instructions)\n\nWhen user responds to choice prompts:\n- \"a\" or \"b\" etc. → select single option\n- \"a,b\" or \"a, b\" → select multiple options (comma-separated, if applicable)\n- \"r\" → select all options marked with ⭐ (when 2+ recommendations exist)\n- \"a, and [modification]\" → select option with user's changes applied\n- Invalid (e.g.",
-      "tokens": 0,
-      "firstFile": {
-        "name": ".claude/commands/plan.md",
-        "start": 6,
-        "end": 19,
-        "startLoc": {
-          "line": 6,
-          "column": 13,
-          "position": 36
-        },
-        "endLoc": {
-          "line": 19,
-          "column": 4,
-          "position": 173
-        }
-      },
-      "secondFile": {
-        "name": ".claude/commands/ship.md",
-        "start": 6,
-        "end": 21,
-        "startLoc": {
-          "line": 6,
-          "column": 22,
-          "position": 38
-        },
-        "endLoc": {
-          "line": 21,
+          "line": 121,
           "column": 7,
-          "position": 177
-        }
-      }
-    },
-    {
-      "format": "markdown",
-      "lines": 15,
-      "fragment": "adiness                        │\n└─────────────────────────────────────────────────────────┘\n\n## Response Parsing (AI Instructions)\n\nWhen user responds to choice prompts:\n- \"a\" or \"b\" etc. → select single option\n- \"a,b\" or \"a, b\" → select multiple options (comma-separated, if applicable)\n- \"r\" → select all options marked with ⭐ (when 2+ recommendations exist)\n- \"a, and [modification]\" → select option with user's changes applied\n- Invalid (e.g.",
-      "tokens": 0,
-      "firstFile": {
-        "name": ".claude/commands/harden.md",
-        "start": 6,
-        "end": 20,
-        "startLoc": {
-          "line": 6,
-          "column": 25,
-          "position": 32
-        },
-        "endLoc": {
-          "line": 20,
-          "column": 3,
-          "position": 170
-        }
-      },
-      "secondFile": {
-        "name": ".claude/commands/ship.md",
-        "start": 6,
-        "end": 21,
-        "startLoc": {
-          "line": 6,
-          "column": 22,
-          "position": 38
-        },
-        "endLoc": {
-          "line": 21,
-          "column": 7,
-          "position": 177
-        }
-      }
-    },
-    {
-      "format": "markdown",
-      "lines": 11,
-      "fragment": "gement                         │\n└─────────────────────────────────────────────────────────┘\n\n## Response Parsing (AI Instructions)\n\nWhen user responds to choice prompts:\n- \"a\" or \"b\" etc. → select single option\n- \"a,b\" or \"a, b\" → select multiple options (comma-separated, if applicable)\n- \"r\" → select all options marked with ⭐ (when 2+ recommendations exist)\n- \"a, and [modification]\" → select option wi",
-      "tokens": 0,
-      "firstFile": {
-        "name": ".claude/commands/decide.md",
-        "start": 6,
-        "end": 16,
-        "startLoc": {
-          "line": 6,
-          "column": 26,
-          "position": 34
-        },
-        "endLoc": {
-          "line": 16,
-          "column": 5,
-          "position": 157
-        }
-      },
-      "secondFile": {
-        "name": ".claude/commands/ship.md",
-        "start": 6,
-        "end": 16,
-        "startLoc": {
-          "line": 6,
-          "column": 22,
-          "position": 38
-        },
-        "endLoc": {
-          "line": 16,
-          "column": 5,
-          "position": 161
-        }
-      }
-    },
-    {
-      "format": "markdown",
-      "lines": 15,
-      "fragment": " Mode                          │\n└─────────────────────────────────────────────────────────┘\n\n## Response Parsing (AI Instructions)\n\nWhen user responds to choice prompts:\n- \"a\" or \"b\" etc. → select single option\n- \"a,b\" or \"a, b\" → select multiple options (comma-separated, if applicable)\n- \"r\" → select all options marked with ⭐ (when 2+ recommendations exist)\n- \"a, and [modification]\" → select option with user's changes applied\n- Invalid (e.g., \"7\" when options ",
-      "tokens": 0,
-      "firstFile": {
-        "name": ".claude/commands/build.md",
-        "start": 6,
-        "end": 20,
-        "startLoc": {
-          "line": 6,
-          "column": 27,
-          "position": 32
-        },
-        "endLoc": {
-          "line": 20,
-          "column": 7,
-          "position": 175
-        }
-      },
-      "secondFile": {
-        "name": ".claude/commands/ship.md",
-        "start": 6,
-        "end": 20,
-        "startLoc": {
-          "line": 6,
-          "column": 22,
-          "position": 38
-        },
-        "endLoc": {
-          "line": 20,
-          "column": 7,
-          "position": 177
+          "position": 1003
         }
       }
     }

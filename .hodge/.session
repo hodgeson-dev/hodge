@@ -1,0 +1,12 @@
+{
+  "v": 1,
+  "ts": 1761363223626,
+  "feature": "HODGE-347",
+  "mode": "explore",
+  "recentCommands": [
+    "hodge explore HODGE-347"
+  ],
+  "recentDecisions": [],
+  "summary": "Explored HODGE-347 - template ready for AI approach generation",
+  "nextAction": "Review exploration and decide with 'hodge decide'"
+}

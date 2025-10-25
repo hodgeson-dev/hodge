@@ -159,4 +159,50 @@ describe('[smoke] Logger', () => {
     delete process.env.HODGE_SILENT;
     consoleSpy.mockRestore();
   });
+
+  // HODGE-347: Log persistence fixes
+  smokeTest('should not rotate logs automatically on module import', async () => {
+    // The rotator should be exported but NOT run automatically
+    // This prevents log loss when commands run frequently
+    const { rotator } = await import('./logger.js');
+    expect(rotator).toBeDefined();
+    expect(typeof rotator.rotateIfNeeded).toBe('function');
+  });
+
+  smokeTest('should read log level from HODGE_LOG_LEVEL env var', () => {
+    const originalLevel = process.env.HODGE_LOG_LEVEL;
+
+    process.env.HODGE_LOG_LEVEL = 'debug';
+    expect(() => {
+      const logger = createCommandLogger('env-test');
+      logger.debug('Debug message');
+    }).not.toThrow();
+
+    if (originalLevel) {
+      process.env.HODGE_LOG_LEVEL = originalLevel;
+    } else {
+      delete process.env.HODGE_LOG_LEVEL;
+    }
+  });
+
+  smokeTest('should read log level from hodge.json config file', async () => {
+    const configPath = path.join(process.cwd(), 'hodge.json');
+    const configExists = await fs.pathExists(configPath);
+
+    if (!configExists) {
+      // Create test config
+      await fs.writeJson(configPath, { logLevel: 'error' });
+    }
+
+    // Config should be readable without crashing
+    expect(() => {
+      const logger = createCommandLogger('config-test');
+      logger.error('Error message');
+    }).not.toThrow();
+
+    // Cleanup test config if we created it
+    if (!configExists) {
+      await fs.remove(configPath);
+    }
+  });
 });

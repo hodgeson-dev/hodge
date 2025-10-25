@@ -75,5 +75,11 @@
   "standards": {
     "enforceInHarden": true,
     "customRules": []
-  }
+  },
+
+  // Logging Configuration
+  // Log level: "trace" | "debug" | "info" | "warn" | "error"
+  // Can be overridden with HODGE_LOG_LEVEL environment variable
+  // Default: "info"
+  "logLevel": "info"
 }

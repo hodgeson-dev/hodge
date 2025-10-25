@@ -33,6 +33,45 @@ function getLogDir(): string {
   }
 }
 
+/**
+ * Configuration shape for hodge.json
+ */
+interface HodgeConfig {
+  logLevel?: string;
+  [key: string]: unknown;
+}
+
+/**
+ * Get log level from configuration with fallback chain:
+ * 1. HODGE_LOG_LEVEL environment variable (highest priority - per-command override)
+ * 2. hodge.json logLevel setting (persistent project preference, committed to repo)
+ * 3. 'info' (default)
+ */
+function getLogLevel(): string {
+  // Check environment variable first (per-command override)
+  if (process.env.HODGE_LOG_LEVEL) {
+    return process.env.HODGE_LOG_LEVEL;
+  }
+
+  // Check hodge.json for persistent preference (in project root)
+  try {
+    const configPath = path.join(process.cwd(), 'hodge.json');
+    if (fs.existsSync(configPath)) {
+      const config = fs.readJsonSync(configPath) as HodgeConfig;
+      if (config.logLevel) {
+        return config.logLevel;
+      }
+    }
+  } catch (error) {
+    // Config file doesn't exist or can't be read - use default
+    // Log the error for debugging purposes
+    logger.debug('Failed to read hodge.json config', { error });
+  }
+
+  // Default to info level
+  return 'info';
+}
+
 // Detect if we're running in Vitest (test environment)
 const isTest = process.env.VITEST === 'true' || process.env.NODE_ENV === 'test';
 
@@ -73,7 +112,7 @@ const baseLoggerOptions: LoggerOptions = {
 // Create the base logger
 const loggerOptions: LoggerOptions = {
   ...baseLoggerOptions,
-  level: process.env.LOG_LEVEL ?? 'info',
+  level: getLogLevel(),
 };
 
 export const logger = pino(loggerOptions, logDestination);
@@ -202,7 +241,7 @@ export class LogRotator {
 
   private async getLogFiles(): Promise<string[]> {
     // Use dynamic log directory resolution for test compatibility
-    const dir = process.env.HODGE_LOG_DIR || logDir;
+    const dir = process.env.HODGE_LOG_DIR ?? logDir;
 
     // Ensure directory exists before reading
     try {
@@ -211,6 +250,8 @@ export class LogRotator {
       return files.filter((f) => f.endsWith('.log')).map((f) => path.join(dir, f));
     } catch (error) {
       // Directory doesn't exist or can't be read - return empty array
+      // This is expected during initial setup or in test environments
+      logger.debug('Could not read log directory', { dir, error });
       return [];
     }
   }
@@ -294,11 +335,10 @@ export class LogRotator {
   }
 }
 
-// Initialize rotation on startup
-const rotator = new LogRotator();
-rotator.rotateIfNeeded().catch((error: unknown) => {
-  logger.error('Initial log rotation failed', { error });
-});
+// Export rotator for manual rotation (e.g., via cron or maintenance command)
+// NOTE: Rotation should NOT run automatically on every import as this can cause log loss
+// when commands run frequently. Instead, rotation should be triggered manually or via scheduled job.
+export const rotator = new LogRotator();
 
 // Ensure logs are flushed on process exit
 // With sync: true, logs are written immediately so no flush needed

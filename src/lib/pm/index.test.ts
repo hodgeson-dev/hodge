@@ -69,11 +69,10 @@ describe('PM Module', () => {
       process.env.HODGE_PM_TOOL = 'linear';
       // Missing API key and team ID
 
-      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const adapter = getPMAdapterFromEnv();
 
+      // Test behavior: function should return null when validation fails
       expect(adapter).toBeNull();
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Linear requires'));
     });
 
     it('should handle adapter creation errors', () => {
@@ -86,13 +85,10 @@ describe('PM Module', () => {
         throw new Error('Creation failed');
       });
 
-      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const adapter = getPMAdapterFromEnv();
 
+      // Test behavior: function should return null when adapter creation fails
       expect(adapter).toBeNull();
-      expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Failed to create PM adapter')
-      );
     });
   });
 
@@ -144,13 +140,11 @@ describe('PM Module', () => {
           }) as unknown as LinearAdapter
       );
 
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       const result = await transitionIssueForMode('issue-1', 'explore', 'build');
 
+      // Test behavior: function should return false when transition fails
       expect(result).toBe(false);
-      expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Failed to transition issue')
-      );
+      expect(mockTransition).toHaveBeenCalled();
     });
   });
 });

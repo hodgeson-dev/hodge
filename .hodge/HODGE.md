@@ -3,31 +3,39 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: general
-**Mode**: explore
-**Last Updated**: 2025-10-25T02:06:47.340Z
+**Feature**: HODGE-347
+**Mode**: build
+**PM Issue**: HODGE-347
+**Last Updated**: 2025-10-25T05:43:43.866Z
+## Current Session
+**Resumed**: 2 hours ago
+**Progress**: Explored HODGE-347 - template ready for AI approach generation
+**Working on**: HODGE-347 (explore mode)
+## AI Context Restoration
+You were helping with HODGE-347. Explored HODGE-347 - template ready for AI approach generation
+Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
-- **2025-10-09**: Removal Over Deprecation for Redundant Features
-- **2025-10-02**: Error if --feature directory doesn't exist - provides clear feedback to user, prevents typos in feature names, encourages proper workflow (run /explore before /decide), aligns with discipline principle
-- **2025-10-02**: No migration - leave existing decision
-- **2025-10-02**: Append decisions to accumulate in one file - multiple decisions for same feature build up in decisions
-- **2025-10-02**: Use same template format as global decisions
-- **2025-10-01**: Structure PM issue description with Problem Statement above Decisions Made - extract problem statement from exploration
-- **2025-10-01**: Make Title field required for new explorations only - /explore template must generate Title field, existing features without Title continue using fallback patterns, no validation failure just ensures AI generates it for new explorations
-- **2025-10-01**: AI-generated title field in exploration
-- **2025-10-01**: Use 'No description available' fallback only when genuinely no content exists - no exploration
-- **2025-10-01**: Fix exploration
-- **2025-10-01**: Smart Description Extraction approach - enhance getFeatureDescription() to extract from decisions automatically when exploration
-- **2025-10-01**: No backward compatibility concerns - This is a bug fix not a feature change, no evidence of dependencies on incorrect behavior, proceed with fix directly
-- **2025-10-01**: Update /hodge template with clarification - Add note in
-- **2025-10-01**: Skip --project flag for now - Don't add hodge context --project flag in this fix, keeps scope minimal and focused on bug fix, can add later if users request it
-- **2025-10-01**: No staleness check for sessions - Always use session feature for mode detection regardless of age, keeps implementation simple, user can manually start new work if needed
-- **2025-10-01**: Use session feature for mode detection - Load session first in loadDefaultContext(), use session
-- **2025-10-01**: Write feature decisions to feature-specific decision
-- **2025-10-01**: Add 'Shipped' as separate progress line (6th checkbox) - provides clear progression through all stages: Exploration → Decision → Build → Harden → Production Ready → Shipped
-- **2025-10-01**: Use ship-record
-- **2025-10-01**: Check feature root for decision
+- **2025-09-22**: Implement Hybrid Progressive Enhancement for ship commit messages - Phase 1: Smart templates that analyze git diff, Phase 2: State persistence for edits, Phase 3: Interactive approval workflow
+- **2025-09-21**: 1
+- **2025-09-18**: Implement formal feature closure workflow: /close command or closure option in /ship to properly transition features to closed state with reasons
+- **2025-09-18**: The /review command must provide dual awareness: 1) Current Claude Code conversation context (actual work in flight), 2) Filesystem persisted state, and 3) Identify any mismatches between them
+- **2025-09-18**: Create HODGE-054: Update all workflow commands to be context-aware with optional feature override
+- **2025-09-18**: Create HODGE-053: Implement discovery exploration mode for exploring topics without specific features
+- **2025-09-18**: Create HODGE-052: Implement persistent current feature context in
+- **2025-09-18**: Support dual-mode exploration: feature exploration for specific features, and discovery exploration for topics that result in feature creation
+- **2025-09-18**: Implement context-aware commands with persistent current feature state in
+- **2025-09-18**: The only hodge CLI command typically used by developers will be init
+- **2025-09-18**: There will no longer be any effort given toward making hodge a tool intended for developers to use from the command line
+- **2025-09-18**: All AI interactions and workflows for Claude Code slash commands will be in the
+- **2025-09-18**: We are abandoning all effort to enable Hodge to integrate with any AI-assisted software development tool other than Claude Code
+- **2025-09-16**: Implement cross-tool-compatibility using Hybrid approach with HODGE
+- **2025-09-16**: TODO Comment Convention
+- **2025-01-16**: Defer GitHub and Jira PM adapters until Linear adapter is fully tested
+- **2025-01-16**: Implement actual tsconfig.json reading in standards validator
+- **2025-01-16**: Document interaction state configuration as future enhancement
+- **2025-09-16**: linting-standards-optimization
+- **2025-09-15**: Use Progressive Enhancement approach for interactive ship commits with environment-specific optimizations
 
 ## Active Standards
 
@@ -206,11 +214,17 @@ This file provides AI assistants with context about the current Hodge workflow s
 - Full test coverage required
 - Performance benchmarks met
 
+## Working Files
+
+- `.hodge/features/HODGE-347/explore/exploration.md`
+- `.hodge/features/HODGE-347/explore/test-intentions.md`
+- `.hodge/features/HODGE-347/build/build-plan.md`
+
 ## Next Steps
 
-1. Review exploration approaches
-2. Make decision with `hodge decide`
-3. Start building with `hodge build general`
+1. Complete implementation
+2. Run tests with `npm test`
+3. Harden with `hodge harden HODGE-347`
 
 
 ---

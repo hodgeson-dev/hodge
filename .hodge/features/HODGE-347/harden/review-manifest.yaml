@@ -1,0 +1,125 @@
+version: '1.0'
+feature: HODGE-347
+generated_at: '2025-10-25T05:55:51.222Z'
+recommended_tier: full
+change_analysis:
+  total_files: 20
+  total_lines: 1130
+  breakdown:
+    implementation: 12
+    test: 3
+    documentation: 5
+    config: 0
+changed_files:
+  - path: .hodge/.session
+    lines_changed: 12
+    change_type: implementation
+  - path: .hodge/HODGE.md
+    lines_changed: 66
+    change_type: documentation
+  - path: .hodge/context.json
+    lines_changed: 8
+    change_type: implementation
+  - path: .hodge/features/HODGE-347/build/build-plan.md
+    lines_changed: 53
+    change_type: documentation
+  - path: .hodge/features/HODGE-347/explore/exploration.md
+    lines_changed: 152
+    change_type: documentation
+  - path: .hodge/features/HODGE-347/explore/test-intentions.md
+    lines_changed: 49
+    change_type: documentation
+  - path: .hodge/features/HODGE-347/issue-id.txt
+    lines_changed: 1
+    change_type: implementation
+  - path: .hodge/features/HODGE-347/ship-record.json
+    lines_changed: 16
+    change_type: implementation
+  - path: .hodge/id-counter.json
+    lines_changed: 6
+    change_type: implementation
+  - path: .hodge/id-mappings.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/project_management.md
+    lines_changed: 13
+    change_type: documentation
+  - path: report/jscpd-report.json
+    lines_changed: 607
+    change_type: implementation
+  - path: src/lib/harden-service.ts
+    lines_changed: 10
+    change_type: implementation
+  - path: src/lib/logger.smoke.test.ts
+    lines_changed: 46
+    change_type: test
+  - path: src/lib/logger.ts
+    lines_changed: 50
+    change_type: implementation
+  - path: src/lib/pm/base-adapter.test.ts
+    lines_changed: 3
+    change_type: test
+  - path: src/lib/pm/base-adapter.ts
+    lines_changed: 4
+    change_type: implementation
+  - path: src/lib/pm/index.test.ts
+    lines_changed: 14
+    change_type: test
+  - path: src/lib/pm/index.ts
+    lines_changed: 14
+    change_type: implementation
+  - path: src/lib/pm/local-pm-adapter.ts
+    lines_changed: 2
+    change_type: implementation
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - test-pattern.md
+      - error-boundary.md
+      - input-validation.md
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - testing/vitest-3.x.yaml
+      - testing/general-test-standards.yaml
+      - languages/typescript-5.x.yaml
+      - languages/general-coding-standards.yaml
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed
+scope:
+  type: feature
+  target: HODGE-347
+  fileCount: 20

@@ -4,6 +4,11 @@ import chalk from 'chalk';
 import { BasePMAdapter } from './base-adapter.js';
 import { PMIssue, PMState, StateType } from './types.js';
 import { createCommandLogger } from '../logger.js';
+
+/**
+ * Feature status type for local PM tracking
+ */
+type FeatureStatus = 'exploring' | 'building' | 'hardening' | 'shipped';
 // Reserved for future use when we implement full project plan parsing
 // interface ProjectPlan {
 //   phases: Phase[];
@@ -32,7 +37,7 @@ import { createCommandLogger } from '../logger.js';
  * special always-on behavior and local file management.
  */
 export class LocalPMAdapter extends BasePMAdapter {
-  private logger = createCommandLogger('local-p-m-adapter', { enableConsole: false });
+  protected logger = createCommandLogger('local-p-m-adapter', { enableConsole: false });
   private pmPath: string;
   private operationQueue: Promise<void> = Promise.resolve();
   private basePath: string;
@@ -93,10 +98,7 @@ export class LocalPMAdapter extends BasePMAdapter {
   /**
    * Update feature status in the project plan
    */
-  async updateFeatureStatus(
-    feature: string,
-    status: 'exploring' | 'building' | 'hardening' | 'shipped'
-  ): Promise<void> {
+  async updateFeatureStatus(feature: string, status: FeatureStatus): Promise<void> {
     return this.serializeOperation(async () => {
       // Ensure file exists first
       await this.init();
@@ -185,9 +187,10 @@ export class LocalPMAdapter extends BasePMAdapter {
       const afterActiveFeatures = content.substring(
         activeFeaturesIndex + '## Active Features\n'.length
       );
-      const nextSectionMatch = afterActiveFeatures.match(/^## /m);
+      const nextSectionRegex = /^## /m;
+      const nextSectionMatch = nextSectionRegex.exec(afterActiveFeatures);
       const nextSectionIndex = nextSectionMatch
-        ? activeFeaturesIndex + '## Active Features\n'.length + nextSectionMatch.index!
+        ? activeFeaturesIndex + '## Active Features\n'.length + nextSectionMatch.index
         : content.length;
 
       // Insert the new feature entry before the next section
@@ -205,12 +208,12 @@ export class LocalPMAdapter extends BasePMAdapter {
   private moveToCompleted(content: string, feature: string): string {
     // Extract feature entry
     const featureRegex = new RegExp(`(### ${feature}[\\s\\S]*?)\\n##`, 'm');
-    const match = content.match(featureRegex);
+    const match = featureRegex.exec(content);
 
     if (!match) {
       // Try fallback pattern for end of file
       const endPattern = new RegExp(`(### ${feature}[\\s\\S]*)$`, 'm');
-      const endMatch = content.match(endPattern);
+      const endMatch = endPattern.exec(content);
       if (endMatch) {
         return this.moveToCompletedWithMatch(content, feature, endMatch[1].trim());
       }
@@ -271,12 +274,12 @@ export class LocalPMAdapter extends BasePMAdapter {
 
     for (const phase of phases) {
       const phaseRegex = new RegExp(`(### ${phase}.*?)(?=###|##|$)`, 's');
-      const phaseMatch = updated.match(phaseRegex);
+      const phaseMatch = phaseRegex.exec(updated);
 
       if (phaseMatch) {
         const phaseContent = phaseMatch[1];
-        const totalItems = (phaseContent.match(/\[[ x~]\]/g) || []).length;
-        const completedItems = (phaseContent.match(/\[x\]/g) || []).length;
+        const totalItems = (phaseContent.match(/\[[ x~]\]/g) ?? []).length;
+        const completedItems = (phaseContent.match(/\[x\]/g) ?? []).length;
 
         if (totalItems > 0 && completedItems === totalItems) {
           // Mark phase as complete
@@ -358,11 +361,7 @@ HODGE-004 (ID Management)
    */
   async syncFromExternal(updates: Array<{ feature: string; status: string }>): Promise<void> {
     for (const update of updates) {
-      const status = update.status.toLowerCase() as
-        | 'exploring'
-        | 'building'
-        | 'hardening'
-        | 'shipped';
+      const status = update.status.toLowerCase() as FeatureStatus;
       await this.updateFeatureStatus(update.feature, status);
     }
     await this.updatePhaseProgress();
@@ -407,21 +406,23 @@ HODGE-004 (ID Management)
     const featureContent = featureMatch[0];
     let title = issueId;
     let description = '';
-    let status: 'exploring' | 'building' | 'hardening' | 'shipped' = 'exploring';
+    let status: FeatureStatus = 'exploring';
 
     // Extract description from the feature section
-    const descriptionMatch = featureContent.match(/- \*\*Description\*\*: (.+)/);
+    const descriptionRegex = /- \*\*Description\*\*: (.+)/;
+    const descriptionMatch = descriptionRegex.exec(featureContent);
     if (descriptionMatch) {
       title = descriptionMatch[1].trim();
       description = descriptionMatch[1].trim();
     }
 
     // Extract status from the feature section
-    const statusMatch = featureContent.match(/- \*\*Status\*\*: (\w+)/);
+    const statusRegex = /- \*\*Status\*\*: (\w+)/;
+    const statusMatch = statusRegex.exec(featureContent);
     if (statusMatch) {
       const foundStatus = statusMatch[1];
       if (['exploring', 'building', 'hardening', 'shipped'].includes(foundStatus)) {
-        status = foundStatus as 'exploring' | 'building' | 'hardening' | 'shipped';
+        status = foundStatus as FeatureStatus;
       }
     }
 
@@ -440,9 +441,7 @@ HODGE-004 (ID Management)
    */
   async updateIssueState(issueId: string, stateId: string): Promise<void> {
     const validStatuses = ['exploring', 'building', 'hardening', 'shipped'];
-    const status = validStatuses.includes(stateId)
-      ? (stateId as 'exploring' | 'building' | 'hardening' | 'shipped')
-      : 'exploring';
+    const status = validStatuses.includes(stateId) ? (stateId as FeatureStatus) : 'exploring';
 
     await this.updateFeatureStatus(issueId, status);
   }
@@ -486,36 +485,42 @@ HODGE-004 (ID Management)
   ): Array<{
     id: string;
     description: string;
-    status: 'exploring' | 'building' | 'hardening' | 'shipped';
+    status: FeatureStatus;
   }> {
     const features: Array<{
       id: string;
       description: string;
-      status: 'exploring' | 'building' | 'hardening' | 'shipped';
+      status: FeatureStatus;
     }> = [];
     const queryLower = query.toLowerCase();
 
     // Find all feature sections
-    const featureMatches = content.matchAll(/### ([A-Z]+-\d+)[\s\S]*?(?=###|##|$)/g);
+    // Split by headers to avoid regex backtracking issues
+    const sections = content.split(/(?=###\s)/);
 
-    for (const match of featureMatches) {
-      const featureId = match[1];
-      const featureContent = match[0];
+    for (const section of sections) {
+      const headerMatch = /^###\s+([A-Z]+-\d+)/.exec(section);
+      if (!headerMatch) continue;
+
+      const featureId = headerMatch[1];
+      const featureContent = section;
 
       // Check if the feature content contains the query
       if (featureContent.toLowerCase().includes(queryLower)) {
         // Extract description
-        const descriptionMatch = featureContent.match(/- \*\*Description\*\*: (.+)/);
+        const descriptionRegex = /- \*\*Description\*\*: (.+)/;
+        const descriptionMatch = descriptionRegex.exec(featureContent);
         const description = descriptionMatch ? descriptionMatch[1].trim() : featureId;
 
         // Extract status
-        const statusMatch = featureContent.match(/- \*\*Status\*\*: (\w+)/);
-        let status: 'exploring' | 'building' | 'hardening' | 'shipped' = 'exploring';
+        const statusRegex = /- \*\*Status\*\*: (\w+)/;
+        const statusMatch = statusRegex.exec(featureContent);
+        let status: FeatureStatus = 'exploring';
         if (
           statusMatch &&
           ['exploring', 'building', 'hardening', 'shipped'].includes(statusMatch[1])
         ) {
-          status = statusMatch[1] as 'exploring' | 'building' | 'hardening' | 'shipped';
+          status = statusMatch[1] as FeatureStatus;
         }
 
         features.push({ id: featureId, description, status });
@@ -528,7 +533,7 @@ HODGE-004 (ID Management)
   /**
    * Map local status to PMState
    */
-  private mapStatusToState(status: 'exploring' | 'building' | 'hardening' | 'shipped'): PMState {
+  private mapStatusToState(status: FeatureStatus): PMState {
     const stateMap: Record<string, PMState> = {
       exploring: { id: 'exploring', name: 'Exploring', type: 'unstarted' as StateType },
       building: { id: 'building', name: 'Building', type: 'started' as StateType },

@@ -2,8 +2,10 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import { ToolchainService } from './toolchain-service.js';
 import type { RawToolResult } from '../types/toolchain.js';
+import { createCommandLogger } from './logger.js';
 
 const execAsync = promisify(exec);
+const logger = createCommandLogger('harden-service');
 
 export interface ValidationResult {
   passed: boolean;
@@ -62,10 +64,10 @@ export class HardenService {
         return await this.runToolchainValidations(feature, options);
       } catch (error) {
         // Fall back to legacy npm commands if toolchain fails
-        // TODO: Remove console.warn and handle error properly (HODGE-330 violation)
-        console.error('⚠️  Toolchain validation failed, falling back to npm commands:');
-        console.error('Error message:', error instanceof Error ? error.message : String(error));
-        console.error('Stack trace:', error instanceof Error ? error.stack : 'N/A');
+        logger.error('Toolchain validation failed, falling back to npm commands', {
+          error: error as Error,
+          feature,
+        });
       }
     }
 
@@ -238,7 +240,7 @@ export class HardenService {
       timestamp: new Date().toISOString(),
       allPassed,
       results,
-      skipTests: options.skipTests || false,
+      skipTests: options.skipTests ?? false,
     };
   }
 

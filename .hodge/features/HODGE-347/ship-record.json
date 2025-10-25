@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-347",
+  "timestamp": "2025-10-25T06:48:09.450Z",
+  "issueId": "HODGE-347",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "fix(logging): fix log rotation and migrate library logging to pino\n\n## What Changed\n- Fixed log rotation bug that was causing log loss during auto-rotation\n- Implemented hybrid log level configuration (HODGE_LOG_LEVEL env var + hodge.json)\n  - Added logLevel setting to hodge.json and hodge.json.example\n- Migrated library error logging from console to pino (HODGE-330 compliance)\n  - src/lib/pm/base-adapter.ts: console.warn → logger.warn\n  - src/lib/pm/index.ts: console.warn/error → logger.warn/error\n  - src/lib/harden-service.ts: console.error → logger.error\n- Updated tests to verify behavior instead of console spy mocks (4 tests)\n- Added comprehensive smoke tests for logging functionality\n- Applied Boy Scout Rule: Fixed 10 pre-existing ESLint errors in local-pm-adapter.ts\n  - Created FeatureStatus type alias to replace union types\n  - Converted 9 RegExp.match() to RegExp.exec() for better performance\n  - Fixed slow regex with backtracking vulnerability\n  - Fixed nullish coalescing warnings (5 locations)\n\n## Why This Change\nHODGE-347 addresses critical log persistence issues where logs were being lost during\nautomatic rotation. The previous implementation had a bug in the rotation logic that\nprevented logs from being written before rotation occurred. Additionally, library files\nwere violating HODGE-330 standards by using console logging instead of pino, making\ndebugging and troubleshooting difficult.\n\nThe hybrid configuration approach provides flexibility: environment variables for\nper-command overrides and hodge.json for persistent project preferences, giving\ndevelopers the best of both worlds.\n\n## Impact\n- ✅ Audit trail now persists correctly (logs survive rotation)\n- ✅ Library operations properly logged for debugging (HODGE-330 compliant)\n- ✅ Flexible log level configuration (env var + config file)\n- ✅ Configuration files now document logLevel option\n- ✅ Better test quality (behavior over implementation)\n- ✅ Improved code quality in local-pm-adapter.ts (Boy Scout Rule)\n- ✅ Performance improvement from regex optimizations\n\nRelated: HODGE-330 (Logging Standards)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}

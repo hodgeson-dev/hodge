@@ -6,6 +6,7 @@ import { StateConventions } from './conventions.js';
 import { PMAdapterOptions, PMIssue, PMState, PMOverrides, HodgeMode, StateType } from './types.js';
 import * as fs from 'fs';
 import * as path from 'path';
+import { createCommandLogger } from '../logger.js';
 
 export abstract class BasePMAdapter {
   protected conventions: StateConventions;
@@ -13,11 +14,12 @@ export abstract class BasePMAdapter {
   protected stateCache: Map<string, PMState[]> = new Map();
   protected cacheTimeout: number;
   protected lastCacheTime: number = 0;
+  protected logger = createCommandLogger('pm-adapter');
 
   constructor(protected options: PMAdapterOptions) {
     this.conventions = new StateConventions();
     this.overrides = this.loadOverrides();
-    this.cacheTimeout = options.cacheTimeout || 5 * 60 * 1000; // 5 minutes default
+    this.cacheTimeout = options.cacheTimeout ?? 5 * 60 * 1000; // 5 minutes default
 
     // Apply custom patterns if provided
     if (this.overrides.customPatterns) {
@@ -41,10 +43,10 @@ export abstract class BasePMAdapter {
         return JSON.parse(content) as PMOverrides;
       }
     } catch (error) {
-      console.warn(`Failed to load PM overrides: ${String(error)}`);
+      this.logger.warn('Failed to load PM overrides', { error: error as Error });
     }
 
-    return this.options.overrides || {};
+    return this.options.overrides ?? {};
   }
 
   /**
@@ -65,7 +67,7 @@ export abstract class BasePMAdapter {
    * Get available states (with caching)
    */
   async getStates(projectId?: string): Promise<PMState[]> {
-    const cacheKey = projectId || 'default';
+    const cacheKey = projectId ?? 'default';
     const now = Date.now();
 
     // Check cache
