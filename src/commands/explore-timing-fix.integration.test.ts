@@ -1,10 +1,9 @@
 import { describe, expect } from 'vitest';
 import { integrationTest } from '../test/helpers.js';
 import { ExploreCommand } from './explore.js';
-import fs from 'fs/promises';
-import path from 'path';
-import os from 'os';
 import { existsSync } from 'fs';
+import path from 'path';
+import { withTestWorkspace } from '../test/runners.js';
 
 describe('[integration] Explore Command Timing Fix', () => {
   // HODGE-320: Replaced subprocess spawning with direct function calls
@@ -12,25 +11,17 @@ describe('[integration] Explore Command Timing Fix', () => {
   // No timing assertions to eliminate flakiness
 
   integrationTest('explore command completes successfully', async () => {
-    // Create isolated temp directory for test (test isolation)
-    const testDir = await fs.mkdtemp(path.join(os.tmpdir(), 'hodge-timing-test-'));
-
-    try {
-      // Initialize .hodge structure in test directory
-      const hodgeDir = path.join(testDir, '.hodge');
-      await fs.mkdir(hodgeDir, { recursive: true });
-      await fs.mkdir(path.join(hodgeDir, 'features'), { recursive: true });
-
+    await withTestWorkspace('explore-timing', async (workspace) => {
       // Direct function call - no subprocess
       const command = new ExploreCommand();
       const originalCwd = process.cwd();
 
       try {
-        process.chdir(testDir);
+        process.chdir(workspace.getPath());
         await command.execute('test-timing-fix', { skipIdManagement: true });
 
         // Verify success through filesystem state
-        const featureDir = path.join(hodgeDir, 'features', 'test-timing-fix');
+        const featureDir = path.join(workspace.getPath(), '.hodge', 'features', 'test-timing-fix');
         expect(existsSync(featureDir)).toBe(true);
 
         const exploreDir = path.join(featureDir, 'explore');
@@ -42,34 +33,24 @@ describe('[integration] Explore Command Timing Fix', () => {
       } finally {
         process.chdir(originalCwd);
       }
-    } finally {
-      // Cleanup temp directory
-      await fs.rm(testDir, { recursive: true, force: true });
-    }
+    });
   });
 
   integrationTest('multiple explores complete successfully', async () => {
-    // Create isolated temp directory for test (test isolation)
-    const testDir = await fs.mkdtemp(path.join(os.tmpdir(), 'hodge-multi-timing-test-'));
-
-    try {
-      // Initialize .hodge structure in test directory
-      const hodgeDir = path.join(testDir, '.hodge');
-      await fs.mkdir(hodgeDir, { recursive: true });
-      await fs.mkdir(path.join(hodgeDir, 'features'), { recursive: true });
-
+    await withTestWorkspace('explore-multi-timing', async (workspace) => {
       // Direct function calls - no subprocess
       const command = new ExploreCommand();
       const originalCwd = process.cwd();
 
       try {
-        process.chdir(testDir);
+        process.chdir(workspace.getPath());
 
         // Run multiple explores
         await command.execute('feature-1', { skipIdManagement: true });
         await command.execute('feature-2', { skipIdManagement: true });
 
         // Verify both features were created
+        const hodgeDir = path.join(workspace.getPath(), '.hodge');
         const feature1Dir = path.join(hodgeDir, 'features', 'feature-1', 'explore');
         const feature2Dir = path.join(hodgeDir, 'features', 'feature-2', 'explore');
 
@@ -82,9 +63,6 @@ describe('[integration] Explore Command Timing Fix', () => {
       } finally {
         process.chdir(originalCwd);
       }
-    } finally {
-      // Cleanup temp directory
-      await fs.rm(testDir, { recursive: true, force: true });
-    }
+    });
   });
 });

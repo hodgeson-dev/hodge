@@ -3,10 +3,9 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: HODGE-346.4
-**Mode**: ship
-**PM Issue**: HODGE-346.4
-**Last Updated**: 2025-10-24T20:50:58.991Z
+**Feature**: general
+**Mode**: explore
+**Last Updated**: 2025-10-25T02:06:47.340Z
 ## Recent Decisions
 
 - **2025-10-09**: Removal Over Deprecation for Redundant Features
@@ -207,19 +206,11 @@ This file provides AI assistants with context about the current Hodge workflow s
 - Full test coverage required
 - Performance benchmarks met
 
-## Working Files
-
-- `.hodge/features/HODGE-346.4/explore/exploration.md`
-- `.hodge/features/HODGE-346.4/explore/test-intentions.md`
-- `.hodge/features/HODGE-346.4/build/build-plan.md`
-- `.hodge/features/HODGE-346.4/build/phase-2-plan.md`
-- `.hodge/features/HODGE-346.4/ship/release-notes.md`
-
 ## Next Steps
 
-1. Commit changes
-2. Create pull request
-3. Update documentation
+1. Review exploration approaches
+2. Make decision with `hodge decide`
+3. Start building with `hodge build general`
 
 
 ---
