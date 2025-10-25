@@ -3,13 +3,22 @@
 fast-redact  *
 fast-redact vulnerable to prototype pollution - https://github.com/advisories/GHSA-ffrw-9mx8-89p8
 fix available via `npm audit fix --force`
-Will install pino@10.0.0, which is a breaking change
+Will install pino@10.1.0, which is a breaking change
 node_modules/fast-redact
   pino  5.0.0-rc.1 - 9.11.0
   Depends on vulnerable versions of fast-redact
   node_modules/pino
 
-2 low severity vulnerabilities
+vite  7.1.0 - 7.1.10
+Severity: moderate
+vite allows server.fs.deny bypass via backslash on Windows - https://github.com/advisories/GHSA-93m4-6634-74q7
+fix available via `npm audit fix`
+node_modules/vite
+
+3 vulnerabilities (2 low, 1 moderate)
+
+To address issues that do not require attention, run:
+  npm audit fix
 
 To address all issues (including breaking changes), run:
   npm audit fix --force
