@@ -44,7 +44,6 @@ logs/
 .parcel-cache/
 
 # Hodge runtime files
-.hodge/saves/
 .hodge/context.md
 .hodge/session.json
 
