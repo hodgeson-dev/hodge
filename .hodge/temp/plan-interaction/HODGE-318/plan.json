@@ -1,8 +1,0 @@
-{
-  "feature": "HODGE-318",
-  "type": "single",
-  "title": "Fix CI ERR_REQUIRE_ESM - Migrate to ESM and Drop Node 18.x Support",
-  "description": "Migrate project from CommonJS to native ESM and update minimum Node version to 20.0.0 to fix CI test failures and establish modern foundations for initial release.\n\nImplementation Checklist:\n- Update package.json: Add \"type\": \"module\", engines \"node\": \">=20.0.0\"\n- Update tsconfig.json: \"module\": \"NodeNext\", \"moduleResolution\": \"NodeNext\"\n- Update .github/workflows/quality.yml: Remove 18.x, keep [20.x, 22.x]\n- Run full test suite locally on Node 20.x\n- Fix any import statement issues (add .js extensions if needed)\n- Update README.md with Node 20.x+ requirement\n- Verify CI passes on both Node 20.x and 22.x\n- Update CONTRIBUTING.md if it mentions Node version requirements\n\nDecision Reference:\n- Use ESM Migration + Drop Node 18.x Support approach (recorded 2025-10-02)",
-  "estimatedDays": 2,
-  "createdAt": "2025-10-02T23:35:00.000Z"
-}

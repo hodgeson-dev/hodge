@@ -1,9 +1,0 @@
-{
-  "feature": "HODGE-313",
-  "type": "single",
-  "title": "Fix /hodge command to show correct status for last feature worked on",
-  "description": "The /hodge command incorrectly shows 'explore' mode for shipped features. Root cause: hodge context generates HODGE.md using 'general' for mode detection instead of the session's actual feature, causing a mismatch between detected mode and displayed feature.\n\nImplementation:\n1. Modify src/commands/context.ts - loadDefaultContext() method to use session?.feature || 'general' for mode detection\n2. Add smoke tests to verify shipped/active/no-session scenarios\n\nFiles to modify: src/commands/context.ts, src/commands/context.smoke.test.ts",
-  "estimatedDays": 0.25,
-  "effort": "small",
-  "createdAt": "2025-10-01T03:56:00.000Z"
-}

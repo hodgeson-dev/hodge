@@ -46,6 +46,7 @@ logs/
 # Hodge runtime files
 .hodge/context.md
 .hodge/session.json
+.hodge/temp/
 
 # OS files
 Thumbs.db
