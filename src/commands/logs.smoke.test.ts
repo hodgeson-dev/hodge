@@ -1,51 +1,27 @@
 /**
  * Smoke Tests for Logs Command
- * Quick sanity checks for log formatting and filtering
+ * Quick sanity checks - no file I/O, <100ms each
  */
 
 import { smokeTest } from '../test/helpers.js';
 import { LogsCommand } from './logs.js';
-import fs from 'fs-extra';
-import path from 'path';
-import os from 'os';
 
-smokeTest('logs command should not crash with no log file', async () => {
-  const cmd = new LogsCommand();
-  await expect(cmd.execute()).resolves.not.toThrow();
+smokeTest('LogsCommand constructor should not throw with custom path', () => {
+  expect(() => new LogsCommand('/tmp/fake-log-path.log')).not.toThrow();
 });
 
-smokeTest('logs command should handle empty options', async () => {
-  const cmd = new LogsCommand();
-  await expect(cmd.execute({})).resolves.not.toThrow();
+smokeTest('LogsCommand constructor should not throw with default path', () => {
+  expect(() => new LogsCommand()).not.toThrow();
 });
 
-smokeTest('logs command should handle pretty option', async () => {
-  const cmd = new LogsCommand();
-  await expect(cmd.execute({ pretty: true })).resolves.not.toThrow();
+smokeTest('formatLogLine should handle malformed JSON gracefully', () => {
+  const cmd = new LogsCommand('/tmp/fake.log');
+  const result = (cmd as any).formatLogLine('invalid json', {}, true);
+  expect(result).toBeTruthy(); // Should return the line as-is, not crash
 });
 
-smokeTest('logs command should handle level filter', async () => {
-  const cmd = new LogsCommand();
-  await expect(cmd.execute({ level: 'error' })).resolves.not.toThrow();
-});
-
-smokeTest('logs command should handle command filter', async () => {
-  const cmd = new LogsCommand();
-  await expect(cmd.execute({ command: 'ship' })).resolves.not.toThrow();
-});
-
-smokeTest('logs command should handle tail option', async () => {
-  const cmd = new LogsCommand();
-  await expect(cmd.execute({ tail: 10 })).resolves.not.toThrow();
-});
-
-smokeTest('logs command should handle clear option', async () => {
-  const cmd = new LogsCommand();
-  await expect(cmd.execute({ clear: true })).resolves.not.toThrow();
-});
-
-smokeTest('formatLogLine should filter logger internals in pretty mode', async () => {
-  const cmd = new LogsCommand();
+smokeTest('formatLogLine should filter logger internals in pretty mode', () => {
+  const cmd = new LogsCommand('/tmp/fake.log');
   const logLine = JSON.stringify({
     time: Date.now(),
     level: 'info',
@@ -57,7 +33,6 @@ smokeTest('formatLogLine should filter logger internals in pretty mode', async (
     pid: 12345,
   });
 
-  // Access private method via type assertion for testing
   const formatted = (cmd as any).formatLogLine(logLine, {}, true);
 
   expect(formatted).toBeTruthy();
@@ -66,8 +41,8 @@ smokeTest('formatLogLine should filter logger internals in pretty mode', async (
   expect(formatted).not.toContain('"name"');
 });
 
-smokeTest('formatLogLine should capitalize and bracket command names', async () => {
-  const cmd = new LogsCommand();
+smokeTest('formatLogLine should capitalize and bracket command names', () => {
+  const cmd = new LogsCommand('/tmp/fake.log');
   const logLine = JSON.stringify({
     time: Date.now(),
     level: 'info',
@@ -81,8 +56,8 @@ smokeTest('formatLogLine should capitalize and bracket command names', async () 
   expect(formatted).not.toContain('[ship]');
 });
 
-smokeTest('formatLogLine should show user data line-by-line', async () => {
-  const cmd = new LogsCommand();
+smokeTest('formatLogLine should show user data line-by-line', () => {
+  const cmd = new LogsCommand('/tmp/fake.log');
   const logLine = JSON.stringify({
     time: Date.now(),
     level: 'error',
@@ -99,8 +74,8 @@ smokeTest('formatLogLine should show user data line-by-line', async () => {
   expect(formatted).toContain('\n  '); // Check for indentation
 });
 
-smokeTest('formatLogLine should preserve raw JSON in non-pretty mode', async () => {
-  const cmd = new LogsCommand();
+smokeTest('formatLogLine should preserve raw JSON in non-pretty mode', () => {
+  const cmd = new LogsCommand('/tmp/fake.log');
   const logLine = JSON.stringify({
     time: Date.now(),
     level: 'info',

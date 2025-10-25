@@ -385,7 +385,6 @@ Based on the status output and implementation progress:
 • `npm run test:smoke` - Run smoke tests to verify basic functionality (Recommended first step)
 • `/harden {{feature}}` - Add integration tests and validate production readiness
 • `/review` - Get code review feedback
-• `/save` - Save your progress
 
 💡 Tip: Run smoke tests first to catch basic issues before hardening.
 ```
@@ -398,7 +397,6 @@ Great work! Your implementation is ready for the next phase.
 
 • `/harden {{feature}}` - Add integration tests and validate production readiness (Recommended)
 • `/review` - Get code review feedback
-• `/save` - Save your progress
 • `/status {{feature}}` - Check overall feature status
 
 💡 Tip: Hardening adds integration tests and validates all quality gates.
@@ -411,7 +409,6 @@ Great work! Your implementation is ready for the next phase.
 • Continue implementing - Fix failing tests or complete remaining work
 • `npm run test:smoke` - Re-run smoke tests after changes
 • `/build {{feature}}` - Review build plan or continue implementation
-• `/save` - Save your progress
 
 💡 Tip: Get smoke tests passing before moving to harden phase.
 ```

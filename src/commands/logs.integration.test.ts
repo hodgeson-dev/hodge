@@ -45,10 +45,7 @@ integrationTest('should read and format real log file with pretty output', async
 
     await fs.writeFile(testLogFile, logEntries.join('\n'));
 
-    const cmd = new LogsCommand();
-
-    // Mock getLogPath to return our test file
-    (cmd as any).getLogPath = () => testLogFile;
+    const cmd = new LogsCommand(testLogFile);
 
     // Execute should not throw
     await expect(cmd.execute({ pretty: true })).resolves.not.toThrow();
@@ -72,8 +69,7 @@ integrationTest('should filter logs by level', async () => {
 
     await fs.writeFile(testLogFile, logEntries.join('\n'));
 
-    const cmd = new LogsCommand();
-    (cmd as any).getLogPath = () => testLogFile;
+    const cmd = new LogsCommand(testLogFile);
 
     await expect(cmd.execute({ level: 'error', pretty: true })).resolves.not.toThrow();
   } finally {
@@ -101,8 +97,7 @@ integrationTest('should filter logs by command', async () => {
 
     await fs.writeFile(testLogFile, logEntries.join('\n'));
 
-    const cmd = new LogsCommand();
-    (cmd as any).getLogPath = () => testLogFile;
+    const cmd = new LogsCommand(testLogFile);
 
     await expect(cmd.execute({ command: 'build', pretty: true })).resolves.not.toThrow();
   } finally {
@@ -123,8 +118,7 @@ integrationTest('should apply tail limit correctly', async () => {
 
     await fs.writeFile(testLogFile, logEntries.join('\n'));
 
-    const cmd = new LogsCommand();
-    (cmd as any).getLogPath = () => testLogFile;
+    const cmd = new LogsCommand(testLogFile);
 
     await expect(cmd.execute({ tail: 10, pretty: true })).resolves.not.toThrow();
   } finally {
@@ -140,8 +134,7 @@ integrationTest('should clear log files', async () => {
     await fs.ensureDir(testLogDir);
     await fs.writeFile(testLogFile, 'test log content');
 
-    const cmd = new LogsCommand();
-    (cmd as any).getLogPath = () => testLogFile;
+    const cmd = new LogsCommand(testLogFile);
 
     await cmd.execute({ clear: true });
 
@@ -153,8 +146,7 @@ integrationTest('should clear log files', async () => {
 });
 
 integrationTest('should handle non-existent log file gracefully', async () => {
-  const cmd = new LogsCommand();
-  (cmd as any).getLogPath = () => '/tmp/nonexistent-hodge-log-file.log';
+  const cmd = new LogsCommand('/tmp/nonexistent-hodge-log-file.log');
 
   await expect(cmd.execute({ pretty: true })).resolves.not.toThrow();
 });
@@ -174,8 +166,7 @@ integrationTest('should handle malformed JSON in log file', async () => {
 
     await fs.writeFile(testLogFile, logEntries.join('\n'));
 
-    const cmd = new LogsCommand();
-    (cmd as any).getLogPath = () => testLogFile;
+    const cmd = new LogsCommand(testLogFile);
 
     await expect(cmd.execute({ pretty: true })).resolves.not.toThrow();
   } finally {
@@ -200,8 +191,7 @@ integrationTest('should preserve raw JSON in non-pretty mode', async () => {
 
     await fs.writeFile(testLogFile, logEntry);
 
-    const cmd = new LogsCommand();
-    (cmd as any).getLogPath = () => testLogFile;
+    const cmd = new LogsCommand(testLogFile);
 
     await expect(cmd.execute({ pretty: false })).resolves.not.toThrow();
   } finally {

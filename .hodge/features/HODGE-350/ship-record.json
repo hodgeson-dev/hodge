@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-350",
+  "timestamp": "2025-10-25T21:47:22.618Z",
+  "issueId": "HODGE-350",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "fix(logs): fix test isolation violations in logs command tests\n\n## What Changed\n- Added constructor injection to LogsCommand for test path control\n  - New optional logPath parameter in constructor\n  - Extracted getDefaultLogPath() method with project/home fallback logic\n- Completely rewrote smoke tests (src/commands/logs.smoke.test.ts)\n  - Removed 7 dangerous tests that used real .hodge/logs paths\n  - Added 7 fast, isolated tests using fake paths (/tmp/fake-log-path.log)\n  - Zero file I/O in smoke tests (constructor and formatting tests only)\n- Updated integration tests (src/commands/logs.integration.test.ts)\n  - Replaced hacky property override pattern with clean constructor injection\n  - Changed from `(cmd as any).getLogPath = () => testFile` to `new LogsCommand(testLogFile)`\n- Fixed pre-existing ESLint errors in logs.ts (Boy Scout Rule)\n  - Refactored formatLogLine from 65-line method into 6 focused helpers\n  - Reduced cognitive complexity from 20 to <5 per method\n  - Fixed empty catch block with explanatory comment\n- Created new defensive design pattern documentation\n  - .hodge/patterns/constructor-injection-for-testing.md (157 lines)\n  - Includes before/after examples, when to apply, gotchas, tradeoffs\n\n## Why This Change\nAll 7 smoke tests violated test isolation by touching real project files:\n- Tests used `new LogsCommand()` which accessed `.hodge/logs/hodge.log`\n- `hodge logs --clear` tests deleted actual project logs during test runs\n- Integration tests used hacky property overrides instead of proper injection\n\nThis created flaky tests, potential data loss, and violated the principle that\ntests should be hermetic and leave no side effects.\n\nDuring the harden phase, pre-existing ESLint errors were discovered (cognitive\ncomplexity violation in formatLogLine). Per Boy Scout Rule, these were fixed\nrather than documented as technical debt.\n\n## Impact\n- ✅ Zero test isolation violations (all 15 tests properly isolated)\n- ✅ Smoke tests run in <100ms with zero file I/O\n- ✅ Integration tests use temp directories exclusively\n- ✅ New defensive pattern prevents future violations\n- ✅ Improved code quality (cognitive complexity fixed)\n- ✅ All 1254 tests passing across entire suite\n- ✅ No ESLint errors (2 pre-existing warnings remain, documented in review)\n- ✅ TypeScript strict mode passing\n- ✅ Build successful\n\nRelated: Constructor Injection Pattern (codified in .hodge/patterns/)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}

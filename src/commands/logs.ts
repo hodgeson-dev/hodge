@@ -29,10 +29,15 @@ interface LogEntry {
 
 export class LogsCommand {
   private logger = createCommandLogger('logs', { enableConsole: true });
+  private logPath: string;
+
+  constructor(logPath?: string) {
+    this.logPath = logPath ?? this.getDefaultLogPath();
+  }
 
   async execute(options: LogsOptions = {}): Promise<void> {
     // Find log file
-    const logPath = this.getLogPath();
+    const logPath = this.logPath;
 
     // Handle clear option
     if (options.clear) {
@@ -57,7 +62,7 @@ export class LogsCommand {
     }
   }
 
-  private getLogPath(): string {
+  private getDefaultLogPath(): string {
     // Try project directory first
     const projectLogPath = path.join(process.cwd(), '.hodge', 'logs', 'hodge.log');
     if (fs.existsSync(projectLogPath)) {
@@ -172,83 +177,102 @@ export class LogsCommand {
       const log = JSON.parse(line) as LogEntry;
 
       // Apply filters
-      if (options.level && log.level !== options.level.toLowerCase()) return null;
-      if (options.command && log.command !== options.command && log.name !== options.command)
+      if (!this.passesFilters(log, options)) {
         return null;
+      }
 
       if (!pretty) {
         return line;
       }
 
-      // Pretty print format
-      const timestamp = new Date(log.time).toLocaleString();
-      const level = (log.level ?? 'info').toUpperCase().padEnd(5);
-
-      // Capitalize command name and format as [Command]
-      // Use 'command' field first, fall back to 'name' field
-      const rawCommand = log.command ?? log.name;
-      const commandName = rawCommand
-        ? rawCommand.charAt(0).toUpperCase() + rawCommand.slice(1)
-        : '';
-      const command = commandName ? chalk.blue(`[${commandName}]`) : '';
-      const msg = log.msg ?? '';
-
-      // Color coding for levels
-      let levelStr: string;
-      switch (level.trim()) {
-        case 'ERROR':
-          levelStr = chalk.red(level);
-          break;
-        case 'WARN':
-          levelStr = chalk.yellow(level);
-          break;
-        case 'INFO':
-          levelStr = chalk.cyan(level);
-          break;
-        case 'DEBUG':
-          levelStr = chalk.gray(level);
-          break;
-        default:
-          levelStr = chalk.white(level);
-      }
-
-      let output = `${chalk.gray(timestamp)} ${levelStr} ${command} ${msg}`;
-
-      // Filter out pino/logger internal fields
-      const pinoInternals = [
-        'time',
-        'level',
-        'pid',
-        'msg',
-        'command',
-        'timestamp',
-        'hodgeVersion',
-        'hostname',
-        'name',
-        'enableConsole',
-        'v', // pino version field
-      ];
-
-      // Add extra user data if present (exclude logger internals)
-      const extras: Record<string, unknown> = {};
-      for (const [key, value] of Object.entries(log)) {
-        if (!pinoInternals.includes(key)) {
-          extras[key] = value;
-        }
-      }
-
-      // Format extra data line-by-line, indented
-      if (Object.keys(extras).length > 0) {
-        for (const [key, value] of Object.entries(extras)) {
-          const valueStr = typeof value === 'string' ? value : JSON.stringify(value);
-          output += `\n  ${chalk.dim(key)}: ${valueStr}`;
-        }
-      }
-
-      return output;
-    } catch (e) {
-      // Not valid JSON, might be an error stack trace
+      return this.formatPrettyLog(log);
+    } catch {
+      // Not valid JSON, might be an error stack trace - return as-is
       return pretty ? chalk.dim(line) : line;
     }
+  }
+
+  private passesFilters(log: LogEntry, options: LogsOptions): boolean {
+    if (options.level && log.level !== options.level.toLowerCase()) {
+      return false;
+    }
+    if (options.command && log.command !== options.command && log.name !== options.command) {
+      return false;
+    }
+    return true;
+  }
+
+  private formatPrettyLog(log: LogEntry): string {
+    const timestamp = new Date(log.time).toLocaleString();
+    const level = (log.level ?? 'info').toUpperCase().padEnd(5);
+    const levelStr = this.colorizeLevel(level);
+    const command = this.formatCommand(log.command ?? log.name);
+    const msg = log.msg ?? '';
+
+    let output = `${chalk.gray(timestamp)} ${levelStr} ${command} ${msg}`;
+
+    // Add extra user data (excluding pino internals)
+    const extras = this.extractUserData(log);
+    if (Object.keys(extras).length > 0) {
+      output += this.formatExtras(extras);
+    }
+
+    return output;
+  }
+
+  private colorizeLevel(level: string): string {
+    switch (level.trim()) {
+      case 'ERROR':
+        return chalk.red(level);
+      case 'WARN':
+        return chalk.yellow(level);
+      case 'INFO':
+        return chalk.cyan(level);
+      case 'DEBUG':
+        return chalk.gray(level);
+      default:
+        return chalk.white(level);
+    }
+  }
+
+  private formatCommand(rawCommand?: string): string {
+    if (!rawCommand) {
+      return '';
+    }
+    const commandName = rawCommand.charAt(0).toUpperCase() + rawCommand.slice(1);
+    return chalk.blue(`[${commandName}]`);
+  }
+
+  private extractUserData(log: LogEntry): Record<string, unknown> {
+    const pinoInternals = [
+      'time',
+      'level',
+      'pid',
+      'msg',
+      'command',
+      'timestamp',
+      'hodgeVersion',
+      'hostname',
+      'name',
+      'enableConsole',
+      'v', // pino version field
+    ];
+
+    const extras: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(log)) {
+      if (!pinoInternals.includes(key)) {
+        extras[key] = value;
+      }
+    }
+    return extras;
+  }
+
+  private formatExtras(extras: Record<string, unknown>): string {
+    let output = '';
+    for (const [key, value] of Object.entries(extras)) {
+      const valueStr = typeof value === 'string' ? value : JSON.stringify(value);
+      output += `\n  ${chalk.dim(key)}: ${valueStr}`;
+    }
+    return output;
   }
 }
