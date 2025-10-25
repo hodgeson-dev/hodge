@@ -84,17 +84,77 @@ After loading context, these files are available:
 
 **STOP HERE and present the context to the user.**
 
-Based on what you find, present the current state:
-- If exploration exists → "Exploration complete"
-- If decision exists → "Decision made: [brief summary]"
-- If build started → "Build in progress"
-- If nothing exists → "No work started yet"
+Check feature status to provide smart suggestions:
+```bash
+hodge status {{feature}}
+```
 
-Then list available options WITHOUT taking action:
-- "Continue with `/explore {{feature}}`" (if not explored)
-- "Continue with `/build {{feature}}`" (if explored and decided)
-- "Continue with `/harden {{feature}}`" (if built)
-- "Review existing work at `.hodge/features/{{feature}}/`"
+Based on the status output, present context-aware options:
+
+**If Exploration ✓, Decision ○, Build ○:**
+```
+### Current State
+Exploration complete. Ready to make decisions or start building.
+
+### What's Next?
+- `/decide` - Make architectural decisions (if needed)
+- `/build {{feature}}` - Start building (Recommended)
+- `/status {{feature}}` - Check detailed progress
+
+💡 Tip: You can start building immediately or record decisions first.
+```
+
+**If Exploration ✓, Build ✓, Harden ○:**
+```
+### Current State
+Build phase complete. Ready for integration tests and validation.
+
+### What's Next?
+- `/harden {{feature}}` - Add integration tests and validate (Recommended)
+- `/build {{feature}}` - Continue building if needed
+- `/status {{feature}}` - Check detailed progress
+
+💡 Tip: Hardening validates production readiness with quality gates.
+```
+
+**If Harden ✓, Production Ready ✓:**
+```
+### Current State
+Feature is production-ready! All quality gates passed.
+
+### What's Next?
+- `/ship {{feature}}` - Ship to production (Recommended)
+- `/review` - Optional final review
+- `/status {{feature}}` - Check detailed progress
+
+💡 Tip: You're ready to ship! 🚀
+```
+
+**If already Shipped ✓:**
+```
+### Current State
+Feature has been shipped. Great work! 🎉
+
+### What's Next?
+- `/explore <new-feature>` - Start your next feature (Recommended)
+- `git push` - Push to remote if not done
+- `/status` - Check overall project status
+
+💡 Tip: Time to start something new or take a well-deserved break!
+```
+
+**If no work started yet:**
+```
+### Current State
+No work started on {{feature}} yet.
+
+### What's Next?
+- `/explore {{feature}}` - Start exploring this feature (Recommended)
+- `/status` - Check overall project status
+- Choose a different feature to work on
+
+💡 Tip: Begin with exploration to understand the problem space.
+```
 
 **Wait for explicit user direction before proceeding.**
 

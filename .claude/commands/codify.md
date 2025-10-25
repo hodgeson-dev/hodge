@@ -412,5 +412,24 @@ c) Change enforcement to MANDATORY
 
 ---
 
+## What's Next?
+
+After codifying knowledge:
+
+```
+### What's Next?
+
+Knowledge captured! The rule/pattern/profile is now part of your project.
+
+• Continue with current work
+• `/codify "another rule"` - Capture more learnings
+• `/status` - Check overall project status
+• Review what you've codified in `.hodge/` directories
+
+💡 Tip: Codify insights as you discover them - don't wait until the end.
+```
+
+---
+
 *Command created: 2025-10-12*
 *Part of HODGE-341.4: AI Review Profile Compression*

@@ -142,13 +142,39 @@ After making decisions, use the `/plan` command to:
 
 See `/plan` for detailed work organization capabilities.
 
-## Next Steps
+## What's Next?
 
-After decisions are recorded, you can:
+After recording decisions, check feature status:
 
-- Plan work structure with `/plan {{feature}}`
-- Start building with `/build {{feature}}`
-- Review all decisions with `/status`
-- Continue development
+```bash
+hodge status {{feature}}
+```
+
+**If PM tracking is needed:**
+```
+### What's Next?
+
+Decisions recorded! Now you can structure the work.
+
+• `/plan {{feature}}` - Create PM issues and work breakdown (Recommended if complex)
+• `/build {{feature}}` - Start implementing (Recommended if straightforward)
+• `/status {{feature}}` - Check overall feature status
+• Continue refining - Add more decisions if needed
+
+💡 Tip: Use /plan for complex features that need multiple sub-tasks. Use /build for simple features.
+```
+
+**If already planned or PM tracked:**
+```
+### What's Next?
+
+Decisions are recorded and feature is tracked.
+
+• `/build {{feature}}` - Start implementing (Recommended)
+• `/plan {{feature}}` - Refine work breakdown if needed
+• `/status {{feature}}` - Check current progress
+
+💡 Tip: You're ready to build! The approach is clear and decisions are documented.
+```
 
 Remember: The `/decide` command focuses purely on recording technical and architectural decisions. Use `/plan` to organize work into epics, stories, and development lanes.

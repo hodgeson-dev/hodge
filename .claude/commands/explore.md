@@ -257,19 +257,54 @@ If user skips conversation or provides complete requirements upfront, fall back 
 ```
 
 ## Next Steps Menu
-After exploration is complete, suggest:
+
+After exploration is complete, check feature status to provide smart suggestions:
+
+```bash
+hodge status {{feature}}
 ```
-### Next Steps
-Type one of these commands:
-• `/decide` - Review and decide on approach
-• `/build {{feature}}` - Start building with [recommended approach name]
+
+Based on the status output, suggest relevant next steps:
+
+**If "Decisions Needed" section in exploration has items:**
+```
+### What's Next?
+
+I see you have decisions to make. Here are your options:
+
+• `/decide` - Make and record architectural decisions (Recommended)
+• `/build {{feature}}` - Start building with recommended approach (decisions can be made later)
 • `/save` - Save your progress
-• `/status {{feature}}` - Check current status
 • Continue exploring - Just describe what else to explore
 
-Or type your next request.
+💡 Tip: Making decisions now helps clarify the implementation approach.
+```
 
-Note: `/build` will use the recommended approach. Use `/decide` to choose a different approach.
+**If "No Decisions Needed" (exploration shows all decisions made):**
+```
+### What's Next?
+
+Your exploration is complete and all decisions are made! 🎉
+
+• `/build {{feature}}` - Start building with [recommended approach name] (Recommended)
+• `/save` - Save your progress
+• Continue exploring - Just describe what else to explore
+
+💡 Tip: You're ready to build! The recommended approach is clearly defined.
+```
+
+**If feature already has build started (status shows Build ✓):**
+```
+### What's Next?
+
+I see you've already started building this feature.
+
+• `/build {{feature}}` - Continue building
+• `/harden {{feature}}` - Add integration tests and validate
+• `/status {{feature}}` - Check current progress
+• Continue exploring - Refine the approach based on what you've learned
+
+💡 Tip: Building while exploring is fine - update the exploration as you learn.
 ```
 
 Remember: The CLI handles all the file creation and PM integration. Focus on generating creative solutions and documenting approaches.

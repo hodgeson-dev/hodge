@@ -1,8 +1,8 @@
 # Critical Files for Review
 
-**Generated**: 2025-10-24T09:20:09.447Z
+**Generated**: 2025-10-25T00:32:04.952Z
 **Algorithm**: risk-weighted-v1.0
-**Scope**: 20 files changed, top 10 selected for deep review
+**Scope**: 23 files changed, top 10 selected for deep review
 
 ## Scoring Factors
 
@@ -25,41 +25,44 @@
 
 | Rank | Score | File | Risk Factors |
 |------|-------|------|-------------|
-| 1 | 550 | src/commands/status.ts | 3 blocker issues, 8 warnings, large change (306 lines) |
-| 2 | 417 | src/commands/context.ts | 15 warnings |
-| 3 | 200 | src/commands/lessons.ts | 1 blocker issue, large change (335 lines), new file |
-| 4 | 175 | report/jscpd-report.json | 1 blocker issue, 1 warning, large change (257 lines) |
-| 5 | 150 | .hodge/features/HODGE-346.4/build/build-plan.md | 2 warnings, large change (538 lines), new file |
-| 6 | 150 | .hodge/features/HODGE-346.4/explore/exploration.md | 2 warnings, large change (755 lines), new file |
-| 7 | 125 | .hodge/features/HODGE-346.4/explore/test-intentions.md | 2 warnings, new file |
-| 8 | 108 | .hodge/features/HODGE-346.4/ship-record.json | 2 warnings, new file |
-| 9 | 104 | .hodge/lessons/HODGE-341.5-test-infrastructure-fix.md | 2 warnings, new file |
-| 10 | 102 | .hodge/id-mappings.json | 2 warnings, new file |
+| 1 | 232 | .hodge/features/HODGE-346.4/harden/critical-files.md | 2 blocker issues |
+| 2 | 175 | report/jscpd-report.json | 1 blocker issue, 1 warning, large change (426 lines) |
+| 3 | 110 | .claude/commands/codify.md | 2 warnings, new file |
+| 4 | 109 | .claude/commands/review.md | 2 warnings, new file |
+| 5 | 103 | src/commands/hodge-324.smoke.test.ts | 1 blocker issue, 2 warnings, test file (lower priority) |
+| 6 | 100 | .hodge/features/HODGE-346.4/harden/quality-checks.md | 2 warnings, large change (287 lines) |
+| 7 | 100 | .hodge/features/HODGE-346.4/harden/review-manifest.yaml | 2 warnings |
+| 8 | 91 | .claude/commands/hodge.md | 2 warnings |
+| 9 | 76 | .claude/commands/explore.md | 2 warnings |
+| 10 | 75 | .claude/commands/build.md | 2 warnings, medium change (102 lines) |
 
-## All Changed Files (20 total)
+## All Changed Files (23 total)
 
 | File | Score | Included in Review |
 |------|-------|-----------------|
-| src/commands/status.ts | 550 | ✅ Yes (Rank 1) |
-| src/commands/context.ts | 417 | ✅ Yes (Rank 2) |
-| src/commands/lessons.ts | 200 | ✅ Yes (Rank 3) |
-| report/jscpd-report.json | 175 | ✅ Yes (Rank 4) |
-| .hodge/features/HODGE-346.4/build/build-plan.md | 150 | ✅ Yes (Rank 5) |
-| .hodge/features/HODGE-346.4/explore/exploration.md | 150 | ✅ Yes (Rank 6) |
-| .hodge/features/HODGE-346.4/explore/test-intentions.md | 125 | ✅ Yes (Rank 7) |
-| .hodge/features/HODGE-346.4/ship-record.json | 108 | ✅ Yes (Rank 8) |
-| .hodge/lessons/HODGE-341.5-test-infrastructure-fix.md | 104 | ✅ Yes (Rank 9) |
-| .hodge/id-mappings.json | 102 | ✅ Yes (Rank 10) |
-| .hodge/features/HODGE-346.4/issue-id.txt | 101 | ❌ No |
-| .hodge/lessons/HODGE-317.1-eliminate-hung-test-processes.md | 79 | ❌ No |
-| src/bin/hodge.ts | 65 | ❌ No |
-| .hodge/HODGE.md | 61 | ❌ No |
-| .hodge/.session | 55 | ❌ No |
+| .hodge/features/HODGE-346.4/harden/critical-files.md | 232 | ✅ Yes (Rank 1) |
+| report/jscpd-report.json | 175 | ✅ Yes (Rank 2) |
+| .claude/commands/codify.md | 110 | ✅ Yes (Rank 3) |
+| .claude/commands/review.md | 109 | ✅ Yes (Rank 4) |
+| src/commands/hodge-324.smoke.test.ts | 103 | ✅ Yes (Rank 5) |
+| .hodge/features/HODGE-346.4/harden/quality-checks.md | 100 | ✅ Yes (Rank 6) |
+| .hodge/features/HODGE-346.4/harden/review-manifest.yaml | 100 | ✅ Yes (Rank 7) |
+| .claude/commands/hodge.md | 91 | ✅ Yes (Rank 8) |
+| .claude/commands/explore.md | 76 | ✅ Yes (Rank 9) |
+| .claude/commands/build.md | 75 | ✅ Yes (Rank 10) |
+| .claude/commands/harden.md | 75 | ❌ No |
+| .claude/commands/ship.md | 75 | ❌ No |
+| .hodge/features/HODGE-346.4/harden/auto-fix-report.json | 75 | ❌ No |
+| src/commands/visual-patterns.smoke.test.ts | 75 | ❌ No |
+| src/commands/visual-rendering.smoke.test.ts | 75 | ❌ No |
+| .claude/commands/status.md | 72 | ❌ No |
+| .claude/commands/plan.md | 70 | ❌ No |
+| .claude/commands/decide.md | 69 | ❌ No |
+| .hodge/HODGE.md | 60 | ❌ No |
 | .hodge/context.json | 54 | ❌ No |
-| .hodge/project_management.md | 53 | ❌ No |
-| src/commands/lessons.smoke.test.ts | 50 | ❌ No |
-| src/commands/status.smoke.test.ts | 50 | ❌ No |
-| src/commands/context.smoke.test.ts | 16 | ❌ No |
+| .hodge/features/HODGE-346.4/ship-record.json | 52 | ❌ No |
+| .hodge/project_management.md | 51 | ❌ No |
+| src/commands/choice-formatting.smoke.test.ts | 50 | ❌ No |
 
 ---
 **Note**: Focus your deep review on the Top 10 files. Other files should receive basic checks only.

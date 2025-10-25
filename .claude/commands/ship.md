@@ -30,6 +30,15 @@ Before shipping, you MUST ensure all standards are met at the **BLOCKING Level**
 
 If any BLOCKING standards are not met, return to `/harden` phase.
 
+────────────────────────────────────────────────────────────
+📍 Step 1 of 4: Analyze Changes
+────────────────────────────────────────────────────────────
+
+Remaining:
+  ○ Generate Rich Commit Message
+  ○ Interactive Approval & Lessons
+  ○ Ship Quality Checks & Commit
+
 ## Step 1: Analyze Changes
 First, analyze the git changes to understand what was modified:
 
@@ -52,6 +61,17 @@ echo ""
 echo "📄 File-by-file changes:"
 git diff --name-status
 ```
+
+────────────────────────────────────────────────────────────
+📍 Step 2 of 4: Generate Rich Commit Message
+────────────────────────────────────────────────────────────
+
+Previously completed:
+  ✓ Analyze Changes
+
+Remaining:
+  ○ Interactive Approval & Lessons
+  ○ Ship Quality Checks & Commit
 
 ## Step 2: Generate Rich Commit Message
 
@@ -87,6 +107,17 @@ If it's a bug fix, explain what was broken and how it's fixed.
 - [Developer experience improvements]
 - [Performance or reliability changes]
 ```
+
+────────────────────────────────────────────────────────────
+📍 Step 3 of 4: Interactive Approval & Lessons
+────────────────────────────────────────────────────────────
+
+Previously completed:
+  ✓ Analyze Changes
+  ✓ Generate Rich Commit Message
+
+Remaining:
+  ○ Ship Quality Checks & Commit
 
 ## Step 3: Interactive Approval
 
@@ -451,6 +482,15 @@ d) Discuss - I have questions or want to explore this more
 - Standards are mandatory (enforced), patterns are guidance (suggested)
 - Multiple elevations possible (e.g., both a standard AND a pattern)
 
+────────────────────────────────────────────────────────────
+📍 Step 4 of 4: Ship Quality Checks & Commit
+────────────────────────────────────────────────────────────
+
+Previously completed:
+  ✓ Analyze Changes
+  ✓ Generate Rich Commit Message
+  ✓ Interactive Approval & Lessons
+
 ## Step 4: Ship Quality Checks & Commit
 
 The ship command will:
@@ -462,13 +502,123 @@ The ship command will:
 - ✅ Update PM tracking
 - ✅ Learn patterns from shipped code
 
-## Post-Ship Actions
-After successful shipping:
-1. Push to remote: `git push`
-2. Create PR if needed
-3. Monitor production metrics
-4. Review and document lessons learned
-5. Start next feature with `/explore`
+## What's Next?
+
+After successful shipping, check your velocity:
+
+```bash
+hodge status --stats
+```
+
+**After ship completes successfully:**
+
+Parse the stats output and display celebration based on achievements:
+
+**If ships_this_week >= 5:**
+```
+┌─────────────────────────────────────────────────────────┐
+│ 🎉 {{feature}} Shipped!                                 │
+└─────────────────────────────────────────────────────────┘
+
+Wow! You're absolutely unstoppable! 🚀
+
+📊 Your Momentum:
+• {{ships_this_week}} features shipped this week
+• {{ships_this_month}} features shipped this month
+• {{total_shipped}} total features shipped
+{{#if streak >= 2}}• {{streak}} consecutive weeks shipping{{/if}}
+{{#if coverage_trend}}• {{average_coverage}}% test coverage ({{coverage_trend >= 0 ? '+' : ''}}{{coverage_trend}}% trend){{/if}}
+
+🏆 Achievement Unlocked: "Unstoppable" (5+ features in one week)
+
+### What's Next?
+
+• `git push` - Push to remote repository (Recommended next)
+• Create PR if needed for team review
+• `/explore <new-feature>` - Keep the momentum going!
+• `/status` - Check overall project status
+
+💡 Tip: You're on fire! Consider taking a break or starting something new. 🔥
+```
+
+**Else if ships_this_week >= 3:**
+```
+┌─────────────────────────────────────────────────────────┐
+│ 🎉 {{feature}} Shipped!                                 │
+└─────────────────────────────────────────────────────────┘
+
+Nice work! That's your {{ships_this_week}}{{ordinal_suffix}} ship this week. 🚢
+
+📊 Your Momentum:
+• {{ships_this_week}} features shipped this week
+• {{ships_this_month}} features shipped this month
+• {{total_shipped}} total features shipped
+{{#if streak >= 2}}• {{streak}} consecutive weeks shipping{{/if}}
+{{#if coverage_trend}}• {{average_coverage}}% test coverage ({{coverage_trend >= 0 ? '+' : ''}}{{coverage_trend}}% trend){{/if}}
+
+🏆 Achievement Unlocked: "Shipping Machine" (3+ features in one week)
+
+### What's Next?
+
+• `git push` - Push to remote repository (Recommended next)
+• Create PR if needed for team review
+• `/explore <new-feature>` - Start your next feature
+• `/status` - Check overall project status
+
+💡 Tip: Great velocity! You're shipping consistently. 🎯
+```
+
+**Else if streak >= 4:**
+```
+┌─────────────────────────────────────────────────────────┐
+│ 🎉 {{feature}} Shipped!                                 │
+└─────────────────────────────────────────────────────────┘
+
+Excellent consistency! {{streak}} consecutive weeks shipping. 📈
+
+📊 Your Momentum:
+• {{ships_this_week}} features shipped this week
+• {{ships_this_month}} features shipped this month
+• {{total_shipped}} total features shipped
+• {{streak}} consecutive weeks shipping
+{{#if coverage_trend}}• {{average_coverage}}% test coverage ({{coverage_trend >= 0 ? '+' : ''}}{{coverage_trend}}% trend){{/if}}
+
+🏆 Achievement Unlocked: "Velocity Master" (4+ consecutive weeks)
+
+### What's Next?
+
+• `git push` - Push to remote repository (Recommended next)
+• Create PR if needed for team review
+• `/explore <new-feature>` - Start your next feature
+• `/status` - Check overall project status
+
+💡 Tip: Your consistency is impressive! Keep the streak alive. ⚡
+```
+
+**Else (no special achievements):**
+```
+┌─────────────────────────────────────────────────────────┐
+│ 🎉 {{feature}} Shipped!                                 │
+└─────────────────────────────────────────────────────────┘
+
+Great work! Feature successfully shipped. ✅
+
+📊 Your Stats:
+• {{ships_this_week}} features shipped this week
+• {{ships_this_month}} features shipped this month
+• {{total_shipped}} total features shipped
+{{#if streak >= 2}}• {{streak}} consecutive weeks shipping{{/if}}
+{{#if coverage_trend}}• {{average_coverage}}% test coverage ({{coverage_trend >= 0 ? '+' : ''}}{{coverage_trend}}% trend){{/if}}
+
+### What's Next?
+
+• `git push` - Push to remote repository (Recommended next)
+• Create PR if needed for team review
+• `/explore <new-feature>` - Start your next feature
+• `/status` - Check overall project status
+
+💡 Tip: Push your changes and celebrate the win! 🚀
+```
 
 ## Troubleshooting
 - **Tests failing?** Fix them first with `/build {{feature}}`

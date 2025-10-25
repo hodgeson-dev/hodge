@@ -348,4 +348,21 @@ If the command fails:
 - Provide guidance based on error type
 - Don't crash the conversation - help user recover
 
+## What's Next?
+
+After review completes:
+
+```
+### What's Next?
+
+Review findings documented in `.hodge/reviews/{{filename}}.md`
+
+• Address critical issues found in the review
+• Continue with current workflow (`/build`, `/harden`, `/ship`)
+• Run another review: `/review --file <path>` or `/review --directory <path>`
+• `/status {{feature}}` - Check feature progress
+
+💡 Tip: Use /review anytime to get targeted code quality feedback.
+```
+
 ARGUMENTS: {{flags}}

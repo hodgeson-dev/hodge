@@ -9,7 +9,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-const COMMANDS_DIR = join(__dirname);
+const COMMANDS_DIR = join(__dirname, '..', '..', '.claude', 'commands');
 
 // Commands that should have choice blocks
 const COMMANDS_WITH_CHOICES = [

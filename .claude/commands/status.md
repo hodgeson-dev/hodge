@@ -77,14 +77,44 @@ The status command helps you:
 - Maintain context when switching tasks
 - See what needs attention
 
-## Next Steps
+## What's Next?
 
-After checking status, you can:
+Based on the status output, suggest context-aware next steps:
 
-- Continue with the suggested feature
-- Start a new feature with `/explore`
-- Resume an active feature with `/build {{feature}}`
-- Review and record decisions with `/decide`
-- Check a specific feature with `/status {{feature}}`
+**If showing overall status (no specific feature):**
+```
+### What's Next?
+
+{{#if active_features.length > 0}}
+You have {{active_features.length}} active feature(s):
+{{#each active_features}}
+• {{this}} - Continue with `/build {{this}}` or `/harden {{this}}`
+{{/each}}
+
+Or start fresh:
+• `/explore <new-feature>` - Start a new feature
+• `/status {{feature}}` - Check specific feature details
+
+💡 Tip: Focus on completing active features before starting new ones.
+{{else}}
+No active features. Ready to start something new!
+
+• `/explore <feature>` - Start exploring a new feature
+• Check velocity with `hodge status --stats`
+
+💡 Tip: Use status --stats to see your shipping velocity and momentum.
+{{/if}}
+```
+
+**If showing specific feature status:**
+```
+### What's Next?
+
+Based on "{{feature}}" progress, use the "Next Step" suggestion shown above.
+
+The status command has already analyzed your feature state and provided the optimal next command.
+
+💡 Tip: Follow the suggested next step for the smoothest workflow progression.
+```
 
 Remember: The CLI tracks all feature progress automatically. Use status to stay oriented and make informed decisions about what to work on next.

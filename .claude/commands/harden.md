@@ -77,6 +77,29 @@ This workflow has a hard gate at Step 6:
 
 The CLI validation will fail on errors anyway. Catching them in pre-check saves time.
 
+────────────────────────────────────────────────────────────
+📍 Step 1 of 7: Generate Review Manifest
+────────────────────────────────────────────────────────────
+
+Remaining:
+  ○ Read Review Manifest
+  ○ Choose Review Tier
+  ○ Load Context Files
+  ○ Conduct AI Review
+  ○ Assess Findings
+  ○ Generate Review Report
+
+## Check for Relevant Lessons
+
+Before starting the harden workflow, check for lessons related to the changes:
+
+```bash
+# Check for lessons based on modified files
+git diff --name-only | xargs -I {} hodge lessons --match "testing,quality,validation" --files "{}"
+```
+
+**Display any high-confidence + critical lessons as proactive prompts** (see /build template for format).
+
 ### Step 1: Generate Review Manifest
 **Analyze changes and generate tiered review manifest:**
 
@@ -95,6 +118,20 @@ This command will:
    - Changed files list with line counts
    - Context files to load (organized by precedence)
    - Matched patterns and profiles
+
+────────────────────────────────────────────────────────────
+📍 Step 2 of 7: Read Review Manifest
+────────────────────────────────────────────────────────────
+
+Previously completed:
+  ✓ Generate Review Manifest
+
+Remaining:
+  ○ Choose Review Tier
+  ○ Load Context Files
+  ○ Conduct AI Review
+  ○ Assess Findings
+  ○ Generate Review Report
 
 ### Step 2: Read Review Manifest
 ```bash
@@ -143,6 +180,20 @@ The report shows:
 - Inferred critical paths (files with >20 imports)
 - Configured critical paths (from .hodge/toolchain.yaml)
 
+────────────────────────────────────────────────────────────
+📍 Step 3 of 7: Choose Review Tier
+────────────────────────────────────────────────────────────
+
+Previously completed:
+  ✓ Generate Review Manifest
+  ✓ Read Review Manifest
+
+Remaining:
+  ○ Load Context Files
+  ○ Conduct AI Review
+  ○ Assess Findings
+  ○ Generate Review Report
+
 ### Step 3: Choose Review Tier
 Based on the manifest's `recommended_tier`, choose your review tier:
 
@@ -153,6 +204,20 @@ Based on the manifest's `recommended_tier`, choose your review tier:
 - **FULL**: Major changes or critical paths (~8K lines of context)
 
 **Default**: Use the recommended tier unless you have a reason to override.
+
+────────────────────────────────────────────────────────────
+📍 Step 4 of 7: Load Context Files
+────────────────────────────────────────────────────────────
+
+Previously completed:
+  ✓ Generate Review Manifest
+  ✓ Read Review Manifest
+  ✓ Choose Review Tier
+
+Remaining:
+  ○ Conduct AI Review
+  ○ Assess Findings
+  ○ Generate Review Report
 
 ### Step 4: Load Context Files (MANDATORY)
 
@@ -220,6 +285,20 @@ Before proceeding to Step 5, confirm you loaded:
 
 **Example**: If a review profile suggests "always use async", but standards.md says "only use async when necessary", the standard wins.
 
+────────────────────────────────────────────────────────────
+📍 Step 5 of 7: Conduct AI Code Review
+────────────────────────────────────────────────────────────
+
+Previously completed:
+  ✓ Generate Review Manifest
+  ✓ Read Review Manifest
+  ✓ Choose Review Tier
+  ✓ Load Context Files
+
+Remaining:
+  ○ Assess Findings
+  ○ Generate Review Report
+
 ### Step 5: Conduct AI Code Review
 
 **Review Strategy**: Use the context files you loaded in Step 4 to assess the code.
@@ -264,6 +343,20 @@ Before moving to Step 6, confirm you actually USED the context files:
 **If you can't answer YES to these questions, return to Step 4 and re-load context.**
 
 The purpose of loading context is to APPLY it, not just read it.
+
+────────────────────────────────────────────────────────────
+📍 Step 6 of 7: Assess Review Findings
+────────────────────────────────────────────────────────────
+
+Previously completed:
+  ✓ Generate Review Manifest
+  ✓ Read Review Manifest
+  ✓ Choose Review Tier
+  ✓ Load Context Files
+  ✓ Conduct AI Review
+
+Remaining:
+  ○ Generate Review Report
 
 ### Step 6: Assess Review Findings
 
@@ -372,6 +465,18 @@ No errors or warnings found. Ready to proceed with validation.
 - **(b) Fix mandatory + warnings** → Use Edit tool to fix all issues, then proceed to Step 7
 - **(c) Review first** → Show detailed analysis of each issue, then re-present the choice
 - **(d) Skip** → Proceed to Step 7 (document that issues remain)
+
+────────────────────────────────────────────────────────────
+📍 Step 7 of 7: Generate Review Report
+────────────────────────────────────────────────────────────
+
+Previously completed:
+  ✓ Generate Review Manifest
+  ✓ Read Review Manifest
+  ✓ Choose Review Tier
+  ✓ Load Context Files
+  ✓ Conduct AI Review
+  ✓ Assess Findings
 
 ### Step 7: Generate Review Report
 **IMPORTANT**: After conducting your review, you MUST write a review-report.md file documenting your findings.
@@ -543,16 +648,56 @@ Before proceeding to ship, ensure:
 - [ ] Performance standards met
 - [ ] Documentation updated if needed
 
-## Next Steps
+## What's Next?
 
-After hardening is complete, you can:
+After completing the harden workflow, check validation status:
 
-- Ship to production with `/ship {{feature}}`
-- Run additional tests with `npm test`
-- Request code review with `/review`
-- Back to build for fixes with `/build {{feature}}`
-- Check status with `/status {{feature}}`
-- Save progress with `/save`
+```bash
+hodge status {{feature}}
+```
+
+Based on the status output:
+
+**If "Production Ready" shows ✓ (all validation passed):**
+```
+### What's Next?
+
+🎉 Feature is production-ready! All quality gates passed.
+
+• `/ship {{feature}}` - Ship to production (Recommended)
+• `/review` - Optional final code review
+• `/status {{feature}}` - Check overall feature status
+• `/save` - Save your progress
+
+💡 Tip: You're ready to ship! All tests pass and quality gates are green.
+```
+
+**If "Production Ready" shows ○ (validation issues remain):**
+```
+### What's Next?
+
+There are still issues blocking production readiness.
+
+• Review quality-checks.md for specific issues
+• Fix failing tests or quality checks
+• Re-run `/harden {{feature}} --fix` to auto-fix simple issues
+• Re-run `/harden {{feature}} --review` after fixes
+• `/build {{feature}}` - Return to build if major changes needed
+
+💡 Tip: Address all ERRORS before shipping. Warnings can be addressed but won't block.
+```
+
+**If harden workflow was interrupted:**
+```
+### What's Next?
+
+• `/harden {{feature}}` - Continue or restart harden workflow
+• `/status {{feature}}` - Check what's been completed
+• `/build {{feature}}` - Return to build if needed
+• `/save` - Save your progress
+
+💡 Tip: Complete the full harden workflow to validate production readiness.
+```
 
 ## Important Notes
 1. **The AI Standards Pre-Check is MANDATORY** - Never skip it

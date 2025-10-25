@@ -10,7 +10,6 @@
 import { describe, it, expect } from 'vitest';
 import fs from 'fs/promises';
 import path from 'path';
-import { fileExists } from '../lib/file-utils.js';
 
 describe('[smoke] HODGE-324: Lessons Timing Fix', () => {
   describe('CLI Code Changes', () => {
@@ -113,19 +112,19 @@ describe('[smoke] HODGE-324: Lessons Timing Fix', () => {
   });
 
   describe('Template Structure Validation', () => {
-    it('should have correct step order: 3 → 3.5 → 4 → Post-Ship', async () => {
+    it("should have correct step order: 3 → 3.5 → 4 → What's Next", async () => {
       const shipMdPath = path.join(process.cwd(), '.claude/commands/ship.md');
       const content = await fs.readFile(shipMdPath, 'utf-8');
 
       const step3Index = content.indexOf('## Step 3:');
       const step35Index = content.indexOf('## Step 3.5:');
       const step4Index = content.indexOf('## Step 4:');
-      const postShipIndex = content.indexOf('## Post-Ship Actions');
+      const whatsNextIndex = content.indexOf("## What's Next?");
 
       expect(step3Index).toBeGreaterThan(0);
       expect(step35Index).toBeGreaterThan(step3Index);
       expect(step4Index).toBeGreaterThan(step35Index);
-      expect(postShipIndex).toBeGreaterThan(step4Index);
+      expect(whatsNextIndex).toBeGreaterThan(step4Index);
     });
 
     it('should have Step 4 execute ship command after lessons', async () => {

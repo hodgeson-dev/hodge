@@ -534,14 +534,40 @@ rm -rf .hodge/temp/plan-interaction/{{feature}}
 - **Warn users** if stories appear to be horizontal slices (layer-based)
 - **Suggest single issue** when vertical slicing is not feasible
 
-## Next Steps After Planning
+## What's Next?
 
-After plan is saved and/or PM issues created, you can:
+After planning is complete, check what was created:
 
-- Start building first story with `/build {{first_story}}`
-- Review plan details with `cat .hodge/development-plan.json`
-- Regenerate plan with `/plan {{feature}} --lanes N`
-- View in Linear [provide Linear URL if PM issues created]
-- Continue development
+```bash
+cat .hodge/development-plan.json
+```
+
+**If PM issues were created:**
+```
+### What's Next?
+
+Work structure created! Stories are ready to build.
+
+• `/build {{first_story}}` - Start with the first story (Recommended)
+• View in Linear - [provide Linear URL from command output]
+• `/status {{feature}}` - Check overall feature status
+• Regenerate plan with `/plan {{feature}} --lanes N` if needed
+
+💡 Tip: Build stories in dependency order. Parallel lanes let you work on independent stories simultaneously.
+```
+
+**If only plan file created (no PM tracking):**
+```
+### What's Next?
+
+Development plan saved locally.
+
+• `/build {{first_story}}` - Start implementing first story (Recommended)
+• Review plan: `cat .hodge/development-plan.json`
+• Create PM issues later if needed
+• `/status {{feature}}` - Check feature status
+
+💡 Tip: You can still break features into sub-features manually without PM integration.
+```
 
 Remember: `/plan` bridges the gap between decisions and implementation, turning ideas into actionable, parallel work streams.

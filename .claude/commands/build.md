@@ -283,6 +283,55 @@ The CLI will output:
 - Build guidelines (SHOULD follow standards)
 - Created files location
 
+## Check for Relevant Lessons
+
+Before starting implementation, check if there are lessons from past features that might be relevant:
+
+```bash
+# Check for lessons related to the files you'll be modifying
+# Example: if modifying command execution code
+hodge lessons --match "subprocess,command,execution" --files "src/commands/build.ts"
+```
+
+**If lessons are found, display them based on confidence and severity:**
+
+**High confidence + Critical severity → Proactive (interrupt with choice):**
+```
+🔔 YOUR RESPONSE NEEDED
+
+💡 Pattern from {{lesson.feature}}: {{lesson.relevance}}
+
+Should I check for {{lesson.title}} before we start building?
+
+a) ⭐ Yes, check now (~30s) (Recommended)
+b) Skip, I know it's safe
+c) Tell me more about the pattern
+
+💡 Tip: You can modify any choice, e.g., "a, and also check for related patterns"
+
+👉 Your choice [a/b/c]:
+```
+
+**Medium confidence OR Warning severity → Reactive (callout box):**
+```
+┌─────────────────────────────────────────────────────────┐
+│ 💡 Relevant Pattern: {{lesson.title}}                  │
+├─────────────────────────────────────────────────────────┤
+│ {{lesson.excerpt}}                                      │
+│                                                          │
+│ Consider: {{lesson.suggestion}}                         │
+│ Pattern: .hodge/lessons/{{lesson.feature}}.md         │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Low confidence → Inline mention:**
+```
+💡 Related: See .hodge/lessons/{{lesson.feature}}.md for {{lesson.topic}}
+```
+
+**If no relevant lessons found:**
+Continue with implementation (no interruption).
+
 ## Your Tasks After CLI Command
 1. Review the build plan at `.hodge/features/{{feature}}/build/build-plan.md`
 2. Implement the feature following:
@@ -319,15 +368,52 @@ The CLI will output:
 - **Run Command**: `npm run test:smoke`
 - Use test utilities from `src/test/helpers.ts`
 
-## Next Steps
+## What's Next?
 
-After building is complete, you can:
+After implementing, check feature status to provide smart suggestions:
 
-- Run smoke tests with `npm run test:smoke`
-- Proceed to hardening with `/harden {{feature}}`
-- Review changes with `/review`
-- Save progress with `/save`
-- Check status with `/status {{feature}}`
-- Switch to another feature with `/build`
+```bash
+hodge status {{feature}}
+```
+
+Based on the status output and implementation progress:
+
+**If smoke tests haven't been run yet:**
+```
+### What's Next?
+
+• `npm run test:smoke` - Run smoke tests to verify basic functionality (Recommended first step)
+• `/harden {{feature}}` - Add integration tests and validate production readiness
+• `/review` - Get code review feedback
+• `/save` - Save your progress
+
+💡 Tip: Run smoke tests first to catch basic issues before hardening.
+```
+
+**If smoke tests pass and implementation looks complete:**
+```
+### What's Next?
+
+Great work! Your implementation is ready for the next phase.
+
+• `/harden {{feature}}` - Add integration tests and validate production readiness (Recommended)
+• `/review` - Get code review feedback
+• `/save` - Save your progress
+• `/status {{feature}}` - Check overall feature status
+
+💡 Tip: Hardening adds integration tests and validates all quality gates.
+```
+
+**If still implementing or tests failing:**
+```
+### What's Next?
+
+• Continue implementing - Fix failing tests or complete remaining work
+• `npm run test:smoke` - Re-run smoke tests after changes
+• `/build {{feature}}` - Review build plan or continue implementation
+• `/save` - Save your progress
+
+💡 Tip: Get smoke tests passing before moving to harden phase.
+```
 
 Remember: The CLI handles all file management and PM integration. Focus on implementing quality code that follows project conventions.

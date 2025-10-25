@@ -9,7 +9,7 @@ import { join } from 'path';
  * the unified visual language patterns established in the exploration.
  */
 
-const COMMANDS_DIR = join(__dirname);
+const COMMANDS_DIR = join(__dirname, '..', '..', '.claude', 'commands');
 const COMMAND_FILES = [
   'status.md',
   'hodge.md',
@@ -84,8 +84,18 @@ describe('[smoke] Visual Pattern Compliance (HODGE-346.2)', () => {
         const boxLines = content.match(/│[^│\n]+│/g) || [];
 
         boxLines.forEach((line) => {
+          // Skip template variable boxes (contextual tips examples)
+          if (line.includes('{{') || line.includes('lesson.')) {
+            return;
+          }
+
+          // Skip empty box lines (separators in contextual tips boxes)
+          if (line.trim() === '│                                                          │') {
+            return;
+          }
+
           // Should contain emoji
-          expect(line).toMatch(/[🔍📊🎯📋🔨📝🔧🚀]/);
+          expect(line).toMatch(/[🔍📊🎯📋🔨📝🔧🚀💡]/);
 
           // Should have proper spacing
           expect(line).toMatch(/│\s+/); // Space after opening
