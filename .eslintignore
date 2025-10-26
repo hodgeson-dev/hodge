@@ -19,3 +19,9 @@ scripts/
 # Ignore example and template files
 *.example
 *.template
+
+# Ignore markdown documentation files (not TypeScript)
+*.md
+
+# Ignore JSON config files (not TypeScript)
+*.json

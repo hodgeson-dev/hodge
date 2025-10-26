@@ -1,0 +1,77 @@
+{
+  "timestamp": "2025-10-26T16:04:28.780Z",
+  "stagedFiles": [
+    ".cache/npm-audit-cache.json",
+    ".gitignore",
+    ".hodge/.session",
+    ".hodge/HODGE.md",
+    ".hodge/context.json",
+    ".hodge/features/HODGE-352/build/build-plan.md",
+    ".hodge/features/HODGE-352/decisions.md",
+    ".hodge/features/HODGE-352/explore/exploration.md",
+    ".hodge/features/HODGE-352/explore/test-intentions.md",
+    ".hodge/features/HODGE-352/issue-id.txt",
+    ".hodge/features/HODGE-352/ship-record.json",
+    ".hodge/id-counter.json",
+    ".hodge/id-mappings.json",
+    ".hodge/project_management.md",
+    "CHANGELOG.md",
+    "CODE_OF_CONDUCT.md",
+    "CONTRIBUTING.md",
+    "IMPLEMENTATION_PLAN.md",
+    "README.md",
+    "SECURITY.md",
+    "docs/HOD-11-implementation-report.md",
+    "docs/PM_INTEGRATION.md",
+    "docs/STANDARDS.md",
+    "docs/advanced/README.md",
+    "docs/basic-usage.md",
+    "docs/epic-story-breakdown.md",
+    "docs/getting-started.md",
+    "docs/local-testing.md",
+    "docs/pre-push-hooks.md",
+    "examples/README.md",
+    "file",
+    "package.json",
+    "podge/hodge-claude-slash-commands.md",
+    "podge/hodge-v3-balanced.md",
+    "podge/hodge-v3-bootstrap-guide.md",
+    "podge/hodge-v3-claude-adapter.js",
+    "podge/hodge-v3-repo.md",
+    "scripts/README.md",
+    "src/test/hodge-352.smoke.test.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 35,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": "src/test/hodge-352.smoke.test.ts 61ms\n",
+      "stderr": "[error] No files matching the pattern were found: \"IMPLEMENTATION_PLAN.md\".\n[error] No files matching the pattern were found: \"docs/HOD-11-implementation-report.md\".\n[error] No files matching the pattern were found: \"docs/PM_INTEGRATION.md\".\n[error] No files matching the pattern were found: \"docs/STANDARDS.md\".\n[error] No files matching the pattern were found: \"docs/epic-story-breakdown.md\".\n[error] No files matching the pattern were found: \"docs/local-testing.md\".\n[error] No files matching the pattern were found: \"docs/pre-push-hooks.md\".\n[error] No files matching the pattern were found: \"podge/hodge-claude-slash-commands.md\".\n[error] No files matching the pattern were found: \"podge/hodge-v3-balanced.md\".\n[error] No files matching the pattern were found: \"podge/hodge-v3-bootstrap-guide.md\".\n[error] No files matching the pattern were found: \"podge/hodge-v3-claude-adapter.js\".\n[error] No files matching the pattern were found: \"podge/hodge-v3-repo.md\".\n",
+      "duration": 943
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 0,
+      "issuesFixed": 0,
+      "success": false,
+      "stdout": "",
+      "stderr": "\nOops! Something went wrong! :(\n\nESLint: 8.57.1\n\nNo files matching the pattern \"podge/hodge-v3-claude-adapter.js\" were found.\nPlease check for typing mistakes in the pattern.\n\n",
+      "duration": 496
+    }
+  ],
+  "totalIssuesFixed": 0,
+  "totalFilesModified": 35,
+  "failures": [
+    {
+      "tool": "eslint",
+      "filesProcessed": 0,
+      "issuesFixed": 0,
+      "success": false,
+      "stdout": "",
+      "stderr": "\nOops! Something went wrong! :(\n\nESLint: 8.57.1\n\nNo files matching the pattern \"podge/hodge-v3-claude-adapter.js\" were found.\nPlease check for typing mistakes in the pattern.\n\n",
+      "duration": 496
+    }
+  ]
+}

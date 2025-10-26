@@ -47,6 +47,10 @@ logs/
 .hodge/context.md
 .hodge/session.json
 .hodge/temp/
+.hodge/review-profiles/
+
+# Analysis reports
+report/
 
 # OS files
 Thumbs.db

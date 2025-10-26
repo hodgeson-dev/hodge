@@ -9,16 +9,7 @@ node_modules/fast-redact
   Depends on vulnerable versions of fast-redact
   node_modules/pino
 
-vite  7.1.0 - 7.1.10
-Severity: moderate
-vite allows server.fs.deny bypass via backslash on Windows - https://github.com/advisories/GHSA-93m4-6634-74q7
-fix available via `npm audit fix`
-node_modules/vite
-
-3 vulnerabilities (2 low, 1 moderate)
-
-To address issues that do not require attention, run:
-  npm audit fix
+2 low severity vulnerabilities
 
 To address all issues (including breaking changes), run:
   npm audit fix --force

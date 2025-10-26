@@ -1,5 +1,5 @@
 {
-  "name": "@agile-explorations/hodge",
+  "name": "@hodgeson/hodge",
   "version": "0.1.0-alpha.1",
   "description": "AI development framework: Freedom to explore, discipline to build, confidence to ship",
   "type": "module",
@@ -16,7 +16,7 @@
     "dev": "tsx watch src/bin/hodge.ts",
     "dev:link": "npm run build:watch & npm link",
     "link:local": "npm run build && npm link",
-    "unlink:local": "npm unlink -g @agile-explorations/hodge",
+    "unlink:local": "npm unlink -g @hodgeson/hodge",
     "test:local": "tsx scripts/create-test-workspace.ts",
     "test:scripts": "vitest scripts/ --config vitest.config.ts",
     "test:npm-integration": "vitest scripts/npm-link-integration.test.ts --config vitest.config.ts",
@@ -98,12 +98,13 @@
     "framework",
     "typescript"
   ],
-  "author": "Agile Explorations",
+  "author": "Hodgeson",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/agile-explorations/hodge.git"
+    "url": "git+https://github.com/hodgeson-dev/hodge.git"
   },
+  "homepage": "https://www.hodgeson.dev",
   "publishConfig": {
     "access": "public"
   },

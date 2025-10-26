@@ -151,8 +151,6 @@ c) Use recommendation 3
 d) Go to /decide to formalize decisions
 e) Skip and build without guidance
 
-🔔 YOUR RESPONSE NEEDED
-
 💡 Tip: You can modify any choice, e.g., "a, and combine ideas from option 2"
 
 👉 Your choice [a/b/c/d/e]:
@@ -307,8 +305,6 @@ hodge lessons --match "subprocess,command,execution" --files "src/commands/build
 💡 Pattern from {{lesson.feature}}: {{lesson.relevance}}
 
 Should I check for {{lesson.title}} before we start building?
-
-🔔 YOUR RESPONSE NEEDED
 
 a) ⭐ Yes, check now (~30s) (Recommended)
 b) Skip, I know it's safe

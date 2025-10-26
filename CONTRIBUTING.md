@@ -14,7 +14,7 @@ Thank you for your interest in contributing to Hodge! This guide will help you g
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/agile-explorations/hodge.git
+   git clone https://github.com/hodgeson-dev/hodge.git
    cd hodge
    ```
 

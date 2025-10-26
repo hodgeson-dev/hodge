@@ -30,7 +30,10 @@ When user responds to choice prompts:
 - "a,b" or "a, b" → select multiple options (comma-separated, if applicable)
 - "r" → select all options marked with ⭐ (when 2+ recommendations exist)
 - "a, and [modification]" → select option with user's changes applied
-- Invalid (e.g., "7" when options are a-e) → use collaborative error recovery
+- Invalid (e.g., "7" when options are a-e) OR uncertain (e.g., "maybe b?") → use collaborative error recovery:
+  - Detect uncertainty patterns: "maybe", "?", "not sure", "either"
+  - Offer repair options, never just reject
+  - Example: "Hmm, I got 'maybe b?' - sounds uncertain. Let me help clarify: a) Continue with b, b) Explain options better, c) Start over"
 
 ## Decision Extraction (Before Build)
 
@@ -450,7 +453,10 @@ When user responds to choice prompts:
 - "a,b" or "a, b" → select multiple options (comma-separated, if applicable)
 - "r" → select all options marked with ⭐ (when 2+ recommendations exist)
 - "a, and [modification]" → select option with user's changes applied
-- Invalid (e.g., "7" when options are a-c) → use collaborative error recovery
+- Invalid (e.g., "7" when options are a-c) OR uncertain (e.g., "maybe b?") → use collaborative error recovery:
+  - Detect uncertainty patterns: "maybe", "?", "not sure", "either"
+  - Offer repair options, never just reject
+  - Example: "Hmm, I got 'maybe b?' - sounds uncertain. Let me help clarify: a) Continue with b, b) Explain options better, c) Start over"
 
 ## Purpose
 
@@ -888,7 +894,10 @@ When user responds to choice prompts:
 - "a,b" or "a, b" → select multiple options (comma-separated, if applicable)
 - "r" → select all options marked with ⭐ (when 2+ recommendations exist)
 - "a, and [modification]" → select option with user's changes applied
-- Invalid (e.g., "7" when options are a-e) → use collaborative error recovery
+- Invalid (e.g., "7" when options are a-e) OR uncertain (e.g., "maybe b?") → use collaborative error recovery:
+  - Detect uncertainty patterns: "maybe", "?", "not sure", "either"
+  - Offer repair options, never just reject
+  - Example: "Hmm, I got 'maybe b?' - sounds uncertain. Let me help clarify: a) Continue with b, b) Explain options better, c) Start over"
 
 ## ⚠️ DEFAULT BEHAVIOR: Interactive Decision Mode
 
@@ -1431,7 +1440,10 @@ When user responds to choice prompts:
 - "a,b" or "a, b" → select multiple options (comma-separated, if applicable)
 - "r" → select all options marked with ⭐ (when 2+ recommendations exist)
 - "a, and [modification]" → select option with user's changes applied
-- Invalid (e.g., "7" when options are a-d) → use collaborative error recovery
+- Invalid (e.g., "7" when options are a-d) OR uncertain (e.g., "maybe b?") → use collaborative error recovery:
+  - Detect uncertainty patterns: "maybe", "?", "not sure", "either"
+  - Offer repair options, never just reject
+  - Example: "Hmm, I got 'maybe b?' - sounds uncertain. Let me help clarify: a) Continue with b, b) Explain options better, c) Start over"
 
 ## Step 0: Auto-Fix Simple Issues (HODGE-341.6)
 
@@ -2227,9 +2239,9 @@ Based on the status output, present context-aware options:
 Exploration complete. Ready to make decisions or start building.
 
 ### What's Next?
-- \`/decide\` - Make architectural decisions (if needed)
-- \`/build {{feature}}\` - Start building (Recommended)
-- \`/status {{feature}}\` - Check detailed progress
+• \`/decide\` - Make architectural decisions (if needed)
+• \`/build {{feature}}\` - Start building (Recommended)
+• \`/status {{feature}}\` - Check detailed progress
 
 💡 Tip: You can start building immediately or record decisions first.
 \`\`\`
@@ -2240,9 +2252,9 @@ Exploration complete. Ready to make decisions or start building.
 Build phase complete. Ready for integration tests and validation.
 
 ### What's Next?
-- \`/harden {{feature}}\` - Add integration tests and validate (Recommended)
-- \`/build {{feature}}\` - Continue building if needed
-- \`/status {{feature}}\` - Check detailed progress
+• \`/harden {{feature}}\` - Add integration tests and validate (Recommended)
+• \`/build {{feature}}\` - Continue building if needed
+• \`/status {{feature}}\` - Check detailed progress
 
 💡 Tip: Hardening validates production readiness with quality gates.
 \`\`\`
@@ -2253,9 +2265,9 @@ Build phase complete. Ready for integration tests and validation.
 Feature is production-ready! All quality gates passed.
 
 ### What's Next?
-- \`/ship {{feature}}\` - Ship to production (Recommended)
-- \`/review\` - Optional final review
-- \`/status {{feature}}\` - Check detailed progress
+• \`/ship {{feature}}\` - Ship to production (Recommended)
+• \`/review\` - Optional final review
+• \`/status {{feature}}\` - Check detailed progress
 
 💡 Tip: You're ready to ship! 🚀
 \`\`\`
@@ -2266,9 +2278,9 @@ Feature is production-ready! All quality gates passed.
 Feature has been shipped. Great work! 🎉
 
 ### What's Next?
-- \`/explore <new-feature>\` - Start your next feature (Recommended)
-- \`git push\` - Push to remote if not done
-- \`/status\` - Check overall project status
+• \`/explore <new-feature>\` - Start your next feature (Recommended)
+• \`git push\` - Push to remote if not done
+• \`/status\` - Check overall project status
 
 💡 Tip: Time to start something new or take a well-deserved break!
 \`\`\`
@@ -2279,9 +2291,9 @@ Feature has been shipped. Great work! 🎉
 No work started on {{feature}} yet.
 
 ### What's Next?
-- \`/explore {{feature}}\` - Start exploring this feature (Recommended)
-- \`/status\` - Check overall project status
-- Choose a different feature to work on
+• \`/explore {{feature}}\` - Start exploring this feature (Recommended)
+• \`/status\` - Check overall project status
+• Choose a different feature to work on
 
 💡 Tip: Begin with exploration to understand the problem space.
 \`\`\`
@@ -2312,18 +2324,18 @@ Current mode: {{mode}}
 Next suggested action: {{next_action}}
 
 Available commands:
-- \`/explore {{feature}}\` - Continue exploration
-- \`/build {{feature}}\` - Start/continue building
-- \`/decide\` - Record decisions
+• \`/explore {{feature}}\` - Continue exploration
+• \`/build {{feature}}\` - Start/continue building
+• \`/decide\` - Record decisions
 
 {{else}}
 ### Available Commands
-- \`/explore {{feature}}\` - Start exploring a new feature
-- \`/build {{feature}}\` - Build a feature with standards
-- \`/decide {{decision}}\` - Record a decision
-- \`/ship {{feature}}\` - Ship feature to production
-- \`/status\` - Check current status
-- \`/review\` - Review current work
+• \`/explore {{feature}}\` - Start exploring a new feature
+• \`/build {{feature}}\` - Build a feature with standards
+• \`/decide {{decision}}\` - Record a decision
+• \`/ship {{feature}}\` - Ship feature to production
+• \`/status\` - Check current status
+• \`/review\` - Review current work
 
 ### Quick Actions
 {{#if current_feature}}
@@ -2375,7 +2387,10 @@ When user responds to choice prompts:
 - "a,b" or "a, b" → select multiple options (comma-separated, if applicable)
 - "r" → select all options marked with ⭐ (when 2+ recommendations exist)
 - "a, and [modification]" → select option with user's changes applied
-- Invalid (e.g., "7" when options are a-d) → use collaborative error recovery
+- Invalid (e.g., "7" when options are a-d) OR uncertain (e.g., "maybe b?") → use collaborative error recovery:
+  - Detect uncertainty patterns: "maybe", "?", "not sure", "either"
+  - Offer repair options, never just reject
+  - Example: "Hmm, I got 'maybe b?' - sounds uncertain. Let me help clarify: a) Continue with b, b) Explain options better, c) Start over"
 
 ## Purpose
 The \`/plan\` command transforms technical decisions into organized, executable work. It handles epic/story breakdown, dependency analysis, parallel lane allocation, and PM tool integration.
@@ -2951,7 +2966,10 @@ When user responds to choice prompts:
 - "a,b" or "a, b" → select multiple options (comma-separated, if applicable)
 - "r" → select all options marked with ⭐ (when 2+ recommendations exist)
 - "a, and [modification]" → select option with user's changes applied
-- Invalid (e.g., "7" when options are a-c) → use collaborative error recovery
+- Invalid (e.g., "7" when options are a-c) OR uncertain (e.g., "maybe b?") → use collaborative error recovery:
+  - Detect uncertainty patterns: "maybe", "?", "not sure", "either"
+  - Offer repair options, never just reject
+  - Example: "Hmm, I got 'maybe b?' - sounds uncertain. Let me help clarify: a) Continue with b, b) Explain options better, c) Start over"
 
 ## Overview
 
@@ -3323,7 +3341,10 @@ When user responds to choice prompts:
 - "a,b" or "a, b" → select multiple options (comma-separated, if applicable)
 - "r" → select all options marked with ⭐ (when 2+ recommendations exist)
 - "a, and [modification]" → select option with user's changes applied
-- Invalid (e.g., "7" when options are a-d) → use collaborative error recovery
+- Invalid (e.g., "7" when options are a-d) OR uncertain (e.g., "maybe b?") → use collaborative error recovery:
+  - Detect uncertainty patterns: "maybe", "?", "not sure", "either"
+  - Offer repair options, never just reject
+  - Example: "Hmm, I got 'maybe b?' - sounds uncertain. Let me help clarify: a) Continue with b, b) Explain options better, c) Start over"
 
 ## Standards Review Process
 

@@ -1,148 +1,12 @@
 {
   "statistics": {
-    "detectionDate": "2025-10-26T00:39:11.408Z",
+    "detectionDate": "2025-10-26T16:13:56.962Z",
     "formats": {
-      "markdown": {
+      "typescript": {
         "sources": {
-          ".claude/commands/status.md": {
-            "lines": 118,
-            "tokens": 829,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/ship.md": {
-            "lines": 624,
-            "tokens": 4713,
-            "sources": 1,
-            "clones": 5,
-            "duplicatedLines": 61,
-            "duplicatedTokens": 664,
-            "percentage": 9.78,
-            "percentageTokens": 14.09,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/review.md": {
-            "lines": 366,
-            "tokens": 2918,
-            "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 10,
-            "duplicatedTokens": 123,
-            "percentage": 2.73,
-            "percentageTokens": 4.22,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/plan.md": {
-            "lines": 567,
-            "tokens": 4248,
-            "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 13,
-            "duplicatedTokens": 137,
-            "percentage": 2.29,
-            "percentageTokens": 3.23,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/hodge.md": {
-            "lines": 226,
-            "tokens": 1522,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/harden.md": {
-            "lines": 708,
-            "tokens": 5939,
-            "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 14,
-            "duplicatedTokens": 138,
-            "percentage": 1.98,
-            "percentageTokens": 2.32,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/explore.md": {
-            "lines": 355,
-            "tokens": 3637,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/decide.md": {
-            "lines": 178,
-            "tokens": 1361,
-            "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 10,
-            "duplicatedTokens": 123,
-            "percentage": 5.62,
-            "percentageTokens": 9.04,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/codify.md": {
-            "lines": 433,
-            "tokens": 3276,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          ".claude/commands/build.md": {
-            "lines": 414,
-            "tokens": 3328,
-            "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 14,
-            "duplicatedTokens": 143,
-            "percentage": 3.38,
-            "percentageTokens": 4.3,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          }
-        },
-        "total": {
-          "lines": 3989,
-          "tokens": 31771,
-          "sources": 10,
-          "clones": 5,
-          "duplicatedLines": 61,
-          "duplicatedTokens": 664,
-          "percentage": 1.53,
-          "percentageTokens": 2.09,
-          "newDuplicatedLines": 0,
-          "newClones": 0
-        }
-      },
-      "url": {
-        "sources": {
-          ".claude/commands/ship.md": {
-            "lines": 0,
-            "tokens": 4,
+          "src/test/hodge-352.smoke.test.ts": {
+            "lines": 98,
+            "tokens": 1107,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -154,8 +18,8 @@
           }
         },
         "total": {
-          "lines": 0,
-          "tokens": 4,
+          "lines": 98,
+          "tokens": 1107,
           "sources": 1,
           "clones": 0,
           "duplicatedLines": 0,
@@ -168,198 +32,17 @@
       }
     },
     "total": {
-      "lines": 3989,
-      "tokens": 31775,
-      "sources": 11,
-      "clones": 5,
-      "duplicatedLines": 61,
-      "duplicatedTokens": 664,
-      "percentage": 1.53,
-      "percentageTokens": 2.09,
+      "lines": 98,
+      "tokens": 1107,
+      "sources": 1,
+      "clones": 0,
+      "duplicatedLines": 0,
+      "duplicatedTokens": 0,
+      "percentage": 0,
+      "percentageTokens": 0,
       "newDuplicatedLines": 0,
       "newClones": 0
     }
   },
-  "duplicates": [
-    {
-      "format": "markdown",
-      "lines": 11,
-      "fragment": "─────────┐\n│ 🔍 Review: Advisory Code Review                        │\n└─────────────────────────────────────────────────────────┘\n\n## Response Parsing (AI Instructions)\n\nWhen user responds to choice prompts:\n- \"a\" or \"b\" etc. → select single option\n- \"a,b\" or \"a, b\" → select multiple options (comma-separated, if applicable)\n- \"r\" → select all options marked with ⭐ (when 2+ recommendations exist)\n- \"a, a",
-      "tokens": 0,
-      "firstFile": {
-        "name": ".claude/commands/review.md",
-        "start": 6,
-        "end": 16,
-        "startLoc": {
-          "line": 6,
-          "column": 25,
-          "position": 34
-        },
-        "endLoc": {
-          "line": 16,
-          "column": 5,
-          "position": 157
-        }
-      },
-      "secondFile": {
-        "name": ".claude/commands/ship.md",
-        "start": 6,
-        "end": 16,
-        "startLoc": {
-          "line": 6,
-          "column": 22,
-          "position": 38
-        },
-        "endLoc": {
-          "line": 16,
-          "column": 5,
-          "position": 161
-        }
-      }
-    },
-    {
-      "format": "markdown",
-      "lines": 14,
-      "fragment": "on & PM Integration            │\n└─────────────────────────────────────────────────────────┘\n\n## Response Parsing (AI Instructions)\n\nWhen user responds to choice prompts:\n- \"a\" or \"b\" etc. → select single option\n- \"a,b\" or \"a, b\" → select multiple options (comma-separated, if applicable)\n- \"r\" → select all options marked with ⭐ (when 2+ recommendations exist)\n- \"a, and [modification]\" → select option with user's changes applied\n- Invalid (e.g.",
-      "tokens": 0,
-      "firstFile": {
-        "name": ".claude/commands/plan.md",
-        "start": 6,
-        "end": 19,
-        "startLoc": {
-          "line": 6,
-          "column": 13,
-          "position": 36
-        },
-        "endLoc": {
-          "line": 19,
-          "column": 4,
-          "position": 173
-        }
-      },
-      "secondFile": {
-        "name": ".claude/commands/ship.md",
-        "start": 6,
-        "end": 21,
-        "startLoc": {
-          "line": 6,
-          "column": 22,
-          "position": 38
-        },
-        "endLoc": {
-          "line": 21,
-          "column": 7,
-          "position": 177
-        }
-      }
-    },
-    {
-      "format": "markdown",
-      "lines": 15,
-      "fragment": "adiness                        │\n└─────────────────────────────────────────────────────────┘\n\n## Response Parsing (AI Instructions)\n\nWhen user responds to choice prompts:\n- \"a\" or \"b\" etc. → select single option\n- \"a,b\" or \"a, b\" → select multiple options (comma-separated, if applicable)\n- \"r\" → select all options marked with ⭐ (when 2+ recommendations exist)\n- \"a, and [modification]\" → select option with user's changes applied\n- Invalid (e.g.",
-      "tokens": 0,
-      "firstFile": {
-        "name": ".claude/commands/harden.md",
-        "start": 6,
-        "end": 20,
-        "startLoc": {
-          "line": 6,
-          "column": 25,
-          "position": 32
-        },
-        "endLoc": {
-          "line": 20,
-          "column": 3,
-          "position": 170
-        }
-      },
-      "secondFile": {
-        "name": ".claude/commands/ship.md",
-        "start": 6,
-        "end": 21,
-        "startLoc": {
-          "line": 6,
-          "column": 22,
-          "position": 38
-        },
-        "endLoc": {
-          "line": 21,
-          "column": 7,
-          "position": 177
-        }
-      }
-    },
-    {
-      "format": "markdown",
-      "lines": 11,
-      "fragment": "ement                          │\n└─────────────────────────────────────────────────────────┘\n\n## Response Parsing (AI Instructions)\n\nWhen user responds to choice prompts:\n- \"a\" or \"b\" etc. → select single option\n- \"a,b\" or \"a, b\" → select multiple options (comma-separated, if applicable)\n- \"r\" → select all options marked with ⭐ (when 2+ recommendations exist)\n- \"a, and [modification]\" → select option wi",
-      "tokens": 0,
-      "firstFile": {
-        "name": ".claude/commands/decide.md",
-        "start": 6,
-        "end": 16,
-        "startLoc": {
-          "line": 6,
-          "column": 27,
-          "position": 34
-        },
-        "endLoc": {
-          "line": 16,
-          "column": 5,
-          "position": 157
-        }
-      },
-      "secondFile": {
-        "name": ".claude/commands/ship.md",
-        "start": 6,
-        "end": 16,
-        "startLoc": {
-          "line": 6,
-          "column": 22,
-          "position": 38
-        },
-        "endLoc": {
-          "line": 16,
-          "column": 5,
-          "position": 161
-        }
-      }
-    },
-    {
-      "format": "markdown",
-      "lines": 15,
-      "fragment": " Mode                          │\n└─────────────────────────────────────────────────────────┘\n\n## Response Parsing (AI Instructions)\n\nWhen user responds to choice prompts:\n- \"a\" or \"b\" etc. → select single option\n- \"a,b\" or \"a, b\" → select multiple options (comma-separated, if applicable)\n- \"r\" → select all options marked with ⭐ (when 2+ recommendations exist)\n- \"a, and [modification]\" → select option with user's changes applied\n- Invalid (e.g., \"7\" when options ",
-      "tokens": 0,
-      "firstFile": {
-        "name": ".claude/commands/build.md",
-        "start": 6,
-        "end": 20,
-        "startLoc": {
-          "line": 6,
-          "column": 27,
-          "position": 32
-        },
-        "endLoc": {
-          "line": 20,
-          "column": 7,
-          "position": 175
-        }
-      },
-      "secondFile": {
-        "name": ".claude/commands/ship.md",
-        "start": 6,
-        "end": 20,
-        "startLoc": {
-          "line": 6,
-          "column": 22,
-          "position": 38
-        },
-        "endLoc": {
-          "line": 20,
-          "column": 7,
-          "position": 177
-        }
-      }
-    }
-  ]
+  "duplicates": []
 }
