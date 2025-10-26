@@ -9,32 +9,30 @@ Consistent error handling with logging
 
 ## Examples
 
-### scripts/validate-standards.js
-```typescript
-try {
-    const tsconfig = JSON.parse(fs.readFileSync('tsconfig.json', 'utf8'));
-
-    if (!tsconfig.compilerOptions?.strict) {
-      log('TypeScript strict mode is not enabled', 'error');
-      return
-```
-
-
-### scripts/validate-standards.js
+### scripts/release-check.js
 ```typescript
 .catch((error) => {
   console.error
 ```
 
 
-### src/commands/explore.ts
+### scripts/release-prepare.js
 ```typescript
-.catch(() => {
-          // Silently handle PM update failures
-        });
-      } else if (!featureID) {
-        // It looks like an ID but we couldn't find it
-        // Create a new feature and lin
+try {
+      execSync(`${editor} ${changelogPath}`, { stdio: 'inherit' });
+    } catch (error) {
+      console.log('   (Editor closed)');
+    }
+
+    console.log('\n✓ CHANGELOG.md updated');
+    console
+```
+
+
+### scripts/release-prepare.js
+```typescript
+.catch((error) => {
+  console.error
 ```
 
 
@@ -44,5 +42,5 @@ try {
 - 
 
 ---
-*First seen: 2025-10-05T06:33:49.958Z*
-*Last used: 2025-10-05T06:33:49.979Z*
+*First seen: 2025-10-26T18:14:50.579Z*
+*Last used: 2025-10-26T18:14:50.580Z*

@@ -37,7 +37,10 @@
     "prepublishOnly": "npm run build",
     "update-pm-scripts": "npm run build && node scripts/update-pm-scripts.js",
     "logs": "tsx src/bin/hodge.ts logs",
-    "logs:follow": "tsx src/bin/hodge.ts logs --follow"
+    "logs:follow": "tsx src/bin/hodge.ts logs --follow",
+    "release:prepare": "node scripts/release-prepare.js",
+    "release:check": "node scripts/release-check.js",
+    "release:publish": "node scripts/release-publish.js"
   },
   "engines": {
     "node": ">=20.0.0"

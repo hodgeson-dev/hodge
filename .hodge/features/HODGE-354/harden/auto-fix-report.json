@@ -1,0 +1,46 @@
+{
+  "timestamp": "2025-10-26T18:08:01.427Z",
+  "stagedFiles": [
+    ".hodge/.session",
+    ".hodge/HODGE.md",
+    ".hodge/context.json",
+    ".hodge/features/HODGE-354/build/build-plan.md",
+    ".hodge/features/HODGE-354/explore/exploration.md",
+    ".hodge/features/HODGE-354/explore/test-intentions.md",
+    ".hodge/features/HODGE-354/issue-id.txt",
+    ".hodge/features/HODGE-354/ship-record.json",
+    ".hodge/id-counter.json",
+    ".hodge/id-mappings.json",
+    ".hodge/project_management.md",
+    "CONTRIBUTING.md",
+    "package.json",
+    "scripts/lib/release-utils.js",
+    "scripts/release-check.js",
+    "scripts/release-prepare.js",
+    "scripts/release-publish.js",
+    "src/test/hodge-354.smoke.test.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 16,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": "scripts/lib/release-utils.js 69ms\nscripts/release-check.js 10ms\nscripts/release-prepare.js 11ms\nscripts/release-publish.js 9ms\nsrc/test/hodge-354.smoke.test.ts 51ms\n",
+      "stderr": "",
+      "duration": 772
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 5,
+      "issuesFixed": 5,
+      "success": true,
+      "stdout": "\n/Users/michaelkelly/Projects/hodge/scripts/lib/release-utils.js\n  0:0  warning  File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override\n\n/Users/michaelkelly/Projects/hodge/scripts/release-check.js\n  0:0  warning  File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override\n\n/Users/michaelkelly/Projects/hodge/scripts/release-prepare.js\n  0:0  warning  File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override\n\n/Users/michaelkelly/Projects/hodge/scripts/release-publish.js\n  0:0  warning  File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override\n\n/Users/michaelkelly/Projects/hodge/src/test/hodge-354.smoke.test.ts\n  0:0  warning  File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override\n\n✖ 5 problems (0 errors, 5 warnings)\n\n",
+      "stderr": "",
+      "duration": 1408
+    }
+  ],
+  "totalIssuesFixed": 5,
+  "totalFilesModified": 21,
+  "failures": []
+}

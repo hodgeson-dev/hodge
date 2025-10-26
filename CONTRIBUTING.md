@@ -512,6 +512,165 @@ Use this checklist to ensure nothing is missed:
 - [ ] Package visible on npmjs.com
 - [ ] GitHub Release created with notes
 - [ ] Verified installation: `npm install -g @hodgeson/hodge@alpha`
+
+### Automated Release Scripts (Recommended)
+
+To simplify the release process, Hodge provides automated scripts that handle the mechanical steps of releasing. This is the **recommended approach** for maintainers.
+
+#### Overview
+
+The automated workflow consists of three scripts:
+1. **`release:prepare`** - Automates steps 1-4 (CHANGELOG, version bump, tag push)
+2. **`release:check`** - Optional CI status monitoring
+3. **`release:publish`** - Automates steps 5-6 (NPM publish, GitHub Release)
+
+#### Prerequisites
+
+1. **GitHub Token**: Create a GitHub Personal Access Token (PAT) with `repo` scope:
+   - Go to GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
+   - Click "Generate new token (classic)"
+   - Select `repo` scope (full control of private repositories)
+   - Copy the token and add to your environment:
+     ```bash
+     export GITHUB_TOKEN="your_github_token_here"
+     # Add to ~/.zshrc or ~/.bashrc to persist
+     ```
+
+2. **NPM Authentication**: Ensure you're logged in to NPM (see NPM Account Setup above)
+
+#### Quick Start
+
+```bash
+# Step 1: Prepare release (generates CHANGELOG, bumps version, pushes tag)
+npm run release:prepare
+
+# Step 2: (Optional) Monitor CI validation
+npm run release:check
+
+# Step 3: Publish to NPM and create GitHub Release
+npm run release:publish
+```
+
+#### Detailed Workflow
+
+##### Step 1: Prepare Release
+
+The `release:prepare` script automates the first four manual steps:
+
+```bash
+npm run release:prepare
+```
+
+What it does:
+1. ✅ Validates preconditions (no uncommitted changes, on main branch)
+2. 📝 Generates CHANGELOG from conventional commits since last release
+3. 👁️ Shows preview and prompts for approval (y/n/e)
+4. 💾 Commits CHANGELOG
+5. 🔖 Runs `npm version prerelease --preid=alpha`
+6. ⬆️ Pushes commits and tags with `git push --follow-tags`
+7. 🔄 Displays CI workflow URL
+
+**Version Types:**
+```bash
+# Prerelease (default)
+npm run release:prepare              # 0.1.0-alpha.1 → 0.1.0-alpha.2
+
+# Other types
+npm run release:prepare -- patch     # 0.1.0 → 0.1.1
+npm run release:prepare -- minor     # 0.1.0 → 0.2.0
+npm run release:prepare -- major     # 0.1.0 → 1.0.0
+```
+
+**CHANGELOG Preview Options:**
+- `y` (yes) - Approve and proceed
+- `n` (no) - Cancel release
+- `e` (edit) - Open CHANGELOG.md in your editor for manual changes
+
+##### Step 2: Monitor CI (Optional)
+
+While CI runs, you can check the status without blocking:
+
+```bash
+npm run release:check
+```
+
+Possible outputs:
+- ⏳ **Running**: CI validation in progress
+- ✅ **Success**: CI passed, ready to publish
+- ❌ **Failure**: CI failed, see recovery instructions
+- ⚠️ **Not Found**: Workflow not found (wait a moment or check GitHub)
+
+##### Step 3: Publish Release
+
+Once CI validation passes, publish to NPM and create GitHub Release:
+
+```bash
+npm run release:publish
+```
+
+What it does:
+1. 🔍 Checks CI validation status
+2. 📦 Publishes to NPM (with appropriate tag: `alpha` for prereleases, `latest` for stable)
+3. 📝 Creates GitHub Release with CHANGELOG excerpt
+4. 🎉 Displays success summary with URLs
+
+**Safety Features:**
+- Blocks publishing if CI is still running (prompts to wait)
+- Blocks publishing if CI validation failed (shows recovery instructions)
+- Idempotent: Safe to re-run if already published
+- Skips NPM publish if version already exists
+
+#### Recovery from Failures
+
+If CI validation fails after `release:prepare`, follow these steps:
+
+```bash
+# 1. Fix the issue on main branch
+git add .
+git commit -m "fix: resolve CI issue"
+
+# 2. Clean up failed release
+git reset --hard HEAD~2             # Remove CHANGELOG and version commits
+git tag -d v0.1.0-alpha.2           # Delete local tag
+git push origin :refs/tags/v0.1.0-alpha.2  # Delete remote tag
+
+# 3. Re-run release:prepare
+npm run release:prepare
+```
+
+#### Edge Cases Handled
+
+The automated scripts handle common edge cases:
+
+- ✅ **Uncommitted changes**: Blocks with clear error message
+- ✅ **Wrong branch**: Ensures you're on `main` before releasing
+- ✅ **No commits**: Detects when there's nothing to release
+- ✅ **CI failures**: Provides recovery instructions
+- ✅ **NPM failures**: Handles auth errors, conflicts, network issues
+- ✅ **Duplicate publish**: Idempotent (safe to re-run)
+- ✅ **GitHub API rate limits**: Clear error messages with retry instructions
+
+#### Comparison: Manual vs Automated
+
+| Aspect | Manual Workflow | Automated Scripts |
+|--------|-----------------|-------------------|
+| Steps | 7 manual steps | 2 commands |
+| CHANGELOG | Manual writing | Auto-generated from commits |
+| Approval | N/A | Interactive preview |
+| CI Monitoring | Manual GitHub checking | Optional automated check |
+| Error Recovery | Manual cleanup | Guided instructions |
+| Idempotency | Manual tracking | Built-in |
+| Time | ~10-15 minutes | ~3-5 minutes |
+
+#### Automated Release Checklist
+
+Simplified checklist when using automated scripts:
+
+- [ ] All changes committed and pushed
+- [ ] Run `npm run release:prepare` and approve CHANGELOG
+- [ ] Wait for CI validation (monitor with `npm run release:check`)
+- [ ] Run `npm run release:publish`
+- [ ] Verify installation: `npm install -g @hodgeson/hodge@alpha`
 - [ ] Verified CLI works: `hodge --version`
 
 ### Troubleshooting
