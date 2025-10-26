@@ -1,12 +1,12 @@
 {
   "statistics": {
-    "detectionDate": "2025-10-25T21:26:01.469Z",
+    "detectionDate": "2025-10-26T00:01:56.714Z",
     "formats": {
       "typescript": {
         "sources": {
-          "src/commands/logs.ts": {
-            "lines": 277,
-            "tokens": 2536,
+          "vitest.config.ts": {
+            "lines": 51,
+            "tokens": 292,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -16,9 +16,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/commands/logs.smoke.test.ts": {
-            "lines": 89,
-            "tokens": 805,
+          "src/test/hodge-351.smoke.test.ts": {
+            "lines": 59,
+            "tokens": 482,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -28,9 +28,45 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/commands/logs.integration.test.ts": {
-            "lines": 199,
-            "tokens": 1961,
+          "src/lib/toolchain-service.ts": {
+            "lines": 548,
+            "tokens": 4132,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/toolchain-service.smoke.test.ts": {
+            "lines": 183,
+            "tokens": 1287,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/toolchain-service-registry.smoke.test.ts": {
+            "lines": 68,
+            "tokens": 558,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/toolchain-service-registry.integration.test.ts": {
+            "lines": 111,
+            "tokens": 962,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -42,9 +78,9 @@
           }
         },
         "total": {
-          "lines": 565,
-          "tokens": 5302,
-          "sources": 3,
+          "lines": 1020,
+          "tokens": 7713,
+          "sources": 6,
           "clones": 0,
           "duplicatedLines": 0,
           "duplicatedTokens": 0,
@@ -56,9 +92,9 @@
       }
     },
     "total": {
-      "lines": 565,
-      "tokens": 5302,
-      "sources": 3,
+      "lines": 1020,
+      "tokens": 7713,
+      "sources": 6,
       "clones": 0,
       "duplicatedLines": 0,
       "duplicatedTokens": 0,

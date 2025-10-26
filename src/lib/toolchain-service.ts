@@ -42,6 +42,11 @@ interface ExecError extends Error {
 export class ToolchainService {
   private cwd: string;
   private registryLoader: ToolRegistryLoader;
+  // HODGE-351: Cache package.json per instance (directory-specific)
+  private packageJsonCache?: PackageJson | null;
+  // HODGE-351: Static command cache (shared across all instances)
+  // Commands in PATH don't change per directory, so we can share this cache
+  private static commandCache: Map<string, boolean> = new Map();
 
   constructor(cwd: string = process.cwd(), registryLoader?: ToolRegistryLoader) {
     this.cwd = cwd;
@@ -152,36 +157,62 @@ export class ToolchainService {
 
   /**
    * Check if a package is in dependencies or devDependencies
+   * HODGE-351: Cached to avoid re-reading package.json for every tool
    */
   private async hasPackageDependency(packageName: string): Promise<boolean> {
-    try {
-      const packageJsonPath = join(this.cwd, 'package.json');
-      const content = await fs.readFile(packageJsonPath, 'utf-8');
-      const parsed: unknown = JSON.parse(content);
+    // Load and cache package.json on first call
+    if (this.packageJsonCache === undefined) {
+      try {
+        const packageJsonPath = join(this.cwd, 'package.json');
+        const content = await fs.readFile(packageJsonPath, 'utf-8');
+        const parsed: unknown = JSON.parse(content);
 
-      if (typeof parsed !== 'object' || parsed === null) {
+        if (typeof parsed !== 'object' || parsed === null) {
+          this.packageJsonCache = null;
+          return false;
+        }
+
+        this.packageJsonCache = parsed as PackageJson;
+      } catch {
+        this.packageJsonCache = null;
         return false;
       }
+    }
 
-      const packageJson = parsed as PackageJson;
-      const deps = { ...(packageJson.dependencies ?? {}), ...(packageJson.devDependencies ?? {}) };
-
-      return packageName in deps;
-    } catch {
+    // Return false if package.json doesn't exist or is invalid
+    if (this.packageJsonCache === null) {
       return false;
     }
+
+    const deps = {
+      ...(this.packageJsonCache.dependencies ?? {}),
+      ...(this.packageJsonCache.devDependencies ?? {}),
+    };
+
+    return packageName in deps;
   }
 
   /**
    * Check if a command exists in PATH
+   * HODGE-351: Static cache to avoid repeated subprocess spawning (major bottleneck)
+   * - Each exec() call takes ~100-200ms, and we check 16+ commands per detectTools()
+   * - Cache is static because command availability doesn't change per directory
+   * - First detectTools() call populates cache, subsequent calls are instant
    */
   private async commandExists(command: string): Promise<boolean> {
+    // Check static cache first
+    if (ToolchainService.commandCache.has(command)) {
+      return ToolchainService.commandCache.get(command)!;
+    }
+
     try {
       // Use 'which' on Unix-like systems, 'where' on Windows
       const whichCommand = process.platform === 'win32' ? 'where' : 'which';
       await exec(`${whichCommand} ${command}`, { cwd: this.cwd });
+      ToolchainService.commandCache.set(command, true);
       return true;
     } catch {
+      ToolchainService.commandCache.set(command, false);
       return false;
     }
   }

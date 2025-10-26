@@ -5,8 +5,17 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    // HODGE-351: Increase timeout for integration tests (real I/O takes 3-5s)
+    testTimeout: 10000, // 10 seconds (default is 5s)
     // Vitest 3.x: Use forks pool for better test isolation
     pool: 'forks',
+    // HODGE-351: Limit concurrent workers to prevent resource exhaustion
+    poolOptions: {
+      forks: {
+        maxForks: 6, // Conservative limit for 8-core machines with 16GB RAM
+        minForks: 2, // Maintain some parallelism even for small test runs
+      },
+    },
     // Isolate file system state between test files
     isolate: true,
     coverage: {

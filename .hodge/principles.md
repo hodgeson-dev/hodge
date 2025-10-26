@@ -203,6 +203,31 @@ The framework balances structure with conversational discovery:
 - **Harden**: Strict enforcement, must meet quality gates
 - **Ship**: Production ready, all requirements met
 
+### 7. Performance Optimization Through Iteration 🔄
+**Optimize through measurement cycles, not assumptions**
+
+When addressing performance issues:
+1. **Measure first** - Establish baseline metrics
+2. **Target the biggest bottleneck** - Fix the most impactful issue
+3. **Measure again** - Validate the improvement
+4. **Repeat** - Continue until goals are met or diminishing returns
+
+**Why**:
+- Prevents premature optimization
+- Ensures changes actually help
+- Reveals hidden bottlenecks (solving one often exposes the next)
+- Builds confidence through data
+
+**Example (HODGE-351)**:
+- Baseline: 74s with orphaned processes
+- Fix 1: Worker limits → 23s, zero orphaned processes
+- Fix 2: Test reclassification → clearer picture of where time goes
+- Fix 3: detectTools() optimization → 16.5s (63% total improvement)
+
+Each step revealed the next opportunity.
+
+**Related**: Test performance standards (<30s full suite)
+
 ## Applied Principles
 
 ### For Individual Developers

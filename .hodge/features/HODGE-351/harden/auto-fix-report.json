@@ -1,0 +1,44 @@
+{
+  "timestamp": "2025-10-25T23:01:03.228Z",
+  "stagedFiles": [
+    ".hodge/.session",
+    ".hodge/HODGE.md",
+    ".hodge/context.json",
+    ".hodge/features/HODGE-351/build/build-plan.md",
+    ".hodge/features/HODGE-351/decisions.md",
+    ".hodge/features/HODGE-351/explore/exploration.md",
+    ".hodge/features/HODGE-351/explore/test-intentions.md",
+    ".hodge/features/HODGE-351/issue-id.txt",
+    ".hodge/features/HODGE-351/ship-record.json",
+    ".hodge/id-counter.json",
+    ".hodge/id-mappings.json",
+    ".hodge/project_management.md",
+    "src/lib/toolchain-service-registry.smoke.test.ts",
+    "src/lib/toolchain-service.smoke.test.ts",
+    "src/test/hodge-351.smoke.test.ts",
+    "vitest.config.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 14,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": "src/lib/toolchain-service-registry.smoke.test.ts 55ms (unchanged)\nsrc/lib/toolchain-service.smoke.test.ts 14ms (unchanged)\nsrc/test/hodge-351.smoke.test.ts 5ms (unchanged)\nvitest.config.ts 5ms (unchanged)\n",
+      "stderr": "",
+      "duration": 630
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 4,
+      "issuesFixed": 3,
+      "success": true,
+      "stdout": "\n/Users/michaelkelly/Projects/hodge/src/lib/toolchain-service-registry.smoke.test.ts\n  0:0  warning  File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override\n\n/Users/michaelkelly/Projects/hodge/src/lib/toolchain-service.smoke.test.ts\n  0:0  warning  File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override\n\n/Users/michaelkelly/Projects/hodge/src/test/hodge-351.smoke.test.ts\n  0:0  warning  File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override\n\n✖ 3 problems (0 errors, 3 warnings)\n\n",
+      "stderr": "",
+      "duration": 3166
+    }
+  ],
+  "totalIssuesFixed": 3,
+  "totalFilesModified": 18,
+  "failures": []
+}
