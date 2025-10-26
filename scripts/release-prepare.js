@@ -113,10 +113,23 @@ async function main() {
     console.log('\n📝 Opening CHANGELOG.md for manual editing...');
     console.log('   After editing, run this script again\n');
 
-    // Prepend the section to CHANGELOG.md
+    // Insert the section after the "# Changelog" title
     const changelogPath = './CHANGELOG.md';
     const existingChangelog = readFileSync(changelogPath, 'utf-8');
-    const updatedChangelog = changelogSection + '\n' + existingChangelog;
+
+    // Find the position after "# Changelog" header and any following blank lines
+    const headerMatch = existingChangelog.match(/(# Changelog\s*\n(?:\s*\n)*)/);
+    if (!headerMatch) {
+      throw new Error('Could not find "# Changelog" header in CHANGELOG.md');
+    }
+
+    const headerEndIndex = headerMatch.index + headerMatch[0].length;
+    const updatedChangelog =
+      existingChangelog.slice(0, headerEndIndex) +
+      changelogSection +
+      '\n' +
+      existingChangelog.slice(headerEndIndex);
+
     writeFileSync(changelogPath, updatedChangelog);
 
     // Open in editor
@@ -136,7 +149,20 @@ async function main() {
   console.log('\n📝 Updating CHANGELOG.md...');
   const changelogPath = './CHANGELOG.md';
   const existingChangelog = readFileSync(changelogPath, 'utf-8');
-  const updatedChangelog = changelogSection + '\n' + existingChangelog;
+
+  // Find the position after "# Changelog" header and any following blank lines
+  const headerMatch = existingChangelog.match(/(# Changelog\s*\n(?:\s*\n)*)/);
+  if (!headerMatch) {
+    throw new Error('Could not find "# Changelog" header in CHANGELOG.md');
+  }
+
+  const headerEndIndex = headerMatch.index + headerMatch[0].length;
+  const updatedChangelog =
+    existingChangelog.slice(0, headerEndIndex) +
+    changelogSection +
+    '\n' +
+    existingChangelog.slice(headerEndIndex);
+
   writeFileSync(changelogPath, updatedChangelog);
   console.log('✓ CHANGELOG.md updated\n');
 

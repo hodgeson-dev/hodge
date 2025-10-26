@@ -1,12 +1,12 @@
 {
   "statistics": {
-    "detectionDate": "2025-10-26T18:10:49.628Z",
+    "detectionDate": "2025-10-26T19:01:27.366Z",
     "formats": {
       "typescript": {
         "sources": {
           "src/test/hodge-354.smoke.test.ts": {
-            "lines": 271,
-            "tokens": 2482,
+            "lines": 378,
+            "tokens": 3395,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -18,8 +18,8 @@
           }
         },
         "total": {
-          "lines": 271,
-          "tokens": 2482,
+          "lines": 378,
+          "tokens": 3395,
           "sources": 1,
           "clones": 0,
           "duplicatedLines": 0,
@@ -32,78 +32,54 @@
       },
       "javascript": {
         "sources": {
-          "scripts/release-publish.js": {
-            "lines": 192,
-            "tokens": 1416,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "scripts/release-prepare.js": {
-            "lines": 189,
-            "tokens": 1322,
+            "lines": 215,
+            "tokens": 1496,
             "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "scripts/release-check.js": {
-            "lines": 115,
-            "tokens": 819,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
+            "clones": 2,
+            "duplicatedLines": 34,
+            "duplicatedTokens": 282,
+            "percentage": 15.81,
+            "percentageTokens": 18.85,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "scripts/lib/release-utils.js": {
-            "lines": 428,
-            "tokens": 2919,
+            "lines": 465,
+            "tokens": 3193,
             "sources": 1,
             "clones": 2,
             "duplicatedLines": 24,
             "duplicatedTokens": 196,
-            "percentage": 5.61,
-            "percentageTokens": 6.71,
+            "percentage": 5.16,
+            "percentageTokens": 6.14,
             "newDuplicatedLines": 0,
             "newClones": 0
           }
         },
         "total": {
-          "lines": 924,
-          "tokens": 6476,
-          "sources": 4,
-          "clones": 1,
-          "duplicatedLines": 12,
-          "duplicatedTokens": 98,
-          "percentage": 1.3,
-          "percentageTokens": 1.51,
+          "lines": 680,
+          "tokens": 4689,
+          "sources": 2,
+          "clones": 2,
+          "duplicatedLines": 29,
+          "duplicatedTokens": 239,
+          "percentage": 4.26,
+          "percentageTokens": 5.1,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
       }
     },
     "total": {
-      "lines": 1195,
-      "tokens": 8958,
-      "sources": 5,
-      "clones": 1,
-      "duplicatedLines": 12,
-      "duplicatedTokens": 98,
-      "percentage": 1,
-      "percentageTokens": 1.09,
+      "lines": 1058,
+      "tokens": 8084,
+      "sources": 3,
+      "clones": 2,
+      "duplicatedLines": 29,
+      "duplicatedTokens": 239,
+      "percentage": 2.74,
+      "percentageTokens": 2.96,
       "newDuplicatedLines": 0,
       "newClones": 0
     }
@@ -111,37 +87,73 @@
   "duplicates": [
     {
       "format": "javascript",
+      "lines": 18,
+      "fragment": "const changelogPath = './CHANGELOG.md';\n  const existingChangelog = readFileSync(changelogPath, 'utf-8');\n\n  // Find the position after \"# Changelog\" header and any following blank lines\n  const headerMatch = existingChangelog.match(/(# Changelog\\s*\\n(?:\\s*\\n)*)/);\n  if (!headerMatch) {\n    throw new Error('Could not find \"# Changelog\" header in CHANGELOG.md');\n  }\n\n  const headerEndIndex = headerMatch.index + headerMatch[0].length;\n  const updatedChangelog =\n    existingChangelog.slice(0, headerEndIndex) +\n    changelogSection +\n    '\\n' +\n    existingChangelog.slice(headerEndIndex);\n\n  writeFileSync(changelogPath, updatedChangelog);\n  console",
+      "tokens": 0,
+      "firstFile": {
+        "name": "scripts/release-prepare.js",
+        "start": 150,
+        "end": 167,
+        "startLoc": {
+          "line": 150,
+          "column": 3,
+          "position": 974
+        },
+        "endLoc": {
+          "line": 167,
+          "column": 8,
+          "position": 1115
+        }
+      },
+      "secondFile": {
+        "name": "scripts/release-prepare.js",
+        "start": 117,
+        "end": 135,
+        "startLoc": {
+          "line": 117,
+          "column": 5,
+          "position": 714
+        },
+        "endLoc": {
+          "line": 135,
+          "column": 18,
+          "position": 856
+        }
+      }
+    },
+    {
+      "format": "javascript",
       "lines": 13,
       "fragment": "(tag) {\n  const octokit = createGitHubClient();\n  const { owner, repo } = getRepoInfo();\n\n  try {\n    const { data: runs } = await octokit.rest.actions.listWorkflowRunsForRepo({\n      owner,\n      repo,\n      event: 'push',\n      per_page: 10,\n    });\n\n    const",
       "tokens": 0,
       "firstFile": {
         "name": "scripts/lib/release-utils.js",
-        "start": 275,
-        "end": 287,
+        "start": 312,
+        "end": 324,
         "startLoc": {
-          "line": 275,
+          "line": 312,
           "column": 18,
-          "position": 1848
+          "position": 2122
         },
         "endLoc": {
-          "line": 287,
+          "line": 324,
           "column": 6,
-          "position": 1946
+          "position": 2220
         }
       },
       "secondFile": {
         "name": "scripts/lib/release-utils.js",
-        "start": 235,
-        "end": 247,
+        "start": 272,
+        "end": 284,
         "startLoc": {
-          "line": 235,
+          "line": 272,
           "column": 14,
-          "position": 1575
+          "position": 1849
         },
         "endLoc": {
-          "line": 247,
+          "line": 284,
           "column": 34,
-          "position": 1673
+          "position": 1947
         }
       }
     }

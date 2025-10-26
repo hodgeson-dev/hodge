@@ -61,7 +61,31 @@ export function getLatestTag() {
  */
 export function getCommitsSince(since) {
   try {
-    const range = since ? `${since}..HEAD` : 'HEAD';
+    // If no tag exists, get commits from the last release date in CHANGELOG
+    // This prevents including the entire repository history
+    let range;
+    if (since) {
+      range = `${since}..HEAD`;
+    } else {
+      // When no tags exist, default to commits since the last release date
+      // Parse CHANGELOG.md to find the most recent release date
+      try {
+        const changelogPath = './CHANGELOG.md';
+        const changelog = readFileSync(changelogPath, 'utf-8');
+        const releaseMatch = changelog.match(/## \[[\d.a-z-]+\] - (\d{4}-\d{2}-\d{2})/);
+        if (releaseMatch) {
+          const lastReleaseDate = releaseMatch[1];
+          range = `--since="${lastReleaseDate}" HEAD`;
+        } else {
+          // Fallback: last 30 days if no release found
+          range = '--since="30 days ago" HEAD';
+        }
+      } catch (err) {
+        // Fallback: last 30 days if CHANGELOG doesn't exist
+        range = '--since="30 days ago" HEAD';
+      }
+    }
+
     const log = execSync(`git log --oneline --no-merges ${range}`, { encoding: 'utf-8' });
 
     if (!log.trim()) {
@@ -74,9 +98,22 @@ export function getCommitsSince(since) {
       .map((line) => {
         const match = line.match(/^(\w+)\s+(.+)$/);
         if (!match) return null;
+
+        // Extract only the first line (before first \n\n or \n#)
+        // Some commits have multi-paragraph messages in the subject line
+        let message = match[2];
+        const firstParagraphEnd = message.indexOf('\n\n');
+        const firstMarkdownSection = message.indexOf('\n#');
+
+        if (firstParagraphEnd !== -1) {
+          message = message.substring(0, firstParagraphEnd);
+        } else if (firstMarkdownSection !== -1) {
+          message = message.substring(0, firstMarkdownSection);
+        }
+
         return {
           hash: match[1],
-          message: match[2],
+          message: message.trim(),
         };
       })
       .filter(Boolean);

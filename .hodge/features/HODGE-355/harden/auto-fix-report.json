@@ -1,0 +1,42 @@
+{
+  "timestamp": "2025-10-26T18:59:01.423Z",
+  "stagedFiles": [
+    ".hodge/.session",
+    ".hodge/HODGE.md",
+    ".hodge/context.json",
+    ".hodge/features/HODGE-355/build/build-plan.md",
+    ".hodge/features/HODGE-355/explore/exploration.md",
+    ".hodge/features/HODGE-355/explore/test-intentions.md",
+    ".hodge/features/HODGE-355/issue-id.txt",
+    ".hodge/features/HODGE-355/ship-record.json",
+    ".hodge/id-counter.json",
+    ".hodge/id-mappings.json",
+    ".hodge/project_management.md",
+    "scripts/lib/release-utils.js",
+    "scripts/release-prepare.js",
+    "src/test/hodge-354.smoke.test.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 12,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": "scripts/lib/release-utils.js 66ms (unchanged)\nscripts/release-prepare.js 16ms\nsrc/test/hodge-354.smoke.test.ts 62ms (unchanged)\n",
+      "stderr": "",
+      "duration": 718
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 3,
+      "issuesFixed": 3,
+      "success": true,
+      "stdout": "\n/Users/michaelkelly/Projects/hodge/scripts/lib/release-utils.js\n  0:0  warning  File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override\n\n/Users/michaelkelly/Projects/hodge/scripts/release-prepare.js\n  0:0  warning  File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override\n\n/Users/michaelkelly/Projects/hodge/src/test/hodge-354.smoke.test.ts\n  0:0  warning  File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override\n\n✖ 3 problems (0 errors, 3 warnings)\n\n",
+      "stderr": "",
+      "duration": 1347
+    }
+  ],
+  "totalIssuesFixed": 3,
+  "totalFilesModified": 15,
+  "failures": []
+}

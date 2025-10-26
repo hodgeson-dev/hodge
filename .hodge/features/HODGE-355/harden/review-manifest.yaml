@@ -1,0 +1,110 @@
+version: '1.0'
+feature: HODGE-355
+generated_at: '2025-10-26T18:59:07.837Z'
+recommended_tier: full
+change_analysis:
+  total_files: 14
+  total_lines: 474
+  breakdown:
+    implementation: 8
+    test: 1
+    documentation: 5
+    config: 0
+changed_files:
+  - path: .hodge/.session
+    lines_changed: 9
+    change_type: implementation
+  - path: .hodge/HODGE.md
+    lines_changed: 12
+    change_type: documentation
+  - path: .hodge/context.json
+    lines_changed: 8
+    change_type: implementation
+  - path: .hodge/features/HODGE-355/build/build-plan.md
+    lines_changed: 46
+    change_type: documentation
+  - path: .hodge/features/HODGE-355/explore/exploration.md
+    lines_changed: 132
+    change_type: documentation
+  - path: .hodge/features/HODGE-355/explore/test-intentions.md
+    lines_changed: 49
+    change_type: documentation
+  - path: .hodge/features/HODGE-355/issue-id.txt
+    lines_changed: 1
+    change_type: implementation
+  - path: .hodge/features/HODGE-355/ship-record.json
+    lines_changed: 16
+    change_type: implementation
+  - path: .hodge/id-counter.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/id-mappings.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/project_management.md
+    lines_changed: 13
+    change_type: documentation
+  - path: scripts/lib/release-utils.js
+    lines_changed: 41
+    change_type: implementation
+  - path: scripts/release-prepare.js
+    lines_changed: 32
+    change_type: implementation
+  - path: src/test/hodge-354.smoke.test.ts
+    lines_changed: 107
+    change_type: test
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - test-pattern.md
+      - error-boundary.md
+      - input-validation.md
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - testing/vitest-3.x.yaml
+      - testing/general-test-standards.yaml
+      - languages/typescript-5.x.yaml
+      - languages/javascript-legacy.yaml
+      - languages/javascript-es2020+.yaml
+      - languages/javascript-es2015-2019.yaml
+      - languages/general-coding-standards.yaml
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed
+scope:
+  type: feature
+  target: HODGE-355
+  fileCount: 14

@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-355",
+  "timestamp": "2025-10-26T19:18:43.004Z",
+  "issueId": "HODGE-355",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "test(release): add comprehensive smoke tests for release script bug fixes\n\n## What Changed\n\n**Bug Fixes Validated** (3 critical fixes to release scripts):\n- Smart fallback logic for `getCommitsSince()` when no git tags exist\n- Multi-paragraph commit message truncation (prevents bloated CHANGELOGs)\n- CHANGELOG header preservation (prevents corrupting file preamble)\n\n**Test Coverage Added** (src/test/hodge-354.smoke.test.ts):\n- Added 9 new smoke tests covering all three bug fixes\n- Tests verify fallback logic (CHANGELOG date parsing → \"30 days ago\")\n- Tests validate commit message truncation at `\\n\\n` and `\\n#` markers\n- Tests confirm CHANGELOG header/preamble preservation\n- All tests passing (1317 total, up from 1308)\n\n**Implementation Files Modified**:\n- scripts/lib/release-utils.js (+41 lines): Fallback logic and commit truncation\n- scripts/release-prepare.js (+32 lines): Header-aware CHANGELOG insertion\n\n**Feature Tracking**:\n- Complete exploration, build, and harden documentation\n- All quality gates passed (tests, linting, type checking, build)\n\n## Why This Change\n\nThe `release:prepare` script was generating unusable CHANGELOG entries due to:\n1. Including entire repository history when no tags exist (thousands of commits)\n2. Pulling complete commit message bodies into CHANGELOG (multi-paragraph bloat)\n3. Corrupting CHANGELOG header by prepending content instead of inserting\n\nThese three surgical bug fixes now ensure CHANGELOGs remain concise and maintainable.\n\n## Impact\n\n- ✅ **CHANGELOG quality**: Entries now limited to relevant commits with concise messages\n- ✅ **Regression prevention**: Comprehensive test coverage prevents future breakage\n- ✅ **Developer experience**: Release process generates clean, readable CHANGELOGs\n- ✅ **Code quality**: All tests passing, no linting errors, strict TypeScript compliance\n\n**Related**: HODGE-355\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}

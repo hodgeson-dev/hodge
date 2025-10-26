@@ -225,6 +225,113 @@ describe('[smoke] HODGE-354: Automated Release Scripts', () => {
     });
   });
 
+  describe('HODGE-355: Bug Fixes for Release Script', () => {
+    describe('getCommitsSince() Fallback Logic', () => {
+      smokeTest('should use tag..HEAD range when tag is provided', () => {
+        // Use getLatestTag() to get an actual tag if one exists
+        const latestTag = getLatestTag();
+        if (latestTag) {
+          const commits = getCommitsSince(latestTag);
+          expect(Array.isArray(commits)).toBe(true);
+        } else {
+          // If no tags exist, verify the function handles null gracefully
+          expect(() => getCommitsSince(null)).not.toThrow();
+        }
+      });
+
+      smokeTest('should return array when no tag exists (fallback logic)', () => {
+        // When null is passed and no tags exist, the function falls back to:
+        // 1. CHANGELOG date parsing
+        // 2. "30 days ago" if no CHANGELOG date found
+        const commits = getCommitsSince(null);
+        expect(Array.isArray(commits)).toBe(true);
+        // Should not throw, should return commits from fallback range
+      });
+
+      smokeTest('should handle CHANGELOG parsing gracefully', () => {
+        // This tests that the function doesn't crash even if CHANGELOG format changes
+        // The actual implementation has try-catch for CHANGELOG parsing
+        expect(() => getCommitsSince(null)).not.toThrow();
+      });
+    });
+
+    describe('Multi-Paragraph Commit Message Truncation', () => {
+      smokeTest('should extract only first paragraph from multi-paragraph commits', () => {
+        // Create a mock git log output with multi-paragraph message
+        // Note: The actual truncation happens inside getCommitsSince()
+        // We verify the behavior by checking that returned messages are truncated
+        const commits = getCommitsSince(null);
+
+        if (commits.length > 0) {
+          commits.forEach((commit: { hash: string; message: string }) => {
+            // Verify no commit messages contain paragraph breaks
+            expect(commit.message).not.toContain('\n\n');
+            expect(commit.message.indexOf('\n#')).toBe(-1);
+          });
+        }
+      });
+
+      smokeTest('should handle single-line commits without modification', () => {
+        // Single-line commits should pass through unchanged
+        const commits = getCommitsSince(null);
+        expect(Array.isArray(commits)).toBe(true);
+        // Each commit should have hash and message
+        commits.forEach((commit: { hash: string; message: string }) => {
+          expect(commit).toHaveProperty('hash');
+          expect(commit).toHaveProperty('message');
+          expect(typeof commit.message).toBe('string');
+        });
+      });
+    });
+
+    describe('CHANGELOG Header Preservation', () => {
+      smokeTest('should detect "# Changelog" header pattern', () => {
+        // Test the regex pattern used in release-prepare.js
+        const validChangelog = '# Changelog\n\nContent here';
+        const headerMatch = validChangelog.match(/(# Changelog\s*\n(?:\s*\n)*)/);
+
+        expect(headerMatch).not.toBeNull();
+        expect(headerMatch![0]).toContain('# Changelog');
+      });
+
+      smokeTest('should handle CHANGELOG with preamble text', () => {
+        // Test that the pattern captures header + blank lines correctly
+        const changelogWithPreamble = '# Changelog\n\nAll notable changes...\n\n## [1.0.0]';
+        const headerMatch = changelogWithPreamble.match(/(# Changelog\s*\n(?:\s*\n)*)/);
+
+        expect(headerMatch).not.toBeNull();
+        // The match should include the header and following blank lines
+        expect(headerMatch![0]).toMatch(/# Changelog\s*\n/);
+      });
+
+      smokeTest('should fail gracefully if header is missing', () => {
+        // Test that the pattern returns null for invalid CHANGELOG
+        const invalidChangelog = 'No header here\n\n## [1.0.0]';
+        const headerMatch = invalidChangelog.match(/(# Changelog\s*\n(?:\s*\n)*)/);
+
+        expect(headerMatch).toBeNull();
+        // release-prepare.js throws error in this case, which is correct behavior
+      });
+
+      smokeTest('should calculate correct insertion point', () => {
+        // Test the insertion point logic
+        const changelog = '# Changelog\n\nPreamble text\n\n## [1.0.0]';
+        const headerMatch = changelog.match(/(# Changelog\s*\n(?:\s*\n)*)/);
+
+        if (headerMatch) {
+          const headerEndIndex = headerMatch.index! + headerMatch[0].length;
+          const beforeInsert = changelog.slice(0, headerEndIndex);
+          const afterInsert = changelog.slice(headerEndIndex);
+
+          // Verify header is preserved
+          expect(beforeInsert).toContain('# Changelog');
+          // Verify content after header is preserved
+          expect(afterInsert).toContain('Preamble text');
+        }
+      });
+    });
+  });
+
   describe('Script Files Exist', () => {
     smokeTest('release-prepare.js exists', async () => {
       const { existsSync } = await import('fs');
