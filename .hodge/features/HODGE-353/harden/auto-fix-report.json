@@ -1,0 +1,44 @@
+{
+  "timestamp": "2025-10-26T17:10:37.746Z",
+  "stagedFiles": [
+    ".github/workflows/validate-release.yml",
+    ".hodge/.session",
+    ".hodge/HODGE.md",
+    ".hodge/context.json",
+    ".hodge/features/HODGE-353/build/build-plan.md",
+    ".hodge/features/HODGE-353/explore/exploration.md",
+    ".hodge/features/HODGE-353/explore/test-intentions.md",
+    ".hodge/features/HODGE-353/issue-id.txt",
+    ".hodge/features/HODGE-353/ship-record.json",
+    ".hodge/id-counter.json",
+    ".hodge/id-mappings.json",
+    ".hodge/project_management.md",
+    "CONTRIBUTING.md",
+    "index.ts",
+    "src/test/hodge-353.smoke.test.ts",
+    "tsconfig.json"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 14,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": ".github/workflows/validate-release.yml 26ms (unchanged)\nindex.ts 24ms (unchanged)\nsrc/test/hodge-353.smoke.test.ts 32ms\n",
+      "stderr": "",
+      "duration": 682
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 2,
+      "issuesFixed": 1,
+      "success": true,
+      "stdout": "\n/Users/michaelkelly/Projects/hodge/src/test/hodge-353.smoke.test.ts\n  0:0  warning  File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override\n\n✖ 1 problem (0 errors, 1 warning)\n\n",
+      "stderr": "",
+      "duration": 3575
+    }
+  ],
+  "totalIssuesFixed": 1,
+  "totalFilesModified": 16,
+  "failures": []
+}

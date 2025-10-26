@@ -1,0 +1,144 @@
+name: Validate Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x, 22.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: TypeScript check
+        run: npm run typecheck
+
+      - name: ESLint check
+        run: npm run lint
+
+      - name: Prettier check
+        run: npx prettier --check .
+
+      - name: Run all tests
+        run: npm test
+
+      - name: Test coverage
+        run: npm run test:coverage
+
+      - name: Validate standards
+        run: node scripts/validate-standards.js
+
+      - name: Validate package contents
+        run: |
+          echo "Validating package.json configuration..."
+          node -e "
+            const pkg = require('./package.json');
+
+            // Check required fields
+            if (!pkg.name) throw new Error('Missing package name');
+            if (!pkg.version) throw new Error('Missing package version');
+            if (!pkg.main) throw new Error('Missing main entry point');
+            if (!pkg.bin) throw new Error('Missing bin configuration');
+
+            // Check publishConfig
+            if (!pkg.publishConfig || pkg.publishConfig.access !== 'public') {
+              throw new Error('publishConfig.access must be set to public');
+            }
+
+            // Check files array
+            if (!pkg.files || !Array.isArray(pkg.files)) {
+              throw new Error('Missing or invalid files array');
+            }
+
+            const requiredFiles = ['dist', 'README.md', 'LICENSE'];
+            for (const file of requiredFiles) {
+              if (!pkg.files.includes(file)) {
+                throw new Error(\`Missing required file in files array: \${file}\`);
+              }
+            }
+
+            console.log('✓ Package configuration valid');
+            console.log('  Package:', pkg.name);
+            console.log('  Version:', pkg.version);
+            console.log('  Files:', pkg.files.join(', '));
+          "
+
+      - name: Check build artifacts
+        run: |
+          echo "Checking for required build artifacts..."
+
+          # Check dist directory exists
+          if [ ! -d "dist" ]; then
+            echo "❌ dist/ directory not found"
+            exit 1
+          fi
+
+          # Check critical files in dist
+          required_files=(
+            "dist/src/bin/hodge.js"
+            "dist/index.js"
+            "dist/package.json"
+          )
+
+          for file in "${required_files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "❌ Required file not found: $file"
+              exit 1
+            fi
+          done
+
+          # Check templates are copied
+          if [ ! -d "dist/src/templates" ]; then
+            echo "❌ Templates not copied to dist/"
+            exit 1
+          fi
+
+          # Check review profiles are copied
+          if [ ! -d "dist/review-profiles" ]; then
+            echo "❌ Review profiles not copied to dist/"
+            exit 1
+          fi
+
+          echo "✓ All required build artifacts present"
+
+      - name: Dry run npm pack
+        run: |
+          echo "Testing package creation..."
+          npm pack --dry-run
+          echo "✓ Package can be created successfully"
+
+      - name: Validation summary
+        if: matrix.node-version == '20.x'
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✅ Release Validation Complete"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "All quality gates passed for tag: ${{ github.ref_name }}"
+          echo ""
+          echo "Next steps:"
+          echo "1. Review validation results in this Actions run"
+          echo "2. If all checks passed, publish to NPM:"
+          echo "   npm publish --tag alpha"
+          echo "3. Create GitHub Release with CHANGELOG excerpt"
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

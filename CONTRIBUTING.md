@@ -313,11 +313,232 @@ Use our test utilities for cleaner tests:
 
 ## Release Process
 
-Releases are managed by maintainers:
+Releases are managed by maintainers using a semi-automated workflow that balances safety with control.
 
-1. Version bumping follows semantic versioning
-2. Changelog is updated for each release
-3. GitHub releases are created with release notes
+### NPM Account Setup (One-Time Setup)
+
+Before you can publish to NPM, you need to set up your NPM account and the `@hodgeson` organization:
+
+#### 1. Create NPM Account
+
+1. Go to [npmjs.com](https://www.npmjs.com/) and sign up for a free account
+2. Verify your email address
+3. Set up Two-Factor Authentication (2FA):
+   - Go to Account Settings → Two-Factor Authentication
+   - Choose "Authorization and Publishing" (required for scoped packages)
+   - Follow the setup instructions with your authenticator app
+   - **Save your recovery codes** in a secure location
+
+#### 2. Create the `@hodgeson` Organization
+
+1. Log in to npmjs.com
+2. Click your profile → "Add an Organization"
+3. Choose organization name: `hodgeson`
+4. Select "Create a free organization"
+5. Add organization details:
+   - Display name: "Hodgeson"
+   - Description: "AI development framework: Freedom to explore, discipline to build, confidence to ship"
+   - Website: https://www.hodgeson.dev
+
+#### 3. Grant Publish Access
+
+If you're not the organization owner, request publish access:
+
+1. Organization owner goes to npmjs.com → Organizations → hodgeson
+2. Click "Members" → "Invite Members"
+3. Enter your NPM username
+4. Grant role: "Developer" (allows publishing)
+5. You'll receive an email invitation to accept
+
+#### 4. Configure Local NPM Token
+
+1. Generate an access token:
+   - Go to npmjs.com → Account → Access Tokens
+   - Click "Generate New Token"
+   - Choose "Automation" type (recommended for publishing)
+   - Copy the token immediately (you won't see it again)
+
+2. Configure npm to use the token:
+   ```bash
+   npm login
+   # Enter your username, password, and email
+   # You'll be prompted for 2FA code
+   ```
+
+   Or set token directly in `~/.npmrc`:
+   ```bash
+   echo "//registry.npmjs.org/:_authToken=YOUR_TOKEN_HERE" >> ~/.npmrc
+   ```
+
+3. Verify authentication:
+   ```bash
+   npm whoami
+   # Should output your NPM username
+   ```
+
+### Release Workflow
+
+Our release process uses a **Hybrid Workflow** - CI validates quality, maintainer controls publish timing.
+
+#### Step 1: Update CHANGELOG
+
+Before releasing, document what's changed:
+
+```bash
+# Edit CHANGELOG.md
+# Add a new section for the release under "## [Unreleased]"
+```
+
+Example CHANGELOG entry:
+```markdown
+## [0.1.0-alpha.2] - 2025-01-26
+
+### Added
+- GitHub Actions validation workflow for releases
+- Comprehensive NPM publishing documentation
+- Automated package validation checks
+
+### Fixed
+- Package build artifacts now include all required files
+
+### Changed
+- Release process now uses semi-automated workflow
+```
+
+#### Step 2: Bump Version
+
+Use npm's built-in `version` command to bump the version and create a git tag:
+
+```bash
+# For alpha releases (current stage)
+npm version prerelease --preid=alpha
+# This bumps: 0.1.0-alpha.1 → 0.1.0-alpha.2
+
+# Other version bump commands (for future use):
+npm version patch    # 0.1.0 → 0.1.1 (bug fixes)
+npm version minor    # 0.1.0 → 0.2.0 (new features)
+npm version major    # 0.1.0 → 1.0.0 (breaking changes)
+```
+
+This command:
+- Updates `package.json` version
+- Creates a git commit with message "0.1.0-alpha.2"
+- Creates a git tag `v0.1.0-alpha.2`
+
+#### Step 3: Push Tag to Trigger CI
+
+Push the version tag to GitHub to trigger validation:
+
+```bash
+git push --follow-tags
+```
+
+This triggers the `.github/workflows/validate-release.yml` workflow which:
+- Runs all quality checks (build, typecheck, lint, tests)
+- Validates package configuration
+- Checks build artifacts
+- Creates a dry-run package
+- Tests on Node 20.x and 22.x
+
+#### Step 4: Monitor CI Validation
+
+1. Go to GitHub Actions tab
+2. Find the "Validate Release" workflow for your tag
+3. Wait for all checks to complete (~3-5 minutes)
+4. Review any failures and fix if needed
+
+**If CI fails:**
+```bash
+# Fix the issues
+git add .
+git commit -m "fix: resolve release validation issues"
+
+# Delete the old tag
+git tag -d v0.1.0-alpha.2
+git push origin :refs/tags/v0.1.0-alpha.2
+
+# Create new tag with same version
+git tag v0.1.0-alpha.2
+git push --follow-tags
+```
+
+#### Step 5: Publish to NPM
+
+Once CI validation passes, publish to NPM:
+
+```bash
+# Publish to NPM with alpha tag (keeps it off 'latest')
+npm publish --tag alpha
+
+# Verify publication
+npm view @hodgeson/hodge@alpha
+```
+
+**Important Notes:**
+- Use `--tag alpha` to keep the package off the `latest` tag
+- Users install with: `npm install @hodgeson/hodge@alpha`
+- When ready for stable release, use: `npm publish` (defaults to `latest` tag)
+
+#### Step 6: Create GitHub Release
+
+Create a GitHub Release with CHANGELOG excerpt:
+
+1. Go to GitHub → Releases → "Draft a new release"
+2. Choose the tag you just pushed (e.g., `v0.1.0-alpha.2`)
+3. Release title: Same as version (e.g., `0.1.0-alpha.2`)
+4. Description: Copy the relevant section from CHANGELOG.md
+5. Check "This is a pre-release" (for alpha versions)
+6. Click "Publish release"
+
+Or use GitHub CLI:
+```bash
+# Extract CHANGELOG section for this version
+gh release create v0.1.0-alpha.2 \
+  --title "0.1.0-alpha.2" \
+  --notes-file <(sed -n '/## \[0.1.0-alpha.2\]/,/## \[/p' CHANGELOG.md | head -n -1) \
+  --prerelease
+```
+
+### Release Checklist
+
+Use this checklist to ensure nothing is missed:
+
+- [ ] All changes committed and pushed
+- [ ] CHANGELOG.md updated with release notes
+- [ ] `npm version prerelease --preid=alpha` executed
+- [ ] Tag pushed with `git push --follow-tags`
+- [ ] CI validation workflow passed
+- [ ] `npm publish --tag alpha` executed successfully
+- [ ] Package visible on npmjs.com
+- [ ] GitHub Release created with notes
+- [ ] Verified installation: `npm install -g @hodgeson/hodge@alpha`
+- [ ] Verified CLI works: `hodge --version`
+
+### Troubleshooting
+
+**"You must be logged in to publish packages"**
+- Run `npm login` and authenticate with your NPM account
+- Ensure 2FA is set up and provide the code when prompted
+
+**"You do not have permission to publish"**
+- Ensure you're a member of the `@hodgeson` organization with "Developer" role
+- Check `npm whoami` shows your correct username
+
+**"Tag already exists"**
+- Delete the tag: `git tag -d v0.1.0-alpha.2 && git push origin :refs/tags/v0.1.0-alpha.2`
+- Create a new tag with a bumped version
+
+**"CI validation failed"**
+- Review the GitHub Actions logs for specific failures
+- Fix issues and push corrections
+- Delete and recreate the tag to re-trigger validation
+
+### Version Strategy
+
+- **Alpha** (`0.1.0-alpha.x`): Current stage, active development
+- **Beta** (`0.1.0-beta.x`): Feature complete, stabilizing
+- **Release Candidate** (`0.1.0-rc.x`): Final testing before stable
+- **Stable** (`0.1.0`): Production ready, published to `latest` tag
 
 ## Code of Conduct
 

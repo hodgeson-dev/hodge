@@ -1,0 +1,14 @@
+{
+  "feature": "HODGE-353",
+  "timestamp": "2025-10-26T17:17:45.100Z",
+  "issueId": "HODGE-353",
+  "pmTool": "linear",
+  "validationPassed": true,
+  "shipChecks": {
+    "tests": true,
+    "coverage": true,
+    "docs": true,
+    "changelog": true
+  },
+  "commitMessage": "feat(publish): add NPM package publishing setup with semi-automated workflow\n\n## What Changed\n- **GitHub Actions Workflow** (.github/workflows/validate-release.yml, 144 lines):\n  - Comprehensive CI validation triggered on version tags (v*)\n  - Runs full quality suite (build, typecheck, lint, tests, coverage, standards)\n  - Validates package.json configuration and build artifacts\n  - Tests package creation with npm pack --dry-run\n  - Matrix testing on Node 20.x and 22.x\n\n- **Release Documentation** (CONTRIBUTING.md, +229 lines):\n  - NPM Account Setup: Complete guide for account creation, 2FA setup, organization creation, and token configuration\n  - Release Workflow: Step-by-step instructions for version bumping, CI validation, publishing, and GitHub releases\n  - Release Checklist: Ensures consistent release process\n  - Troubleshooting Guide: Solutions for common publishing issues\n  - Version Strategy: Documents alpha → beta → RC → stable progression\n\n- **Package Entry Point** (index.ts, 10 lines):\n  - Enables programmatic usage of Hodge as a library\n  - Exports public API from src/lib/index.js\n  - Required to match package.json main field (./dist/index.js)\n\n- **Smoke Tests** (src/test/hodge-353.smoke.test.ts, 160 lines):\n  - 7 comprehensive tests validating publishing setup\n  - Tests package.json configuration, workflow existence, documentation completeness\n  - Validates build artifacts and required files (LICENSE, README.md)\n  - All tests passing (1278 total tests)\n\n- **Build Configuration** (tsconfig.json):\n  - Added index.ts to include array for proper compilation\n\n## Why This Change\nHodge needed a complete NPM publishing infrastructure to make `@hodgeson/hodge` available to users. The semi-automated \"Hybrid Workflow\" approach balances safety with control—CI validates all quality gates, but the maintainer controls when to publish. This provides guardrails without removing human judgment from the release decision.\n\n## Impact\n- ✅ Production-ready NPM publishing workflow\n- ✅ Comprehensive maintainer documentation (6-step release guide)\n- ✅ Automated quality validation on every release tag\n- ✅ Package can be installed globally: `npm install -g @hodgeson/hodge@alpha`\n- ✅ Full test coverage for publishing infrastructure (7 smoke tests)\n- ✅ Clear troubleshooting guide for common publishing issues\n- 📦 Package ready to publish to NPM with `npm publish --tag alpha`\n\nRelated: HODGE-353\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}

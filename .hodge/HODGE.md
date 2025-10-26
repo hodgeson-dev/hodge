@@ -4,11 +4,11 @@ This file provides AI assistants with context about the current Hodge workflow s
 
 ## Current Status
 **Feature**: HODGE-352
-**Mode**: explore
+**Mode**: shipped
 **PM Issue**: HODGE-352
-**Last Updated**: 2025-10-26T05:13:24.399Z
+**Last Updated**: 2025-10-26T16:25:03.094Z
 ## Current Session
-**Resumed**: 1 hours ago
+**Resumed**: 12 hours ago
 **Progress**: Explored HODGE-352 - template ready for AI approach generation
 **Working on**: HODGE-352 (explore mode)
 ## AI Context Restoration
@@ -218,12 +218,12 @@ Suggested next: Review exploration and decide with 'hodge decide'
 
 - `.hodge/features/HODGE-352/explore/exploration.md`
 - `.hodge/features/HODGE-352/explore/test-intentions.md`
+- `.hodge/features/HODGE-352/build/build-plan.md`
+- `.hodge/features/HODGE-352/ship/release-notes.md`
 
 ## Next Steps
 
-1. Review exploration approaches
-2. Make decision with `hodge decide`
-3. Start building with `hodge build HODGE-352`
+1. Feature completed. Start new work with `hodge explore <feature>`
 
 
 ---

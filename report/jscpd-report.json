@@ -1,12 +1,24 @@
 {
   "statistics": {
-    "detectionDate": "2025-10-26T16:13:56.962Z",
+    "detectionDate": "2025-10-26T17:13:01.660Z",
     "formats": {
       "typescript": {
         "sources": {
-          "src/test/hodge-352.smoke.test.ts": {
-            "lines": 98,
-            "tokens": 1107,
+          "src/test/hodge-353.smoke.test.ts": {
+            "lines": 159,
+            "tokens": 1405,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "index.ts": {
+            "lines": 9,
+            "tokens": 30,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -18,9 +30,9 @@
           }
         },
         "total": {
-          "lines": 98,
-          "tokens": 1107,
-          "sources": 1,
+          "lines": 168,
+          "tokens": 1435,
+          "sources": 2,
           "clones": 0,
           "duplicatedLines": 0,
           "duplicatedTokens": 0,
@@ -32,9 +44,9 @@
       }
     },
     "total": {
-      "lines": 98,
-      "tokens": 1107,
-      "sources": 1,
+      "lines": 168,
+      "tokens": 1435,
+      "sources": 2,
       "clones": 0,
       "duplicatedLines": 0,
       "duplicatedTokens": 0,
