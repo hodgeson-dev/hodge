@@ -97,9 +97,9 @@ Based on the status output, present context-aware options:
 Exploration complete. Ready to make decisions or start building.
 
 ### What's Next?
-- `/decide` - Make architectural decisions (if needed)
-- `/build {{feature}}` - Start building (Recommended)
-- `/status {{feature}}` - Check detailed progress
+• `/decide` - Make architectural decisions (if needed)
+• `/build {{feature}}` - Start building (Recommended)
+• `/status {{feature}}` - Check detailed progress
 
 💡 Tip: You can start building immediately or record decisions first.
 ```
@@ -110,9 +110,9 @@ Exploration complete. Ready to make decisions or start building.
 Build phase complete. Ready for integration tests and validation.
 
 ### What's Next?
-- `/harden {{feature}}` - Add integration tests and validate (Recommended)
-- `/build {{feature}}` - Continue building if needed
-- `/status {{feature}}` - Check detailed progress
+• `/harden {{feature}}` - Add integration tests and validate (Recommended)
+• `/build {{feature}}` - Continue building if needed
+• `/status {{feature}}` - Check detailed progress
 
 💡 Tip: Hardening validates production readiness with quality gates.
 ```
@@ -123,9 +123,9 @@ Build phase complete. Ready for integration tests and validation.
 Feature is production-ready! All quality gates passed.
 
 ### What's Next?
-- `/ship {{feature}}` - Ship to production (Recommended)
-- `/review` - Optional final review
-- `/status {{feature}}` - Check detailed progress
+• `/ship {{feature}}` - Ship to production (Recommended)
+• `/review` - Optional final review
+• `/status {{feature}}` - Check detailed progress
 
 💡 Tip: You're ready to ship! 🚀
 ```
@@ -136,9 +136,9 @@ Feature is production-ready! All quality gates passed.
 Feature has been shipped. Great work! 🎉
 
 ### What's Next?
-- `/explore <new-feature>` - Start your next feature (Recommended)
-- `git push` - Push to remote if not done
-- `/status` - Check overall project status
+• `/explore <new-feature>` - Start your next feature (Recommended)
+• `git push` - Push to remote if not done
+• `/status` - Check overall project status
 
 💡 Tip: Time to start something new or take a well-deserved break!
 ```
@@ -149,9 +149,9 @@ Feature has been shipped. Great work! 🎉
 No work started on {{feature}} yet.
 
 ### What's Next?
-- `/explore {{feature}}` - Start exploring this feature (Recommended)
-- `/status` - Check overall project status
-- Choose a different feature to work on
+• `/explore {{feature}}` - Start exploring this feature (Recommended)
+• `/status` - Check overall project status
+• Choose a different feature to work on
 
 💡 Tip: Begin with exploration to understand the problem space.
 ```
@@ -182,18 +182,18 @@ Current mode: {{mode}}
 Next suggested action: {{next_action}}
 
 Available commands:
-- `/explore {{feature}}` - Continue exploration
-- `/build {{feature}}` - Start/continue building
-- `/decide` - Record decisions
+• `/explore {{feature}}` - Continue exploration
+• `/build {{feature}}` - Start/continue building
+• `/decide` - Record decisions
 
 {{else}}
 ### Available Commands
-- `/explore {{feature}}` - Start exploring a new feature
-- `/build {{feature}}` - Build a feature with standards
-- `/decide {{decision}}` - Record a decision
-- `/ship {{feature}}` - Ship feature to production
-- `/status` - Check current status
-- `/review` - Review current work
+• `/explore {{feature}}` - Start exploring a new feature
+• `/build {{feature}}` - Build a feature with standards
+• `/decide {{decision}}` - Record a decision
+• `/ship {{feature}}` - Ship feature to production
+• `/status` - Check current status
+• `/review` - Review current work
 
 ### Quick Actions
 {{#if current_feature}}

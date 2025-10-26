@@ -14,7 +14,10 @@ When user responds to choice prompts:
 - "a,b" or "a, b" → select multiple options (comma-separated, if applicable)
 - "r" → select all options marked with ⭐ (when 2+ recommendations exist)
 - "a, and [modification]" → select option with user's changes applied
-- Invalid (e.g., "7" when options are a-e) → use collaborative error recovery
+- Invalid (e.g., "7" when options are a-e) OR uncertain (e.g., "maybe b?") → use collaborative error recovery:
+  - Detect uncertainty patterns: "maybe", "?", "not sure", "either"
+  - Offer repair options, never just reject
+  - Example: "Hmm, I got 'maybe b?' - sounds uncertain. Let me help clarify: a) Continue with b, b) Explain options better, c) Start over"
 
 ## Decision Extraction (Before Build)
 
@@ -147,6 +150,8 @@ b) Use recommendation 2
 c) Use recommendation 3
 d) Go to /decide to formalize decisions
 e) Skip and build without guidance
+
+🔔 YOUR RESPONSE NEEDED
 
 💡 Tip: You can modify any choice, e.g., "a, and combine ideas from option 2"
 
@@ -302,6 +307,8 @@ hodge lessons --match "subprocess,command,execution" --files "src/commands/build
 💡 Pattern from {{lesson.feature}}: {{lesson.relevance}}
 
 Should I check for {{lesson.title}} before we start building?
+
+🔔 YOUR RESPONSE NEEDED
 
 a) ⭐ Yes, check now (~30s) (Recommended)
 b) Skip, I know it's safe

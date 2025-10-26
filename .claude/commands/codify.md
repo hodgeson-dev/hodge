@@ -15,7 +15,10 @@ When user responds to choice prompts:
 - "a,b" or "a, b" → select multiple options (comma-separated, if applicable)
 - "r" → select all options marked with ⭐ (when 2+ recommendations exist)
 - "a, and [modification]" → select option with user's changes applied
-- Invalid (e.g., "7" when options are a-c) → use collaborative error recovery
+- Invalid (e.g., "7" when options are a-c) OR uncertain (e.g., "maybe b?") → use collaborative error recovery:
+  - Detect uncertainty patterns: "maybe", "?", "not sure", "either"
+  - Offer repair options, never just reject
+  - Example: "Hmm, I got 'maybe b?' - sounds uncertain. Let me help clarify: a) Continue with b, b) Explain options better, c) Start over"
 
 ## Purpose
 
