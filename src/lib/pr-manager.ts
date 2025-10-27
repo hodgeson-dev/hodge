@@ -114,8 +114,8 @@ export class PRManager {
       const { stdout } = await execAsync(command);
 
       // Extract PR URL from output
-      const urlMatch = stdout.match(/https:\/\/github\.com\/[\w-]+\/[\w-]+\/pull\/\d+/);
-      const numberMatch = stdout.match(/\/pull\/(\d+)/);
+      const urlMatch = /https:\/\/github\.com\/[\w-]+\/[\w-]+\/pull\/\d+/.exec(stdout);
+      const numberMatch = /\/pull\/(\d+)/.exec(stdout);
 
       return {
         success: true,

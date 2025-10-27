@@ -1,0 +1,39 @@
+{
+  "feature": "HODGE-357.4",
+  "type": "single",
+  "title": "Quick Wins - ESLint Cleanup",
+  "description": "Fix 15-20 low-hanging ESLint errors: nested ternaries, dead stores, unused variables, and require-await violations",
+  "scope": {
+    "nestedTernaries": [
+      "ship.ts (1 location)",
+      "status.ts (3 locations)",
+      "pm-hooks.ts (3 locations)",
+      "interaction-state.ts (1 location)",
+      "review-tier-classifier.ts (1 location)"
+    ],
+    "otherQuickWins": [
+      "Dead stores and unused variables",
+      "require-await violations",
+      "Simple type safety improvements"
+    ]
+  },
+  "implementation": [
+    "Extract nested ternaries to if/else blocks (follow harden.ts:396 pattern)",
+    "Remove dead stores and unused variables",
+    "Fix require-await violations (remove async or add await)",
+    "Run tests after each batch of 3-5 fixes",
+    "Update progress checkpoint with final count"
+  ],
+  "acceptanceCriteria": [
+    "All nested ternary errors eliminated (9 errors)",
+    "All dead store/unused variable errors fixed",
+    "All require-await violations fixed",
+    "All existing tests pass (1325 tests)",
+    "No new ESLint errors introduced",
+    "Progress from 67 → ~47-52 errors"
+  ],
+  "estimatedDays": 0.375,
+  "dependencies": ["HODGE-357.3"],
+  "parent": "HODGE-357",
+  "createdAt": "2025-10-26T23:22:00Z"
+}

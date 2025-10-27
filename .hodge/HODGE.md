@@ -3,16 +3,16 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: HODGE-355
-**Mode**: shipped
-**PM Issue**: HODGE-355
-**Last Updated**: 2025-10-26T19:36:29.068Z
+**Feature**: HODGE-357.2
+**Mode**: build
+**PM Issue**: HODGE-357.2
+**Last Updated**: 2025-10-27T04:30:16.611Z
 ## Current Session
-**Resumed**: 50 minutes ago
-**Progress**: Explored HODGE-355 - template ready for AI approach generation
-**Working on**: HODGE-355 (explore mode)
+**Resumed**: 1 hours ago
+**Progress**: Explored HODGE-357.2 - template ready for AI approach generation
+**Working on**: HODGE-357.2 (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-355. Explored HODGE-355 - template ready for AI approach generation
+You were helping with HODGE-357.2. Explored HODGE-357.2 - template ready for AI approach generation
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
@@ -145,6 +145,18 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - HODGE-317.1 (2025-09-30) eliminated subprocess spawning from test-isolation tests
 - HODGE-318 (2025-10-01) inadvertently reintroduced it in commonjs-compatibility tests
 - HODGE-319.1 (2025-10-03) fixed regression and added this standard
+- **Root Cause**: Toolchain execution spawns subprocesses that hang or take excessive time (jscpd scans entire codebase)
+- **Symptom**: Hanging test processes, slow test runs (18s → 115s), zombie processes requiring manual kill
+- **Solution**: Mock `runQualityChecks()` and `executeTool()` in all tests
+- **Exceptions**: None - if you think you need to run real tools, you're testing the wrong thing
+- HODGE-357.1 (2025-10-27) discovered tests spawning jscpd processes that scan entire codebase
+- Same issue as subprocess spawning ban, but specific to ToolchainService
+- Running real tools in tests creates unpredictable behavior and resource exhaustion
+- ✅ Config loading and parsing
+- ✅ Tool detection logic (file existence, package.json checks)
+- ✅ Command template substitution (${files} replacement)
+- ✅ Error handling for missing tools
+- ❌ NOT actual tool execution (eslint, jscpd, tsc, etc.)
 - `.hodge/review-profiles/testing/general-test-standards.md` - Comprehensive test quality guidance
 - `.hodge/patterns/test-pattern.md` - Test pattern examples
 
@@ -216,14 +228,17 @@ Suggested next: Review exploration and decide with 'hodge decide'
 
 ## Working Files
 
-- `.hodge/features/HODGE-355/explore/exploration.md`
-- `.hodge/features/HODGE-355/explore/test-intentions.md`
-- `.hodge/features/HODGE-355/build/build-plan.md`
-- `.hodge/features/HODGE-355/ship/release-notes.md`
+- `.hodge/features/HODGE-357.2/explore/exploration.md`
+- `.hodge/features/HODGE-357.2/explore/test-intentions.md`
+- `.hodge/features/HODGE-357.2/build/build-plan.md`
+- `.hodge/features/HODGE-357.2/build/progress-checkpoint.md`
+- `.hodge/features/HODGE-357.2/build/refactoring-complete.md`
 
 ## Next Steps
 
-1. Feature completed. Start new work with `hodge explore <feature>`
+1. Complete implementation
+2. Run tests with `npm test`
+3. Harden with `hodge harden HODGE-357.2`
 
 
 ---

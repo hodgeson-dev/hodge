@@ -1,4 +1,4 @@
-import { describe, expect, beforeEach, afterEach } from 'vitest';
+import { describe, expect, beforeEach, afterEach, vi } from 'vitest';
 import { smokeTest } from '../test/helpers.js';
 import { mkdtempSync, rmSync } from 'fs';
 import { tmpdir } from 'os';
@@ -6,6 +6,28 @@ import { join } from 'path';
 import { writeFileSync, mkdirSync } from 'fs';
 import * as yaml from 'js-yaml';
 import { HardenCommand } from './harden.js';
+import type { RawToolResult } from '../types/toolchain.js';
+
+// Mock ToolchainService to prevent real tool execution in smoke tests
+vi.mock('../lib/toolchain-service.js', () => ({
+  ToolchainService: class {
+    async runQualityChecks(): Promise<RawToolResult[]> {
+      return [
+        { type: 'testing', tool: 'vitest', success: true },
+        { type: 'linting', tool: 'eslint', success: true },
+        { type: 'type_checking', tool: 'tsc', success: true },
+      ];
+    }
+    async loadConfig() {
+      return {
+        version: '1.0',
+        language: 'typescript',
+        quality_checks: {},
+        commands: {},
+      };
+    }
+  },
+}));
 
 describe('HardenCommand - Review Mode Smoke Tests', () => {
   let testDir: string;

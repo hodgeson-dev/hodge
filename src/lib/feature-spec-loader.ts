@@ -70,7 +70,17 @@ export class FeatureSpecLoader {
    * Validate the feature specification structure
    */
   private validateSpec(spec: unknown): void {
-    // Check required top-level fields
+    const typedSpec = this.validateTopLevelStructure(spec);
+    const feature = typedSpec.feature as Record<string, unknown>;
+
+    this.validateRequiredFields(feature);
+    this.validateOptionalFields(feature);
+  }
+
+  /**
+   * Validate top-level spec structure and version
+   */
+  private validateTopLevelStructure(spec: unknown): Record<string, unknown> {
     if (!spec || typeof spec !== 'object') {
       throw new Error('Spec is empty or invalid');
     }
@@ -85,9 +95,13 @@ export class FeatureSpecLoader {
       throw new Error('Missing or invalid feature field');
     }
 
-    // Check required feature fields
-    const feature = typedSpec.feature as Record<string, unknown>;
+    return typedSpec;
+  }
 
+  /**
+   * Validate required feature fields (name, description)
+   */
+  private validateRequiredFields(feature: Record<string, unknown>): void {
     if (!feature.name) {
       throw new Error('Missing feature.name');
     }
@@ -103,63 +117,97 @@ export class FeatureSpecLoader {
     if (typeof feature.description !== 'string') {
       throw new Error('feature.description must be a string');
     }
+  }
 
-    // Validate decisions if present
-    if (feature.decisions) {
-      if (!Array.isArray(feature.decisions)) {
-        throw new Error('feature.decisions must be an array');
-      }
+  /**
+   * Validate optional feature fields (decisions, scope, exploration_areas, priority)
+   */
+  private validateOptionalFields(feature: Record<string, unknown>): void {
+    this.validateDecisions(feature);
+    this.validateScope(feature);
+    this.validateExplorationAreas(feature);
+    this.validatePriority(feature);
+  }
 
-      feature.decisions.forEach((decision: unknown, index: number) => {
-        if (!decision || typeof decision !== 'object') {
-          throw new Error(`Decision ${index} is invalid`);
-        }
-        const typedDecision = decision as Record<string, unknown>;
-        if (!typedDecision.text) {
-          throw new Error(`Decision ${index} is missing text field`);
-        }
-      });
+  /**
+   * Validate decisions array if present
+   */
+  private validateDecisions(feature: Record<string, unknown>): void {
+    if (!feature.decisions) {
+      return;
     }
 
-    // Validate scope if present
-    if (feature.scope && typeof feature.scope === 'object') {
-      const scope = feature.scope as Record<string, unknown>;
-      if (scope.included && !Array.isArray(scope.included)) {
-        throw new Error('feature.scope.included must be an array');
-      }
-      if (scope.excluded && !Array.isArray(scope.excluded)) {
-        throw new Error('feature.scope.excluded must be an array');
-      }
+    if (!Array.isArray(feature.decisions)) {
+      throw new Error('feature.decisions must be an array');
     }
 
-    // Validate exploration areas if present
-    if (feature.exploration_areas) {
-      if (!Array.isArray(feature.exploration_areas)) {
-        throw new Error('feature.exploration_areas must be an array');
+    feature.decisions.forEach((decision: unknown, index: number) => {
+      if (!decision || typeof decision !== 'object') {
+        throw new Error(`Decision ${index} is invalid`);
       }
+      const typedDecision = decision as Record<string, unknown>;
+      if (!typedDecision.text) {
+        throw new Error(`Decision ${index} is missing text field`);
+      }
+    });
+  }
 
-      feature.exploration_areas.forEach((area: unknown, index: number) => {
-        if (!area || typeof area !== 'object') {
-          throw new Error(`Exploration area ${index} is invalid`);
-        }
-        const typedArea = area as Record<string, unknown>;
-        if (!typedArea.area) {
-          throw new Error(`Exploration area ${index} is missing area field`);
-        }
-        if (!typedArea.questions || !Array.isArray(typedArea.questions)) {
-          throw new Error(`Exploration area ${index} questions must be an array`);
-        }
-      });
+  /**
+   * Validate scope field if present
+   */
+  private validateScope(feature: Record<string, unknown>): void {
+    if (!feature.scope || typeof feature.scope !== 'object') {
+      return;
     }
 
-    // Validate priority if present
-    if (feature.priority !== undefined) {
-      if (typeof feature.priority !== 'number') {
-        throw new Error('feature.priority must be a number');
+    const scope = feature.scope as Record<string, unknown>;
+    if (scope.included && !Array.isArray(scope.included)) {
+      throw new Error('feature.scope.included must be an array');
+    }
+    if (scope.excluded && !Array.isArray(scope.excluded)) {
+      throw new Error('feature.scope.excluded must be an array');
+    }
+  }
+
+  /**
+   * Validate exploration areas array if present
+   */
+  private validateExplorationAreas(feature: Record<string, unknown>): void {
+    if (!feature.exploration_areas) {
+      return;
+    }
+
+    if (!Array.isArray(feature.exploration_areas)) {
+      throw new Error('feature.exploration_areas must be an array');
+    }
+
+    feature.exploration_areas.forEach((area: unknown, index: number) => {
+      if (!area || typeof area !== 'object') {
+        throw new Error(`Exploration area ${index} is invalid`);
       }
-      if (feature.priority < 1 || feature.priority > 5) {
-        throw new Error('feature.priority must be between 1 and 5');
+      const typedArea = area as Record<string, unknown>;
+      if (!typedArea.area) {
+        throw new Error(`Exploration area ${index} is missing area field`);
       }
+      if (!typedArea.questions || !Array.isArray(typedArea.questions)) {
+        throw new Error(`Exploration area ${index} questions must be an array`);
+      }
+    });
+  }
+
+  /**
+   * Validate priority field if present
+   */
+  private validatePriority(feature: Record<string, unknown>): void {
+    if (feature.priority === undefined) {
+      return;
+    }
+
+    if (typeof feature.priority !== 'number') {
+      throw new Error('feature.priority must be a number');
+    }
+    if (feature.priority < 1 || feature.priority > 5) {
+      throw new Error('feature.priority must be between 1 and 5');
     }
   }
 

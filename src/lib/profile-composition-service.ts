@@ -130,7 +130,7 @@ export class ProfileCompositionService {
       // Parse profile line: - `path/to/profile.md` - Description
       // Skip ### subsection headers
       if (inActiveProfiles && line.trim().startsWith('- `')) {
-        const match = line.match(/- `([^`]+)`/);
+        const match = /- `([^`]+)`/.exec(line);
         if (match) {
           // Remove .md extension if present
           const path = match[1].replace(/\.md$/, '');

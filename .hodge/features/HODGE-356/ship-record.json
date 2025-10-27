@@ -1,0 +1,15 @@
+{
+  "feature": "HODGE-356",
+  "timestamp": "2025-10-26T20:45:31.003Z",
+  "issueId": null,
+  "pmTool": null,
+  "validationPassed": false,
+  "shipChecks": {
+    "tests": false,
+    "coverage": false,
+    "docs": false,
+    "changelog": false
+  },
+  "commitMessage": "",
+  "buildStartCommit": "eedf462909fd4a2723e08e8ea3056f1248da222a"
+}

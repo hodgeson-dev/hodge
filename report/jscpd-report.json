@@ -1,12 +1,408 @@
 {
   "statistics": {
-    "detectionDate": "2025-10-26T19:01:27.366Z",
+    "detectionDate": "2025-10-27T02:23:59.730Z",
     "formats": {
       "typescript": {
         "sources": {
-          "src/test/hodge-354.smoke.test.ts": {
-            "lines": 378,
-            "tokens": 3395,
+          "src/test/hodge-356.smoke.test.ts": {
+            "lines": 213,
+            "tokens": 2089,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/pm/pm-hooks.ts": {
+            "lines": 615,
+            "tokens": 5149,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/pm/linear-adapter.ts": {
+            "lines": 258,
+            "tokens": 2051,
+            "sources": 1,
+            "clones": 3,
+            "duplicatedLines": 35,
+            "duplicatedTokens": 271,
+            "percentage": 13.57,
+            "percentageTokens": 13.21,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/pm/github-adapter.ts": {
+            "lines": 475,
+            "tokens": 4262,
+            "sources": 1,
+            "clones": 7,
+            "duplicatedLines": 95,
+            "duplicatedTokens": 997,
+            "percentage": 20,
+            "percentageTokens": 23.39,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/toolchain-service.smoke.test.ts": {
+            "lines": 166,
+            "tokens": 1377,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/toolchain-service-registry.smoke.test.ts": {
+            "lines": 84,
+            "tokens": 670,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/toolchain-service-registry.integration.test.ts": {
+            "lines": 123,
+            "tokens": 1019,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/toolchain-generator.ts": {
+            "lines": 113,
+            "tokens": 936,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/tool-category-mapper.ts": {
+            "lines": 80,
+            "tokens": 515,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/todo-checker.ts": {
+            "lines": 169,
+            "tokens": 1464,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/ship-service.ts": {
+            "lines": 519,
+            "tokens": 3600,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/ship-service.test.ts": {
+            "lines": 207,
+            "tokens": 1838,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/review-tier-classifier.ts": {
+            "lines": 406,
+            "tokens": 2879,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/prompts.ts": {
+            "lines": 414,
+            "tokens": 3588,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/profile-composition-service.ts": {
+            "lines": 329,
+            "tokens": 2187,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/pr-manager.ts": {
+            "lines": 375,
+            "tokens": 2549,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/pattern-learner.ts": {
+            "lines": 633,
+            "tokens": 4330,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/interaction-state.ts": {
+            "lines": 319,
+            "tokens": 2495,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/id-manager.ts": {
+            "lines": 506,
+            "tokens": 3350,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/harden-service.ts": {
+            "lines": 105,
+            "tokens": 632,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/harden-service.test.ts": {
+            "lines": 99,
+            "tokens": 1275,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/feature-populator.ts": {
+            "lines": 406,
+            "tokens": 2582,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 26,
+            "duplicatedTokens": 234,
+            "percentage": 6.4,
+            "percentageTokens": 9.06,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/detection.ts": {
+            "lines": 572,
+            "tokens": 4040,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 28,
+            "duplicatedTokens": 292,
+            "percentage": 4.9,
+            "percentageTokens": 7.23,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/cache-manager.ts": {
+            "lines": 531,
+            "tokens": 3665,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/commands/ship.ts": {
+            "lines": 374,
+            "tokens": 3494,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/commands/ship.integration.test.ts": {
+            "lines": 251,
+            "tokens": 2125,
+            "sources": 1,
+            "clones": 11,
+            "duplicatedLines": 128,
+            "duplicatedTokens": 1210,
+            "percentage": 51,
+            "percentageTokens": 56.94,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/commands/ship-clean-tree.smoke.test.ts": {
+            "lines": 56,
+            "tokens": 460,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/commands/ship-clean-tree.integration.test.ts": {
+            "lines": 101,
+            "tokens": 819,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/commands/hodge-324.smoke.test.ts": {
+            "lines": 156,
+            "tokens": 1565,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/commands/hodge-319.1.smoke.test.ts": {
+            "lines": 153,
+            "tokens": 1388,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/commands/harden.ts": {
+            "lines": 862,
+            "tokens": 6738,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/commands/harden.smoke.test.ts": {
+            "lines": 310,
+            "tokens": 2888,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 20,
+            "duplicatedTokens": 184,
+            "percentage": 6.45,
+            "percentageTokens": 6.37,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/commands/explore.ts": {
+            "lines": 878,
+            "tokens": 6960,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/commands/decide.ts": {
+            "lines": 200,
+            "tokens": 1431,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -18,9 +414,305 @@
           }
         },
         "total": {
-          "lines": 378,
-          "tokens": 3395,
-          "sources": 1,
+          "lines": 11058,
+          "tokens": 86410,
+          "sources": 34,
+          "clones": 13,
+          "duplicatedLines": 166,
+          "duplicatedTokens": 1594,
+          "percentage": 1.5,
+          "percentageTokens": 1.84,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      },
+      "markdown": {
+        "sources": {
+          ".hodge/patterns/test-pattern.md": {
+            "lines": 484,
+            "tokens": 2483,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".hodge/features/HODGE-357/explore/test-intentions.md": {
+            "lines": 622,
+            "tokens": 3109,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".hodge/features/HODGE-357/explore/exploration.md": {
+            "lines": 642,
+            "tokens": 5082,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".hodge/features/HODGE-357/decisions.md": {
+            "lines": 22,
+            "tokens": 278,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".hodge/features/HODGE-357/build/build-plan.md": {
+            "lines": 42,
+            "tokens": 262,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 42,
+            "duplicatedTokens": 249,
+            "percentage": 100,
+            "percentageTokens": 95.04,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".hodge/features/HODGE-357.1/explore/test-intentions.md": {
+            "lines": 108,
+            "tokens": 1517,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".hodge/features/HODGE-357.1/explore/exploration.md": {
+            "lines": 391,
+            "tokens": 4101,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".hodge/features/HODGE-357.1/build/refactoring-complete.md": {
+            "lines": 179,
+            "tokens": 1726,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".hodge/features/HODGE-357.1/build/progress-checkpoint.md": {
+            "lines": 161,
+            "tokens": 1428,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".hodge/features/HODGE-357.1/build/build-plan.md": {
+            "lines": 268,
+            "tokens": 2276,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".hodge/features/HODGE-356/explore/test-intentions.md": {
+            "lines": 45,
+            "tokens": 456,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".hodge/features/HODGE-356/explore/exploration.md": {
+            "lines": 207,
+            "tokens": 2038,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".hodge/features/HODGE-356/build/refactoring-complete.md": {
+            "lines": 159,
+            "tokens": 1270,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".hodge/features/HODGE-356/build/build-plan.md": {
+            "lines": 42,
+            "tokens": 262,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 42,
+            "duplicatedTokens": 249,
+            "percentage": 100,
+            "percentageTokens": 95.04,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".hodge/standards.md": {
+            "lines": 633,
+            "tokens": 5845,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 19,
+            "duplicatedTokens": 155,
+            "percentage": 3,
+            "percentageTokens": 2.65,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".hodge/project_management.md": {
+            "lines": 64,
+            "tokens": 366,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".hodge/HODGE.md": {
+            "lines": 228,
+            "tokens": 3509,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 19,
+            "duplicatedTokens": 155,
+            "percentage": 8.33,
+            "percentageTokens": 4.42,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 4297,
+          "tokens": 36008,
+          "sources": 17,
+          "clones": 2,
+          "duplicatedLines": 61,
+          "duplicatedTokens": 404,
+          "percentage": 1.42,
+          "percentageTokens": 1.12,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      },
+      "json": {
+        "sources": {
+          ".hodge/features/HODGE-357/ship-record.json": {
+            "lines": 9,
+            "tokens": 58,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".hodge/features/HODGE-357/plan.json": {
+            "lines": 103,
+            "tokens": 513,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".hodge/features/HODGE-357.1/ship-record.json": {
+            "lines": 10,
+            "tokens": 65,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".hodge/features/HODGE-356/ship-record.json": {
+            "lines": 14,
+            "tokens": 87,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          ".hodge/id-mappings.json": {
+            "lines": 77,
+            "tokens": 438,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 213,
+          "tokens": 1161,
+          "sources": 5,
           "clones": 0,
           "duplicatedLines": 0,
           "duplicatedTokens": 0,
@@ -29,131 +721,559 @@
           "newDuplicatedLines": 0,
           "newClones": 0
         }
-      },
-      "javascript": {
-        "sources": {
-          "scripts/release-prepare.js": {
-            "lines": 215,
-            "tokens": 1496,
-            "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 34,
-            "duplicatedTokens": 282,
-            "percentage": 15.81,
-            "percentageTokens": 18.85,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "scripts/lib/release-utils.js": {
-            "lines": 465,
-            "tokens": 3193,
-            "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 24,
-            "duplicatedTokens": 196,
-            "percentage": 5.16,
-            "percentageTokens": 6.14,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          }
-        },
-        "total": {
-          "lines": 680,
-          "tokens": 4689,
-          "sources": 2,
-          "clones": 2,
-          "duplicatedLines": 29,
-          "duplicatedTokens": 239,
-          "percentage": 4.26,
-          "percentageTokens": 5.1,
-          "newDuplicatedLines": 0,
-          "newClones": 0
-        }
       }
     },
     "total": {
-      "lines": 1058,
-      "tokens": 8084,
-      "sources": 3,
-      "clones": 2,
-      "duplicatedLines": 29,
-      "duplicatedTokens": 239,
-      "percentage": 2.74,
-      "percentageTokens": 2.96,
+      "lines": 15568,
+      "tokens": 123579,
+      "sources": 56,
+      "clones": 15,
+      "duplicatedLines": 227,
+      "duplicatedTokens": 1998,
+      "percentage": 1.46,
+      "percentageTokens": 1.62,
       "newDuplicatedLines": 0,
       "newClones": 0
     }
   },
   "duplicates": [
     {
-      "format": "javascript",
-      "lines": 18,
-      "fragment": "const changelogPath = './CHANGELOG.md';\n  const existingChangelog = readFileSync(changelogPath, 'utf-8');\n\n  // Find the position after \"# Changelog\" header and any following blank lines\n  const headerMatch = existingChangelog.match(/(# Changelog\\s*\\n(?:\\s*\\n)*)/);\n  if (!headerMatch) {\n    throw new Error('Could not find \"# Changelog\" header in CHANGELOG.md');\n  }\n\n  const headerEndIndex = headerMatch.index + headerMatch[0].length;\n  const updatedChangelog =\n    existingChangelog.slice(0, headerEndIndex) +\n    changelogSection +\n    '\\n' +\n    existingChangelog.slice(headerEndIndex);\n\n  writeFileSync(changelogPath, updatedChangelog);\n  console",
+      "format": "typescript",
+      "lines": 11,
+      "fragment": "{\n            id: issue.id,\n            title: issue.title,\n            description: issue.description || undefined,\n            state: {\n              id: state.id,\n              name: state.name,\n              type: this.mapLinearType(state.type),\n            },\n            url: issue.url,\n          }",
       "tokens": 0,
       "firstFile": {
-        "name": "scripts/release-prepare.js",
-        "start": 150,
-        "end": 167,
+        "name": "src/lib/pm/linear-adapter.ts",
+        "start": 126,
+        "end": 136,
         "startLoc": {
-          "line": 150,
-          "column": 3,
-          "position": 974
+          "line": 126,
+          "column": 2,
+          "position": 1068
         },
         "endLoc": {
-          "line": 167,
-          "column": 8,
-          "position": 1115
+          "line": 136,
+          "column": 2,
+          "position": 1153
         }
       },
       "secondFile": {
-        "name": "scripts/release-prepare.js",
-        "start": 117,
-        "end": 135,
+        "name": "src/lib/pm/linear-adapter.ts",
+        "start": 72,
+        "end": 82,
         "startLoc": {
-          "line": 117,
-          "column": 5,
-          "position": 714
+          "line": 72,
+          "column": 2,
+          "position": 581
         },
         "endLoc": {
-          "line": 135,
-          "column": 18,
-          "position": 856
+          "line": 82,
+          "column": 7,
+          "position": 666
         }
       }
     },
     {
-      "format": "javascript",
-      "lines": 13,
-      "fragment": "(tag) {\n  const octokit = createGitHubClient();\n  const { owner, repo } = getRepoInfo();\n\n  try {\n    const { data: runs } = await octokit.rest.actions.listWorkflowRunsForRepo({\n      owner,\n      repo,\n      event: 'push',\n      per_page: 10,\n    });\n\n    const",
+      "format": "typescript",
+      "lines": 17,
+      "fragment": ",\n      });\n\n      return {\n        id: issue.number.toString(),\n        title: issue.title,\n        state: {\n          id: issue.state ?? 'open',\n          name: issue.state === 'closed' ? 'Closed' : 'Open',\n          type: issue.state === 'closed' ? ('completed' as StateType) : ('started' as StateType),\n        },\n        description: issue.body || '',\n        url: issue.html_url,\n      };\n    } catch (error) {\n      const errorMessage = error instanceof Error ? error.message : String(error);\n      throw new Error(`Failed to create issue: ",
       "tokens": 0,
       "firstFile": {
-        "name": "scripts/lib/release-utils.js",
-        "start": 312,
-        "end": 324,
+        "name": "src/lib/pm/github-adapter.ts",
+        "start": 138,
+        "end": 154,
         "startLoc": {
-          "line": 312,
-          "column": 18,
-          "position": 2122
+          "line": 138,
+          "column": 2,
+          "position": 1219
         },
         "endLoc": {
-          "line": 324,
-          "column": 6,
-          "position": 2220
+          "line": 154,
+          "column": 26,
+          "position": 1403
         }
       },
       "secondFile": {
-        "name": "scripts/lib/release-utils.js",
-        "start": 272,
-        "end": 284,
+        "name": "src/lib/pm/github-adapter.ts",
+        "start": 105,
+        "end": 121,
         "startLoc": {
-          "line": 272,
-          "column": 14,
-          "position": 1849
+          "line": 105,
+          "column": 12,
+          "position": 889
         },
         "endLoc": {
-          "line": 284,
+          "line": 121,
+          "column": 25,
+          "position": 1073
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 11,
+      "fragment": "{\n        id: issue.number.toString(),\n        title: issue.title,\n        state: {\n          id: issue.state ?? 'open',\n          name: issue.state === 'closed' ? 'Closed' : 'Open',\n          type: issue.state === 'closed' ? ('completed' as StateType) : ('started' as StateType),\n        },\n        description: issue.body || '',\n        url: issue.html_url,\n      })",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/lib/pm/github-adapter.ts",
+        "start": 219,
+        "end": 229,
+        "startLoc": {
+          "line": 219,
+          "column": 2,
+          "position": 1983
+        },
+        "endLoc": {
+          "line": 229,
+          "column": 2,
+          "position": 2109
+        }
+      },
+      "secondFile": {
+        "name": "src/lib/pm/github-adapter.ts",
+        "start": 108,
+        "end": 118,
+        "startLoc": {
+          "line": 108,
+          "column": 2,
+          "position": 900
+        },
+        "endLoc": {
+          "line": 118,
+          "column": 2,
+          "position": 1026
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 16,
+      "fragment": ".test(feature)) {\n      try {\n        return await this.getIssue(feature);\n      } catch {\n        // Not an ID, continue\n      }\n    }\n\n    // Search by title\n    const results = await this.searchIssues(feature);\n    return results.find((issue) => issue.title.toLowerCase().includes(feature.toLowerCase()));\n  }\n\n  /**\n   * Find issue by local ID in comments or title\n   */",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/lib/pm/github-adapter.ts",
+        "start": 303,
+        "end": 318,
+        "startLoc": {
+          "line": 303,
+          "column": 8,
+          "position": 2744
+        },
+        "endLoc": {
+          "line": 318,
+          "column": 6,
+          "position": 2845
+        }
+      },
+      "secondFile": {
+        "name": "src/lib/pm/linear-adapter.ts",
+        "start": 217,
+        "end": 234,
+        "startLoc": {
+          "line": 217,
+          "column": 15,
+          "position": 1737
+        },
+        "endLoc": {
+          "line": 234,
+          "column": 6,
+          "position": 1838
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 15,
+      "fragment": ";\n        return {\n          id: issue.number.toString(),\n          title: issue.title,\n          state: {\n            id: issue.state ?? 'open',\n            name: issue.state === 'closed' ? 'Closed' : 'Open',\n            type: issue.state === 'closed' ? ('completed' as StateType) : ('started' as StateType),\n          },\n          description: issue.body || '',\n          url: issue.html_url,\n        };\n      }\n\n      return",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/lib/pm/github-adapter.ts",
+        "start": 331,
+        "end": 345,
+        "startLoc": {
+          "line": 331,
+          "column": 2,
+          "position": 2990
+        },
+        "endLoc": {
+          "line": 345,
+          "column": 7,
+          "position": 3128
+        }
+      },
+      "secondFile": {
+        "name": "src/lib/pm/github-adapter.ts",
+        "start": 106,
+        "end": 119,
+        "startLoc": {
+          "line": 106,
+          "column": 2,
+          "position": 894
+        },
+        "endLoc": {
+          "line": 119,
+          "column": 6,
+          "position": 1031
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 14,
+      "fragment": "[],\n    metadata?: {\n      description?: string;\n      scope?: { included?: string[]; excluded?: string[] };\n      dependencies?: string[];\n      effort?: string;\n      rationale?: string;\n      explorationAreas?: Array<{\n        area: string;\n        questions: string[];\n      }>;\n    }\n  ): Promise<void> {\n    const",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/lib/feature-populator.ts",
+        "start": 104,
+        "end": 117,
+        "startLoc": {
+          "line": 104,
+          "column": 7,
+          "position": 732
+        },
+        "endLoc": {
+          "line": 117,
+          "column": 6,
+          "position": 849
+        }
+      },
+      "secondFile": {
+        "name": "src/lib/feature-populator.ts",
+        "start": 21,
+        "end": 34,
+        "startLoc": {
+          "line": 21,
+          "column": 2,
+          "position": 141
+        },
+        "endLoc": {
+          "line": 34,
+          "column": 38,
+          "position": 258
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 15,
+      "fragment": ": string[] = [];\n    const packageJsonPath = path.join(this.rootPath, 'package.json');\n\n    if (await fs.pathExists(packageJsonPath)) {\n      try {\n        const packageJson = (await fs.readJson(packageJsonPath)) as {\n          dependencies?: Record<string, string>;\n          devDependencies?: Record<string, string>;\n        };\n        const allDeps = {\n          ...packageJson.dependencies,\n          ...packageJson.devDependencies,\n        };\n\n        if (allDeps && allDeps.typescript",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/lib/detection.ts",
+        "start": 479,
+        "end": 493,
+        "startLoc": {
+          "line": 479,
+          "column": 11,
+          "position": 3345
+        },
+        "endLoc": {
+          "line": 493,
+          "column": 11,
+          "position": 3491
+        }
+      },
+      "secondFile": {
+        "name": "src/lib/detection.ts",
+        "start": 424,
+        "end": 438,
+        "startLoc": {
+          "line": 424,
+          "column": 8,
+          "position": 2892
+        },
+        "endLoc": {
+          "line": 438,
+          "column": 7,
+          "position": 3038
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 11,
+      "fragment": "// HODGE-320: Direct function call instead of subprocess spawning\n      const command = new ShipCommand();\n      const originalCwd = process.cwd();\n      try {\n        process.chdir(workspace.getPath());\n        await command.execute('test-feature', { yes: true, skipTests: true });\n      } finally {\n        process.chdir(originalCwd);\n      }\n\n      // Verify commit was made with default message",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/commands/ship.integration.test.ts",
+        "start": 116,
+        "end": 126,
+        "startLoc": {
+          "line": 116,
+          "column": 7,
+          "position": 959
+        },
+        "endLoc": {
+          "line": 126,
+          "column": 47,
+          "position": 1055
+        }
+      },
+      "secondFile": {
+        "name": "src/commands/ship.integration.test.ts",
+        "start": 74,
+        "end": 84,
+        "startLoc": {
+          "line": 74,
+          "column": 7,
+          "position": 603
+        },
+        "endLoc": {
+          "line": 84,
+          "column": 60,
+          "position": 699
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 11,
+      "fragment": "// HODGE-320: Direct function call instead of subprocess spawning\n      const command = new ShipCommand();\n      const originalCwd = process.cwd();\n      try {\n        process.chdir(workspace.getPath());\n        await command.execute('test-feature', { yes: true, skipTests: true });\n      } finally {\n        process.chdir(originalCwd);\n      }\n\n      const",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/commands/ship.integration.test.ts",
+        "start": 155,
+        "end": 165,
+        "startLoc": {
+          "line": 155,
+          "column": 7,
+          "position": 1289
+        },
+        "endLoc": {
+          "line": 165,
+          "column": 6,
+          "position": 1385
+        }
+      },
+      "secondFile": {
+        "name": "src/commands/ship.integration.test.ts",
+        "start": 74,
+        "end": 84,
+        "startLoc": {
+          "line": 74,
+          "column": 7,
+          "position": 603
+        },
+        "endLoc": {
+          "line": 84,
+          "column": 60,
+          "position": 699
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 15,
+      "fragment": ", async (workspace) => {\n      // Setup minimal build structure\n      await workspace.writeFile('.hodge/features/test-feature/build/build-plan.md', '# Build Plan');\n\n      // Initialize git repo\n      await workspace.run('git init');\n      await workspace.run('git config user.email \"test@example.com\"');\n      await workspace.run('git config user.name \"Test User\"');\n      await workspace.writeFile('test.txt', 'test');\n      await workspace.run('git add .');\n      await workspace.run('git commit -m \"initial\"');\n      await workspace.writeFile('test.txt', 'updated');\n      await workspace.run('git add .');\n\n      // Run ship (direct call - no subprocess)",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/commands/ship.integration.test.ts",
+        "start": 171,
+        "end": 185,
+        "startLoc": {
+          "line": 171,
+          "column": 27,
+          "position": 1447
+        },
+        "endLoc": {
+          "line": 185,
+          "column": 42,
+          "position": 1576
+        }
+      },
+      "secondFile": {
+        "name": "src/commands/ship.integration.test.ts",
+        "start": 99,
+        "end": 154,
+        "startLoc": {
+          "line": 99,
+          "column": 28,
+          "position": 823
+        },
+        "endLoc": {
+          "line": 154,
+          "column": 78,
+          "position": 1286
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 11,
+      "fragment": "// HODGE-320: Direct function call instead of subprocess spawning\n      const command = new ShipCommand();\n      const originalCwd = process.cwd();\n      try {\n        process.chdir(workspace.getPath());\n        await command.execute('test-feature', { yes: true, skipTests: true });\n      } finally {\n        process.chdir(originalCwd);\n      }\n\n      // Verify ship record was created",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/commands/ship.integration.test.ts",
+        "start": 186,
+        "end": 196,
+        "startLoc": {
+          "line": 186,
+          "column": 7,
+          "position": 1579
+        },
+        "endLoc": {
+          "line": 196,
           "column": 34,
-          "position": 1947
+          "position": 1675
+        }
+      },
+      "secondFile": {
+        "name": "src/commands/ship.integration.test.ts",
+        "start": 74,
+        "end": 84,
+        "startLoc": {
+          "line": 74,
+          "column": 7,
+          "position": 603
+        },
+        "endLoc": {
+          "line": 84,
+          "column": 60,
+          "position": 699
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 11,
+      "fragment": "// HODGE-320: Direct function call instead of subprocess spawning\n      const command = new ShipCommand();\n      const originalCwd = process.cwd();\n      try {\n        process.chdir(workspace.getPath());\n        await command.execute('test-feature', { yes: true, skipTests: true });\n      } finally {\n        process.chdir(originalCwd);\n      }\n\n      // Verify commit was made locally",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/commands/ship.integration.test.ts",
+        "start": 237,
+        "end": 247,
+        "startLoc": {
+          "line": 237,
+          "column": 7,
+          "position": 1984
+        },
+        "endLoc": {
+          "line": 247,
+          "column": 34,
+          "position": 2080
+        }
+      },
+      "secondFile": {
+        "name": "src/commands/ship.integration.test.ts",
+        "start": 74,
+        "end": 84,
+        "startLoc": {
+          "line": 74,
+          "column": 7,
+          "position": 603
+        },
+        "endLoc": {
+          "line": 84,
+          "column": 60,
+          "position": 699
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 21,
+      "fragment": "vi.mock('../lib/toolchain-service.js', () => ({\n  ToolchainService: class {\n    async runQualityChecks(): Promise<RawToolResult[]> {\n      return [\n        { type: 'testing', tool: 'vitest', success: true },\n        { type: 'linting', tool: 'eslint', success: true },\n        { type: 'type_checking', tool: 'tsc', success: true },\n      ];\n    }\n    async loadConfig() {\n      return {\n        version: '1.0',\n        language: 'typescript',\n        quality_checks: {},\n        commands: {},\n      };\n    }\n  },\n}));\n\ndescribe('HardenCommand - Review Mode Smoke Tests'",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/commands/harden.smoke.test.ts",
+        "start": 12,
+        "end": 32,
+        "startLoc": {
+          "line": 12,
+          "column": 1,
+          "position": 140
+        },
+        "endLoc": {
+          "line": 32,
+          "column": 42,
+          "position": 324
+        }
+      },
+      "secondFile": {
+        "name": "src/commands/ship.integration.test.ts",
+        "start": 8,
+        "end": 28,
+        "startLoc": {
+          "line": 8,
+          "column": 1,
+          "position": 76
+        },
+        "endLoc": {
+          "line": 28,
+          "column": 35,
+          "position": 260
+        }
+      }
+    },
+    {
+      "format": "markdown",
+      "lines": 43,
+      "fragment": " Feature Overview\n**PM Issue**: HODGE-356 (linear)\n**Status**: In Progress\n\n## Implementation Checklist\n\n### Core Implementation\n- [ ] Create main component/module\n- [ ] Implement core logic\n- [ ] Add error handling\n- [ ] Include inline documentation\n\n### Integration\n- [ ] Connect with existing modules\n- [ ] Update CLI/API endpoints\n- [ ] Configure dependencies\n\n### Quality Checks\n- [ ] Follow coding standards\n- [ ] Use established patterns\n- [ ] Add basic validation\n- [ ] Consider edge cases\n\n## Files Modified\n<!-- Track files as you modify them -->\n- `path/to/file1.ts` - Description\n- `path/to/file2.ts` - Description\n\n## Decisions Made\n<!-- Document any implementation decisions -->\n- Decision 1: Reasoning\n- Decision 2: Reasoning\n\n## Testing Notes\n<!-- Notes for testing approach -->\n- ",
+      "tokens": 0,
+      "firstFile": {
+        "name": ".hodge/features/HODGE-356/build/build-plan.md",
+        "start": 4,
+        "end": 46,
+        "startLoc": {
+          "line": 4,
+          "column": 2,
+          "position": 10
+        },
+        "endLoc": {
+          "line": 46,
+          "column": 20,
+          "position": 259
+        }
+      },
+      "secondFile": {
+        "name": ".hodge/features/HODGE-357/build/build-plan.md",
+        "start": 4,
+        "end": 46,
+        "startLoc": {
+          "line": 4,
+          "column": 2,
+          "position": 10
+        },
+        "endLoc": {
+          "line": 46,
+          "column": 20,
+          "position": 259
+        }
+      }
+    },
+    {
+      "format": "markdown",
+      "lines": 20,
+      "fragment": "s include what needs to be done\n- **Review TODOs**: Check all TODOs before shipping\n\n### Code Quality Gates\n- No ESLint errors\n- No TypeScript errors\n- Test coverage >80% for shipped code\n- Documentation for public APIs\n\n### Performance Standards\n- CLI commands respond within 500ms\n- Build completes within 30s\n- Tests complete within 30s\n\n### Progressive Enforcement\n- Standards are **suggestions only**\n- Use `any` types freely\n- Skip tests entirely\n- Focus on proving concepts\n-",
+      "tokens": 0,
+      "firstFile": {
+        "name": ".hodge/HODGE.md",
+        "start": 200,
+        "end": 219,
+        "startLoc": {
+          "line": 200,
+          "column": 1,
+          "position": 3311
+        },
+        "endLoc": {
+          "line": 219,
+          "column": 2,
+          "position": 3466
+        }
+      },
+      "secondFile": {
+        "name": ".hodge/standards.md",
+        "start": 611,
+        "end": 634,
+        "startLoc": {
+          "line": 611,
+          "column": 1,
+          "position": 5673
+        },
+        "endLoc": {
+          "line": 634,
+          "column": 4,
+          "position": 5832
         }
       }
     }

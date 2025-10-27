@@ -1,0 +1,35 @@
+{
+  "feature": "HODGE-357.5",
+  "type": "single",
+  "title": "Complexity Reduction - Service Extraction",
+  "description": "Reduce cognitive complexity in 15 functions by extracting services following Phase 1/2 patterns with constructor injection",
+  "scope": {
+    "complexFunctions": [
+      "init.ts (4 functions)",
+      "plan.ts (4 functions)",
+      "status.ts (3 functions)",
+      "Others (4 functions)"
+    ],
+    "targetComplexity": "Reduce from >15 to ≤15 for all functions"
+  },
+  "implementation": [
+    "Identify 15 functions exceeding cognitive complexity 15",
+    "Extract business logic into focused service classes",
+    "Use constructor injection for testability (follow Phase 1 pattern)",
+    "Maintain existing functionality and test coverage",
+    "Run tests after each service extraction",
+    "Update complexity metrics"
+  ],
+  "acceptanceCriteria": [
+    "All 15 cognitive complexity violations resolved",
+    "New services follow constructor injection pattern",
+    "All existing tests pass (1325+ tests)",
+    "No new ESLint errors introduced",
+    "Service classes are unit-testable",
+    "Progress from ~52 → ~37 errors"
+  ],
+  "estimatedDays": 1.5,
+  "dependencies": ["HODGE-357.4"],
+  "parent": "HODGE-357",
+  "createdAt": "2025-10-26T23:23:00Z"
+}

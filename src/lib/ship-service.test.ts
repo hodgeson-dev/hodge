@@ -48,40 +48,8 @@ describe('ShipService - HODGE-322 Service Extraction', () => {
     expect(typeof service.runQualityGates).toBe('function');
   });
 
-  smokeTest('should return all passed when tests pass and files exist', async () => {
-    // Mock successful test execution
-    vi.mocked(existsSync).mockReturnValue(true);
-
-    const results = await service.runQualityGates({ skipTests: true });
-
-    expect(results.tests).toBe(true);
-    expect(results.coverage).toBe(true);
-    expect(results.docs).toBe(true);
-    expect(results.changelog).toBe(true);
-    expect(results.allPassed).toBe(true);
-  });
-
-  smokeTest('should return false for missing docs when README missing', async () => {
-    vi.mocked(existsSync).mockImplementation((path: string) => {
-      if (path.toString().includes('README')) return false;
-      if (path.toString().includes('CHANGELOG')) return true;
-      return true;
-    });
-
-    const results = await service.runQualityGates({ skipTests: true });
-
-    expect(results.docs).toBe(false);
-    expect(results.changelog).toBe(true);
-    expect(results.allPassed).toBe(false);
-  });
-
-  smokeTest('should mark tests as passing when skipTests is true', async () => {
-    vi.mocked(existsSync).mockReturnValue(true);
-
-    const results = await service.runQualityGates({ skipTests: true });
-
-    expect(results.tests).toBe(true);
-  });
+  // NOTE: runQualityGates behavioral tests moved to hodge-356.smoke.test.ts
+  // These tests use the new RawToolResult[] API
 
   // Ship Record Tests
   smokeTest('should have generateShipRecord method', () => {
@@ -90,12 +58,17 @@ describe('ShipService - HODGE-322 Service Extraction', () => {
   });
 
   smokeTest('should generate ship record with all required fields', () => {
+    const qualityResults = [
+      { type: 'testing' as const, tool: 'vitest', success: true },
+      { type: 'linting' as const, tool: 'eslint', success: true },
+    ];
+
     const record = service.generateShipRecord({
       feature: 'test-feature',
       issueId: 'TEST-123',
       pmTool: 'linear',
       validationPassed: true,
-      shipChecks: { tests: true, coverage: true, docs: true, changelog: true },
+      qualityResults,
       commitMessage: 'feat: test commit',
     });
 
@@ -103,19 +76,24 @@ describe('ShipService - HODGE-322 Service Extraction', () => {
     expect(record.issueId).toBe('TEST-123');
     expect(record.pmTool).toBe('linear');
     expect(record.validationPassed).toBe(true);
-    expect(record.shipChecks).toEqual({ tests: true, coverage: true, docs: true, changelog: true });
+    expect(record.qualityResults).toEqual(qualityResults);
     expect(record.commitMessage).toBe('feat: test commit');
     expect(record.timestamp).toBeDefined();
     expect(new Date(record.timestamp)).toBeInstanceOf(Date);
   });
 
   smokeTest('should handle null issueId and pmTool in ship record', () => {
+    const qualityResults = [
+      { type: 'testing' as const, tool: 'vitest', success: false },
+      { type: 'linting' as const, tool: 'eslint', success: true },
+    ];
+
     const record = service.generateShipRecord({
       feature: 'test-feature',
       issueId: null,
       pmTool: null,
       validationPassed: false,
-      shipChecks: { tests: false, coverage: true, docs: true, changelog: false },
+      qualityResults,
       commitMessage: 'ship: quick fix',
     });
 
@@ -131,31 +109,37 @@ describe('ShipService - HODGE-322 Service Extraction', () => {
   });
 
   smokeTest('should generate release notes with PM issue', () => {
+    const qualityResults = [
+      { type: 'testing' as const, tool: 'vitest', success: true },
+      { type: 'linting' as const, tool: 'eslint', success: true },
+      { type: 'type_checking' as const, tool: 'tsc', success: true },
+    ];
+
     const notes = service.generateReleaseNotes({
       feature: 'awesome-feature',
       issueId: 'PROJ-456',
-      shipChecks: { tests: true, coverage: true, docs: true, changelog: true },
+      qualityResults,
     });
 
     expect(notes).toContain('awesome-feature');
     expect(notes).toContain('PROJ-456');
     expect(notes).toContain('✅ Passing');
-    expect(notes).toContain('✅ Met');
-    expect(notes).toContain('✅ Complete');
-    expect(notes).toContain('✅ Updated');
   });
 
   smokeTest('should generate release notes without PM issue', () => {
+    const qualityResults = [
+      { type: 'testing' as const, tool: 'vitest', success: false },
+      { type: 'linting' as const, tool: 'eslint', success: true },
+    ];
+
     const notes = service.generateReleaseNotes({
       feature: 'simple-feature',
       issueId: null,
-      shipChecks: { tests: false, coverage: true, docs: false, changelog: false },
+      qualityResults,
     });
 
     expect(notes).toContain('simple-feature');
     expect(notes).not.toContain('**PM Issue**');
-    expect(notes).toContain('⚠️ Skipped');
-    expect(notes).toContain('⚠️ Missing');
   });
 
   // Metadata Backup/Restore Tests

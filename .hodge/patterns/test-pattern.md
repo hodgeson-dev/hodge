@@ -30,12 +30,45 @@ const compiled = await fs.readFile('dist/src/bin/hodge.js', 'utf-8');
 expect(compiled).toContain('import');
 ```
 
-### 2. Test Isolation (HODGE-308)
+### 2. NO TOOLCHAIN EXECUTION (HODGE-357.1)
+**NEVER execute real toolchain commands (eslint, jscpd, tsc, prettier, etc.) in tests.**
+
+**Why**: Toolchain execution spawns subprocesses that hang or take excessive time (jscpd scans entire codebase causing 115s test runs).
+
+**Fixed In**:
+- HODGE-357.1 (2025-10-27) - Discovered tests spawning jscpd processes
+
+❌ **BAD** (spawns real tools):
+```typescript
+const service = new ToolchainService(tempDir);
+const results = await service.runQualityChecks('all'); // Spawns jscpd, eslint, tsc!
+```
+
+✅ **GOOD** (mock toolchain execution):
+```typescript
+const service = new ToolchainService(tempDir);
+const mockResults = [
+  { type: 'linting' as const, tool: 'eslint', success: true }
+];
+vi.spyOn(service, 'runQualityChecks').mockResolvedValue(mockResults);
+
+const results = await service.runQualityChecks('all'); // No subprocess spawning
+expect(results).toBeDefined();
+```
+
+**What to Test Instead**:
+- ✅ Config loading/parsing
+- ✅ Tool detection (file/package.json checks)
+- ✅ Command template substitution
+- ✅ Error handling for missing tools
+- ❌ NOT actual tool execution
+
+### 3. Test Isolation (HODGE-308)
 **NEVER modify the project's `.hodge` directory in tests.**
 
 Use `os.tmpdir()` for all file operations.
 
-### 3. Service Class Extraction for CLI Commands (HODGE-321, HODGE-322)
+### 4. Service Class Extraction for CLI Commands (HODGE-321, HODGE-322)
 **Extract testable business logic from AI-orchestrated CLI commands.**
 
 **Why**: CLI commands called by Claude Code slash commands cannot be tested via subprocess spawning (creates hung processes). Extract business logic into Service classes that can be tested directly.

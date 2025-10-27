@@ -24,10 +24,10 @@ describe('ship command - clean working tree', () => {
   });
 
   smokeTest('should use git add -A instead of git add .', async () => {
-    // Read the ship.ts file and verify it uses the correct git command
+    // HODGE-357.1: Git commands moved to ShipService
     const fs = await import('fs/promises');
-    const shipPath = path.join(process.cwd(), 'src', 'commands', 'ship.ts');
-    const content = await fs.readFile(shipPath, 'utf-8');
+    const shipServicePath = path.join(process.cwd(), 'src', 'lib', 'ship-service.ts');
+    const content = await fs.readFile(shipServicePath, 'utf-8');
 
     // Check that we're using git add -A for staging all changes
     expect(content).toContain('git add -A');
@@ -47,11 +47,11 @@ describe('ship command - clean working tree', () => {
     expect(content).not.toContain('generateFeatureHodgeMD(feature)');
     expect(content).not.toContain('populator.generateFeatureHodgeMD');
 
-    // Verify backup/restore still exists for other metadata
-    expect(content).toContain('backupMetadata');
-    expect(content).toContain('restoreMetadata');
+    // Verify backup/restore still exists for other metadata (HODGE-357.1: moved to ShipService)
+    expect(content).toContain('shipService.backupMetadata');
+    // restoreMetadata now called inside ShipService.createShipCommit(), not in ship.ts
 
-    // Verify git commit still exists
-    expect(content).toContain('`git commit -m');
+    // Verify git commit still exists (now via ShipService)
+    expect(content).toContain('createShipCommit');
   });
 });

@@ -31,8 +31,9 @@ describe('[smoke] HODGE-324: Lessons Timing Fix', () => {
     });
 
     it('should still have PatternLearner for pattern detection', async () => {
-      const shipTsPath = path.join(process.cwd(), 'src/commands/ship.ts');
-      const content = await fs.readFile(shipTsPath, 'utf-8');
+      // HODGE-357.1: Pattern learning moved to ShipService
+      const shipServicePath = path.join(process.cwd(), 'src/lib/ship-service.ts');
+      const content = await fs.readFile(shipServicePath, 'utf-8');
 
       // Pattern learning is separate from lessons-draft generation
       expect(content).toContain('PatternLearner');

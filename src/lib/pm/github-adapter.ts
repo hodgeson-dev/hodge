@@ -300,7 +300,7 @@ export class GitHubAdapter extends BasePMAdapter {
    */
   async findIssueByFeature(feature: string): Promise<PMIssue | undefined> {
     // First try as issue number
-    if (feature.match(/^\d+$/)) {
+    if (/^\d+$/.test(feature)) {
       try {
         return await this.getIssue(feature);
       } catch {
@@ -434,6 +434,7 @@ export class GitHubAdapter extends BasePMAdapter {
    */
   private parseGitHubRepo(): { owner: string; repo: string } {
     try {
+      // eslint-disable-next-line sonarjs/no-os-command-from-path -- 'git' is a hardcoded command, not user input
       const remoteUrl = execSync('git remote get-url origin', {
         encoding: 'utf-8',
       }).trim();
@@ -442,13 +443,13 @@ export class GitHubAdapter extends BasePMAdapter {
       let match;
       if (remoteUrl.includes('github.com')) {
         // SSH format: git@github.com:owner/repo.git
-        match = remoteUrl.match(/github\.com[:/]([^/]+)\/([^/.]+)/);
+        match = /github\.com[:/]([^/]+)\/([^/.]+)/.exec(remoteUrl);
         if (match) {
           return { owner: match[1], repo: match[2] };
         }
 
         // HTTPS format: https://github.com/owner/repo.git
-        match = remoteUrl.match(/github\.com\/([^/]+)\/([^/.]+)/);
+        match = /github\.com\/([^/]+)\/([^/.]+)/.exec(remoteUrl);
         if (match) {
           return { owner: match[1], repo: match[2] };
         }
@@ -467,7 +468,7 @@ export class GitHubAdapter extends BasePMAdapter {
    */
   private parseIssueNumber(issueId: string): number {
     // Handle formats: "123", "#123", "GH-123"
-    const match = issueId.match(/\d+/);
+    const match = /\d+/.exec(issueId);
     if (!match) {
       throw new Error(`Invalid issue ID format: ${issueId}`);
     }

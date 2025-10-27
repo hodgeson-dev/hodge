@@ -30,45 +30,44 @@ describe('HardenService - HODGE-321 Service Extraction', () => {
   smokeTest('should check quality gates correctly', () => {
     const service = new HardenService();
 
-    const allPassed = {
-      tests: { passed: true, output: 'all good' },
-      lint: { passed: true, output: 'all good' },
-      typecheck: { passed: true, output: 'all good' },
-      build: { passed: true, output: 'all good' },
-    };
+    const allPassedResults = [
+      { type: 'testing' as const, tool: 'vitest', success: true, stdout: 'all good' },
+      { type: 'linting' as const, tool: 'eslint', success: true, stdout: 'all good' },
+      { type: 'type_checking' as const, tool: 'tsc', success: true, stdout: 'all good' },
+      { type: 'formatting' as const, tool: 'prettier', success: true, stdout: 'all good' },
+    ];
 
-    const results = service.checkQualityGates(allPassed);
+    const gateCheck = service.checkQualityGates(allPassedResults);
 
-    expect(results.allPassed).toBe(true);
-    expect(results.gates).toEqual(['tests', 'lint', 'typecheck', 'build']);
-    expect(results.results).toEqual(allPassed);
+    expect(gateCheck.allPassed).toBe(true);
+    expect(gateCheck.results).toEqual(allPassedResults);
   });
 
   smokeTest('should detect failures in quality gates', () => {
     const service = new HardenService();
 
-    const someFailed = {
-      tests: { passed: true, output: 'all good' },
-      lint: { passed: false, output: 'errors found' },
-      typecheck: { passed: true, output: 'all good' },
-      build: { passed: true, output: 'all good' },
-    };
+    const someFailedResults = [
+      { type: 'testing' as const, tool: 'vitest', success: true, stdout: 'all good' },
+      { type: 'linting' as const, tool: 'eslint', success: false, stdout: 'errors found' },
+      { type: 'type_checking' as const, tool: 'tsc', success: true, stdout: 'all good' },
+      { type: 'formatting' as const, tool: 'prettier', success: true, stdout: 'all good' },
+    ];
 
-    const results = service.checkQualityGates(someFailed);
+    const gateCheck = service.checkQualityGates(someFailedResults);
 
-    expect(results.allPassed).toBe(false);
-    expect(results.gates).toEqual(['tests', 'lint', 'typecheck', 'build']);
+    expect(gateCheck.allPassed).toBe(false);
+    expect(gateCheck.results).toEqual(someFailedResults);
   });
 
   smokeTest('should generate report data correctly', () => {
     const service = new HardenService();
 
-    const validationResults = {
-      tests: { passed: true, output: 'all tests passed' },
-      lint: { passed: true, output: 'no lint errors' },
-      typecheck: { passed: true, output: 'no type errors' },
-      build: { passed: true, output: 'build succeeded' },
-    };
+    const validationResults = [
+      { type: 'testing' as const, tool: 'vitest', success: true, stdout: 'all tests passed' },
+      { type: 'linting' as const, tool: 'eslint', success: true, stdout: 'no lint errors' },
+      { type: 'type_checking' as const, tool: 'tsc', success: true, stdout: 'no type errors' },
+      { type: 'formatting' as const, tool: 'prettier', success: true, stdout: 'formatting ok' },
+    ];
 
     const reportData = service.generateReportData('test-feature', validationResults, {
       skipTests: false,
@@ -85,12 +84,12 @@ describe('HardenService - HODGE-321 Service Extraction', () => {
   smokeTest('should handle skipTests option in report data', () => {
     const service = new HardenService();
 
-    const validationResults = {
-      tests: { passed: true, output: 'tests skipped' },
-      lint: { passed: true, output: 'no lint errors' },
-      typecheck: { passed: true, output: 'no type errors' },
-      build: { passed: true, output: 'build succeeded' },
-    };
+    const validationResults = [
+      { type: 'testing' as const, tool: 'vitest', skipped: true, reason: 'tests skipped' },
+      { type: 'linting' as const, tool: 'eslint', success: true, stdout: 'no lint errors' },
+      { type: 'type_checking' as const, tool: 'tsc', success: true, stdout: 'no type errors' },
+      { type: 'formatting' as const, tool: 'prettier', success: true, stdout: 'formatting ok' },
+    ];
 
     const reportData = service.generateReportData('test-feature', validationResults, {
       skipTests: true,

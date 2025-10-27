@@ -214,7 +214,7 @@ export class LinearAdapter extends BasePMAdapter {
    */
   async findIssueByFeature(feature: string): Promise<PMIssue | undefined> {
     // First try as ID
-    if (feature.match(/^[A-Z]+-\d+$/)) {
+    if (/^[A-Z]+-\d+$/.test(feature)) {
       try {
         return await this.getIssue(feature);
       } catch {

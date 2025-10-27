@@ -1,7 +1,29 @@
-import { describe, expect } from 'vitest';
+import { describe, expect, vi } from 'vitest';
 import { integrationTest } from '../test/helpers.js';
 import { withTestWorkspace } from '../test/runners.js';
 import { ShipCommand } from './ship.js';
+import type { RawToolResult } from '../types/toolchain.js';
+
+// Mock ToolchainService to prevent real tool execution in integration tests
+vi.mock('../lib/toolchain-service.js', () => ({
+  ToolchainService: class {
+    async runQualityChecks(): Promise<RawToolResult[]> {
+      return [
+        { type: 'testing', tool: 'vitest', success: true },
+        { type: 'linting', tool: 'eslint', success: true },
+        { type: 'type_checking', tool: 'tsc', success: true },
+      ];
+    }
+    async loadConfig() {
+      return {
+        version: '1.0',
+        language: 'typescript',
+        quality_checks: {},
+        commands: {},
+      };
+    }
+  },
+}));
 
 describe('Ship Command - Integration Tests', () => {
   integrationTest('should complete full ship workflow with pre-approved message', async () => {

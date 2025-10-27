@@ -7,10 +7,12 @@
  * - Perform real I/O operations on temp directories
  * - Take 3-4 seconds each (40x over smoke test budget)
  *
- * Integration tests are SUPPOSED to be slower - they validate end-to-end behavior.
+ * HODGE-357.1: Mock version detection to prevent spawning processes
+ * - Tests verify detection logic (config files, package.json)
+ * - Version detection is mocked to avoid subprocess spawning
  */
 
-import { describe, expect } from 'vitest';
+import { describe, expect, vi, beforeEach } from 'vitest';
 import { ToolchainService } from './toolchain-service.js';
 import { integrationTest } from '../test/helpers.js';
 import os from 'os';
@@ -18,6 +20,12 @@ import { join } from 'path';
 import { promises as fs } from 'fs';
 
 describe('ToolchainService - Registry-Based Detection (Integration)', () => {
+  beforeEach(() => {
+    // HODGE-357.1: Mock getToolVersion to prevent spawning version check processes
+    // Integration tests verify detection logic, not version command execution
+    vi.spyOn(ToolchainService.prototype as any, 'getToolVersion').mockResolvedValue('1.0.0');
+  });
+
   integrationTest(
     'should detect tool via config file',
     async () => {

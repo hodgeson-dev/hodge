@@ -395,6 +395,59 @@ const result = execSync('node dist/src/bin/hodge.js init', {
 
 **See Also**: `.hodge/patterns/test-pattern.md` for examples
 
+### Toolchain Execution Ban (HODGE-357.1)
+**Enforcement: ALL PHASES (mandatory)**
+**⚠️ CRITICAL**: Tests must NEVER execute real toolchain commands (eslint, jscpd, tsc, prettier, vitest, etc.)
+
+- **Root Cause**: Toolchain execution spawns subprocesses that hang or take excessive time (jscpd scans entire codebase)
+- **Symptom**: Hanging test processes, slow test runs (18s → 115s), zombie processes requiring manual kill
+- **Solution**: Mock `runQualityChecks()` and `executeTool()` in all tests
+- **Exceptions**: None - if you think you need to run real tools, you're testing the wrong thing
+
+**Why This Matters**:
+- HODGE-357.1 (2025-10-27) discovered tests spawning jscpd processes that scan entire codebase
+- Same issue as subprocess spawning ban, but specific to ToolchainService
+- Running real tools in tests creates unpredictable behavior and resource exhaustion
+
+**Correct Pattern** (mock tool execution):
+```typescript
+// ✅ GOOD: Mock tool execution
+smokeTest('should run quality checks', async () => {
+  const service = new ToolchainService(tempDir);
+  const mockResults = [{ type: 'linting', tool: 'eslint', success: true }];
+  vi.spyOn(service, 'runQualityChecks').mockResolvedValue(mockResults);
+
+  const results = await service.runQualityChecks('all');
+  expect(results).toBeDefined();
+});
+
+// ✅ GOOD: Use config with no tools configured
+await fixture.writeFile(
+  '.hodge/toolchain.yaml',
+  `version: "1.0"
+quality_checks:
+  duplication: []  # Don't run jscpd
+  linting: []      # Don't run eslint
+  type_checking: []`
+);
+```
+
+**Incorrect Pattern** (executes real tools):
+```typescript
+// ❌ BAD: Spawns real jscpd, eslint, tsc processes
+const service = new ToolchainService(tempDir);
+const results = await service.runQualityChecks('all'); // Spawns jscpd!
+```
+
+**What to Test Instead**:
+- ✅ Config loading and parsing
+- ✅ Tool detection logic (file existence, package.json checks)
+- ✅ Command template substitution (${files} replacement)
+- ✅ Error handling for missing tools
+- ❌ NOT actual tool execution (eslint, jscpd, tsc, etc.)
+
+**See Also**: `.hodge/patterns/test-pattern.md` for examples
+
 ### Test Quality Anti-Patterns (HODGE-343)
 **Enforcement: Build(encouraged) → Harden(expected) → Ship(required)**
 **Reference**: `.hodge/review-profiles/testing/general-test-standards.md` for comprehensive guidance
@@ -470,16 +523,17 @@ expect(data).toEqual({ id: 1, name: 'test' });
 **Enforcement: Build(suggested) → Harden(expected) → Ship(mandatory)**
 **⚠️ CRITICAL**: Keep files and functions focused and maintainable through enforced size limits.
 
-### Maximum File Length: 300 Lines
+### Maximum File Length: 400 Lines
 **Tool-Enforced**: ESLint (`max-lines`)
 
-Files should not exceed 300 lines (excluding blank lines and comments).
+Files should not exceed 400 lines (excluding blank lines and comments).
 
 **Rationale**:
-- **Cognitive Load**: Files longer than 300 lines are harder to understand and navigate
+- **Cognitive Load**: Files longer than 400 lines are harder to understand and navigate
 - **Testability**: Large files often indicate too many responsibilities, making comprehensive testing difficult
 - **Reviewability**: Code reviews become less effective when files exceed reviewable scope
 - **Maintainability**: Changes to large files have higher risk of unintended side effects
+- **Pragmatic Balance**: 400-line limit accommodates CLI orchestration patterns while still enforcing discipline
 
 **Refactoring Guidance**:
 - Extract service classes for business logic (move to `src/lib/`)
@@ -514,7 +568,7 @@ Functions should not exceed 50 lines (excluding blank lines and comments).
 **Configuration**:
 ```json
 // .eslintrc.json
-"max-lines": ["warn", { "max": 300, "skipBlankLines": true, "skipComments": true }]
+"max-lines": ["warn", { "max": 400, "skipBlankLines": true, "skipComments": true }]
 "max-lines-per-function": ["warn", { "max": 50, "skipBlankLines": true, "skipComments": true }]
 ```
 

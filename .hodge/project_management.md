@@ -9,7 +9,7 @@ This file tracks all Hodge features and their implementation status.
 - [x] cross-tool-compatibility ✅
 - [x] HODGE-004: ID Management ✅
 
-### Phase 2: AI Experience Enhancement (3-4 days) ✅
+### Phase 2: AI Experience Enhancement (3-4 days)
 - [x] session-management ✅
 - [x] HODGE-051: AI-Executable Slash Commands ✅
 - [x] HODGE-052: Persistent Current Feature Context ✅
@@ -51,9 +51,22 @@ HODGE-004 (ID Management)
 ### HODGE-001
 - **Status**: exploring
 - **Priority**: TBD
-- **Created**: 2025-10-26
-- **Updated**: 2025-10-26
+- **Created**: 2025-10-27
+- **Updated**: 2025-10-27
 - **Description**: auth-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-357.3
+- **Status**: building
+- **Priority**: TBD
+- **Created**: 2025-10-27
+- **Updated**: 2025-10-27
+- **Description**: HODGE-357.3
 - **Phase**: TBD
 - **Next Steps**:
   - Complete exploration

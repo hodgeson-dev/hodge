@@ -135,9 +135,9 @@ ${decisions.length > 0 ? decisions.map((d) => `- ${d}`).join('\n') : '- No speci
 ${metadata.rationale ? `## Why This Is a Coherent Feature\n${metadata.rationale}\n` : ''}
 
 ## Scope
-${metadata.scope?.included ? `### Included\n${metadata.scope.included.map((item) => `- ${item}`).join('\n')}` : ''}
+${metadata.scope?.included ? ['### Included', ...metadata.scope.included.map((item) => `- ${item}`)].join('\n') : ''}
 
-${metadata.scope?.excluded ? `### Excluded\n${metadata.scope.excluded.map((item) => `- ${item}`).join('\n')}` : ''}
+${metadata.scope?.excluded ? ['### Excluded', ...metadata.scope.excluded.map((item) => `- ${item}`)].join('\n') : ''}
 
 ## Dependencies
 ${metadata.dependencies ? metadata.dependencies.map((dep) => `- ${dep}`).join('\n') : '- [To be identified during exploration]'}
@@ -146,7 +146,7 @@ ${metadata.dependencies ? metadata.dependencies.map((dep) => `- ${dep}`).join('\
 ${
   metadata.explorationAreas
     ? metadata.explorationAreas
-        .map((area) => `### ${area.area}\n${area.questions.map((q) => `- ${q}`).join('\n')}`)
+        .map((area) => ['### ' + area.area, ...area.questions.map((q) => `- ${q}`)].join('\n'))
         .join('\n\n')
     : `### 1. Technical Requirements
 - [To be explored] Core functionality needed

@@ -52,7 +52,8 @@ class ScriptSecurityValidator {
       { pattern: /child_process/gi, issue: 'direct child_process usage' },
       // Removed overly broad template literal check - only flag dangerous patterns
       { pattern: /require\s*\(\s*['"]\s*\.\./gi, issue: 'relative require paths' },
-      { pattern: /import\s+.*from\s+['"]\s*\.\./gi, issue: 'relative import paths' },
+      // Use non-backtracking pattern to prevent ReDoS
+      { pattern: /import\s+[^\n]*from\s+['"]\s*\.\./gi, issue: 'relative import paths' },
     ];
 
     for (const { pattern, issue } of securityPatterns) {

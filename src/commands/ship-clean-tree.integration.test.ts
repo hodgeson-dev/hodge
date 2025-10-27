@@ -28,36 +28,38 @@ describe('ship command integration - HODGE-220', () => {
   integrationTest(
     'should verify metadata update order without HODGE.md (HODGE-319.1)',
     async () => {
-      // Read the ship.ts source file
+      // HODGE-357.1: Verify backup/restore flow now in ship.ts + ShipService
       const shipPath = path.join(process.cwd(), 'src', 'commands', 'ship.ts');
-      const content = await fs.readFile(shipPath, 'utf-8');
+      const shipServicePath = path.join(process.cwd(), 'src', 'lib', 'ship-service.ts');
 
-      // Verify the order of operations (without HODGE.md generation)
-      const lines = content.split('\n');
+      const [shipContent, serviceContent] = await Promise.all([
+        fs.readFile(shipPath, 'utf-8'),
+        fs.readFile(shipServicePath, 'utf-8'),
+      ]);
+
+      // Verify backup happens in ship.ts before commit
+      const shipLines = shipContent.split('\n');
       let backupLine = -1;
-      let commitLine = -1;
-      let restoreLine = -1;
+      let createCommitLine = -1;
 
-      for (let i = 0; i < lines.length; i++) {
-        // Updated for HODGE-322: backup/restore now via ShipService
-        if (lines[i].includes('await this.shipService.backupMetadata(feature)')) {
+      for (let i = 0; i < shipLines.length; i++) {
+        if (shipLines[i].includes('await this.shipService.backupMetadata(feature)')) {
           backupLine = i;
         }
-        if (lines[i].includes('`git commit -m')) {
-          commitLine = i;
-        }
-        if (lines[i].includes('await this.shipService.restoreMetadata(feature, metadataBackup)')) {
-          restoreLine = i;
+        if (shipLines[i].includes('await this.shipService.createShipCommit(')) {
+          createCommitLine = i;
         }
       }
 
-      // Verify correct order: backup -> commit -> restore (on error)
+      // Verify correct order in ship.ts: backup -> createShipCommit
       expect(backupLine).toBeGreaterThan(0);
-      expect(commitLine).toBeGreaterThan(backupLine);
-      expect(restoreLine).toBeGreaterThan(commitLine);
+      expect(createCommitLine).toBeGreaterThan(backupLine);
+
+      // Verify restore logic exists in ShipService (called on commit failure)
+      expect(serviceContent).toContain('restoreMetadata');
 
       // Verify HODGE.md generation was removed (HODGE-319.1)
-      expect(content).not.toContain('generateFeatureHodgeMD');
+      expect(shipContent).not.toContain('generateFeatureHodgeMD');
     }
   );
 
@@ -84,15 +86,17 @@ describe('ship command integration - HODGE-220', () => {
 
   integrationTest('should handle rollback on commit failure', async () => {
     // Test the rollback logic by verifying the error handling structure
+    // HODGE-357.1: Error handling refactored - rollback now in ShipService.createShipCommit()
     const shipPath = path.join(process.cwd(), 'src', 'commands', 'ship.ts');
     const content = await fs.readFile(shipPath, 'utf-8');
 
-    // Verify error handling includes rollback (Updated for HODGE-322: now via ShipService)
-    expect(content).toContain('// Inner catch for git commit failure');
-    expect(content).toContain('await this.shipService.restoreMetadata(feature, metadataBackup)');
+    // Verify error handling includes rollback message when commit fails
     expect(content).toContain('✓ Metadata rolled back successfully');
 
-    // Verify outer catch for overall failures
-    expect(content).toContain('// Outer catch for any failures during the ship process');
+    // Verify backup/restore calls still exist
+    expect(content).toContain('await this.shipService.backupMetadata(feature)');
+
+    // Verify commit result handling
+    expect(content).toContain('commitResult.success');
   });
 });

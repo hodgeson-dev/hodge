@@ -145,7 +145,8 @@ export class PatternLearner {
       name: 'Input Validation',
       category: 'security',
       patterns: [
-        /if\s*\(![\w.]+\)\s*{[\s\S]*?throw\s+new\s+Error/,
+        // Use non-backtracking pattern to prevent ReDoS - limit scope with [^}]*
+        /if\s*\(![\w.]+\)\s*{[^}]*throw\s+new\s+Error/,
         /function\s+validate\w+/,
         /\w+\.validate\(/,
       ],
@@ -283,7 +284,7 @@ export class PatternLearner {
       // Check each pattern rule
       for (const rule of this.patternRules) {
         for (const pattern of rule.patterns) {
-          const matches = content.match(pattern);
+          const matches = pattern.exec(content);
 
           if (matches) {
             this.recordPattern(rule, filePath, matches[0], _feature);
@@ -580,7 +581,8 @@ ${this.generateRecommendations()
    * Generate pattern ID
    */
   private generatePatternId(name: string): string {
-    return crypto.createHash('md5').update(name.toLowerCase()).digest('hex').substring(0, 8);
+    // Use SHA-256 instead of MD5 for better security
+    return crypto.createHash('sha256').update(name.toLowerCase()).digest('hex').substring(0, 8);
   }
 
   /**
@@ -609,7 +611,7 @@ ${this.generateRecommendations()
         // Parse pattern from markdown
         // This is simplified - real implementation would parse the markdown
         const content = await fs.readFile(path.join(this.patternsDir, file), 'utf-8');
-        const name = content.match(/^# (.+)$/m)?.[1];
+        const name = /^# (.+)$/m.exec(content)?.[1];
 
         if (name) {
           patterns.push({

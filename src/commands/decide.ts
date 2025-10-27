@@ -67,7 +67,7 @@ List the positive and negative consequences of this decision.
     const timestamp = new Date().toLocaleTimeString();
 
     // Extract decision title (first sentence or up to 50 chars)
-    const titleMatch = decision.match(/^([^.!?]+)/);
+    const titleMatch = /^([^.!?]+)/.exec(decision);
     const title = titleMatch ? titleMatch[1].trim() : decision.substring(0, 50);
 
     const newDecision = `

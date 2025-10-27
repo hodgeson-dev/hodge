@@ -138,7 +138,7 @@ describe('ExploreCommand - Sub-Feature Support', () => {
             );
 
             expect(exploration).toContain('# Exploration: HODGE-555.5');
-            expect(exploration).toContain('## Feature Overview');
+            expect(exploration).toContain('## Context');
             expect(exploration).toContain('## Implementation Approaches');
           } finally {
             process.chdir(originalCwd);

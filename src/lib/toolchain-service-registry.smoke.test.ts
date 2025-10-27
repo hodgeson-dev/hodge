@@ -3,27 +3,43 @@
  * Part of HODGE-341.2: Two-Layer Configuration Architecture
  *
  * OPTIMIZATION (HODGE-351):
- * - Shared ToolchainService instance for tests that scan the real Hodge project
  * - Moved slow temp-directory tests to .integration.test.ts
  * - Smoke tests now complete in <100ms total
  *
- * Note: Real tool detection behavior is validated in integration tests.
- * These smoke tests verify basic instantiation and project scanning works.
+ * HODGE-357.1: Mock detectTools() to avoid spawning version check processes
+ * - Real tool detection behavior is validated in integration tests
+ * - These smoke tests verify basic instantiation works
  */
 
-import { describe, expect, beforeAll } from 'vitest';
+import { describe, expect, beforeAll, vi } from 'vitest';
 import { ToolchainService } from './toolchain-service.js';
 import { smokeTest } from '../test/helpers.js';
 import os from 'os';
 
 describe('ToolchainService - Registry-Based Detection (HODGE-341.2)', () => {
-  // HODGE-351: Share service instance for tests that scan the real Hodge project
-  // This reduces execution time from ~40s to ~5s by scanning once instead of multiple times
+  // HODGE-357.1: Mock detectedTools to avoid spawning real version commands (npx semgrep --version, etc.)
   let sharedService: ToolchainService;
   let detectedTools: Awaited<ReturnType<typeof sharedService.detectTools>>;
 
   beforeAll(async () => {
     sharedService = new ToolchainService();
+
+    // HODGE-357.1: Mock detectTools to prevent spawning version check processes
+    const mockTools = [
+      {
+        name: 'typescript',
+        detected: true,
+        version: '5.0.0',
+        detectionMethod: 'config_file' as const,
+      },
+      {
+        name: 'eslint',
+        detected: true,
+        version: '8.0.0',
+        detectionMethod: 'package_json' as const,
+      },
+    ];
+    vi.spyOn(sharedService, 'detectTools').mockResolvedValue(mockTools);
     detectedTools = await sharedService.detectTools();
   });
 

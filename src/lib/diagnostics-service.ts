@@ -164,8 +164,8 @@ export class DiagnosticsService {
   private parseTypeScriptDiagnostics(stdout: string, tool: string): Diagnostic[] {
     const diagnostics: Diagnostic[] = [];
 
-    // Match TypeScript error format
-    const errorRegex = /^(.+?)\((\d+),(\d+)\):\s+(error|warning)\s+(\w+):\s+(.+)$/gm;
+    // Match TypeScript error format - use non-backtracking pattern to prevent ReDoS
+    const errorRegex = /^([^\n(]+)\((\d+),(\d+)\):\s+(error|warning)\s+(\w+):\s+([^\n]+)$/gm;
     let match;
 
     while ((match = errorRegex.exec(stdout)) !== null) {

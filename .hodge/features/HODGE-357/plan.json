@@ -1,0 +1,104 @@
+{
+  "feature": "HODGE-357",
+  "type": "epic",
+  "stories": [
+    {
+      "id": "HODGE-357.1",
+      "title": "Phase 1 - Critical Complexity Reduction",
+      "description": "Refactor ship.ts, toolchain-generator.ts, cache-manager.ts with service extraction. Reduce complexity from 56/40/32 → <15. Extract service methods with tests. All existing tests must pass.",
+      "effort": "medium",
+      "dependencies": [],
+      "lane": 0,
+      "estimatedDays": 2,
+      "deliverables": [
+        "ship.ts complexity < 15",
+        "toolchain-generator.ts complexity < 15",
+        "cache-manager.ts complexity < 15",
+        "Service methods extracted with tests",
+        "All existing tests passing",
+        "ESLint errors reduced by ~30%"
+      ],
+      "testCriteria": [
+        "npm test passes",
+        "npm run lint shows reduced errors",
+        "Complexity verified with ESLint"
+      ]
+    },
+    {
+      "id": "HODGE-357.2",
+      "title": "Phase 2 - High Complexity Functions",
+      "description": "Refactor 5 high-complexity functions (pm-hooks, detection.ts, explore.ts, feature-spec-loader). Reduce complexity from 25-31 → <15. Implement strategy patterns for pm-hooks verbosity. Extract detection helpers.",
+      "effort": "large",
+      "dependencies": [
+        "HODGE-357.1"
+      ],
+      "lane": 0,
+      "estimatedDays": 3,
+      "deliverables": [
+        "5 functions complexity reduced to <15",
+        "Strategy pattern for pm-hooks verbosity",
+        "Detection helpers extracted",
+        "All tests passing",
+        "ESLint errors reduced by additional ~50%"
+      ],
+      "testCriteria": [
+        "npm test passes",
+        "Complexity scores verified",
+        "Integration tests pass"
+      ]
+    },
+    {
+      "id": "HODGE-357.3",
+      "title": "Phase 3 - Security Fixes & File Splitting",
+      "description": "Fix all 9 security vulnerabilities (regex DoS, PATH injection). Split oversized files (init.ts, explore.ts) into <300 lines. Add security tests. Ensure no circular dependencies.",
+      "effort": "medium",
+      "dependencies": [
+        "HODGE-357.2"
+      ],
+      "lane": 0,
+      "estimatedDays": 2,
+      "deliverables": [
+        "9 security vulnerabilities patched",
+        "Security tests added and passing",
+        "init.ts and explore.ts split (<300 lines)",
+        "No circular dependencies",
+        "Zero ESLint errors"
+      ],
+      "testCriteria": [
+        "Security tests pass",
+        "npm run lint shows 0 errors",
+        "TypeScript compiles without circular dependency warnings"
+      ]
+    },
+    {
+      "id": "HODGE-357.4",
+      "title": "Phase 4 - Automated Cleanup & Verification",
+      "description": "Run automated fixes for nullish coalescing warnings (89 occurrences). Reduce ESLint warnings from 338 → <50. Final verification that all 1300+ tests pass and CI pipeline is green.",
+      "effort": "small",
+      "dependencies": [
+        "HODGE-357.3"
+      ],
+      "lane": 0,
+      "estimatedDays": 1,
+      "deliverables": [
+        "Nullish coalescing conversions complete",
+        "ESLint warnings < 50",
+        "All 1300+ tests passing",
+        "CI pipeline green",
+        "HODGE-356 shippable"
+      ],
+      "testCriteria": [
+        "Full test suite passes",
+        "npm run lint shows <50 warnings",
+        "Coverage >80%"
+      ]
+    }
+  ],
+  "lanes": {
+    "count": 1,
+    "assignments": {}
+  },
+  "dependencies": {},
+  "estimatedDays": 8,
+  "createdAt": "2025-10-26T21:20:00Z"
+}

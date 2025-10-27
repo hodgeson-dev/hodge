@@ -239,7 +239,7 @@ export class ReviewTierClassifier {
           const content = readFileSync(join(this.basePath, profileFile), 'utf-8');
 
           // Extract frontmatter (YAML between --- markers)
-          const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+          const frontmatterMatch = /^---\n([\s\S]*?)\n---/.exec(content);
           if (frontmatterMatch) {
             const frontmatter = yaml.load(frontmatterMatch[1]) as Record<string, unknown>;
 

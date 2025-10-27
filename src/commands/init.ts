@@ -205,20 +205,11 @@ export class InitCommand {
   }
 
   /**
-   * Updates .env file with placeholder values for PM tool
-   * @param pmTool - The PM tool to configure
-   * @param missingVars - The missing environment variables
+   * Get environment variable templates for a PM tool
+   * @param pmTool - The PM tool
+   * @returns Template object with variable configurations
    */
-  private async updateEnvFile(pmTool: PMTool, missingVars: string[]): Promise<void> {
-    const envPath = path.join(process.cwd(), '.env');
-    let envContent = '';
-
-    // Read existing .env if it exists
-    if (await fs.pathExists(envPath)) {
-      envContent = await fs.readFile(envPath, 'utf8');
-    }
-
-    // PM tool templates
+  private getPMToolEnvTemplate(pmTool: PMTool): Record<string, { value: string; comment: string }> {
     const templates: Record<PMTool, Record<string, { value: string; comment: string }>> = {
       linear: {
         LINEAR_API_KEY: {
@@ -298,7 +289,24 @@ export class InitCommand {
       local: {}, // Local PM doesn't need any env vars
     };
 
-    const template = templates[pmTool];
+    return templates[pmTool] || {};
+  }
+
+  /**
+   * Updates .env file with placeholder values for PM tool
+   * @param pmTool - The PM tool to configure
+   * @param missingVars - The missing environment variables
+   */
+  private async updateEnvFile(pmTool: PMTool, missingVars: string[]): Promise<void> {
+    const envPath = path.join(process.cwd(), '.env');
+    let envContent = '';
+
+    // Read existing .env if it exists
+    if (await fs.pathExists(envPath)) {
+      envContent = await fs.readFile(envPath, 'utf8');
+    }
+
+    const template = this.getPMToolEnvTemplate(pmTool);
     if (!template) return;
 
     // Add header if file is new
@@ -692,9 +700,8 @@ ${
     }
 
     if (tools.hasGit) {
-      this.logger.info(
-        `   Git: ${chalk.white('Yes')}${tools.gitRemote ? ` (${this.formatGitRemote(tools.gitRemote)})` : ''}`
-      );
+      const gitRemoteInfo = tools.gitRemote ? ` (${this.formatGitRemote(tools.gitRemote)})` : '';
+      this.logger.info(`   Git: ${chalk.white('Yes')}${gitRemoteInfo}`);
     }
 
     this.logger.info(''); // Empty line for spacing
@@ -979,12 +986,12 @@ ${
    * @returns Validation result string or true if valid
    */
   private validateProjectName(name: string): string | true {
-    // Handle undefined/null first
-    if (name === undefined || name === null) {
+    // Handle empty string or whitespace-only
+    if (!name.trim()) {
       return 'Project name is required';
     }
 
-    // Ensure it's a string
+    // Ensure it's a string (already guaranteed by type system)
     if (typeof name !== 'string') {
       return 'Project name must be a string';
     }
@@ -1093,7 +1100,8 @@ ${
    */
   private formatGitRemote(remote: string): string {
     // Extract repo name from git remote URL
-    const match = remote.match(/[:/]([^/]+\/[^/]+?)(?:\\.git)?$/);
+    // Use non-backtracking pattern to prevent ReDoS
+    const match = /[:/]([^/]+\/[^/.]+)(?:\.git)?$/.exec(remote);
     return match ? match[1] : remote;
   }
 

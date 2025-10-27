@@ -122,61 +122,15 @@ export class CacheManager {
       const cached = this.cache.get(key);
       const ttl = options.ttl ?? this.defaultTTL;
 
-      // Check cache validity
-      if (cached && Date.now() - cached.timestamp < ttl) {
-        // Validate checksum for file-based cache
-        if (options.checksum && key.startsWith('file:')) {
-          const filePath = key.slice(5);
-          if (existsSync(filePath)) {
-            try {
-              const currentHash = await this.getFileHash(filePath);
-              if (currentHash === cached.hash) {
-                this.hits++;
-                return cached.data as T;
-              }
-            } catch (error) {
-              // If hash validation fails, proceed to reload
-              this.logger.warn(`Cache validation failed for ${key}:`, error);
-            }
-          }
-        } else {
-          this.hits++;
-          return cached.data as T;
-        }
+      // Check if cached entry is valid
+      const isValid = await this.validateCacheEntry(cached, key, ttl, options);
+      if (isValid) {
+        this.hits++;
+        return cached!.data as T;
       }
 
-      // Load fresh data with error handling
-      this.misses++;
-      let data: T;
-      try {
-        data = await loader();
-      } catch (error) {
-        // Log error and re-throw with context
-        const message = error instanceof Error ? error.message : String(error);
-        throw new Error(`Failed to load data for key "${key}": ${message}`);
-      }
-
-      // Calculate hash for file-based cache
-      let hash: string | undefined;
-      if (options.checksum && key.startsWith('file:')) {
-        const filePath = key.slice(5);
-        if (existsSync(filePath)) {
-          try {
-            hash = await this.getFileHash(filePath);
-          } catch (error) {
-            // Log but don't fail if hash calculation fails
-            this.logger.warn(`Failed to calculate hash for ${filePath}:`, error);
-          }
-        }
-      }
-
-      this.cache.set(key, {
-        data,
-        timestamp: Date.now(),
-        hash,
-      });
-
-      return data;
+      // Load fresh data
+      return await this.loadWithErrorHandling(key, loader, options);
     } catch (error) {
       // Ensure errors are properly propagated
       if (error instanceof Error) {
@@ -184,6 +138,91 @@ export class CacheManager {
       }
       throw new Error(`Cache operation failed: ${String(error)}`);
     }
+  }
+
+  /**
+   * Validate cache entry for freshness and checksum
+   * @private
+   */
+  private async validateCacheEntry<T>(
+    entry: CacheEntry<T> | undefined,
+    key: string,
+    ttl: number,
+    options: CacheOptions
+  ): Promise<boolean> {
+    if (!entry) {
+      return false;
+    }
+
+    // Check TTL expiration
+    if (Date.now() - entry.timestamp >= ttl) {
+      return false;
+    }
+
+    // Validate checksum for file-based cache
+    if (options.checksum && key.startsWith('file:')) {
+      const filePath = key.slice(5);
+      if (!existsSync(filePath)) {
+        return false;
+      }
+
+      try {
+        const currentHash = await this.getFileHash(filePath);
+        return currentHash === entry.hash;
+      } catch (error) {
+        // If hash validation fails, treat as invalid
+        this.logger.warn(`Cache validation failed for ${key}:`, error);
+        return false;
+      }
+    }
+
+    // Valid cache entry
+    return true;
+  }
+
+  /**
+   * Load data with error handling and cache update
+   * @private
+   */
+  private async loadWithErrorHandling<T>(
+    key: string,
+    loader: () => Promise<T>,
+    options: CacheOptions
+  ): Promise<T> {
+    this.misses++;
+
+    // Load fresh data with error handling
+    let data: T;
+    try {
+      data = await loader();
+    } catch (error) {
+      // Log error and re-throw with context
+      const message = error instanceof Error ? error.message : String(error);
+      throw new Error(`Failed to load data for key "${key}": ${message}`);
+    }
+
+    // Calculate hash for file-based cache
+    let hash: string | undefined;
+    if (options.checksum && key.startsWith('file:')) {
+      const filePath = key.slice(5);
+      if (existsSync(filePath)) {
+        try {
+          hash = await this.getFileHash(filePath);
+        } catch (error) {
+          // Log but don't fail if hash calculation fails
+          this.logger.warn(`Failed to calculate hash for ${filePath}:`, error);
+        }
+      }
+    }
+
+    // Update cache
+    this.cache.set(key, {
+      data,
+      timestamp: Date.now(),
+      hash,
+    });
+
+    return data;
   }
 
   /**
@@ -323,7 +362,8 @@ export class CacheManager {
 
     try {
       const content = await fs.readFile(filePath);
-      return crypto.createHash('md5').update(content).digest('hex');
+      // Use SHA-256 instead of MD5 for better security
+      return crypto.createHash('sha256').update(content).digest('hex');
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       throw new Error(`Failed to calculate hash for ${filePath}: ${message}`);

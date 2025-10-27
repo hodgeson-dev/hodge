@@ -125,12 +125,13 @@ export class InteractivePrompts {
         },
       ]);
 
+      const closesLine = data.issueId ? `\n- Closes ${data.issueId}` : '';
       const { body } = await inquirer.prompt<{ body: string }>([
         {
           type: 'editor',
           name: 'body',
           message: 'Enter commit body (detailed description):',
-          default: `- Implementation complete\n- Tests passing\n- Documentation updated${data.issueId ? `\n- Closes ${data.issueId}` : ''}`,
+          default: `- Implementation complete\n- Tests passing\n- Documentation updated${closesLine}`,
         },
       ]);
 

@@ -1,24 +1,12 @@
-import { exec } from 'child_process';
-import { promisify } from 'util';
 import { existsSync } from 'fs';
 import fs from 'fs/promises';
 import path from 'path';
-
-const execAsync = promisify(exec);
-
-/**
- * Quality gate results returned by runQualityGates
- */
-export interface QualityGateResults {
-  tests: boolean;
-  coverage: boolean;
-  docs: boolean;
-  changelog: boolean;
-  allPassed: boolean;
-}
+import { ToolchainService } from './toolchain-service.js';
+import type { RawToolResult } from '../types/toolchain.js';
 
 /**
  * Ship record data structure
+ * HODGE-356: Replaced shipChecks with qualityResults (RawToolResult[])
  * HODGE-341.2: Added commit tracking for toolchain file scoping
  */
 export interface ShipRecordData {
@@ -27,12 +15,7 @@ export interface ShipRecordData {
   issueId: string | null;
   pmTool: string | null;
   validationPassed: boolean;
-  shipChecks: {
-    tests: boolean;
-    coverage: boolean;
-    docs: boolean;
-    changelog: boolean;
-  };
+  qualityResults: RawToolResult[];
   commitMessage: string;
   // Commit tracking for toolchain file scoping (HODGE-341.2)
   buildStartCommit?: string; // First commit when build started
@@ -52,57 +35,41 @@ export interface MetadataBackup {
 /**
  * ShipService - Testable business logic for ship operations
  *
- * Extracts testable business logic from ShipCommand per HODGE-322.
- * Completes the Service class extraction pattern started in HODGE-321.
- * Provides testable methods for quality gates, ship records, release notes,
- * and metadata backup/restore operations.
+ * HODGE-356: Refactored to use ToolchainService for quality gates.
+ * Eliminates hardcoded npm commands, returns RawToolResult[] directly.
+ * Commands check success flags only, AI interprets error details.
  */
 export class ShipService {
+  private toolchainService: ToolchainService;
+
+  constructor(cwd: string = process.cwd(), toolchainService?: ToolchainService) {
+    this.toolchainService = toolchainService ?? new ToolchainService(cwd);
+  }
+
   /**
-   * Run all quality gates and return results
+   * Run all quality gates using toolchain
+   * HODGE-356: Returns RawToolResult[] directly (no conversion)
    * @param options - Quality gate options
-   * @returns QualityGateResults - Results for each gate
+   * @returns RawToolResult[] - Raw tool results from toolchain
    */
-  async runQualityGates(options: { skipTests?: boolean }): Promise<QualityGateResults> {
-    const results: QualityGateResults = {
-      tests: false,
-      coverage: false,
-      docs: false,
-      changelog: false,
-      allPassed: false,
-    };
+  async runQualityGates(options: { skipTests?: boolean }): Promise<RawToolResult[]> {
+    const results = await this.toolchainService.runQualityChecks('all');
 
-    // Check tests
-    if (!options.skipTests) {
-      try {
-        await execAsync('npm test 2>&1');
-        results.tests = true;
-      } catch {
-        results.tests = false;
-      }
-    } else {
-      results.tests = true; // Skipped tests count as passing
+    // Handle skipTests option by marking test results as skipped
+    if (options.skipTests) {
+      return results.map((r) =>
+        r.type === 'testing'
+          ? { ...r, skipped: true, reason: 'Tests skipped via --skip-tests flag' }
+          : r
+      );
     }
-
-    // Check coverage (TODO: implement actual coverage check)
-    results.coverage = true;
-
-    // Check documentation
-    results.docs = existsSync('README.md');
-
-    // Check changelog
-    results.changelog = existsSync('CHANGELOG.md');
-
-    // Determine overall status
-    results.allPassed = Object.entries(results)
-      .filter(([key]) => key !== 'allPassed')
-      .every(([, value]) => value === true);
 
     return results;
   }
 
   /**
    * Generate ship record data
+   * HODGE-356: Uses RawToolResult[] instead of shipChecks
    * @param params - Ship record parameters
    * @returns ShipRecordData - Ship record object
    */
@@ -111,12 +78,7 @@ export class ShipService {
     issueId: string | null;
     pmTool: string | null;
     validationPassed: boolean;
-    shipChecks: {
-      tests: boolean;
-      coverage: boolean;
-      docs: boolean;
-      changelog: boolean;
-    };
+    qualityResults: RawToolResult[];
     commitMessage: string;
   }): ShipRecordData {
     return {
@@ -125,28 +87,51 @@ export class ShipService {
       issueId: params.issueId,
       pmTool: params.pmTool,
       validationPassed: params.validationPassed,
-      shipChecks: params.shipChecks,
+      qualityResults: params.qualityResults,
       commitMessage: params.commitMessage,
     };
   }
 
   /**
    * Generate release notes markdown
+   * HODGE-356: Uses RawToolResult[] instead of shipChecks
    * @param params - Release notes parameters
    * @returns string - Release notes markdown
    */
   generateReleaseNotes(params: {
     feature: string;
     issueId: string | null;
-    shipChecks: {
-      tests: boolean;
-      coverage: boolean;
-      docs: boolean;
-      changelog: boolean;
-    };
+    qualityResults: RawToolResult[];
   }): string {
-    const { feature, issueId, shipChecks } = params;
+    const { feature, issueId, qualityResults } = params;
     const date = new Date().toLocaleDateString();
+
+    // Count results by type
+    const testResults = qualityResults.filter((r) => r.type === 'testing');
+    const lintResults = qualityResults.filter((r) => r.type === 'linting');
+    const typeCheckResults = qualityResults.filter((r) => r.type === 'type_checking');
+
+    // Determine status for each category
+    const testsStatus =
+      testResults.length > 0
+        ? testResults.every((r) => r.skipped || r.success)
+          ? '✅ Passing'
+          : '❌ Failed'
+        : '⚠️ Not Configured';
+
+    const lintStatus =
+      lintResults.length > 0
+        ? lintResults.every((r) => r.skipped || r.success)
+          ? '✅ Passing'
+          : '❌ Failed'
+        : '⚠️ Not Configured';
+
+    const typeCheckStatus =
+      typeCheckResults.length > 0
+        ? typeCheckResults.every((r) => r.skipped || r.success)
+          ? '✅ Passing'
+          : '❌ Failed'
+        : '⚠️ Not Configured';
 
     return `## ${feature}
 
@@ -158,10 +143,10 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}**Shipped**: ${date}
 - Production ready
 
 ### Quality Metrics
-- Tests: ${shipChecks.tests ? '✅ Passing' : '⚠️ Skipped'}
-- Coverage: ${shipChecks.coverage ? '✅ Met' : '⚠️ Unknown'}
-- Documentation: ${shipChecks.docs ? '✅ Complete' : '⚠️ Missing'}
-- Changelog: ${shipChecks.changelog ? '✅ Updated' : '⚠️ Missing'}
+- Tests: ${testsStatus}
+- Type Checking: ${typeCheckStatus}
+- Linting: ${lintStatus}
+- Total Checks: ${qualityResults.length}
 `;
   }
 
@@ -242,7 +227,7 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}**Shipped**: ${date}
 
   /**
    * Write or update ship-record.json for a feature
-   * HODGE-341.2: Helper for updating commit tracking data
+   * HODGE-356: Updated to use qualityResults instead of shipChecks
    * @param feature - Feature name
    * @param updates - Partial updates to apply
    */
@@ -265,12 +250,7 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}**Shipped**: ${date}
         issueId: null,
         pmTool: null,
         validationPassed: false,
-        shipChecks: {
-          tests: false,
-          coverage: false,
-          docs: false,
-          changelog: false,
-        },
+        qualityResults: [],
         commitMessage: '',
         ...updates,
       };
@@ -281,5 +261,260 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}**Shipped**: ${date}
 
     // Write updated record
     await fs.writeFile(shipRecordPath, JSON.stringify(record, null, 2));
+  }
+
+  /**
+   * Validate ship prerequisites (hardening and validation results)
+   * @param feature - Feature name
+   * @param skipTests - Whether to skip prerequisite checks
+   * @returns Object with validation status
+   */
+  async validateShipPrerequisites(
+    feature: string,
+    skipTests: boolean
+  ): Promise<{
+    hardenDirExists: boolean;
+    buildDirExists: boolean;
+    validationPassed: boolean;
+    shouldContinue: boolean;
+  }> {
+    const featureDir = path.join('.hodge', 'features', feature);
+    const hardenDir = path.join(featureDir, 'harden');
+    const buildDir = path.join(featureDir, 'build');
+
+    const hardenDirExists = existsSync(hardenDir);
+    const buildDirExists = existsSync(buildDir);
+
+    // Check validation results from hardening
+    let validationPassed = false;
+    const validationFile = path.join(hardenDir, 'validation-results.json');
+
+    if (existsSync(validationFile)) {
+      try {
+        const results = JSON.parse(await fs.readFile(validationFile, 'utf-8')) as Record<
+          string,
+          { passed: boolean }
+        >;
+        validationPassed = Object.values(results).every((r) => r.passed);
+
+        if (!validationPassed && !skipTests) {
+          return {
+            hardenDirExists,
+            buildDirExists,
+            validationPassed,
+            shouldContinue: false,
+          };
+        }
+      } catch {
+        // Could not read validation results, continue anyway
+      }
+    }
+
+    return {
+      hardenDirExists,
+      buildDirExists,
+      validationPassed,
+      shouldContinue: true,
+    };
+  }
+
+  /**
+   * Load PM integration details (issue ID)
+   * @param feature - Feature name
+   * @returns Object with PM tool and issue ID
+   */
+  async loadPMIntegration(feature: string): Promise<{
+    pmTool: string | null;
+    issueId: string | null;
+  }> {
+    const featureDir = path.join('.hodge', 'features', feature);
+    const pmTool = process.env.HODGE_PM_TOOL ?? null;
+    const issueIdFile = path.join(featureDir, 'issue-id.txt');
+    let issueId = null;
+
+    if (existsSync(issueIdFile)) {
+      issueId = (await fs.readFile(issueIdFile, 'utf-8')).trim();
+    }
+
+    return { pmTool, issueId };
+  }
+
+  /**
+   * Create git commit with rollback on failure
+   * @param commitMessage - Commit message to use
+   * @param feature - Feature name for rollback
+   * @param metadataBackup - Backup data for rollback
+   * @returns Whether commit was successful
+   */
+  async createShipCommit(
+    commitMessage: string,
+    feature: string,
+    metadataBackup: MetadataBackup
+  ): Promise<{ success: boolean; error?: Error }> {
+    try {
+      const { exec } = await import('child_process');
+      const { promisify } = await import('util');
+      const execAsync = promisify(exec);
+
+      // Stage all changes including metadata updates
+      await execAsync('git add -A');
+
+      // Create commit with the generated message
+      await execAsync(
+        `git commit -m "${commitMessage.replace(/"/g, '\\"').replace(/\n/g, '\\n')}"`
+      );
+
+      return { success: true };
+    } catch (error) {
+      // Rollback metadata changes on commit failure
+      await this.restoreMetadata(feature, metadataBackup);
+
+      return {
+        success: false,
+        error: error instanceof Error ? error : new Error(String(error)),
+      };
+    }
+  }
+
+  /**
+   * Check if all quality gates passed
+   * @param qualityResults - Quality check results
+   * @param skipTests - Whether tests were skipped
+   * @returns Whether ready to ship
+   */
+  checkQualityGatesPassed(qualityResults: RawToolResult[], skipTests: boolean): boolean {
+    const allPassed = qualityResults.every((r) => r.skipped || r.success);
+    return allPassed || skipTests;
+  }
+
+  /**
+   * Get quality results categorized by type
+   * @param qualityResults - All quality results
+   * @returns Categorized results
+   */
+  categorizeQualityResults(qualityResults: RawToolResult[]): {
+    testResults: RawToolResult[];
+    lintResults: RawToolResult[];
+    typeCheckResults: RawToolResult[];
+    testsPassed: boolean;
+    lintPassed: boolean;
+    typeCheckPassed: boolean;
+  } {
+    const testResults = qualityResults.filter((r) => r.type === 'testing');
+    const lintResults = qualityResults.filter((r) => r.type === 'linting');
+    const typeCheckResults = qualityResults.filter((r) => r.type === 'type_checking');
+
+    return {
+      testResults,
+      lintResults,
+      typeCheckResults,
+      testsPassed: testResults.every((r) => r.skipped || r.success),
+      lintPassed: lintResults.every((r) => r.skipped || r.success),
+      typeCheckPassed: typeCheckResults.every((r) => r.skipped || r.success),
+    };
+  }
+
+  /**
+   * Learn patterns from shipped code (optional feature)
+   * @param feature - Feature name
+   * @returns Learning result or null if failed
+   */
+  async learnPatternsFromShippedCode(feature: string): Promise<unknown | null> {
+    try {
+      const { PatternLearner } = await import('../lib/pattern-learner.js');
+      const learner = new PatternLearner();
+      const learningResult = await learner.analyzeShippedCode(feature);
+      return learningResult;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Get commit message from interaction state or use default
+   * @param feature - Feature name
+   * @param issueId - PM issue ID (optional)
+   * @param providedMessage - Message from options (optional)
+   * @param noInteractive - Skip interaction state check
+   * @returns Commit message and whether it was edited
+   */
+  async resolveCommitMessage(
+    feature: string,
+    issueId: string | null,
+    providedMessage?: string,
+    noInteractive?: boolean
+  ): Promise<{ message: string; wasEdited: boolean }> {
+    // Use provided message if available
+    if (providedMessage) {
+      return { message: providedMessage, wasEdited: false };
+    }
+
+    // Check interaction state unless disabled
+    if (!noInteractive) {
+      const { InteractionStateManager } = await import('./interaction-state.js');
+      const interactionManager = new InteractionStateManager<{ edited?: string }>('ship', feature);
+      const existingState = await interactionManager.load();
+
+      if (existingState?.data.edited) {
+        const message = existingState.data.edited;
+        // Clean up interaction files after use
+        await interactionManager.cleanup();
+        return { message, wasEdited: true };
+      }
+    }
+
+    // Fallback to default message
+    const closesLine = issueId ? ` (closes ${issueId})` : '';
+    const closesFooter = issueId ? `\n- Closes ${issueId}` : '';
+    const message =
+      `ship: ${feature}${closesLine}\n\n` +
+      `- Implementation complete\n` +
+      `- Tests passing\n` +
+      `- Documentation updated` +
+      closesFooter;
+
+    return { message, wasEdited: false };
+  }
+
+  /**
+   * Determine if shipping should continue based on prerequisites
+   * Returns action: 'continue' | 'abort-not-built' | 'abort-not-hardened' | 'abort-validation-failed' | 'warn-no-validation'
+   * @param prerequisites - Prerequisite validation results
+   * @param skipTests - Whether tests are being skipped
+   * @returns Action to take
+   */
+  determineShipAction(
+    prerequisites: {
+      hardenDirExists: boolean;
+      buildDirExists: boolean;
+      shouldContinue: boolean;
+      validationPassed: boolean;
+    },
+    skipTests: boolean
+  ): { action: string; warning?: string } {
+    // Not built or hardened at all
+    if (!prerequisites.buildDirExists) {
+      return { action: 'abort-not-built' };
+    }
+
+    // Built but not hardened
+    if (!prerequisites.hardenDirExists) {
+      if (skipTests) {
+        return { action: 'continue', warning: 'no-harden' };
+      }
+      return { action: 'abort-not-hardened' };
+    }
+
+    // Validation checks failed
+    if (!prerequisites.shouldContinue) {
+      return { action: 'abort-validation-failed' };
+    }
+
+    // Could not read validation results
+    if (!prerequisites.validationPassed && prerequisites.hardenDirExists) {
+      return { action: 'continue', warning: 'no-validation-data' };
+    }
+
+    return { action: 'continue' };
   }
 }

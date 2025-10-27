@@ -72,17 +72,26 @@ describe('HODGE-319.1 - Phase 1 Quick Wins', () => {
   });
 
   smokeTest('should eliminate HODGE.md backup/restore from ship command', async () => {
-    // Verify ship.ts does not backup/restore HODGE.md
+    // HODGE-357.1: Verify backup/restore logic in both ship.ts and ShipService
     const shipPath = path.join(process.cwd(), 'src', 'commands', 'ship.ts');
-    const content = await fs.readFile(shipPath, 'utf-8');
+    const shipServicePath = path.join(process.cwd(), 'src', 'lib', 'ship-service.ts');
 
-    // Should NOT backup featureHodgeMd
-    expect(content).not.toContain('backup.featureHodgeMd');
-    expect(content).not.toContain('featureHodgePath');
+    const [shipContent, serviceContent] = await Promise.all([
+      fs.readFile(shipPath, 'utf-8'),
+      fs.readFile(shipServicePath, 'utf-8'),
+    ]);
+
+    // Should NOT backup featureHodgeMd (in either file)
+    expect(shipContent).not.toContain('backup.featureHodgeMd');
+    expect(shipContent).not.toContain('featureHodgePath');
+    expect(serviceContent).not.toContain('backup.featureHodgeMd');
+    expect(serviceContent).not.toContain('featureHodgePath');
 
     // Should still backup other metadata (project_management.md)
-    expect(content).toContain('backupMetadata');
-    expect(content).toContain('restoreMetadata');
+    // ship.ts calls the service, service implements the logic
+    expect(shipContent).toContain('shipService.backupMetadata');
+    expect(serviceContent).toContain('backupMetadata');
+    expect(serviceContent).toContain('restoreMetadata');
   });
 
   smokeTest('should eliminate phase-specific context.json from explore command', async () => {

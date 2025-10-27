@@ -49,15 +49,9 @@ export class IDManager {
    */
   constructor(hodgeDir: string = '.hodge') {
     // Validate path to prevent directory traversal attacks
-    const normalizedPath = path.normalize(hodgeDir);
-    if (normalizedPath.includes('..') || path.isAbsolute(normalizedPath)) {
-      // Store as-is for now, will throw on actual file operations
-      this.mappingsFile = path.join(hodgeDir, 'id-mappings.json');
-      this.counterFile = path.join(hodgeDir, 'id-counter.json');
-    } else {
-      this.mappingsFile = path.join(hodgeDir, 'id-mappings.json');
-      this.counterFile = path.join(hodgeDir, 'id-counter.json');
-    }
+    // Store paths for both cases (validation happens on file operations)
+    this.mappingsFile = path.join(hodgeDir, 'id-mappings.json');
+    this.counterFile = path.join(hodgeDir, 'id-counter.json');
   }
 
   /**
@@ -81,7 +75,7 @@ export class IDManager {
     // Check if name is already a HODGE-prefixed ID (e.g., HODGE-333.2)
     // If so, use it directly instead of generating a new sequential ID
     let localID: string;
-    if (name.match(/^HODGE-\d+(\.\d+)?$/)) {
+    if (/^HODGE-\d+(\.\d+)?$/.test(name)) {
       localID = name;
     } else {
       localID = await this.generateLocalID();

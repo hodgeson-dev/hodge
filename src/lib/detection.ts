@@ -1,4 +1,3 @@
-import { createCommandLogger } from './logger.js';
 /**
  * Project Detection Engine
  * Detects project properties for smart initialization
@@ -7,7 +6,14 @@ import { createCommandLogger } from './logger.js';
 
 import fs from 'fs-extra';
 import path from 'path';
-import { execSync } from 'child_process';
+import { LintingDetector } from './linting-detector.js';
+import { BuildToolDetector } from './build-tool-detector.js';
+import { ProjectNameDetector } from './project-name-detector.js';
+import { TestFrameworkDetector } from './test-framework-detector.js';
+import { PMToolDetector, type PMTool } from './pm-tool-detector.js';
+import { NodePackageDetector } from './node-package-detector.js';
+import { ProjectTypeDetector, type ProjectType } from './project-type-detector.js';
+import { GitDetector } from './git-detector.js';
 
 /**
  * Custom error class for detection-related errors
@@ -53,15 +59,9 @@ export interface ProjectInfo {
   rootPath: string;
 }
 
-/**
- * Supported project types for auto-detection
- */
-export type ProjectType = 'node' | 'python' | 'unknown';
-
-/**
- * Supported project management tools
- */
-export type PMTool = 'local' | 'linear' | 'github' | 'jira' | 'trello' | 'asana' | 'custom' | null;
+// Re-export types from detector modules for backward compatibility
+export type { ProjectType } from './project-type-detector.js';
+export type { PMTool } from './pm-tool-detector.js';
 
 /**
  * Development tools detected in the project
@@ -87,14 +87,33 @@ export interface DetectedTools {
  * Main project detection class that analyzes a directory to extract project information
  */
 export class ProjectDetector {
-  private logger = createCommandLogger('detection-error', { enableConsole: false });
+  // Logger for detection errors - intentionally unused for now
+  // private logger = createCommandLogger('detection-error', { enableConsole: false });
 
   /**
    * Creates a new ProjectDetector instance
    * @param rootPath - The root path to analyze (defaults to current working directory)
+   * @param lintingDetector - Detector for linting tools (injectable for testing)
+   * @param buildToolDetector - Detector for build tools (injectable for testing)
+   * @param projectNameDetector - Detector for project name (injectable for testing)
+   * @param testFrameworkDetector - Detector for test frameworks (injectable for testing)
+   * @param pmToolDetector - Detector for PM tools (injectable for testing)
+   * @param nodePackageDetector - Detector for Node package managers (injectable for testing)
+   * @param projectTypeDetector - Detector for project type (injectable for testing)
+   * @param gitDetector - Detector for Git status (injectable for testing)
    * @throws {ValidationError} If the rootPath is invalid
    */
-  constructor(private rootPath: string = process.cwd()) {
+  constructor(
+    private rootPath: string = process.cwd(),
+    private lintingDetector = new LintingDetector(rootPath),
+    private buildToolDetector = new BuildToolDetector(rootPath),
+    private projectNameDetector = new ProjectNameDetector(rootPath),
+    private testFrameworkDetector = new TestFrameworkDetector(rootPath),
+    private pmToolDetector = new PMToolDetector(rootPath),
+    private nodePackageDetector = new NodePackageDetector(rootPath),
+    private projectTypeDetector = new ProjectTypeDetector(rootPath),
+    private gitDetector = new GitDetector(rootPath)
+  ) {
     this.validateRootPath(rootPath);
   }
 
@@ -164,137 +183,16 @@ export class ProjectDetector {
    * @throws {DetectionError} If no valid name can be determined
    */
   private async detectProjectName(): Promise<string> {
-    // Try package.json first
-    const packageJsonPath = path.join(this.rootPath, 'package.json');
-    if (await fs.pathExists(packageJsonPath)) {
-      try {
-        const packageJson = (await fs.readJson(packageJsonPath)) as { name?: string };
-        if (packageJson.name && typeof packageJson.name === 'string') {
-          // Remove scope prefix if present (e.g., @scope/name -> name)
-          const name = packageJson.name.replace(/^@[^/]+\//, '');
-          if (this.isValidProjectName(name)) {
-            return name;
-          }
-        }
-      } catch (error) {
-        // Continue to fallback methods but log the error
-        this.logger.warn(
-          `Warning: Failed to read package.json: ${error instanceof Error ? error.message : 'Unknown error'}`
-        );
-      }
-    }
-
-    // Try git remote
-    try {
-      const remoteUrl = execSync('git remote get-url origin', {
-        cwd: this.rootPath,
-        encoding: 'utf8',
-        stdio: 'pipe',
-        timeout: 5000, // 5 second timeout
-      }).trim();
-
-      // Extract name from git URL (supports both SSH and HTTPS)
-      const match = remoteUrl.match(/\/([^/]+?)(?:\.git)?$/);
-      if (match && match[1]) {
-        const name = match[1];
-        if (this.isValidProjectName(name)) {
-          return name;
-        }
-      }
-    } catch {
-      // Git not available or no remote - this is expected in many cases
-    }
-
-    // Fall back to directory name
-    const dirName = path.basename(this.rootPath);
-    if (this.isValidProjectName(dirName)) {
-      return dirName;
-    }
-
-    // If even directory name is invalid, use a safe default
-    throw new DetectionError(`Could not determine a valid project name from directory: ${dirName}`);
+    return this.projectNameDetector.detect();
   }
 
-  /**
-   * Validates if a project name is valid
-   * @param name - The name to validate
-   * @returns True if the name is valid
-   */
-  private isValidProjectName(name: string): boolean {
-    if (!name || typeof name !== 'string') return false;
-
-    // Remove common invalid characters and check if anything remains
-    const cleaned = name.trim();
-    if (cleaned.length === 0) return false;
-
-    // Check for extremely long names (over 214 characters is npm limit)
-    if (cleaned.length > 214) return false;
-
-    // Check for invalid characters that could cause security issues
-    const invalidChars = /[<>:"|?*\\]/;
-    if (invalidChars.test(cleaned)) return false;
-
-    return true;
-  }
-
-  /**
-   * Creates a safe path by joining with rootPath and validating against path traversal
-   * @param relativePath - The relative path to validate
-   * @returns Safe absolute path or null if invalid
-   */
-  private safePath(relativePath: string): string | null {
-    if (!relativePath || typeof relativePath !== 'string') return null;
-
-    // Prevent path traversal attacks
-    if (relativePath.includes('..') || relativePath.includes('~')) return null;
-
-    const fullPath = path.join(this.rootPath, relativePath);
-
-    // Ensure the resolved path is still within rootPath
-    if (!fullPath.startsWith(this.rootPath)) return null;
-
-    return fullPath;
-  }
 
   /**
    * Detects the project type by analyzing project files
    * @returns The detected project type
    */
   private async detectProjectType(): Promise<ProjectType> {
-    // Check for Node.js indicators
-    const nodeIndicators = [
-      'package.json',
-      'node_modules',
-      'yarn.lock',
-      'package-lock.json',
-      'pnpm-lock.yaml',
-    ];
-
-    for (const indicator of nodeIndicators) {
-      const indicatorPath = this.safePath(indicator);
-      if (indicatorPath && (await fs.pathExists(indicatorPath))) {
-        return 'node';
-      }
-    }
-
-    // Check for Python indicators
-    const pythonIndicators = [
-      'requirements.txt',
-      'setup.py',
-      'pyproject.toml',
-      'Pipfile',
-      'poetry.lock',
-      'environment.yml',
-    ];
-
-    for (const indicator of pythonIndicators) {
-      const indicatorPath = this.safePath(indicator);
-      if (indicatorPath && (await fs.pathExists(indicatorPath))) {
-        return 'python';
-      }
-    }
-
-    return 'unknown';
+    return this.projectTypeDetector.detect();
   }
 
   /**
@@ -302,27 +200,7 @@ export class ProjectDetector {
    * @returns The detected PM tool or null
    */
   private detectPMTool(): PMTool | null {
-    // Check environment variables
-    if (process.env.LINEAR_API_KEY) return 'linear';
-    if (process.env.GITHUB_TOKEN || process.env.GH_TOKEN) return 'github';
-    if (process.env.JIRA_API_TOKEN) return 'jira';
-
-    // Check git remote for GitHub
-    try {
-      const remoteUrl = execSync('git remote get-url origin', {
-        cwd: this.rootPath,
-        encoding: 'utf8',
-        stdio: 'pipe',
-      }).trim();
-
-      if (remoteUrl.includes('github.com')) {
-        return 'github';
-      }
-    } catch {
-      // Git not available or no remote
-    }
-
-    return null;
+    return this.pmToolDetector.detect();
   }
 
   /**
@@ -330,8 +208,7 @@ export class ProjectDetector {
    * @returns True if .hodge directory exists
    */
   private async hasHodgeConfig(): Promise<boolean> {
-    const hodgePath = this.safePath('.hodge');
-    return hodgePath ? fs.pathExists(hodgePath) : false;
+    return fs.pathExists(path.join(this.rootPath, '.hodge'));
   }
 
   /**
@@ -359,16 +236,7 @@ export class ProjectDetector {
    * @returns The detected package manager or null
    */
   private async detectPackageManager(): Promise<'npm' | 'yarn' | 'pnpm' | null> {
-    const pnpmLockPath = this.safePath('pnpm-lock.yaml');
-    if (pnpmLockPath && (await fs.pathExists(pnpmLockPath))) return 'pnpm';
-
-    const yarnLockPath = this.safePath('yarn.lock');
-    if (yarnLockPath && (await fs.pathExists(yarnLockPath))) return 'yarn';
-
-    const npmLockPath = this.safePath('package-lock.json');
-    if (npmLockPath && (await fs.pathExists(npmLockPath))) return 'npm';
-
-    return null;
+    return this.nodePackageDetector.detect();
   }
 
   /**
@@ -376,44 +244,7 @@ export class ProjectDetector {
    * @returns Array of detected test framework names
    */
   private async detectTestFrameworks(): Promise<string[]> {
-    const frameworks: string[] = [];
-    const packageJsonPath = this.safePath('package.json');
-
-    if (packageJsonPath && (await fs.pathExists(packageJsonPath))) {
-      try {
-        const packageJson = (await fs.readJson(packageJsonPath)) as {
-          dependencies?: Record<string, string>;
-          devDependencies?: Record<string, string>;
-        };
-        const allDeps = {
-          ...(packageJson.dependencies || {}),
-          ...(packageJson.devDependencies || {}),
-        };
-
-        // Check for test frameworks with proper type checking
-        const testFrameworkChecks = [
-          { dep: 'vitest', name: 'vitest' },
-          { dep: 'jest', name: 'jest' },
-          { dep: 'mocha', name: 'mocha' },
-          { dep: 'jasmine', name: 'jasmine' },
-          { dep: '@testing-library/react', name: 'testing-library' },
-          { dep: 'cypress', name: 'cypress' },
-          { dep: '@playwright/test', name: 'playwright' },
-        ];
-
-        for (const check of testFrameworkChecks) {
-          if (allDeps[check.dep]) {
-            frameworks.push(check.name);
-          }
-        }
-      } catch (error) {
-        this.logger.warn(
-          `Warning: Failed to read package.json for test framework detection: ${error instanceof Error ? error.message : 'Unknown error'}`
-        );
-      }
-    }
-
-    return frameworks;
+    return this.testFrameworkDetector.detect();
   }
 
   /**
@@ -421,54 +252,7 @@ export class ProjectDetector {
    * @returns Array of detected linting tool names
    */
   private async detectLinting(): Promise<string[]> {
-    const linters: string[] = [];
-    const packageJsonPath = path.join(this.rootPath, 'package.json');
-
-    if (await fs.pathExists(packageJsonPath)) {
-      try {
-        const packageJson = (await fs.readJson(packageJsonPath)) as {
-          dependencies?: Record<string, string>;
-          devDependencies?: Record<string, string>;
-        };
-        const allDeps = {
-          ...packageJson.dependencies,
-          ...packageJson.devDependencies,
-        };
-
-        if (allDeps && allDeps.eslint) linters.push('eslint');
-        if (allDeps && allDeps.prettier) linters.push('prettier');
-        if (allDeps && allDeps.tslint) linters.push('tslint');
-      } catch {
-        // Continue without package.json info
-      }
-    }
-
-    // Check for config files
-    const configFiles = [
-      '.eslintrc',
-      '.eslintrc.js',
-      '.eslintrc.json',
-      '.prettierrc',
-      '.prettierrc.js',
-      '.prettierrc.json',
-      'tslint.json',
-    ];
-
-    for (const file of configFiles) {
-      if (await fs.pathExists(path.join(this.rootPath, file))) {
-        if (file.includes('eslint') && !linters.includes('eslint')) {
-          linters.push('eslint');
-        }
-        if (file.includes('prettier') && !linters.includes('prettier')) {
-          linters.push('prettier');
-        }
-        if (file.includes('tslint') && !linters.includes('tslint')) {
-          linters.push('tslint');
-        }
-      }
-    }
-
-    return linters;
+    return this.lintingDetector.detect();
   }
 
   /**
@@ -476,50 +260,7 @@ export class ProjectDetector {
    * @returns Array of detected build tool names
    */
   private async detectBuildTools(): Promise<string[]> {
-    const buildTools: string[] = [];
-    const packageJsonPath = path.join(this.rootPath, 'package.json');
-
-    if (await fs.pathExists(packageJsonPath)) {
-      try {
-        const packageJson = (await fs.readJson(packageJsonPath)) as {
-          dependencies?: Record<string, string>;
-          devDependencies?: Record<string, string>;
-        };
-        const allDeps = {
-          ...packageJson.dependencies,
-          ...packageJson.devDependencies,
-        };
-
-        if (allDeps && allDeps.typescript) buildTools.push('typescript');
-        if (allDeps && allDeps.webpack) buildTools.push('webpack');
-        if (allDeps && allDeps.vite) buildTools.push('vite');
-        if (allDeps && allDeps.rollup) buildTools.push('rollup');
-        if (allDeps && allDeps.parcel) buildTools.push('parcel');
-      } catch {
-        // Continue without package.json info
-      }
-    }
-
-    // Check for config files
-    const configFiles = [
-      'tsconfig.json',
-      'webpack.config.js',
-      'vite.config.js',
-      'rollup.config.js',
-    ];
-
-    for (const file of configFiles) {
-      if (await fs.pathExists(path.join(this.rootPath, file))) {
-        const tool = file.split('.')[0];
-        if (tool === 'tsconfig' && !buildTools.includes('typescript')) {
-          buildTools.push('typescript');
-        } else if (!buildTools.includes(tool)) {
-          buildTools.push(tool);
-        }
-      }
-    }
-
-    return buildTools;
+    return this.buildToolDetector.detect();
   }
 
   /**
@@ -527,16 +268,7 @@ export class ProjectDetector {
    * @returns True if git is available and initialized
    */
   private checkGit(): boolean {
-    try {
-      execSync('git status', {
-        cwd: this.rootPath,
-        stdio: 'pipe',
-        timeout: 5000, // 5 second timeout
-      });
-      return true;
-    } catch {
-      return false;
-    }
+    return this.gitDetector.checkGit();
   }
 
   /**
@@ -544,16 +276,7 @@ export class ProjectDetector {
    * @returns The git remote URL or undefined
    */
   private getGitRemote(): string | undefined {
-    try {
-      return execSync('git remote get-url origin', {
-        cwd: this.rootPath,
-        encoding: 'utf8',
-        stdio: 'pipe',
-        timeout: 5000, // 5 second timeout
-      }).trim();
-    } catch {
-      return undefined;
-    }
+    return this.gitDetector.getGitRemote();
   }
 
   /**
@@ -561,11 +284,8 @@ export class ProjectDetector {
    * @returns True if CLAUDE.md exists
    */
   private async detectClaudeCode(): Promise<boolean> {
-    const claudeMdPath = this.safePath('CLAUDE.md');
-    if (!claudeMdPath) return false;
-
     try {
-      return await fs.pathExists(claudeMdPath);
+      return await fs.pathExists(path.join(this.rootPath, 'CLAUDE.md'));
     } catch {
       return false;
     }

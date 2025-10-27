@@ -4,11 +4,7 @@ import * as path from 'path';
 import { existsSync } from 'fs';
 import { contextManager } from '../lib/context-manager.js';
 import { PMHooks } from '../lib/pm/pm-hooks.js';
-import {
-  HardenService,
-  type ValidationResult,
-  type ValidationResults,
-} from '../lib/harden-service.js';
+import { HardenService } from '../lib/harden-service.js';
 import type { RawToolResult, ToolchainConfig } from '../types/toolchain.js';
 import { createCommandLogger } from '../lib/logger.js';
 import { GitDiffAnalyzer } from '../lib/git-diff-analyzer.js';
@@ -43,6 +39,20 @@ export interface HardenOptions {
  * @description Production-ready harden command with parallel validation by default
  * @note Refactored in HODGE-321 to use HardenService for testable business logic
  */
+/**
+ * HODGE-356: Helper functions for working with RawToolResult[]
+ */
+function getAllPassed(results: RawToolResult[]): boolean {
+  return results.every((r) => r.skipped || r.success);
+}
+
+function getResultsByType(
+  results: RawToolResult[],
+  type: keyof QualityChecksMapping
+): RawToolResult[] {
+  return results.filter((r) => r.type === type);
+}
+
 export class HardenCommand {
   private pmHooks = new PMHooks();
   private hardenService = new HardenService();
@@ -184,7 +194,7 @@ export class HardenCommand {
   private async runValidationsWithTiming(
     feature: string,
     options: HardenOptions
-  ): Promise<ValidationResults> {
+  ): Promise<RawToolResult[]> {
     this.logger.info(chalk.bold('Running validation checks...\n'));
 
     if (options.sequential) {
@@ -195,9 +205,8 @@ export class HardenCommand {
 
     const parallelStartTime = Date.now();
 
-    // Delegate to HardenService for business logic
-    // HODGE-341.2: Pass feature name for commit range scoping
-    const results: ValidationResults = await this.hardenService.runValidations(feature, options);
+    // Delegate to HardenService for business logic (HODGE-356)
+    const results: RawToolResult[] = await this.hardenService.runValidations(feature, options);
 
     const parallelEndTime = Date.now();
     if (!options.sequential) {
@@ -211,16 +220,17 @@ export class HardenCommand {
 
   /**
    * Save validation results and generate reports
+   * HODGE-356: Updated to use RawToolResult[]
    * @private
    */
   private async saveValidationResults(
     feature: string,
     hardenDir: string,
-    results: ValidationResults,
+    results: RawToolResult[],
     options: HardenOptions
   ): Promise<void> {
-    // Check if all validations passed
-    const allPassed = Object.values(results).every((r: ValidationResult) => r.passed);
+    // Check if all validations passed (HODGE-356: universal success flags)
+    const allPassed = getAllPassed(results);
 
     // Save validation results
     await fs.writeFile(
@@ -228,16 +238,13 @@ export class HardenCommand {
       JSON.stringify(results, null, 2)
     );
 
-    // HODGE-341.2: Save ALL quality check results (including advanced checks) for AI review
-    const allQualityChecks = this.hardenService.getLastQualityCheckResults();
-    if (allQualityChecks && allQualityChecks.length > 0) {
-      const qualityChecksReport = this.generateQualityChecksReport(allQualityChecks);
-      await fs.writeFile(path.join(hardenDir, 'quality-checks.md'), qualityChecksReport);
-      this.logger.debug('Wrote quality checks report', {
-        checkCount: allQualityChecks.length,
-        path: path.join(hardenDir, 'quality-checks.md'),
-      });
-    }
+    // HODGE-356: Save quality check results for AI review
+    const qualityChecksReport = this.generateQualityChecksReport(results);
+    await fs.writeFile(path.join(hardenDir, 'quality-checks.md'), qualityChecksReport);
+    this.logger.debug('Wrote quality checks report', {
+      checkCount: results.length,
+      path: path.join(hardenDir, 'quality-checks.md'),
+    });
 
     // Generate and save report
     const reportContent = this.generateReport(feature, results, options);
@@ -273,21 +280,31 @@ export class HardenCommand {
 
   /**
    * Display validation status (presentation layer)
+   * HODGE-356: Updated to use RawToolResult[] with universal success flags
    * @private
    */
-  private displayValidationStatus(results: ValidationResults, options: HardenOptions): void {
-    this.logger.info(this.getTestStatusMessage(results.tests.passed, options.skipTests ?? false));
+  private displayValidationStatus(results: RawToolResult[], _options: HardenOptions): void {
+    const testResults = getResultsByType(results, 'testing');
+    const lintResults = getResultsByType(results, 'linting');
+    const typeCheckResults = getResultsByType(results, 'type_checking');
+
+    // Tests status
+    const testsPassed = testResults.every((r) => r.skipped || r.success);
+    const testsSkipped = testResults.some((r) => r.skipped);
+    this.logger.info(this.getTestStatusMessage(testsPassed, testsSkipped));
+
+    // Linting status
+    const lintPassed = lintResults.every((r) => r.skipped || r.success);
     this.logger.info(
-      results.lint.passed ? chalk.green('   ✓ Linting passed') : chalk.red('   ✗ Linting failed')
+      lintPassed ? chalk.green('   ✓ Linting passed') : chalk.red('   ✗ Linting failed')
     );
+
+    // Type checking status
+    const typeCheckPassed = typeCheckResults.every((r) => r.skipped || r.success);
     this.logger.info(
-      results.typecheck.passed
-        ? chalk.green('   ✓ Type check passed')
-        : chalk.red('   ✗ Type check failed')
+      typeCheckPassed ? chalk.green('   ✓ Type check passed') : chalk.red('   ✗ Type check failed')
     );
-    this.logger.info(
-      results.build.passed ? chalk.green('   ✓ Build succeeded') : chalk.red('   ✗ Build failed')
-    );
+
     this.logger.info('');
   }
 
@@ -321,14 +338,24 @@ export class HardenCommand {
 
   /**
    * Generate harden report
+   * HODGE-356: Updated to use RawToolResult[]
    * @private
    */
   private generateReport(
     feature: string,
-    results: ValidationResults,
-    options: HardenOptions
+    results: RawToolResult[],
+    _options: HardenOptions
   ): string {
-    const allPassed = Object.values(results).every((r: ValidationResult) => r.passed);
+    const allPassed = getAllPassed(results);
+
+    const testResults = getResultsByType(results, 'testing');
+    const lintResults = getResultsByType(results, 'linting');
+    const typeCheckResults = getResultsByType(results, 'type_checking');
+
+    const testsPassed = testResults.every((r) => r.skipped || r.success);
+    const testsSkipped = testResults.some((r) => r.skipped);
+    const lintPassed = lintResults.every((r) => r.skipped || r.success);
+    const typeCheckPassed = typeCheckResults.every((r) => r.skipped || r.success);
 
     return `# Harden Report: ${feature}
 
@@ -337,10 +364,12 @@ export class HardenCommand {
 **Overall Status**: ${allPassed ? '✅ PASSED' : '❌ FAILED'}
 
 ### Test Results
-- **Tests**: ${this.getTestStatusForReport(results.tests.passed, options.skipTests ?? false)}
-- **Linting**: ${results.lint.passed ? '✅ Passed' : '❌ Failed'}
-- **Type Check**: ${results.typecheck.passed ? '✅ Passed' : '❌ Failed'}
-- **Build**: ${results.build.passed ? '✅ Passed' : '❌ Failed'}
+- **Tests**: ${this.getTestStatusForReport(testsPassed, testsSkipped)}
+- **Linting**: ${lintPassed ? '✅ Passed' : '❌ Failed'}
+- **Type Check**: ${typeCheckPassed ? '✅ Passed' : '❌ Failed'}
+
+### Tools Used
+${results.map((r) => `- ${r.type}: ${r.tool}`).join('\n')}
 
 ## Standards Compliance
 ${allPassed ? 'All standards have been met. Code is production-ready.' : 'Standards violations detected. Please fix before shipping.'}
@@ -362,39 +391,43 @@ ${
 
 ## Detailed Output
 
-### Test Output
-\`\`\`
-${results.tests.output || 'No test output'}
-\`\`\`
+${results
+  .map((r) => {
+    // Extract nested ternary to clear logic
+    let status: string;
+    if (r.skipped) {
+      status = '⚠️ Skipped';
+    } else if (r.success) {
+      status = '✅ Passed';
+    } else {
+      status = '❌ Failed';
+    }
+    const reason = r.skipped ? `**Reason**: ${r.reason || 'No reason provided'}` : '';
+    return `### ${r.type}: ${r.tool}
+**Status**: ${status}
+${reason}
 
-### Lint Output
 \`\`\`
-${results.lint.output || 'No lint output'}
+${r.stdout || ''}${r.stderr || ''}
 \`\`\`
-
-### Type Check Output
-\`\`\`
-${results.typecheck.output || 'No type check output'}
-\`\`\`
-
-### Build Output
-\`\`\`
-${results.build.output || 'No build output'}
-\`\`\`
+`;
+  })
+  .join('\n')}
 `;
   }
 
   /**
    * Display final summary
+   * HODGE-356: Updated to use RawToolResult[]
    * @private
    */
   private displaySummary(
     feature: string,
-    results: ValidationResults,
+    results: RawToolResult[],
     hardenDir: string,
     options: HardenOptions
   ): void {
-    const allPassed = Object.values(results).every((r: ValidationResult) => r.passed);
+    const allPassed = getAllPassed(results);
 
     this.logger.info('\n' + chalk.bold('Harden Summary:'));
 

@@ -5,6 +5,7 @@ import { ShipContext } from './types.js';
 import { IDManager } from '../id-manager.js';
 import { LinearAdapter } from './linear-adapter.js';
 import { GitHubAdapter } from './github-adapter.js';
+import { CommentGeneratorService } from './comment-generator-service.js';
 import fs from 'fs/promises';
 import path from 'path';
 import { existsSync } from 'fs';
@@ -36,12 +37,17 @@ export class PMHooks {
   private idManager: IDManager;
   private pmQueueFile: string;
   private basePath: string;
+  private commentGenerator: CommentGeneratorService;
 
-  constructor(basePath?: string) {
+  constructor(
+    basePath?: string,
+    commentGenerator = new CommentGeneratorService()
+  ) {
     this.basePath = basePath ?? process.cwd();
     this.localAdapter = new LocalPMAdapter(basePath);
     this.idManager = new IDManager();
     this.pmQueueFile = path.join(this.basePath, '.hodge/.pm-queue.json');
+    this.commentGenerator = commentGenerator;
   }
 
   /**
@@ -267,70 +273,7 @@ export class PMHooks {
    * Generate rich comment based on verbosity level
    */
   private async generateRichComment(context: ShipContext): Promise<string> {
-    const pmConfig = await this.configManager.getPMConfig();
-    const verbosity = pmConfig?.verbosity ?? 'essential';
-
-    if (verbosity === 'minimal') {
-      return `✅ Feature ${context.feature} has been shipped${context.commitHash ? ` in ${context.commitHash.substring(0, 7)}` : ''}.`;
-    }
-
-    let comment = `## 🚀 Shipped via Hodge\n\n`;
-
-    // Essential information
-    if (context.commitHash) {
-      comment += `**Commit**: \`${context.commitHash.substring(0, 7)}\`\n`;
-    }
-    if (context.branch) {
-      comment += `**Branch**: \`${context.branch}\`\n`;
-    }
-    comment += '\n';
-
-    // Add metrics for essential and rich
-    if (verbosity === 'essential' || verbosity === 'rich') {
-      if (context.filesChanged || context.linesAdded || context.linesRemoved) {
-        comment += `### 📊 Changes\n`;
-        if (context.filesChanged) comment += `- Files: ${context.filesChanged}\n`;
-        if (context.linesAdded) comment += `- Added: +${context.linesAdded}\n`;
-        if (context.linesRemoved) comment += `- Removed: -${context.linesRemoved}\n`;
-        comment += '\n';
-      }
-
-      if (context.testsResults) {
-        comment += `### ✅ Tests\n`;
-        comment += `${context.testsResults.passed}/${context.testsResults.total} passing\n\n`;
-      }
-    }
-
-    // Add rich details
-    if (verbosity === 'rich') {
-      if (context.coverage !== undefined) {
-        comment += `### 📈 Coverage\n`;
-        comment += `${context.coverage}%\n\n`;
-      }
-
-      if (context.patterns && context.patterns.length > 0) {
-        comment += `### 🎯 Patterns Applied\n`;
-        context.patterns.forEach((p) => {
-          comment += `- ${p}\n`;
-        });
-        comment += '\n';
-      }
-
-      if (context.commitMessage) {
-        comment += `### 📝 Commit Message\n`;
-        comment += '```\n';
-        comment += context.commitMessage.substring(0, 500);
-        if (context.commitMessage.length > 500) {
-          comment += '...\n';
-        }
-        comment += '\n```\n';
-      }
-    }
-
-    comment += `\n---\n`;
-    comment += `_Updated by Hodge${context.hodgeVersion ? ` v${context.hodgeVersion}` : ''}_`;
-
-    return comment;
+    return this.commentGenerator.generate(context);
   }
 
   /**
@@ -512,14 +455,14 @@ export class PMHooks {
       const content = await fs.readFile(explorationFile, 'utf-8');
 
       // Try to extract from ## Problem Statement heading
-      const headingMatch = content.match(/## Problem Statement\s*\n([^\n]+(?:\n(?!##)[^\n]+)*)/);
+      const headingMatch = /## Problem Statement\s*\n([^\n]+(?:\n(?!##)[^\n]+)*)/.exec(content);
       if (headingMatch && headingMatch[1]) {
         return headingMatch[1].trim();
       }
 
       // Try to extract from **Problem Statement:** inline format
-      const inlineMatch = content.match(
-        /\*\*Problem Statement:\*\*\s*\n([^\n]+(?:\n(?!\*\*)[^\n]+)*)/
+      const inlineMatch = /\*\*Problem Statement:\*\*\s*\n([^\n]+(?:\n(?!\*\*)[^\n]+)*)/.exec(
+        content
       );
       if (inlineMatch && inlineMatch[1]) {
         return inlineMatch[1].trim();

@@ -1,0 +1,40 @@
+{
+  "feature": "HODGE-357.6",
+  "type": "single",
+  "title": "File Splitting - Module Reorganization",
+  "description": "Split 8 oversized files (>400 lines) into focused modules while maintaining existing patterns and adding ESLint exemptions for templates",
+  "scope": {
+    "oversizedFiles": [
+      "init.ts (983 lines)",
+      "plan.ts (604 lines)",
+      "harden.ts (570 lines)",
+      "hodge-md-generator.ts (458 lines)",
+      "pattern-learner.ts (427 lines)",
+      "sub-feature-context-service.ts (421 lines)",
+      "explore-service.ts (409 lines)",
+      "status.ts (401 lines)"
+    ],
+    "target": "Split into modules <400 lines each"
+  },
+  "implementation": [
+    "Identify logical boundaries in each oversized file",
+    "Extract cohesive modules (e.g., init.ts → init-detector.ts, init-generator.ts, init-validator.ts)",
+    "Maintain existing imports and exports",
+    "Add ESLint exemptions for template files (if needed)",
+    "Run tests after each file split",
+    "Update import paths in dependent files"
+  ],
+  "acceptanceCriteria": [
+    "All 8 file length violations resolved",
+    "Each new module is cohesive and focused",
+    "All existing tests pass (1325+ tests)",
+    "No new ESLint errors introduced",
+    "Import paths updated correctly",
+    "Template files have appropriate ESLint exemptions",
+    "Progress from ~37 → ~29 errors"
+  ],
+  "estimatedDays": 1.5,
+  "dependencies": ["HODGE-357.5"],
+  "parent": "HODGE-357",
+  "createdAt": "2025-10-26T23:24:00Z"
+}

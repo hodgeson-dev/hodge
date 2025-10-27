@@ -57,7 +57,7 @@ export function findTodos(baseDir = 'src'): TodoItem[] {
       const lines = content.split('\n');
 
       lines.forEach((line, index) => {
-        const todoMatch = line.match(/\/\/\s*TODO:?\s*(.*)/);
+        const todoMatch = /\/\/\s*TODO:?\s*(.*)/.exec(line);
         if (todoMatch) {
           const text = todoMatch[1].trim();
           const priority = determinePriority(text);
