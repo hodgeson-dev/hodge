@@ -243,7 +243,14 @@ export class InteractionStateManager<T = unknown> {
 export function formatFileChanges(files: ShipInteractionData['analysis']['files']): string {
   return files
     .map((f) => {
-      const statusCode = f.status === 'added' ? 'A' : f.status === 'modified' ? 'M' : 'D';
+      let statusCode: string;
+      if (f.status === 'added') {
+        statusCode = 'A';
+      } else if (f.status === 'modified') {
+        statusCode = 'M';
+      } else {
+        statusCode = 'D';
+      }
       return `${statusCode} ${f.path} (+${f.insertions}, -${f.deletions})`;
     })
     .join('\n');

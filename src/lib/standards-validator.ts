@@ -38,8 +38,14 @@ export function validateStandards(mode: Mode, _code?: string): ValidationResult 
   const essentialEnforced = true;
 
   // Recommended standards enforcement varies by mode
-  const recommendedLevel: EnforcementLevel =
-    mode === 'harden' ? 'enforce' : mode === 'build' ? 'recommend' : 'suggest';
+  let recommendedLevel: EnforcementLevel;
+  if (mode === 'harden') {
+    recommendedLevel = 'enforce';
+  } else if (mode === 'build') {
+    recommendedLevel = 'recommend';
+  } else {
+    recommendedLevel = 'suggest';
+  }
 
   return {
     essentialEnforced,

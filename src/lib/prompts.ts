@@ -20,7 +20,14 @@ export class InteractivePrompts {
     if (data.analysis.files.length > 0) {
       this.logger.info(chalk.gray('Changed files:'));
       data.analysis.files.forEach((f) => {
-        const statusIcon = f.status === 'added' ? '✚' : f.status === 'deleted' ? '✖' : '✎';
+        let statusIcon: string;
+        if (f.status === 'added') {
+          statusIcon = '✚';
+        } else if (f.status === 'deleted') {
+          statusIcon = '✖';
+        } else {
+          statusIcon = '✎';
+        }
         this.logger.info(
           chalk.gray(`  ${statusIcon} ${f.path} (+${f.insertions}, -${f.deletions})`)
         );

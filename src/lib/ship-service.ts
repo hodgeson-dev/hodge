@@ -112,26 +112,32 @@ export class ShipService {
     const typeCheckResults = qualityResults.filter((r) => r.type === 'type_checking');
 
     // Determine status for each category
-    const testsStatus =
-      testResults.length > 0
-        ? testResults.every((r) => r.skipped || r.success)
-          ? '✅ Passing'
-          : '❌ Failed'
-        : '⚠️ Not Configured';
+    let testsStatus: string;
+    if (testResults.length === 0) {
+      testsStatus = '⚠️ Not Configured';
+    } else if (testResults.every((r) => r.skipped || r.success)) {
+      testsStatus = '✅ Passing';
+    } else {
+      testsStatus = '❌ Failed';
+    }
 
-    const lintStatus =
-      lintResults.length > 0
-        ? lintResults.every((r) => r.skipped || r.success)
-          ? '✅ Passing'
-          : '❌ Failed'
-        : '⚠️ Not Configured';
+    let lintStatus: string;
+    if (lintResults.length === 0) {
+      lintStatus = '⚠️ Not Configured';
+    } else if (lintResults.every((r) => r.skipped || r.success)) {
+      lintStatus = '✅ Passing';
+    } else {
+      lintStatus = '❌ Failed';
+    }
 
-    const typeCheckStatus =
-      typeCheckResults.length > 0
-        ? typeCheckResults.every((r) => r.skipped || r.success)
-          ? '✅ Passing'
-          : '❌ Failed'
-        : '⚠️ Not Configured';
+    let typeCheckStatus: string;
+    if (typeCheckResults.length === 0) {
+      typeCheckStatus = '⚠️ Not Configured';
+    } else if (typeCheckResults.every((r) => r.skipped || r.success)) {
+      typeCheckStatus = '✅ Passing';
+    } else {
+      typeCheckStatus = '❌ Failed';
+    }
 
     return `## ${feature}
 

@@ -91,7 +91,7 @@ export class ExploreCommand {
     }
 
     let featureID = await this.idManager.resolveID(feature);
-    let featureName = feature;
+    let featureName: string;
 
     if (!featureID && !/^(HODGE-|[A-Z]+-|#|!)\d+/.test(feature)) {
       // New feature name
@@ -190,7 +190,7 @@ export class ExploreCommand {
     }
 
     // Gather context in parallel
-    const [_projectContext, featureIntent, similarFeatures, pmIssue, existingPatterns] = await Promise.all([
+    const [, featureIntent, similarFeatures, pmIssue, existingPatterns] = await Promise.all([
       this.loadProjectContext(),
       this.exploreService.analyzeFeatureIntent(featureName),
       this.exploreService.findSimilarFeatures(featureName),
@@ -309,10 +309,10 @@ export class ExploreCommand {
   /**
    * Resolve PM issue from feature ID or feature name
    */
-  private async resolvePMIssue(
+  private resolvePMIssue(
     featureID: FeatureID | null,
     featureName: string
-  ): Promise<{ id: string; title: string; url: string } | null> {
+  ): { id: string; title: string; url: string } | null {
     if (featureID?.externalID) {
       return {
         id: featureID.externalID,
