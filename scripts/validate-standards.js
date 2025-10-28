@@ -55,22 +55,17 @@ function checkCommitMessage() {
   try {
     // Get the most recent commit message
     const message = execSync('git log -1 --pretty=%B', { encoding: 'utf8' }).trim();
-    const validPrefixes = [
-      'feat:',
-      'fix:',
-      'docs:',
-      'refactor:',
-      'test:',
-      'chore:',
-      'style:',
-      'perf:',
-    ];
 
-    const hasValidPrefix = validPrefixes.some((prefix) => message.startsWith(prefix));
+    // Conventional Commits format: type(scope): description
+    // Scope is optional, so we support both feat: and feat(scope):
+    const conventionalCommitPattern = /^(feat|fix|docs|refactor|test|chore|style|perf)(\(.+?\))?:/;
 
-    if (!hasValidPrefix && !message.startsWith('Merge')) {
+    const isValid = conventionalCommitPattern.test(message) || message.startsWith('Merge');
+
+    if (!isValid) {
       log(`Commit message doesn't follow semantic format: "${message}"`, 'warning');
-      log(`Should start with: ${validPrefixes.join(', ')}`, 'info');
+      log('Should start with: feat:, fix:, docs:, refactor:, test:, chore:, style:, perf:', 'info');
+      log('Optionally with scope: feat(api):, fix(test):, etc.', 'info');
       return false;
     }
 
@@ -181,6 +176,10 @@ function checkNoConsoleLog() {
       /src\/lib\/pm-scripts-templates\.ts$/, // PM script templates (template content)
       /src\/lib\/todo-checker\.ts$/, // User-facing TODO display functions
       /src\/commands\/init-claude-commands\.ts$/, // Function-based command (user-facing output)
+      /src\/lib\/claude-commands\.ts$/, // Claude commands template (user-facing output)
+      /src\/commands\/lessons\.ts$/, // Lessons command (user-facing JSON output)
+      /src\/commands\/review\.ts$/, // Review command (user-facing output)
+      /src\/commands\/logs\.ts$/, // Logs command (user-facing output)
     ];
 
     const filesWithConsoleLog = [];
