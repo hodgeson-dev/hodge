@@ -39,7 +39,7 @@ export class ContextCommand {
   private logger = createCommandLogger('context', { enableConsole: true });
 
   constructor(basePath?: string) {
-    this.basePath = basePath || process.cwd();
+    this.basePath = basePath ?? process.cwd();
     this.hodgeMDGenerator = new HodgeMDGenerator(this.basePath);
   }
 
@@ -74,7 +74,7 @@ export class ContextCommand {
 
     // Load session first to get actual feature for accurate mode detection (HODGE-313)
     const session = await sessionManager.load();
-    const featureToCheck = session?.feature || 'general';
+    const featureToCheck = session?.feature ?? 'general';
 
     // Generate fresh HODGE.md with actual feature for accurate mode detection
     await this.hodgeMDGenerator.saveToFile(featureToCheck);
@@ -97,7 +97,7 @@ export class ContextCommand {
         );
         if (save.feature) {
           this.logger.info(
-            chalk.gray(`   Feature: ${save.feature}, Mode: ${save.mode || 'unknown'}`)
+            chalk.gray(`   Feature: ${save.feature}, Mode: ${save.mode ?? 'unknown'}`)
           );
         }
         if (save.summary) {
@@ -189,13 +189,14 @@ export class ContextCommand {
     if (mostRecent.feature) {
       this.logger.info(
         chalk.gray(`Continue with: `) +
-          chalk.cyan(`/${mostRecent.mode || 'explore'} ${mostRecent.feature}`)
+          chalk.cyan(`/${mostRecent.mode ?? 'explore'} ${mostRecent.feature}`)
       );
     }
   }
 
   /**
    * Load context for a specific feature
+   * HODGE-358: Includes checkpoint file discovery and precedence hints
    */
   private async loadFeatureContext(feature: string): Promise<void> {
     this.logger.info(chalk.cyan(`📂 Loading Context for: ${feature}`));
@@ -228,6 +229,23 @@ export class ContextCommand {
       }
       if (await this.fileExists(decisionsFile)) {
         this.logger.info(chalk.gray('• ') + 'linked-decisions.md');
+      }
+
+      // HODGE-358: Discover checkpoint files
+      const checkpoints = await this.discoverCheckpoints(featureDir);
+      if (checkpoints.length > 0) {
+        this.logger.info('');
+        this.logger.info(chalk.bold('Checkpoints:'));
+
+        checkpoints.forEach((checkpoint, index) => {
+          const precedence = index === 0 ? chalk.yellow('(most recent)') : chalk.gray('(older)');
+          this.logger.info(chalk.gray('• ') + checkpoint.name + ' ' + precedence);
+        });
+
+        this.logger.info('');
+        this.logger.info(
+          chalk.gray('💡 Tip: Most recent checkpoint has high precedence for context restoration')
+        );
       }
     } else {
       this.logger.info(chalk.yellow(`Feature directory not found: ${feature}`));
@@ -311,10 +329,10 @@ export class ContextCommand {
           saves.push({
             name: dir,
             path: path.join(savesDir, dir),
-            feature: context.feature || 'unknown',
-            mode: context.mode || 'unknown',
-            timestamp: context.timestamp || 'unknown',
-            summary: context.session?.keyAchievements?.[0] || context.nextPhase || '',
+            feature: context.feature ?? 'unknown',
+            mode: context.mode ?? 'unknown',
+            timestamp: context.timestamp ?? 'unknown',
+            summary: context.session?.keyAchievements?.[0] ?? context.nextPhase ?? '',
           });
         } catch {
           // Skip invalid saves
@@ -329,6 +347,43 @@ export class ContextCommand {
       });
 
       return saves;
+    } catch {
+      return [];
+    }
+  }
+
+  /**
+   * HODGE-358: Discover checkpoint files in feature directory
+   * Returns checkpoints sorted by timestamp (newest first) with precedence hints
+   */
+  private async discoverCheckpoints(
+    featureDir: string
+  ): Promise<Array<{ name: string; timestamp: string }>> {
+    try {
+      const files = await fs.readdir(featureDir);
+
+      // Filter for checkpoint files (checkpoint-*.yaml)
+      const checkpointFiles = files.filter(
+        (file) => file.startsWith('checkpoint-') && file.endsWith('.yaml')
+      );
+
+      if (checkpointFiles.length === 0) {
+        return [];
+      }
+
+      // Parse timestamps and sort (newest first)
+      const timestampRegex = /checkpoint-(\d{4}-\d{2}-\d{2}-\d{6})\.yaml/;
+      const checkpoints = checkpointFiles
+        .map((file) => {
+          // Extract timestamp from filename: checkpoint-YYYY-MM-DD-HHMMSS.yaml
+          const timestampMatch = timestampRegex.exec(file);
+          const timestamp = timestampMatch ? timestampMatch[1] : file;
+
+          return { name: file, timestamp };
+        })
+        .sort((a, b) => b.timestamp.localeCompare(a.timestamp)); // Newest first
+
+      return checkpoints;
     } catch {
       return [];
     }

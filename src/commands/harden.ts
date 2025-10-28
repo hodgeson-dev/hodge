@@ -20,7 +20,7 @@ import { ReviewEngineService } from '../lib/review-engine-service.js';
 import { ToolchainService } from '../lib/toolchain-service.js';
 import { ToolRegistryLoader } from '../lib/tool-registry-loader.js';
 import { HardenValidator, getAllPassed } from './harden/harden-validator.js';
-import { HardenReportGenerator } from './harden/harden-report-generator.js';
+import { QualityReportGenerator } from '../lib/quality-report-generator.js';
 import { HardenReview } from './harden/harden-review.js';
 import { HardenAutoFix } from './harden/harden-auto-fix.js';
 import type { RawToolResult } from '../types/toolchain.js';
@@ -42,7 +42,7 @@ export class HardenCommand {
   private shipService = new ShipService();
   private reviewEngineService: ReviewEngineService;
   private validator: HardenValidator;
-  private reportGenerator: HardenReportGenerator;
+  private reportGenerator: QualityReportGenerator;
   private reviewHandler: HardenReview;
   private autoFixHandler: HardenAutoFix;
 
@@ -64,7 +64,7 @@ export class HardenCommand {
 
     // Initialize modules
     this.validator = new HardenValidator();
-    this.reportGenerator = new HardenReportGenerator();
+    this.reportGenerator = new QualityReportGenerator();
     this.reviewHandler = new HardenReview(this.reviewEngineService);
     this.autoFixHandler = new HardenAutoFix();
   }
@@ -191,6 +191,12 @@ export class HardenCommand {
       JSON.stringify(results, null, 2)
     );
 
+    // Update ship-record with validation status and quality results
+    await this.shipService.updateShipRecord(feature, {
+      validationPassed: allPassed,
+      qualityResults: results,
+    });
+
     // Save quality check results for AI review
     const qualityChecksReport = this.reportGenerator.generateQualityChecksReport(results);
     await fs.writeFile(path.join(hardenDir, 'quality-checks.md'), qualityChecksReport);
@@ -200,7 +206,7 @@ export class HardenCommand {
     });
 
     // Generate and save report
-    const reportContent = this.reportGenerator.generateReport(feature, results, options);
+    const reportContent = this.reportGenerator.generateReport(feature, results);
     await fs.writeFile(path.join(hardenDir, 'harden-report.md'), reportContent);
 
     // HODGE-341.5: If all errors fixed, prompt AI to review warnings

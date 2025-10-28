@@ -1,0 +1,60 @@
+{
+  "timestamp": "2025-10-28T05:09:06.169Z",
+  "stagedFiles": [
+    ".claude/commands/checkpoint.md",
+    ".claude/commands/ship.md",
+    ".hodge/.session",
+    ".hodge/HODGE.md",
+    ".hodge/context.json",
+    ".hodge/features/HODGE-358/build/build-plan.md",
+    ".hodge/features/HODGE-358/decisions.md",
+    ".hodge/features/HODGE-358/explore/exploration.md",
+    ".hodge/features/HODGE-358/explore/test-intentions.md",
+    ".hodge/features/HODGE-358/harden/auto-fix-report.json",
+    ".hodge/features/HODGE-358/harden/critical-files.md",
+    ".hodge/features/HODGE-358/harden/harden-report.md",
+    ".hodge/features/HODGE-358/harden/quality-checks.md",
+    ".hodge/features/HODGE-358/harden/review-manifest.yaml",
+    ".hodge/features/HODGE-358/harden/validation-results.json",
+    ".hodge/features/HODGE-358/ship-record.json",
+    ".hodge/id-counter.json",
+    ".hodge/id-mappings.json",
+    ".hodge/project_management.md",
+    ".hodge/reviews/review-file-.claude-commands-checkpoint.md-2025-10-27-202759/quality-checks.md",
+    ".hodge/reviews/review-file-.claude-commands-checkpoint.md-2025-10-27-202759/review-manifest.yaml",
+    ".hodge/standards.md",
+    ".hodge/toolchain.yaml",
+    "report/jscpd-report.json",
+    "src/commands/checkpoint.smoke.test.ts",
+    "src/commands/context.ts",
+    "src/commands/harden.ts",
+    "src/commands/harden/harden-review.ts",
+    "src/commands/ship.ts",
+    "src/lib/claude-commands.ts",
+    "src/lib/quality-report-generator.ts",
+    "src/lib/ship-service.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 31,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": ".hodge/features/HODGE-358/harden/review-manifest.yaml 21ms (unchanged)\n.hodge/reviews/review-file-.claude-commands-checkpoint.md-2025-10-27-202759/review-manifest.yaml 4ms (unchanged)\n.hodge/toolchain.yaml 5ms (unchanged)\nsrc/commands/checkpoint.smoke.test.ts 53ms (unchanged)\nsrc/commands/context.ts 57ms (unchanged)\nsrc/commands/harden.ts 20ms (unchanged)\nsrc/commands/harden/harden-review.ts 14ms (unchanged)\nsrc/commands/ship.ts 18ms (unchanged)\nsrc/lib/claude-commands.ts 8ms (unchanged)\nsrc/lib/quality-report-generator.ts 8ms (unchanged)\nsrc/lib/ship-service.ts 19ms (unchanged)\n",
+      "stderr": "",
+      "duration": 836
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 8,
+      "issuesFixed": 12,
+      "success": true,
+      "stdout": "\n/Users/michaelkelly/Projects/hodge/src/commands/checkpoint.smoke.test.ts\n  0:0  warning  File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override\n\n/Users/michaelkelly/Projects/hodge/src/commands/context.ts\n  201:3   warning  Async method 'loadFeatureContext' has too many lines (56). Maximum allowed is 50  max-lines-per-function\n  544:12  warning  Complete the task associated to this \"TODO\" comment                               sonarjs/todo-tag\n  575:33  warning  Complete the task associated to this \"TODO\" comment                               sonarjs/todo-tag\n  576:23  warning  Complete the task associated to this \"TODO\" comment                               sonarjs/todo-tag\n  577:34  warning  Complete the task associated to this \"TODO\" comment                               sonarjs/todo-tag\n  578:40  warning  Complete the task associated to this \"TODO\" comment                               sonarjs/todo-tag\n  579:1   warning  File has too many lines (426). Maximum allowed is 400                             max-lines\n\n/Users/michaelkelly/Projects/hodge/src/commands/ship.ts\n   27:3   warning  Async method 'execute' has too many lines (129). Maximum allowed is 50  max-lines-per-function\n  168:10  warning  Complete the task associated to this \"TODO\" comment                     sonarjs/todo-tag\n\n/Users/michaelkelly/Projects/hodge/src/lib/ship-service.ts\n  399:32  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  538:44  warning  Unnecessary conditional, value is always truthy                                                            @typescript-eslint/no-unnecessary-condition\n\n✖ 12 problems (0 errors, 12 warnings)\n\n",
+      "stderr": "",
+      "duration": 3854
+    }
+  ],
+  "totalIssuesFixed": 12,
+  "totalFilesModified": 39,
+  "failures": []
+}

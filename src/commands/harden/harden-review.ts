@@ -19,14 +19,14 @@ import type {
   QualityChecksMapping,
   ToolchainConfig,
 } from '../../types/toolchain.js';
-import { HardenReportGenerator } from './harden-report-generator.js';
+import { QualityReportGenerator } from '../../lib/quality-report-generator.js';
 
 /**
  * Handles review mode workflow
  */
 export class HardenReview {
   private logger = createCommandLogger('harden-review', { enableConsole: true });
-  private reportGenerator = new HardenReportGenerator();
+  private reportGenerator = new QualityReportGenerator();
 
   constructor(private reviewEngineService: ReviewEngineService) {}
 

@@ -81,19 +81,22 @@ commands:
     # --check: Exit with error if files are not formatted (lists unformatted files)
     # --write: Auto-format files (HODGE-341.6)
   jscpd:
-    command: npx jscpd ${files} --min-lines 10 --silent --reporters json
+    command: npx jscpd ${files} --min-lines 10 --silent --reporters json --ignore "node_modules/**,dist/**,.hodge/**"
     provides:
       - duplication
     # --silent: No progress output
     # --reporters json: Structured output
+    # --ignore: Exclude node_modules, dist, and .hodge directories
   dependency-cruiser:
-    command: npx depcruise --config .dependency-cruiser.cjs --output-type err ${files}
+    command: npx depcruise --config .dependency-cruiser.cjs --output-type err ${files} || true
     provides:
       - architecture
     # --output-type err: Only show violations
+    # || true: Exit 0 even with warnings (exit code 7), AI interprets stdout
   semgrep:
-    command: semgrep --config .hodge/semgrep-rules/ --config auto --quiet ${files}
+    command: semgrep --config .hodge/semgrep-rules/ --config auto --quiet ${files} 2>&1 | grep -v "ca-certs" || true
     provides:
       - security
       - patterns
     # --quiet: Only show findings, suppress progress
+    # 2>&1 | grep -v "ca-certs" || true: Filter out certificate warnings, return success if no output

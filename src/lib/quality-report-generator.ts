@@ -1,25 +1,23 @@
 /**
- * Harden Report Generation
- * Handles generating harden reports and quality checks reports
+ * Quality Report Generation
+ * Handles generating quality check reports for harden and ship phases
  */
 
-import type { RawToolResult } from '../../types/toolchain.js';
-import type { HardenOptions } from '../harden.js';
-import { getAllPassed, getResultsByType } from './harden-validator.js';
+import type { RawToolResult } from '../types/toolchain.js';
 
 /**
- * Generates harden reports and quality checks reports
+ * Generates quality check reports for harden and ship phases
  */
-export class HardenReportGenerator {
+export class QualityReportGenerator {
   /**
-   * Generate harden report
+   * Generate validation report (used by harden command)
    */
-  generateReport(feature: string, results: RawToolResult[], _options: HardenOptions): string {
-    const allPassed = getAllPassed(results);
+  generateReport(feature: string, results: RawToolResult[]): string {
+    const allPassed = this.getAllPassed(results);
 
-    const testResults = getResultsByType(results, 'testing');
-    const lintResults = getResultsByType(results, 'linting');
-    const typeCheckResults = getResultsByType(results, 'type_checking');
+    const testResults = this.getResultsByType(results, 'testing');
+    const lintResults = this.getResultsByType(results, 'linting');
+    const typeCheckResults = this.getResultsByType(results, 'type_checking');
 
     const testsPassed = testResults.every((r) => r.skipped ?? r.success);
     const testsSkipped = testResults.some((r) => r.skipped);
@@ -233,5 +231,19 @@ The AI will interpret these results to identify issues that need to be fixed bef
    */
   private generateReportFooter(): string {
     return `\n---\n\n**Note**: This is a machine-readable report for AI interpretation. The AI will analyze these results and provide actionable feedback in the harden workflow.\n`;
+  }
+
+  /**
+   * Check if all quality checks passed
+   */
+  private getAllPassed(results: RawToolResult[]): boolean {
+    return results.every((r) => r.skipped ?? r.success);
+  }
+
+  /**
+   * Filter results by check type
+   */
+  private getResultsByType(results: RawToolResult[], type: string): RawToolResult[] {
+    return results.filter((r) => r.type === type);
   }
 }

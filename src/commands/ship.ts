@@ -6,6 +6,7 @@ import { PMHooks } from '../lib/pm/pm-hooks.js';
 import { ShipService } from '../lib/ship-service.js';
 import type { LearningResult } from '../lib/pattern-learner.js';
 import { createCommandLogger } from '../lib/logger.js';
+import { QualityReportGenerator } from '../lib/quality-report-generator.js';
 
 export interface ShipOptions {
   skipTests?: boolean;
@@ -21,6 +22,7 @@ export class ShipCommand {
   private logger = createCommandLogger('ship', { enableConsole: true });
   private pmHooks = new PMHooks();
   private shipService = new ShipService();
+  private reportGenerator = new QualityReportGenerator();
 
   async execute(feature?: string, options: ShipOptions = {}): Promise<void> {
     // Get feature from argument or context
@@ -122,6 +124,10 @@ export class ShipCommand {
 
     const shipDir = path.join(featureDir, 'ship');
     await fs.mkdir(shipDir, { recursive: true });
+
+    // Save quality check results for AI review (same as harden)
+    const qualityChecksReport = this.reportGenerator.generateQualityChecksReport(qualityResults);
+    await fs.writeFile(path.join(shipDir, 'quality-checks.md'), qualityChecksReport);
 
     // Generate release notes using ShipService (HODGE-356: using qualityResults)
     const releaseNotes = this.shipService.generateReleaseNotes({

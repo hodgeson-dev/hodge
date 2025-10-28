@@ -1,29 +1,25 @@
 # Learned Patterns Summary
 
 ## Statistics
-- Total patterns detected: 3
-- High confidence patterns: 1
-- Most frequent category: security
+- Total patterns detected: 2
+- High confidence patterns: 0
+- Most frequent category: error-handling
 
 ## Patterns by Category
 
 
-### Security
-- **Input Validation** (2x, 40% confidence)
-
-
-### Architecture
-- **Factory Pattern** (1x, 20% confidence)
-
-
 ### Error-handling
-- **Error Boundary** (5x, 100% confidence)
+- **Error Boundary** (3x, 60% confidence)
+
+
+### Security
+- **Input Validation** (3x, 60% confidence)
 
 
 ## Recommendations
-- Consider using Error Boundary pattern (used 5 times)
-- Consider enabling TypeScript strict mode
+- Consider using Error Boundary pattern (used 3 times)
+- Consider using Input Validation pattern (used 3 times)
 - Use Promise.all for parallel operations when possible
 
 ---
-*Generated: 2025-10-26T19:18:43.089Z*
+*Generated: 2025-10-28T05:12:11.603Z*

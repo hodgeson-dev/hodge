@@ -1,38 +1,44 @@
 # Error Boundary
 
 **Category**: error-handling
-**Frequency**: Used 5 times
-**Confidence**: 100%
+**Frequency**: Used 3 times
+**Confidence**: 60%
 
 ## Description
 Consistent error handling with logging
 
 ## Examples
 
-### scripts/release-check.js
-```typescript
-.catch((error) => {
-  console.error
-```
-
-
-### scripts/release-prepare.js
+### scripts/validate-standards.js
 ```typescript
 try {
-      execSync(`${editor} ${changelogPath}`, { stdio: 'inherit' });
-    } catch (error) {
-      console.log('   (Editor closed)');
-    }
+    const tsconfig = JSON.parse(fs.readFileSync('tsconfig.json', 'utf8'));
 
-    console.log('\n✓ CHANGELOG.md updated');
-    console
+    if (!tsconfig.compilerOptions?.strict) {
+      log('TypeScript strict mode is not enabled', 'error');
+      return
 ```
 
 
-### scripts/release-prepare.js
+### scripts/validate-standards.js
 ```typescript
 .catch((error) => {
   console.error
+```
+
+
+### src/lib/ship-service.ts
+```typescript
+try {
+      const content = await fs.readFile(shipRecordPath, 'utf-8');
+      return JSON.parse(content) as ShipRecordData;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Write or update ship-
 ```
 
 
@@ -42,5 +48,5 @@ try {
 - 
 
 ---
-*First seen: 2025-10-26T19:18:43.086Z*
-*Last used: 2025-10-26T19:18:43.087Z*
+*First seen: 2025-10-28T05:12:11.593Z*
+*Last used: 2025-10-28T05:12:11.601Z*

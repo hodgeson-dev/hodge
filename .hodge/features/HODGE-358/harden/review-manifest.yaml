@@ -1,0 +1,162 @@
+version: '1.0'
+feature: HODGE-358
+generated_at: '2025-10-28T05:09:16.412Z'
+recommended_tier: full
+change_analysis:
+  total_files: 32
+  total_lines: 377418
+  breakdown:
+    implementation: 18
+    test: 1
+    documentation: 13
+    config: 0
+changed_files:
+  - path: .claude/commands/checkpoint.md
+    lines_changed: 422
+    change_type: documentation
+  - path: .claude/commands/ship.md
+    lines_changed: 49
+    change_type: documentation
+  - path: .hodge/.session
+    lines_changed: 10
+    change_type: implementation
+  - path: .hodge/HODGE.md
+    lines_changed: 19
+    change_type: documentation
+  - path: .hodge/context.json
+    lines_changed: 8
+    change_type: implementation
+  - path: .hodge/features/HODGE-358/build/build-plan.md
+    lines_changed: 51
+    change_type: documentation
+  - path: .hodge/features/HODGE-358/decisions.md
+    lines_changed: 84
+    change_type: documentation
+  - path: .hodge/features/HODGE-358/explore/exploration.md
+    lines_changed: 197
+    change_type: documentation
+  - path: .hodge/features/HODGE-358/explore/test-intentions.md
+    lines_changed: 27
+    change_type: documentation
+  - path: .hodge/features/HODGE-358/harden/auto-fix-report.json
+    lines_changed: 60
+    change_type: implementation
+  - path: .hodge/features/HODGE-358/harden/critical-files.md
+    lines_changed: 62
+    change_type: documentation
+  - path: .hodge/features/HODGE-358/harden/harden-report.md
+    lines_changed: 254
+    change_type: documentation
+  - path: .hodge/features/HODGE-358/harden/quality-checks.md
+    lines_changed: 235
+    change_type: documentation
+  - path: .hodge/features/HODGE-358/harden/review-manifest.yaml
+    lines_changed: 117
+    change_type: implementation
+  - path: .hodge/features/HODGE-358/harden/validation-results.json
+    lines_changed: 63
+    change_type: implementation
+  - path: .hodge/features/HODGE-358/ship-record.json
+    lines_changed: 73
+    change_type: implementation
+  - path: .hodge/id-counter.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/id-mappings.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/project_management.md
+    lines_changed: 13
+    change_type: documentation
+  - path: .hodge/reviews/review-file-.claude-commands-checkpoint.md-2025-10-27-202759/quality-checks.md
+    lines_changed: 198
+    change_type: documentation
+  - path: .hodge/reviews/review-file-.claude-commands-checkpoint.md-2025-10-27-202759/review-manifest.yaml
+    lines_changed: 62
+    change_type: implementation
+  - path: .hodge/standards.md
+    lines_changed: 30
+    change_type: documentation
+  - path: .hodge/toolchain.yaml
+    lines_changed: 9
+    change_type: implementation
+  - path: report/jscpd-report.json
+    lines_changed: 374412
+    change_type: implementation
+  - path: src/commands/checkpoint.smoke.test.ts
+    lines_changed: 157
+    change_type: test
+  - path: src/commands/context.ts
+    lines_changed: 71
+    change_type: implementation
+  - path: src/commands/harden.ts
+    lines_changed: 14
+    change_type: implementation
+  - path: src/commands/harden/harden-review.ts
+    lines_changed: 4
+    change_type: implementation
+  - path: src/commands/ship.ts
+    lines_changed: 6
+    change_type: implementation
+  - path: src/lib/claude-commands.ts
+    lines_changed: 426
+    change_type: implementation
+  - path: src/lib/quality-report-generator.ts
+    lines_changed: 249
+    change_type: implementation
+  - path: src/lib/ship-service.ts
+    lines_changed: 28
+    change_type: implementation
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - test-pattern.md
+      - error-boundary.md
+      - input-validation.md
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - ux-patterns/claude-code-slash-commands.yaml
+      - testing/vitest-3.x.yaml
+      - testing/general-test-standards.yaml
+      - languages/typescript-5.x.yaml
+      - languages/general-coding-standards.yaml
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed
+scope:
+  type: feature
+  target: HODGE-358
+  fileCount: 32

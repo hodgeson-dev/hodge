@@ -9,30 +9,26 @@ Input validation before processing
 
 ## Examples
 
-### src/lib/git-utils.ts
-```typescript
-if (!trackedFiles) {
-      throw new FileScopingError(
-        `No files to review. File not found or not git-tracked: ${filePath}`
-      );
-    }
-
-    return [filePath];
-  } catch (error) {
-    // Re
-```
-
-
-### src/lib/git-utils.ts
-```typescript
-function validateFile
-```
-
-
-### src/lib/toolchain-service.ts
+### src/commands/context.ts
 ```typescript
 if (!feature) {
-          throw new Error
+        this.logger.error(chalk.red('No feature specified and no active session found'));
+        this.logger.info('Usage: hodge context --todos [--feature HODGE-XXX]');
+        throw 
+```
+
+
+### src/commands/harden.ts
+```typescript
+if (!resolvedFeature) {
+      throw new Error
+```
+
+
+### src/commands/ship.ts
+```typescript
+if (!resolvedFeature) {
+      throw new Error
 ```
 
 
@@ -42,5 +38,5 @@ if (!feature) {
 - 
 
 ---
-*First seen: 2025-10-16T21:24:11.943Z*
-*Last used: 2025-10-16T21:24:11.968Z*
+*First seen: 2025-10-28T05:12:11.594Z*
+*Last used: 2025-10-28T05:12:11.596Z*

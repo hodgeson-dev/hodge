@@ -115,6 +115,7 @@ export class ShipService {
     let testsStatus: string;
     if (testResults.length === 0) {
       testsStatus = '⚠️ Not Configured';
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- Boolean OR for .every() logic
     } else if (testResults.every((r) => r.skipped || r.success)) {
       testsStatus = '✅ Passing';
     } else {
@@ -124,6 +125,7 @@ export class ShipService {
     let lintStatus: string;
     if (lintResults.length === 0) {
       lintStatus = '⚠️ Not Configured';
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- Boolean OR for .every() logic
     } else if (lintResults.every((r) => r.skipped || r.success)) {
       lintStatus = '✅ Passing';
     } else {
@@ -133,6 +135,7 @@ export class ShipService {
     let typeCheckStatus: string;
     if (typeCheckResults.length === 0) {
       typeCheckStatus = '⚠️ Not Configured';
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- Boolean OR for .every() logic
     } else if (typeCheckResults.every((r) => r.skipped || r.success)) {
       typeCheckStatus = '✅ Passing';
     } else {
@@ -297,11 +300,13 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}**Shipped**: ${date}
 
     if (existsSync(validationFile)) {
       try {
-        const results = JSON.parse(await fs.readFile(validationFile, 'utf-8')) as Record<
-          string,
-          { passed: boolean }
-        >;
-        validationPassed = Object.values(results).every((r) => r.passed);
+        const results = JSON.parse(await fs.readFile(validationFile, 'utf-8')) as Array<{
+          success?: boolean;
+          skipped?: boolean;
+        }>;
+        // All non-skipped checks must have success: true
+        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- Boolean OR for .every() logic
+        validationPassed = results.every((r) => r.skipped || r.success === true);
 
         if (!validationPassed && !skipTests) {
           return {
@@ -389,6 +394,16 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}**Shipped**: ${date}
    * @returns Whether ready to ship
    */
   checkQualityGatesPassed(qualityResults: RawToolResult[], skipTests: boolean): boolean {
+    // Debug: Log each result to understand failures
+    qualityResults.forEach((r) => {
+      const passed = r.skipped || r.success;
+      if (!passed) {
+        console.error(
+          `❌ Quality gate failed: ${r.type}:${r.tool} - skipped=${r.skipped} success=${r.success}`
+        );
+      }
+    });
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- Boolean OR for .every() logic
     const allPassed = qualityResults.every((r) => r.skipped || r.success);
     return allPassed || skipTests;
   }
@@ -414,8 +429,11 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}**Shipped**: ${date}
       testResults,
       lintResults,
       typeCheckResults,
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- Boolean OR for .every() logic
       testsPassed: testResults.every((r) => r.skipped || r.success),
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- Boolean OR for .every() logic
       lintPassed: lintResults.every((r) => r.skipped || r.success),
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- Boolean OR for .every() logic
       typeCheckPassed: typeCheckResults.every((r) => r.skipped || r.success),
     };
   }

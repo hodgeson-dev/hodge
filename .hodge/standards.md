@@ -47,6 +47,36 @@ This project follows the Hodge development philosophy:
 - ESLint rules enforced
 - Prettier formatting
 
+### Nullish Coalescing Operator Requirement
+**Tool-Enforced**: ESLint (`@typescript-eslint/prefer-nullish-coalescing`)
+
+**ALWAYS use nullish coalescing (`??`) instead of logical OR (`||`) for default values.**
+
+**Correct Pattern**:
+```typescript
+// ✅ GOOD: Use ?? for default values
+const value = userInput ?? 'default';
+const config = options?.timeout ?? 5000;
+const feature = session?.feature ?? 'general';
+```
+
+**Incorrect Pattern**:
+```typescript
+// ❌ BAD: || coalesces all falsy values (0, '', false, null, undefined)
+const value = userInput || 'default';        // Wrong if userInput is ''
+const config = options?.timeout || 5000;     // Wrong if timeout is 0
+const feature = session?.feature || 'general'; // Wrong if feature is ''
+```
+
+**Why This Matters**:
+- `||` treats ALL falsy values as "missing" (0, '', false, null, undefined)
+- `??` only treats null/undefined as "missing", preserving valid falsy values
+- Common bug source: `count || 0` evaluates to 0 when count is 0
+- Explicit about intent: "use default only if null/undefined"
+
+**Token Efficiency**:
+Following this rule from the start avoids ESLint warnings and fix cycles, saving tokens and time.
+
 ## Logging Standards (HODGE-330)
 **Enforcement: ALL PHASES (mandatory)**
 **⚠️ CRITICAL**: Hodge uses dual logging (console + pino) for commands and pino-only for libraries.

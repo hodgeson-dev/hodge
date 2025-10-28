@@ -496,14 +496,57 @@ Previously completed:
 
 ## Step 4: Ship Quality Checks & Commit
 
-The ship command will:
+The ship command will run all quality checks and generate a detailed report. **You must review this report before the feature is committed.**
+
+After running `hodge ship "{{feature}}"`, the CLI will:
 - ✅ Run all tests
-- ✅ Check code coverage
-- ✅ Verify documentation
+- ✅ Run linting checks
+- ✅ Run type checking
+- ✅ Generate quality-checks.md with full tool output
+- ✅ Verify all quality gates pass
 - ✅ Stage all files (including lessons if created) with `git add -A`
 - ✅ Create git commit with approved message
 - ✅ Update PM tracking
 - ✅ Learn patterns from shipped code
+
+### Review Quality Check Results
+
+**After the ship command completes**, read the quality check results to verify all issues are resolved:
+
+```bash
+# Read ship quality check results
+cat .hodge/features/{{feature}}/ship/quality-checks.md
+```
+
+This contains the raw output from all quality checks run during ship. Review it to ensure:
+- **No test failures** - All tests must pass
+- **No TypeScript errors** - Type checking must be clean
+- **No ESLint errors** - Errors must be fixed (warnings are acceptable)
+- **No security issues** - Security scanner must pass
+- **No critical architecture violations** - Circular dependencies and major issues resolved
+
+**Question**: Did you find any ERRORS (not warnings) in the quality-checks.md?
+
+#### If YES (Errors Found) → ABORT SHIP 🚫
+
+The ship command should have prevented commit if there were errors, but if you see any:
+
+```
+🚫 SHIP ABORTED - Blocking Issues Found
+
+There are errors that must be fixed before shipping:
+
+[List the specific errors from quality-checks.md]
+
+### Next Steps:
+• Fix the errors listed above
+• Re-run `/harden {{feature}}` to verify fixes
+• Re-run `/ship {{feature}}` when ready
+```
+
+#### If NO (No Errors) → CONTINUE ✅
+
+Great! All quality gates passed. The feature has been shipped successfully
 
 ## What's Next?
 

@@ -1,0 +1,62 @@
+version: '1.0'
+feature: .claude/commands/checkpoint.md
+generated_at: '2025-10-28T03:27:59.897Z'
+recommended_tier: full
+change_analysis:
+  total_files: 1
+  total_lines: 422
+  breakdown:
+    implementation: 0
+    test: 0
+    documentation: 1
+    config: 0
+changed_files:
+  - path: .claude/commands/checkpoint.md
+    lines_changed: 422
+    change_type: documentation
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - ux-patterns/claude-code-slash-commands.yaml
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed
+scope:
+  type: file
+  target: .claude/commands/checkpoint.md
+  fileCount: 1
