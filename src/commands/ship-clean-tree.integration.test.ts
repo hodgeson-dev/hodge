@@ -64,15 +64,15 @@ describe('ship command integration - HODGE-220', () => {
   );
 
   integrationTest('should use git add -A for staging all changes', async () => {
-    // Read the compiled ship.js file to verify runtime behavior
-    const shipJsPath = path.join(process.cwd(), 'dist', 'src', 'commands', 'ship.js');
+    // HODGE-357.1: git add -A is now in ShipService.createShipCommit()
+    const shipServiceJsPath = path.join(process.cwd(), 'dist', 'src', 'lib', 'ship-service.js');
 
     // Only run this test if the built file exists
-    if (existsSync(shipJsPath)) {
-      const content = await fs.readFile(shipJsPath, 'utf-8');
+    if (existsSync(shipServiceJsPath)) {
+      const content = await fs.readFile(shipServiceJsPath, 'utf-8');
 
-      // Verify we're using git add -A
-      expect(content).toContain("'git add -A'");
+      // Verify we're using git add -A in ShipService
+      expect(content).toContain('git add -A');
 
       // Verify rollback mechanism is present
       expect(content).toContain('backupMetadata');
