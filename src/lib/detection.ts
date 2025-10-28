@@ -186,7 +186,6 @@ export class ProjectDetector {
     return this.projectNameDetector.detect();
   }
 
-
   /**
    * Detects the project type by analyzing project files
    * @returns The detected project type

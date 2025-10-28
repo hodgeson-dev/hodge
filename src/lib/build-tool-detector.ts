@@ -58,7 +58,12 @@ export class BuildToolDetector {
    * Detect build tools from config files
    */
   private async detectFromConfigFiles(buildTools: string[]): Promise<void> {
-    const configFiles = ['tsconfig.json', 'webpack.config.js', 'vite.config.js', 'rollup.config.js'];
+    const configFiles = [
+      'tsconfig.json',
+      'webpack.config.js',
+      'vite.config.js',
+      'rollup.config.js',
+    ];
 
     for (const file of configFiles) {
       if (await fs.pathExists(path.join(this.rootPath, file))) {

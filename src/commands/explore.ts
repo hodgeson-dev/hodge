@@ -58,7 +58,9 @@ export class ExploreCommand {
 
     if (inputType === 'topic') {
       this.logger.info(chalk.cyan('🔍 Exploring Topic: ' + feature));
-      this.logger.info(chalk.yellow('Topic exploration not yet implemented. Treating as feature for now.\n'));
+      this.logger.info(
+        chalk.yellow('Topic exploration not yet implemented. Treating as feature for now.\n')
+      );
     }
 
     // Handle ID management and get resolved feature name
@@ -125,7 +127,9 @@ export class ExploreCommand {
     } else {
       const newFeature = await this.idManager.createFeature(feature);
       const featureID = await this.idManager.linkExternalID(newFeature.localID, feature);
-      this.logger.info(chalk.green(`✓ Created new feature ${featureID.localID} linked to ${feature}`));
+      this.logger.info(
+        chalk.green(`✓ Created new feature ${featureID.localID} linked to ${feature}`)
+      );
       this.pmHooks.onExplore(featureID.localID, feature).catch(() => {});
       return featureID;
     }
@@ -136,7 +140,9 @@ export class ExploreCommand {
    */
   private logExistingFeature(featureID: FeatureID): void {
     if (featureID.externalID) {
-      this.logger.info(chalk.blue(`ℹ️  Using existing feature ${featureID.localID} (${featureID.externalID})`));
+      this.logger.info(
+        chalk.blue(`ℹ️  Using existing feature ${featureID.localID} (${featureID.externalID})`)
+      );
     } else {
       this.logger.info(chalk.blue(`ℹ️  Using existing feature ${featureID.localID}`));
     }
@@ -182,7 +188,10 @@ export class ExploreCommand {
     const exploreDir = path.join('.hodge', 'features', featureName, 'explore');
 
     // Check existing exploration
-    const existingCheck = await this.exploreService.checkExistingExploration(exploreDir, options.force);
+    const existingCheck = await this.exploreService.checkExistingExploration(
+      exploreDir,
+      options.force
+    );
 
     if (existingCheck.exists && !existingCheck.shouldContinue) {
       this.displayExistingExploration(exploreDir, existingCheck.content);
@@ -203,7 +212,11 @@ export class ExploreCommand {
       featureName,
       featureIntent,
       similarFeatures,
-      existingPatterns.map((p) => ({ name: p.name, description: p.description, confidence: p.frequency / 100 })),
+      existingPatterns.map((p) => ({
+        name: p.name,
+        description: p.description,
+        confidence: p.frequency / 100,
+      })),
       { projectType: 'unknown', technologies: [], patterns: [] }, // Simplified for now
       pmIssue,
       userDescription
@@ -235,7 +248,10 @@ export class ExploreCommand {
   private detectInputType(input: string): 'feature' | 'topic' {
     const trimmed = input.trim();
 
-    if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+    if (
+      (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+      (trimmed.startsWith("'") && trimmed.endsWith("'"))
+    ) {
       return 'topic';
     }
 
@@ -324,7 +340,6 @@ export class ExploreCommand {
     return null;
   }
 
-
   /**
    * Display exploration guidance
    *
@@ -350,7 +365,9 @@ export class ExploreCommand {
 
     if (template.suggestedPatterns.length > 0) {
       this.logger.info(`  • Suggested patterns: ${chalk.green(template.suggestedPatterns.length)}`);
-      template.suggestedPatterns.slice(0, 3).forEach((p) => this.logger.info(chalk.gray(`    - ${p}`)));
+      template.suggestedPatterns
+        .slice(0, 3)
+        .forEach((p) => this.logger.info(chalk.gray(`    - ${p}`)));
     }
 
     this.logger.info('\n' + chalk.bold('Next steps:'));
@@ -368,7 +385,9 @@ export class ExploreCommand {
     this.logger.info(chalk.gray(`\n⚡ Execution time: ${executionTime}ms`));
     const stats = this.cache.getStats();
     this.logger.info(
-      chalk.gray(`📊 Cache: ${stats.hits} hits, ${stats.misses} misses (${(stats.hitRate * 100).toFixed(1)}% hit rate)`)
+      chalk.gray(
+        `📊 Cache: ${stats.hits} hits, ${stats.misses} misses (${(stats.hitRate * 100).toFixed(1)}% hit rate)`
+      )
     );
   }
 
