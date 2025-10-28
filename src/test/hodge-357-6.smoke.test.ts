@@ -2,83 +2,78 @@
  * Smoke tests for HODGE-357.6: File Splitting - Module Reorganization
  *
  * Tests verify ESLint configuration exempts template files from line limits
+ *
+ * NOTE: Following HODGE-357.1 Toolchain Execution Ban - we verify config directly
+ * instead of executing real ESLint commands
  */
 
 import { describe } from 'vitest';
 import { smokeTest } from './helpers.js';
-import { ESLint } from 'eslint';
+import { readFile } from 'fs/promises';
 import { join } from 'path';
+
+/**
+ * Strip comments from JSON string (ESLint config files support comments)
+ */
+function stripJsonComments(jsonString: string): string {
+  // Remove single-line comments (// ...)
+  return jsonString.replace(/\/\/.*$/gm, '');
+}
 
 describe('HODGE-357.6: Template File Exemptions', () => {
   smokeTest(
-    'claude-commands.ts should be exempt from max-lines',
+    'ESLint config should have template file overrides for claude-commands.ts',
     async ({ expect }) => {
-      const eslint = new ESLint();
-      const results = await eslint.lintFiles(['src/lib/claude-commands.ts']);
+      // Read .eslintrc.json directly instead of executing ESLint
+      const eslintConfigPath = join(process.cwd(), '.eslintrc.json');
+      const configContent = await readFile(eslintConfigPath, 'utf-8');
+      const config = JSON.parse(stripJsonComments(configContent));
 
-      // Should have no max-lines errors for the file
-      const maxLinesErrors =
-        results[0]?.messages?.filter((msg) => msg.ruleId === 'max-lines') || [];
-
-      expect(maxLinesErrors).toHaveLength(0);
-    },
-    30000 // 30 second timeout for ESLint run
-  );
-
-  smokeTest(
-    'pm-scripts-templates.ts should be exempt from max-lines',
-    async ({ expect }) => {
-      const eslint = new ESLint();
-      const results = await eslint.lintFiles(['src/lib/pm-scripts-templates.ts']);
-
-      // Should have no max-lines errors for the file
-      const maxLinesErrors =
-        results[0]?.messages?.filter((msg) => msg.ruleId === 'max-lines') || [];
-
-      expect(maxLinesErrors).toHaveLength(0);
-    },
-    30000 // 30 second timeout for ESLint run
-  );
-
-  smokeTest('template files should be exempt from max-lines-per-function', async ({ expect }) => {
-    const eslint = new ESLint();
-    const results = await eslint.lintFiles([
-      'src/lib/claude-commands.ts',
-      'src/lib/pm-scripts-templates.ts',
-    ]);
-
-    // Should have no max-lines-per-function errors for these files
-    results.forEach((result) => {
-      const functionLengthErrors = result.messages.filter(
-        (msg) => msg.ruleId === 'max-lines-per-function'
+      // Find the override for template files
+      const templateOverride = config.overrides?.find(
+        (override: any) =>
+          override.files?.includes('src/lib/*-templates.ts') ||
+          override.files?.includes('src/lib/claude-commands.ts') ||
+          override.files?.includes('src/commands/init-claude-commands.ts')
       );
 
-      expect(functionLengthErrors).toHaveLength(0);
+      expect(templateOverride).toBeDefined();
+      expect(templateOverride?.rules?.['max-lines']).toBe('off');
+      expect(templateOverride?.rules?.['max-lines-per-function']).toBe('off');
+    }
+  );
+
+  smokeTest('ESLint config should have overrides structure', async ({ expect }) => {
+    // Read .eslintrc.json directly
+    const eslintConfigPath = join(process.cwd(), '.eslintrc.json');
+    const configContent = await readFile(eslintConfigPath, 'utf-8');
+    const config = JSON.parse(stripJsonComments(configContent));
+
+    // Verify overrides array exists
+    expect(config.overrides).toBeDefined();
+    expect(Array.isArray(config.overrides)).toBe(true);
+
+    // Verify at least one override targets template files
+    const hasTemplateOverride = config.overrides.some((override: any) => {
+      const files = Array.isArray(override.files) ? override.files : [override.files];
+      return files.some(
+        (pattern: string) =>
+          pattern.includes('*-templates.ts') ||
+          pattern.includes('claude-commands.ts') ||
+          pattern.includes('init-claude-commands.ts')
+      );
     });
+
+    expect(hasTemplateOverride).toBe(true);
   });
 
-  smokeTest('ESLint config should have template file overrides', async ({ expect }) => {
-    const eslint = new ESLint();
-    const config = await eslint.calculateConfigForFile('src/lib/claude-commands.ts');
+  smokeTest('non-template files should still have max-lines enforced', async ({ expect }) => {
+    // Read .eslintrc.json directly
+    const eslintConfigPath = join(process.cwd(), '.eslintrc.json');
+    const configContent = await readFile(eslintConfigPath, 'utf-8');
+    const config = JSON.parse(stripJsonComments(configContent));
 
-    // The max-lines rule should be off for this file (can be 'off' or ['off', ...])
-    const maxLinesConfig = config.rules?.['max-lines'];
-    const maxLinesPerFunctionConfig = config.rules?.['max-lines-per-function'];
-
-    expect(
-      maxLinesConfig === 'off' || (Array.isArray(maxLinesConfig) && maxLinesConfig[0] === 'off')
-    ).toBe(true);
-    expect(
-      maxLinesPerFunctionConfig === 'off' ||
-        (Array.isArray(maxLinesPerFunctionConfig) && maxLinesPerFunctionConfig[0] === 'off')
-    ).toBe(true);
-  });
-
-  smokeTest('non-template files should still enforce max-lines', async ({ expect }) => {
-    const eslint = new ESLint();
-    const config = await eslint.calculateConfigForFile('src/commands/init.ts');
-
-    // max-lines should still be enabled for regular files
+    // Base rules should have max-lines defined
     expect(config.rules?.['max-lines']).toBeDefined();
     expect(config.rules?.['max-lines']).not.toBe('off');
   });
@@ -86,23 +81,35 @@ describe('HODGE-357.6: Template File Exemptions', () => {
 
 describe('HODGE-357.6: Max-Lines Violation Count', () => {
   smokeTest(
-    'should have 0 max-lines violations after Phase 4',
+    'ESLint config should have proper max-lines configuration after Phase 4',
     async ({ expect }) => {
-      const eslint = new ESLint();
-      const results = await eslint.lintFiles(['src/**/*.ts']);
+      // HODGE-357.1: Don't execute real ESLint - verify config instead
+      const eslintConfigPath = join(process.cwd(), '.eslintrc.json');
+      const configContent = await readFile(eslintConfigPath, 'utf-8');
+      const config = JSON.parse(stripJsonComments(configContent));
 
-      const maxLinesViolations = results.filter((result) =>
-        result.messages.some((msg) => msg.ruleId === 'max-lines')
-      );
+      // Verify base max-lines rule is configured
+      expect(config.rules?.['max-lines']).toBeDefined();
 
-      // After Phase 1: Template exemptions (10 → 8)
-      // After Phase 2a: init.ts split (8 → 8, but init-interaction.ts still over)
-      // After Phase 2b: plan.ts split (8 → 7)
-      // After Phase 2c: harden.ts split (7 → 6)
-      // After Phase 3: hodge-md-generator.ts split (6 → 5)
-      // After Phase 4: Bounded exemptions for 5 stable files (5 → 0)
-      expect(maxLinesViolations.length).toBe(0);
-    },
-    30000 // 30 second timeout for ESLint run
+      // Verify template file overrides exist (Phase 1 accomplishment)
+      const templateOverrides = config.overrides?.filter((override: any) => {
+        const files = Array.isArray(override.files) ? override.files : [override.files];
+        return files.some(
+          (pattern: string) =>
+            pattern.includes('*-templates.ts') ||
+            pattern.includes('claude-commands.ts') ||
+            pattern.includes('init-claude-commands.ts')
+        );
+      });
+
+      expect(templateOverrides).toBeDefined();
+      expect(templateOverrides.length).toBeGreaterThan(0);
+
+      // After Phase 1: Template exemptions created
+      // After Phase 2a-c: init.ts, plan.ts, harden.ts split
+      // After Phase 3: hodge-md-generator.ts split
+      // After Phase 4: All refactoring complete
+      // Note: Actual violation count verified by CI running `npm run lint`
+    }
   );
 });
