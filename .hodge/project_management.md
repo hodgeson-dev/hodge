@@ -73,6 +73,45 @@ HODGE-004 (ID Management)
   - Define test intentions
   - Make architectural decisions
 
+
+### HODGE-357.5
+- **Status**: building
+- **Priority**: TBD
+- **Created**: 2025-10-27
+- **Updated**: 2025-10-27
+- **Description**: HODGE-357.5
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-357.6
+- **Status**: building
+- **Priority**: TBD
+- **Created**: 2025-10-27
+- **Updated**: 2025-10-27
+- **Description**: HODGE-357.6
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-357.7
+- **Status**: hardening
+- **Priority**: TBD
+- **Created**: 2025-10-27
+- **Updated**: 2025-10-27
+- **Description**: HODGE-357.7
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
 ## Completed Features
 
 ## Backlog

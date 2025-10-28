@@ -5,6 +5,7 @@
 import { BasePMAdapter } from './base-adapter.js';
 import { PMAdapterOptions, PMIssue, PMState, StateType } from './types.js';
 import { execSync } from 'child_process';
+import { createCommandLogger } from '../logger.js';
 
 // Type definitions for GitHub API responses
 interface GitHubIssue {
@@ -29,6 +30,7 @@ interface GitHubApiClient {
 }
 
 export class GitHubAdapter extends BasePMAdapter {
+  protected logger = createCommandLogger('github-adapter', { enableConsole: false });
   private octokit?: GitHubApiClient;
   private owner: string;
   private repo: string;
@@ -344,7 +346,7 @@ export class GitHubAdapter extends BasePMAdapter {
 
       return null;
     } catch (error) {
-      // Silently return null if search fails
+      this.logger.debug('GitHub issue search failed - issue may not exist', { error });
       return null;
     }
   }
@@ -455,6 +457,7 @@ export class GitHubAdapter extends BasePMAdapter {
         }
       }
     } catch (error) {
+      this.logger.debug('Failed to get GitHub repo from git remote', { error });
       // Fall through to throw error below
     }
 

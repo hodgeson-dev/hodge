@@ -117,45 +117,40 @@ These decisions were made during the exploration and design phase and form the f
     const exploreDir = path.join('.hodge', 'features', feature, 'explore');
     const explorationFile = path.join(exploreDir, 'exploration.md');
 
-    // Generate rich content if metadata provided, otherwise use generic template
-    let content: string;
+    const content = metadata?.description
+      ? this.generateRichExploration(feature, decisions, metadata)
+      : this.generateGenericExploration(feature, decisions);
 
-    if (metadata?.description) {
-      // Rich exploration from feature extraction
-      content = `# ${feature} Exploration
+    await fs.writeFile(explorationFile, content, 'utf-8');
+  }
 
-## Feature Overview
-**Description**: ${metadata.description}
-${metadata.effort ? `**Estimated Effort**: ${metadata.effort}` : ''}
+  private generateRichExploration(
+    feature: string,
+    decisions: string[],
+    metadata: NonNullable<Parameters<typeof this.generateExploration>[2]>
+  ): string {
+    const overview = this.buildFeatureOverview(metadata);
+    const origin = this.buildOriginSection(decisions);
+    const rationale = metadata.rationale
+      ? `## Why This Is a Coherent Feature\n${metadata.rationale}\n`
+      : '';
+    const scope = this.buildScopeSection(metadata.scope);
+    const dependencies = this.buildDependenciesSection(metadata.dependencies);
+    const explorationAreas = this.buildExplorationAreas(metadata.explorationAreas);
 
-## Origin
-This feature was extracted from the following decisions:
-${decisions.length > 0 ? decisions.map((d) => `- ${d}`).join('\n') : '- No specific decisions linked'}
+    return `# ${feature} Exploration
 
-${metadata.rationale ? `## Why This Is a Coherent Feature\n${metadata.rationale}\n` : ''}
+${overview}
 
-## Scope
-${metadata.scope?.included ? ['### Included', ...metadata.scope.included.map((item) => `- ${item}`)].join('\n') : ''}
+${origin}
 
-${metadata.scope?.excluded ? ['### Excluded', ...metadata.scope.excluded.map((item) => `- ${item}`)].join('\n') : ''}
+${rationale}
 
-## Dependencies
-${metadata.dependencies ? metadata.dependencies.map((dep) => `- ${dep}`).join('\n') : '- [To be identified during exploration]'}
+${scope}
 
-## Exploration Areas
-${
-  metadata.explorationAreas
-    ? metadata.explorationAreas
-        .map((area) => ['### ' + area.area, ...area.questions.map((q) => `- ${q}`)].join('\n'))
-        .join('\n\n')
-    : `### 1. Technical Requirements
-- [To be explored] Core functionality needed
-- [To be explored] Integration points with existing system
+${dependencies}
 
-### 2. Implementation Approach
-- [To be explored] Architecture design
-- [To be explored] Technology choices`
-}
+${explorationAreas}
 
 ## Next Steps
 1. Complete exploration of identified areas
@@ -163,13 +158,62 @@ ${
 3. Update test intentions with specific scenarios
 4. Proceed to build phase with chosen approach
 `;
-    } else {
-      // Generic template (existing behavior)
-      content = `# ${feature} Exploration
+  }
 
-## Origin
-This feature was extracted from the following decisions:
-${decisions.length > 0 ? decisions.map((d) => `- ${d}`).join('\n') : '- No specific decisions linked'}
+  private buildFeatureOverview(metadata: { description?: string; effort?: string }): string {
+    const effort = metadata.effort ? `\n**Estimated Effort**: ${metadata.effort}` : '';
+    return `## Feature Overview\n**Description**: ${metadata.description}${effort}`;
+  }
+
+  private buildOriginSection(decisions: string[]): string {
+    const decisionList =
+      decisions.length > 0
+        ? decisions.map((d) => `- ${d}`).join('\n')
+        : '- No specific decisions linked';
+    return `## Origin\nThis feature was extracted from the following decisions:\n${decisionList}`;
+  }
+
+  private buildScopeSection(scope?: { included?: string[]; excluded?: string[] }): string {
+    const includedList = scope?.included?.map((item) => `- ${item}`).join('\n') ?? '';
+    const included = scope?.included ? `### Included\n${includedList}\n` : '';
+    const excludedList = scope?.excluded?.map((item) => `- ${item}`).join('\n') ?? '';
+    const excluded = scope?.excluded ? `\n### Excluded\n${excludedList}` : '';
+    return `## Scope\n${included}${excluded}`;
+  }
+
+  private buildDependenciesSection(dependencies?: string[]): string {
+    const depList = dependencies
+      ? dependencies.map((dep) => `- ${dep}`).join('\n')
+      : '- [To be identified during exploration]';
+    return `## Dependencies\n${depList}`;
+  }
+
+  private buildExplorationAreas(
+    explorationAreas?: Array<{ area: string; questions: string[] }>
+  ): string {
+    if (explorationAreas) {
+      const areas = explorationAreas
+        .map((area) => ['### ' + area.area, ...area.questions.map((q) => `- ${q}`)].join('\n'))
+        .join('\n\n');
+      return `## Exploration Areas\n${areas}`;
+    }
+
+    return `## Exploration Areas
+### 1. Technical Requirements
+- [To be explored] Core functionality needed
+- [To be explored] Integration points with existing system
+
+### 2. Implementation Approach
+- [To be explored] Architecture design
+- [To be explored] Technology choices`;
+  }
+
+  private generateGenericExploration(feature: string, decisions: string[]): string {
+    const origin = this.buildOriginSection(decisions);
+
+    return `# ${feature} Exploration
+
+${origin}
 
 ## Context
 This feature was identified through AI-driven analysis of project decisions and represents a cohesive unit of work.
@@ -206,9 +250,6 @@ This feature was identified through AI-driven analysis of project decisions and 
 3. Define test intentions
 4. Proceed to build phase
 `;
-    }
-
-    await fs.writeFile(explorationFile, content, 'utf-8');
   }
 
   /**

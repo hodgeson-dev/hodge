@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { PlanCommand } from './plan.js';
+import { PlanDecisionAnalyzer } from './plan/plan-decision-analyzer.js';
 import { smokeTest } from '../test/helpers.js';
 import fs from 'fs/promises';
 import path from 'path';
@@ -8,11 +9,13 @@ import os from 'os';
 describe('PlanCommand - Description Extraction (Smoke Tests)', () => {
   let testDir: string;
   let planCommand: PlanCommand;
+  let decisionAnalyzer: PlanDecisionAnalyzer;
 
   beforeEach(async () => {
     // Create isolated temp directory
     testDir = await fs.mkdtemp(path.join(os.tmpdir(), 'hodge-plan-test-'));
     planCommand = new PlanCommand(testDir);
+    decisionAnalyzer = new PlanDecisionAnalyzer(testDir);
 
     // Create .hodge structure
     await fs.mkdir(path.join(testDir, '.hodge', 'features', 'TEST-123', 'explore'), {
@@ -40,8 +43,8 @@ When users execute /build...
       explorationContent
     );
 
-    // Access private method via reflection for testing
-    const description = await (planCommand as any).getFeatureDescription('TEST-123');
+    // Test via public method in PlanDecisionAnalyzer
+    const description = await decisionAnalyzer.getFeatureDescription('TEST-123');
 
     expect(description).toBe('Fix PM issue description extraction');
   });
@@ -59,7 +62,7 @@ This is the problem we're solving with this feature.
       explorationContent
     );
 
-    const description = await (planCommand as any).getFeatureDescription('TEST-123');
+    const description = await decisionAnalyzer.getFeatureDescription('TEST-123');
 
     expect(description).toBe("This is the problem we're solving with this feature.");
   });
@@ -76,7 +79,7 @@ This is the problem we're solving with this feature.
       explorationContent
     );
 
-    const description = await (planCommand as any).getFeatureDescription('TEST-123');
+    const description = await decisionAnalyzer.getFeatureDescription('TEST-123');
 
     expect(description.length).toBeLessThanOrEqual(103); // 100 + '...'
     expect(description).toMatch(/\.\.\.$/);
@@ -106,7 +109,7 @@ TBD
 `;
     await fs.writeFile(path.join(testDir, '.hodge', 'decisions.md'), decisionsContent);
 
-    const description = await (planCommand as any).getFeatureDescription('TEST-123');
+    const description = await decisionAnalyzer.getFeatureDescription('TEST-123');
 
     expect(description).toContain('Smart Description Extraction');
   });
@@ -115,7 +118,7 @@ TBD
     // No exploration.md, no decisions
     await fs.writeFile(path.join(testDir, '.hodge', 'decisions.md'), '');
 
-    const description = await (planCommand as any).getFeatureDescription('TEST-123');
+    const description = await decisionAnalyzer.getFeatureDescription('TEST-123');
 
     expect(description).toBe('No description available');
   });
@@ -124,10 +127,12 @@ TBD
 describe('PlanCommand - Cascading Decision Loading (Smoke Tests)', () => {
   let testDir: string;
   let planCommand: PlanCommand;
+  let decisionAnalyzer: PlanDecisionAnalyzer;
 
   beforeEach(async () => {
     testDir = await fs.mkdtemp(path.join(os.tmpdir(), 'hodge-plan-cascade-'));
     planCommand = new PlanCommand(testDir);
+    decisionAnalyzer = new PlanDecisionAnalyzer(testDir);
   });
 
   afterEach(async () => {
@@ -164,7 +169,7 @@ TBD
 `
     );
 
-    const decisions = await (planCommand as any).analyzeDecisions('TEST-001');
+    const decisions = await decisionAnalyzer.analyzeDecisions('TEST-001');
 
     // Should find the decision from feature-specific file
     expect(decisions.length).toBeGreaterThan(0);
@@ -191,7 +196,7 @@ This is the best approach for the problem.
 `
       );
 
-      const decisions = await (planCommand as any).analyzeDecisions('TEST-002');
+      const decisions = await decisionAnalyzer.analyzeDecisions('TEST-002');
 
       // Should extract recommendation from exploration.md
       expect(decisions.length).toBeGreaterThan(0);
@@ -227,7 +232,7 @@ TBD
 `
     );
 
-    const decisions = await (planCommand as any).analyzeDecisions('TEST-003');
+    const decisions = await decisionAnalyzer.analyzeDecisions('TEST-003');
 
     // Should find decision from global file
     expect(decisions.length).toBeGreaterThan(0);
@@ -241,7 +246,7 @@ TBD
     // Create empty decisions.md
     await fs.writeFile(path.join(featureDir, 'decisions.md'), '# Feature Decisions: TEST-004\n');
 
-    const decisions = await (planCommand as any).analyzeDecisions('TEST-004');
+    const decisions = await decisionAnalyzer.analyzeDecisions('TEST-004');
 
     // Should return empty array without crashing
     expect(Array.isArray(decisions)).toBe(true);
@@ -282,7 +287,7 @@ Global approach
 `
     );
 
-    const decisions = await (planCommand as any).analyzeDecisions('TEST-005');
+    const decisions = await decisionAnalyzer.analyzeDecisions('TEST-005');
 
     // Should find feature-specific decision, not global
     expect(decisions.length).toBeGreaterThan(0);
@@ -299,7 +304,7 @@ Global approach
       '# Malformed\nNo proper sections here'
     );
 
-    const decisions = await (planCommand as any).analyzeDecisions('TEST-006');
+    const decisions = await decisionAnalyzer.analyzeDecisions('TEST-006');
 
     // Should return empty array without crashing
     expect(Array.isArray(decisions)).toBe(true);

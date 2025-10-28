@@ -135,7 +135,7 @@ export class CommentGeneratorService {
     if (context.commitMessage.length > 500) {
       message += '...';
     }
-    message += '\n\`\`\`\n';
+    message += '\n```\n';
 
     return message;
   }

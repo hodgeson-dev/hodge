@@ -5,6 +5,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { randomUUID } from 'crypto';
 import { vi } from 'vitest';
 
 /**
@@ -164,7 +165,7 @@ export function createMockPM(
     test: vi.fn(async () => canConnect),
     findIssue: vi.fn(async (id: string) => issues.get(id)),
     createIssue: vi.fn(async (data: any) => {
-      const id = `TEST-${Date.now()}`;
+      const id = `TEST-${randomUUID().substring(0, 8)}`;
       issues.set(id, { id, ...data });
       return { id, ...data };
     }),

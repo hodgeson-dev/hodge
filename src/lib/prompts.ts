@@ -16,33 +16,58 @@ export class InteractivePrompts {
   async promptShipCommit(data: ShipInteractionData): Promise<string> {
     this.logger.info(chalk.bold('\n📝 Commit Message Generator\n'));
 
-    // Show file changes
+    this.showFileChanges(data);
+    this.showSuggestedMessage(data);
+
+    const action = await this.promptForAction();
+
+    if (action === 'cancel') {
+      throw new Error('Ship cancelled by user');
+    }
+
+    if (action === 'use') {
+      return data.suggested;
+    }
+
+    if (action === 'custom') {
+      return await this.promptCustomMessage();
+    }
+
+    if (action === 'edit') {
+      return await this.promptEditMode(data);
+    }
+
+    return data.suggested;
+  }
+
+  private showFileChanges(data: ShipInteractionData): void {
     if (data.analysis.files.length > 0) {
       this.logger.info(chalk.gray('Changed files:'));
       data.analysis.files.forEach((f) => {
-        let statusIcon: string;
-        if (f.status === 'added') {
-          statusIcon = '✚';
-        } else if (f.status === 'deleted') {
-          statusIcon = '✖';
-        } else {
-          statusIcon = '✎';
-        }
+        const statusIcon = this.getFileStatusIcon(f.status);
         this.logger.info(
           chalk.gray(`  ${statusIcon} ${f.path} (+${f.insertions}, -${f.deletions})`)
         );
       });
       this.logger.info('');
     }
+  }
 
-    // Show suggested message
+  private getFileStatusIcon(status: string): string {
+    if (status === 'added') return '✚';
+    if (status === 'deleted') return '✖';
+    return '✎';
+  }
+
+  private showSuggestedMessage(data: ShipInteractionData): void {
     this.logger.info(chalk.gray('Suggested commit message:'));
     this.logger.info(chalk.gray('─'.repeat(60)));
     this.logger.info(data.suggested);
     this.logger.info(chalk.gray('─'.repeat(60)));
     this.logger.info('');
+  }
 
-    // Prompt for action
+  private async promptForAction(): Promise<string> {
     const { action } = await inquirer.prompt<{ action: string }>([
       {
         type: 'list',
@@ -56,115 +81,144 @@ export class InteractivePrompts {
         ],
       },
     ]);
+    return action;
+  }
 
-    if (action === 'cancel') {
-      throw new Error('Ship cancelled by user');
+  private async promptCustomMessage(): Promise<string> {
+    const { message } = await inquirer.prompt<{ message: string }>([
+      {
+        type: 'input',
+        name: 'message',
+        message: 'Enter commit message:',
+        validate: (input: string) => input.trim().length > 0 || 'Message cannot be empty',
+      },
+    ]);
+    return message;
+  }
+
+  private async promptEditMode(data: ShipInteractionData): Promise<string> {
+    const type = await this.promptCommitType(data);
+    const scope = await this.promptScope(data);
+    const breaking = await this.promptBreaking();
+    const subject = await this.promptSubject();
+    const body = await this.promptBody(data);
+
+    let message = this.constructMessage(type, scope, breaking, subject, body);
+
+    if (breaking) {
+      message = await this.addBreakingChangeDescription(message);
     }
 
-    if (action === 'use') {
-      return data.suggested;
+    return message;
+  }
+
+  private async promptCommitType(data: ShipInteractionData): Promise<string> {
+    const { type } = await inquirer.prompt<{ type: string }>([
+      {
+        type: 'list',
+        name: 'type',
+        message: 'Select commit type:',
+        choices: [
+          { name: 'feat - New feature', value: 'feat' },
+          { name: 'fix - Bug fix', value: 'fix' },
+          { name: 'docs - Documentation', value: 'docs' },
+          { name: 'style - Code style changes', value: 'style' },
+          { name: 'refactor - Code refactoring', value: 'refactor' },
+          { name: 'test - Add/update tests', value: 'test' },
+          { name: 'chore - Maintenance tasks', value: 'chore' },
+          { name: 'perf - Performance improvements', value: 'perf' },
+          { name: 'ci - CI/CD changes', value: 'ci' },
+          { name: 'build - Build system changes', value: 'build' },
+          { name: 'revert - Revert previous commit', value: 'revert' },
+        ],
+        default: data.analysis.type,
+      },
+    ]);
+    return type;
+  }
+
+  private async promptScope(data: ShipInteractionData): Promise<string> {
+    const { scope } = await inquirer.prompt<{ scope: string }>([
+      {
+        type: 'input',
+        name: 'scope',
+        message: 'Enter scope (optional):',
+        default: data.analysis.scope !== 'general' ? data.analysis.scope : '',
+      },
+    ]);
+    return scope;
+  }
+
+  private async promptBreaking(): Promise<boolean> {
+    const { breaking } = await inquirer.prompt<{ breaking: boolean }>([
+      {
+        type: 'confirm',
+        name: 'breaking',
+        message: 'Is this a breaking change?',
+        default: false,
+      },
+    ]);
+    return breaking;
+  }
+
+  // eslint-disable-next-line sonarjs/function-return-type
+  private validateSubject(input: string): string | boolean {
+    if (input.trim().length === 0) return 'Subject cannot be empty';
+    if (input.length > 50) return 'Subject should be 50 characters or less';
+    return true;
+  }
+
+  private async promptSubject(): Promise<string> {
+    const { subject } = await inquirer.prompt<{ subject: string }>([
+      {
+        type: 'input',
+        name: 'subject',
+        message: 'Enter commit subject (short description):',
+        validate: this.validateSubject.bind(this),
+      },
+    ]);
+    return subject;
+  }
+
+  private async promptBody(data: ShipInteractionData): Promise<string> {
+    const closesLine = data.issueId ? `\n- Closes ${data.issueId}` : '';
+    const { body } = await inquirer.prompt<{ body: string }>([
+      {
+        type: 'editor',
+        name: 'body',
+        message: 'Enter commit body (detailed description):',
+        default: `- Implementation complete\n- Tests passing\n- Documentation updated${closesLine}`,
+      },
+    ]);
+    return body;
+  }
+
+  private constructMessage(
+    type: string,
+    scope: string,
+    breaking: boolean,
+    subject: string,
+    body: string
+  ): string {
+    let message = type;
+    if (scope) message += `(${scope})`;
+    if (breaking) message += '!';
+    message += `: ${subject}\n\n${body}`;
+    return message;
+  }
+
+  private async addBreakingChangeDescription(message: string): Promise<string> {
+    const { breakingDescription } = await inquirer.prompt<{ breakingDescription: string }>([
+      {
+        type: 'input',
+        name: 'breakingDescription',
+        message: 'Describe the breaking change:',
+      },
+    ]);
+    if (breakingDescription) {
+      return message + `\n\nBREAKING CHANGE: ${breakingDescription}`;
     }
-
-    if (action === 'custom') {
-      const { message } = await inquirer.prompt<{ message: string }>([
-        {
-          type: 'input',
-          name: 'message',
-          message: 'Enter commit message:',
-          validate: (input: string) => input.trim().length > 0 || 'Message cannot be empty',
-        },
-      ]);
-      return message;
-    }
-
-    // Edit mode - prompt for each part
-    if (action === 'edit') {
-      const { type } = await inquirer.prompt<{ type: string }>([
-        {
-          type: 'list',
-          name: 'type',
-          message: 'Select commit type:',
-          choices: [
-            { name: 'feat - New feature', value: 'feat' },
-            { name: 'fix - Bug fix', value: 'fix' },
-            { name: 'docs - Documentation', value: 'docs' },
-            { name: 'style - Code style changes', value: 'style' },
-            { name: 'refactor - Code refactoring', value: 'refactor' },
-            { name: 'test - Add/update tests', value: 'test' },
-            { name: 'chore - Maintenance tasks', value: 'chore' },
-            { name: 'perf - Performance improvements', value: 'perf' },
-            { name: 'ci - CI/CD changes', value: 'ci' },
-            { name: 'build - Build system changes', value: 'build' },
-            { name: 'revert - Revert previous commit', value: 'revert' },
-          ],
-          default: data.analysis.type,
-        },
-      ]);
-
-      const { scope } = await inquirer.prompt<{ scope: string }>([
-        {
-          type: 'input',
-          name: 'scope',
-          message: 'Enter scope (optional):',
-          default: data.analysis.scope !== 'general' ? data.analysis.scope : '',
-        },
-      ]);
-
-      const { breaking } = await inquirer.prompt<{ breaking: boolean }>([
-        {
-          type: 'confirm',
-          name: 'breaking',
-          message: 'Is this a breaking change?',
-          default: false,
-        },
-      ]);
-
-      const { subject } = await inquirer.prompt<{ subject: string }>([
-        {
-          type: 'input',
-          name: 'subject',
-          message: 'Enter commit subject (short description):',
-          validate: (input: string) => {
-            if (input.trim().length === 0) return 'Subject cannot be empty';
-            if (input.length > 50) return 'Subject should be 50 characters or less';
-            return true;
-          },
-        },
-      ]);
-
-      const closesLine = data.issueId ? `\n- Closes ${data.issueId}` : '';
-      const { body } = await inquirer.prompt<{ body: string }>([
-        {
-          type: 'editor',
-          name: 'body',
-          message: 'Enter commit body (detailed description):',
-          default: `- Implementation complete\n- Tests passing\n- Documentation updated${closesLine}`,
-        },
-      ]);
-
-      // Construct conventional commit message
-      let message = type;
-      if (scope) message += `(${scope})`;
-      if (breaking) message += '!';
-      message += `: ${subject}\n\n${body}`;
-
-      if (breaking) {
-        const { breakingDescription } = await inquirer.prompt<{ breakingDescription: string }>([
-          {
-            type: 'input',
-            name: 'breakingDescription',
-            message: 'Describe the breaking change:',
-          },
-        ]);
-        if (breakingDescription) {
-          message += `\n\nBREAKING CHANGE: ${breakingDescription}`;
-        }
-      }
-
-      return message;
-    }
-
-    return data.suggested;
+    return message;
   }
 
   /**
@@ -274,17 +328,20 @@ export class InteractivePrompts {
     }
 
     if (action === 'feature') {
+      // eslint-disable-next-line sonarjs/function-return-type
+      const validateBranchName = (input: string): string | boolean => {
+        if (!input.trim()) return 'Branch name cannot be empty';
+        if (input === branch) return 'Cannot be the same as current branch';
+        return true;
+      };
+
       const { branchName } = await inquirer.prompt<{ branchName: string }>([
         {
           type: 'input',
           name: 'branchName',
           message: 'Enter feature branch name:',
           default: `feature/${Date.now()}`,
-          validate: (input: string) => {
-            if (!input.trim()) return 'Branch name cannot be empty';
-            if (input === branch) return 'Cannot be the same as current branch';
-            return true;
-          },
+          validate: validateBranchName,
         },
       ]);
 

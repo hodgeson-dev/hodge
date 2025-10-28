@@ -120,6 +120,49 @@
         "max-lines": "off",
         "max-lines-per-function": "off"
       }
+    },
+    {
+      "files": [
+        "src/lib/claude-commands.ts",
+        "src/lib/pm-scripts-templates.ts"
+      ],
+      "rules": {
+        // Template files containing auto-generated or embedded content
+        // are exempt from line limits (HODGE-357.6)
+        "max-lines": "off",
+        "max-lines-per-function": "off"
+      }
+    },
+    {
+      "files": [
+        "src/lib/pattern-learner.ts",
+        "src/lib/sub-feature-context-service.ts",
+        "src/lib/explore-service.ts"
+      ],
+      "rules": {
+        // Stable service files with bounded exemptions (HODGE-357.6 Phase 4)
+        // These are cohesive, single-purpose services that are barely over the 400-line limit
+        // Upper bound of 450 lines provides buffer while preventing runaway growth
+        "max-lines": ["error", { "max": 450, "skipBlankLines": true, "skipComments": true }]
+      }
+    },
+    {
+      "files": ["src/commands/status.ts"],
+      "rules": {
+        // Status command with bounded exemption (HODGE-357.6 Phase 4)
+        // Active file with ongoing features, tighter bound to encourage future splits
+        // Upper bound of 425 lines provides minimal buffer (currently 401 lines)
+        "max-lines": ["error", { "max": 425, "skipBlankLines": true, "skipComments": true }]
+      }
+    },
+    {
+      "files": ["src/commands/init/init-interaction.ts"],
+      "rules": {
+        // Init interaction module with bounded exemption (HODGE-357.6 Phase 4)
+        // Cohesive user interaction logic created from Phase 2a split
+        // Upper bound of 575 lines provides buffer while preventing excessive growth (currently 529 lines)
+        "max-lines": ["error", { "max": 575, "skipBlankLines": true, "skipComments": true }]
+      }
     }
   ]
 }

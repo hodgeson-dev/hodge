@@ -231,29 +231,10 @@ export class ReviewTierClassifier {
     }
 
     try {
-      // Find all profile markdown files
       const profileFiles = glob.sync(`${profilesDir}/**/*.md`, { cwd: this.basePath });
 
       for (const profileFile of profileFiles) {
-        try {
-          const content = readFileSync(join(this.basePath, profileFile), 'utf-8');
-
-          // Extract frontmatter (YAML between --- markers)
-          const frontmatterMatch = /^---\n([\s\S]*?)\n---/.exec(content);
-          if (frontmatterMatch) {
-            const frontmatter = yaml.load(frontmatterMatch[1]) as Record<string, unknown>;
-
-            if (frontmatter.applies_to && Array.isArray(frontmatter.applies_to)) {
-              const relativePath = profileFile.replace(`${profilesDir}/`, '');
-              patterns.set(relativePath, frontmatter.applies_to as string[]);
-            }
-          }
-        } catch (error) {
-          this.logger.warn('Failed to parse profile', {
-            file: profileFile,
-            error: error instanceof Error ? error.message : String(error),
-          });
-        }
+        this.loadSingleProfile(profileFile, profilesDir, patterns);
       }
 
       this.logger.debug('Loaded profile patterns', { count: patterns.size });
@@ -264,6 +245,42 @@ export class ReviewTierClassifier {
     }
 
     return patterns;
+  }
+
+  private loadSingleProfile(
+    profileFile: string,
+    profilesDir: string,
+    patterns: Map<string, string[]>
+  ): void {
+    try {
+      const content = readFileSync(join(this.basePath, profileFile), 'utf-8');
+      const appliesTo = this.extractAppliesTo(content);
+
+      if (appliesTo) {
+        const relativePath = profileFile.replace(`${profilesDir}/`, '');
+        patterns.set(relativePath, appliesTo);
+      }
+    } catch (error) {
+      this.logger.warn('Failed to parse profile', {
+        file: profileFile,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
+  private extractAppliesTo(content: string): string[] | null {
+    const frontmatterMatch = /^---\n([\s\S]*?)\n---/.exec(content);
+    if (!frontmatterMatch) {
+      return null;
+    }
+
+    const frontmatter = yaml.load(frontmatterMatch[1]) as Record<string, unknown>;
+
+    if (frontmatter.applies_to && Array.isArray(frontmatter.applies_to)) {
+      return frontmatter.applies_to as string[];
+    }
+
+    return null;
   }
 
   /**

@@ -88,7 +88,7 @@ export class SessionManager {
 
       return session;
     } catch (error) {
-      // Return null for any error (corrupted file, etc.)
+      this.logger.debug('Could not load session file (corrupted or invalid)', { error });
       return null;
     }
   }
@@ -143,7 +143,7 @@ export class SessionManager {
         await fs.unlink(this.sessionFile);
       }
     } catch (error) {
-      // Ignore cleanup errors
+      this.logger.debug('Could not delete session file during cleanup', { error });
     }
   }
 

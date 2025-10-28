@@ -2,8 +2,10 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import chalk from 'chalk';
 import type { GitDiffResult } from './git-diff-analyzer.js';
+import { createCommandLogger } from './logger.js';
 
 const execAsync = promisify(exec);
+const logger = createCommandLogger('git-utils', { enableConsole: false });
 
 /**
  * Git utilities for branch management and push operations
@@ -87,8 +89,9 @@ export async function getGitStatus(): Promise<GitStatus> {
     const [aheadStr, behindStr] = revListOut.trim().split('\t');
     ahead = parseInt(aheadStr, 10) || 0;
     behind = parseInt(behindStr, 10) || 0;
-  } catch {
+  } catch (error) {
     // No upstream branch set
+    logger.debug('No upstream branch configured', { error });
     remote = undefined;
   }
 
@@ -218,7 +221,8 @@ export async function remoteExists(branch: string, remote = 'origin'): Promise<b
   try {
     await execAsync(`git ls-remote --heads ${remote} ${branch}`);
     return true;
-  } catch {
+  } catch (error) {
+    logger.debug('Branch check failed (may not exist remotely)', { error });
     return false;
   }
 }

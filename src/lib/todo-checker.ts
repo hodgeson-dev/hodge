@@ -1,6 +1,9 @@
 import { readFileSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
 import chalk from 'chalk';
+import { createCommandLogger } from './logger.js';
+
+const logger = createCommandLogger('todo-checker', { enableConsole: false });
 
 export interface TodoItem {
   file: string;
@@ -37,7 +40,7 @@ function findFiles(dir: string, extensions: string[]): string[] {
       }
     }
   } catch (error) {
-    // Skip directories we can't read
+    logger.debug('Could not read directory (skipping)', { dir, error });
   }
 
   return files;
@@ -71,7 +74,7 @@ export function findTodos(baseDir = 'src'): TodoItem[] {
         }
       });
     } catch (error) {
-      // Skip files that can't be read
+      logger.debug('Could not read file for TODO scanning (skipping)', { file, error });
     }
   }
 

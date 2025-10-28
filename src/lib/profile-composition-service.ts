@@ -168,7 +168,7 @@ export class ProfileCompositionService {
         this.logger.debug('Loaded profile', { name: profile.name });
       } catch (error) {
         // Profile missing - warn but continue
-        this.logger.warn('Profile not found, skipping', { path: profilePath });
+        this.logger.warn('Profile not found, skipping', { path: profilePath, error });
         missing.push(profilePath);
       }
     }
@@ -191,7 +191,15 @@ export class ProfileCompositionService {
   ): string {
     const sections: string[] = [];
 
-    // Header with precedence rules
+    this.addPrecedenceHeader(sections);
+    this.addMissingProfilesWarning(sections, missingProfiles);
+    this.addProjectContext(sections, projectContext);
+    this.addReusableProfiles(sections, profiles);
+
+    return sections.join('\n');
+  }
+
+  private addPrecedenceHeader(sections: string[]): void {
     sections.push('# REVIEW CONTEXT - PRECEDENCE RULES');
     sections.push('');
     sections.push(
@@ -205,8 +213,9 @@ export class ProfileCompositionService {
       'profile recommendations, the PROJECT STANDARD wins. Always defer to project standards.'
     );
     sections.push('');
+  }
 
-    // Missing profiles warning (if any)
+  private addMissingProfilesWarning(sections: string[], missingProfiles: string[]): void {
     if (missingProfiles.length > 0) {
       sections.push('⚠️ **MISSING PROFILES**:');
       for (const path of missingProfiles) {
@@ -216,28 +225,38 @@ export class ProfileCompositionService {
       sections.push('Continuing review with available profiles...');
       sections.push('');
     }
+  }
 
-    // Project Context (HIGHEST PRECEDENCE)
+  private addProjectContext(sections: string[], projectContext: ProjectContext): void {
     sections.push('## Project Context (HIGHEST PRECEDENCE)');
     sections.push('');
 
-    // Standards
-    if (projectContext.standards) {
+    this.addStandards(sections, projectContext.standards);
+    this.addPrinciples(sections, projectContext.principles);
+    this.addDecisions(sections);
+    this.addPatterns(sections, projectContext.patterns);
+    this.addLessons(sections, projectContext.lessons);
+  }
+
+  private addStandards(sections: string[], standards?: string): void {
+    if (standards) {
       sections.push('### Project Standards (.hodge/standards.md)');
       sections.push('');
-      sections.push(projectContext.standards);
+      sections.push(standards);
       sections.push('');
     }
+  }
 
-    // Principles
-    if (projectContext.principles) {
+  private addPrinciples(sections: string[], principles?: string): void {
+    if (principles) {
       sections.push('### Project Principles (.hodge/principles.md)');
       sections.push('');
-      sections.push(projectContext.principles);
+      sections.push(principles);
       sections.push('');
     }
+  }
 
-    // Decisions (load from .hodge/decisions.md)
+  private addDecisions(sections: string[]): void {
     const decisionsContent = this.loadDecisions();
     if (decisionsContent) {
       sections.push('### Project Decisions (.hodge/decisions.md)');
@@ -245,38 +264,42 @@ export class ProfileCompositionService {
       sections.push(decisionsContent);
       sections.push('');
     }
+  }
 
-    // Patterns (load each pattern file)
-    if (projectContext.patterns.length > 0) {
+  private addPatterns(sections: string[], patterns: string[]): void {
+    if (patterns.length > 0) {
       sections.push('### Project Patterns (.hodge/patterns/)');
       sections.push('');
-      for (const patternPath of projectContext.patterns) {
-        try {
-          const patternContent = readFileSync(patternPath, 'utf-8');
-          sections.push(patternContent);
-          sections.push('');
-        } catch (error) {
-          this.logger.warn('Could not read pattern file', { path: patternPath });
-        }
+      for (const patternPath of patterns) {
+        this.loadAndAddFile(sections, patternPath, 'pattern');
       }
     }
+  }
 
-    // Lessons (load each lesson file)
-    if (projectContext.lessons.length > 0) {
+  private addLessons(sections: string[], lessons: string[]): void {
+    if (lessons.length > 0) {
       sections.push('### Project Lessons (.hodge/lessons/)');
       sections.push('');
-      for (const lessonPath of projectContext.lessons) {
-        try {
-          const lessonContent = readFileSync(lessonPath, 'utf-8');
-          sections.push(lessonContent);
-          sections.push('');
-        } catch (error) {
-          this.logger.warn('Could not read lesson file', { path: lessonPath });
-        }
+      for (const lessonPath of lessons) {
+        this.loadAndAddFile(sections, lessonPath, 'lesson');
       }
     }
+  }
 
-    // Reusable Review Profiles (LOWER PRECEDENCE)
+  private loadAndAddFile(sections: string[], filePath: string, fileType: string): void {
+    try {
+      const content = readFileSync(filePath, 'utf-8');
+      sections.push(content);
+      sections.push('');
+    } catch (error) {
+      this.logger.warn(`Could not read ${fileType} file`, { path: filePath, error });
+    }
+  }
+
+  private addReusableProfiles(
+    sections: string[],
+    profiles: Array<{ name: string; content: string }>
+  ): void {
     sections.push('---');
     sections.push('');
     sections.push('## Reusable Review Profiles (LOWER PRECEDENCE)');
@@ -292,8 +315,6 @@ export class ProfileCompositionService {
       sections.push(profile.content);
       sections.push('');
     }
-
-    return sections.join('\n');
   }
 
   /**

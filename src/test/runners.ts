@@ -6,6 +6,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
+import { randomUUID } from 'crypto';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import path from 'path';
@@ -83,7 +84,7 @@ export class TestWorkspace {
   private cleanupFns: Array<() => Promise<void>> = [];
 
   constructor(name = 'test') {
-    this.dir = path.join(os.tmpdir(), `hodge-test-${name}-${Date.now()}`);
+    this.dir = path.join(os.tmpdir(), `hodge-test-${name}-${randomUUID().substring(0, 8)}`);
   }
 
   async setup() {

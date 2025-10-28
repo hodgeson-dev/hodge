@@ -188,7 +188,7 @@ export class Fixture<T> {
     }
   }
 
-  get() {
+  get(): T {
     if (this.data === undefined) {
       throw new Error('Fixture not initialized. Call before() first.');
     }

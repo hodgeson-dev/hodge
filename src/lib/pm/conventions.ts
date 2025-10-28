@@ -47,7 +47,7 @@ export class StateConventions {
       priority: 3,
       patterns: [
         /^done$/i,
-        /^complete[d]?$/i,
+        /^completed?$/i,
         /^shipped$/i,
         /^deployed$/i,
         /^closed$/i,
@@ -60,7 +60,7 @@ export class StateConventions {
       type: 'canceled',
       priority: 4,
       patterns: [
-        /^cancel[l]?ed$/i,
+        /^cancell?ed$/i,
         /^abandoned$/i,
         /^declined$/i,
         /^rejected$/i,

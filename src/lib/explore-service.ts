@@ -60,6 +60,13 @@ interface ProjectContext {
   patterns: string[];
 }
 
+interface PackageJson {
+  bin?: unknown;
+  main?: string;
+  dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
+}
+
 export interface ExploreServiceOptions {
   force?: boolean;
   verbose?: boolean;
@@ -173,7 +180,9 @@ export class ExploreService {
         const patterns: string[] = [];
 
         try {
-          const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8'));
+          const packageJson = JSON.parse(
+            await fs.readFile(packageJsonPath, 'utf-8')
+          ) as PackageJson;
 
           // Detect project type
           if (packageJson.bin) projectType = 'cli';
@@ -357,7 +366,6 @@ export class ExploreService {
     }
   }
 
-
   /**
    * Update session and context managers
    */
@@ -432,7 +440,9 @@ export class ExploreService {
       existingPatterns
         .filter((p) => p.confidence > 0.3)
         .forEach((p) => {
-          sections.push(`- **${p.name}**: ${p.description} (${(p.confidence * 100).toFixed(0)}% confidence)`);
+          sections.push(
+            `- **${p.name}**: ${p.description} (${(p.confidence * 100).toFixed(0)}% confidence)`
+          );
         });
       sections.push('');
     }
@@ -542,7 +552,9 @@ export class ExploreService {
     sections.push(`-\n`);
 
     sections.push(`---`);
-    sections.push(`*Generated during exploration phase. Convert to actual tests during build phase.*`);
+    sections.push(
+      `*Generated during exploration phase. Convert to actual tests during build phase.*`
+    );
 
     return sections.join('\n');
   }

@@ -52,8 +52,8 @@ class ScriptSecurityValidator {
       { pattern: /child_process/gi, issue: 'direct child_process usage' },
       // Removed overly broad template literal check - only flag dangerous patterns
       { pattern: /require\s*\(\s*['"]\s*\.\./gi, issue: 'relative require paths' },
-      // Use non-backtracking pattern to prevent ReDoS
-      { pattern: /import\s+[^\n]*from\s+['"]\s*\.\./gi, issue: 'relative import paths' },
+      // Use bounded quantifier to prevent ReDoS
+      { pattern: /import\s+.{1,200}?from\s+['"]\s*\.\./gi, issue: 'relative import paths' },
     ];
 
     for (const { pattern, issue } of securityPatterns) {
@@ -200,7 +200,8 @@ export class StructureGenerator {
       await this.generateUserConfig(projectInfo); // Create hodge.json if PM tool selected
       await this.generateStandards(projectInfo, hodgePath);
       // Standards now includes decisions, patterns, and principles via installHodgeWay
-      await this.generatePMScripts(projectInfo, hodgePath);
+      // eslint-disable-next-line sonarjs/deprecation
+      await this.generatePMScripts(projectInfo, hodgePath); // Still used for PM scripts directory setup
 
       // Generate .gitignore entry if git is present
       if (projectInfo.detectedTools.hasGit) {
@@ -445,6 +446,8 @@ Scripts will be generated here once a PM tool is configured.
       ScriptSecurityValidator.validateScriptPath(scriptPath);
       ScriptSecurityValidator.validateScriptContent(script.content, script.description);
       await fs.writeFile(scriptPath, script.content, 'utf8');
+      // Safe: 0o755 (rwxr-xr-x) is standard for executable scripts
+      // eslint-disable-next-line sonarjs/file-permissions
       await fs.chmod(scriptPath, 0o755);
     }
   }
@@ -529,6 +532,8 @@ this.logger.info('Custom PM integration - customize this script for your needs')
     ScriptSecurityValidator.validateScriptContent(templateScript, 'Custom sync script template');
 
     await fs.writeFile(scriptPath, templateScript, 'utf8');
+    // Safe: 0o755 (rwxr-xr-x) is standard for executable scripts
+    // eslint-disable-next-line sonarjs/file-permissions
     await fs.chmod(scriptPath, 0o755);
   }
 

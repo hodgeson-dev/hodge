@@ -425,7 +425,7 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}**Shipped**: ${date}
    * @param feature - Feature name
    * @returns Learning result or null if failed
    */
-  async learnPatternsFromShippedCode(feature: string): Promise<unknown | null> {
+  async learnPatternsFromShippedCode(feature: string): Promise<unknown> {
     try {
       const { PatternLearner } = await import('../lib/pattern-learner.js');
       const learner = new PatternLearner();

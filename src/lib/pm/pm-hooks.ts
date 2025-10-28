@@ -3,9 +3,9 @@ import { LocalPMAdapter } from './local-pm-adapter.js';
 import { getConfigManager } from '../config-manager.js';
 import { ShipContext } from './types.js';
 import { IDManager } from '../id-manager.js';
-import { LinearAdapter } from './linear-adapter.js';
-import { GitHubAdapter } from './github-adapter.js';
 import { CommentGeneratorService } from './comment-generator-service.js';
+import { PMAdapterService } from './pm-adapter-service.js';
+import { PMIssueCreatorService } from './pm-issue-creator-service.js';
 import fs from 'fs/promises';
 import path from 'path';
 import { existsSync } from 'fs';
@@ -38,16 +38,21 @@ export class PMHooks {
   private pmQueueFile: string;
   private basePath: string;
   private commentGenerator: CommentGeneratorService;
+  private pmAdapterService: PMAdapterService;
+  private issueCreatorService: PMIssueCreatorService;
 
-  constructor(
-    basePath?: string,
-    commentGenerator = new CommentGeneratorService()
-  ) {
+  constructor(basePath?: string, commentGenerator = new CommentGeneratorService()) {
     this.basePath = basePath ?? process.cwd();
     this.localAdapter = new LocalPMAdapter(basePath);
     this.idManager = new IDManager();
     this.pmQueueFile = path.join(this.basePath, '.hodge/.pm-queue.json');
     this.commentGenerator = commentGenerator;
+    this.pmAdapterService = new PMAdapterService(
+      this.localAdapter,
+      this.commentGenerator,
+      this.configManager
+    );
+    this.issueCreatorService = new PMIssueCreatorService(this.idManager);
   }
 
   /**
@@ -169,111 +174,7 @@ export class PMHooks {
    * Call the appropriate PM adapter based on tool
    */
   private async callPMAdapter(tool: string, feature: string, status: string): Promise<void> {
-    switch (tool.toLowerCase()) {
-      case 'local':
-        // LocalPMAdapter can now be called through unified interface
-        // This is optional - the direct calls in methods above still work
-        await this.localAdapter.updateIssueState(feature, status);
-        break;
-
-      case 'linear': {
-        const apiKey = this.configManager.getPMApiKey('linear');
-        const teamId = this.configManager.getPMTeamId();
-        if (!apiKey || !teamId) {
-          throw new Error('Linear API key and team ID are required');
-        }
-        const { LinearAdapter } = await import('./linear-adapter.js');
-        const adapter = new LinearAdapter({
-          config: {
-            apiKey,
-            teamId,
-            tool: 'linear',
-          },
-        });
-
-        // Find and update the issue
-        const issue = await adapter.findIssueByFeature(feature);
-        if (issue) {
-          // Get Linear's states and map intelligently
-          const states = await adapter.fetchStates();
-          const targetState = this.mapToLinearState(status, states);
-          await adapter.updateIssueState(issue.id, targetState.id);
-
-          // Add rich comment if ship context is available
-          if (this.shipContext && status === 'Done') {
-            const comment = await this.generateRichComment(this.shipContext);
-            await adapter.addComment(issue.id, comment);
-            const isDebug = await this.configManager.isDebugMode();
-            if (isDebug) {
-              this.logger.info(chalk.gray('   Added rich comment to Linear issue'));
-            }
-          }
-        }
-        break;
-      }
-
-      case 'github': {
-        const apiKey = this.configManager.getPMApiKey('github');
-        if (!apiKey) {
-          throw new Error('GitHub token is required');
-        }
-        const { GitHubAdapter } = await import('./github-adapter.js');
-        const githubAdapter = new GitHubAdapter({
-          config: {
-            apiKey,
-            tool: 'github',
-          },
-        });
-
-        // Find and update the issue
-        const githubIssue = await githubAdapter.findIssueByFeature(feature);
-        if (githubIssue) {
-          // GitHub only has open/closed states
-          const targetState = status === 'Done' || status === 'shipped' ? 'closed' : 'open';
-          await githubAdapter.updateIssueState(githubIssue.id, targetState);
-
-          // Add rich comment if ship context is available
-          if (this.shipContext && (status === 'Done' || status === 'shipped')) {
-            const comment = await this.generateRichComment(this.shipContext);
-            await githubAdapter.addComment(githubIssue.id, comment);
-          }
-        }
-        break;
-      }
-
-      default:
-        throw new Error(`PM tool ${tool} not supported`);
-    }
-  }
-
-  /**
-   * Smart state mapping for Linear
-   */
-  private mapToLinearState(
-    hodgeStatus: string,
-    linearStates: Array<{ id: string; name: string; type: string }>
-  ): { id: string; name: string; type: string } {
-    // First try exact match by name
-    const exactMatch = linearStates.find((s) => s.name.toLowerCase() === hodgeStatus.toLowerCase());
-    if (exactMatch) return exactMatch;
-
-    // Then try type-based matching
-    const typeMap: Record<string, string> = {
-      'To Do': 'unstarted',
-      'In Progress': 'started',
-      'In Review': 'started',
-      Done: 'completed',
-    };
-
-    const targetType = typeMap[hodgeStatus] || 'started';
-    return linearStates.find((s) => s.type === targetType) || linearStates[0];
-  }
-
-  /**
-   * Generate rich comment based on verbosity level
-   */
-  private async generateRichComment(context: ShipContext): Promise<string> {
-    return this.commentGenerator.generate(context);
+    await this.pmAdapterService.updatePMStatus(tool, feature, status, this.shipContext);
   }
 
   /**
@@ -303,105 +204,85 @@ export class PMHooks {
       }
 
       // Create the issue based on PM tool
-      let externalId: string | undefined;
+      const description = await this.formatDecisionsForPM(feature, decisions);
+      const result = await this.createIssueForTool(
+        pmTool,
+        apiKey,
+        feature,
+        description,
+        isEpic,
+        subIssues
+      );
 
-      switch (pmTool) {
-        case 'linear': {
-          const linearAdapter = new LinearAdapter({
-            config: {
-              tool: 'linear' as const,
-              apiKey,
-              teamId: process.env.LINEAR_TEAM_ID || '',
-            },
-          });
-
-          // Create issue with decisions in description
-          const description = await this.formatDecisionsForPM(feature, decisions);
-          const issue = await linearAdapter.createIssue(feature, description);
-          externalId = issue.id;
-
-          // Handle sub-issues if this is an epic
-          if (isEpic && subIssues) {
-            // Create sub-issues atomically (with rollback on failure)
-            const createdSubIssues: string[] = [];
-            try {
-              for (const subIssue of subIssues) {
-                const sub = await linearAdapter.createIssue(
-                  subIssue.title,
-                  `Sub-task of ${feature}`
-                );
-                createdSubIssues.push(sub.id);
-                // Map sub-issue ID
-                await this.idManager.mapFeature(subIssue.id, sub.id, 'linear');
-              }
-            } catch (error) {
-              // Rollback: delete created sub-issues
-              for (const subId of createdSubIssues) {
-                // Linear doesn't have a delete API, so we'll close them
-                await linearAdapter.updateIssueState(subId, 'canceled');
-              }
-              // Queue for retry
-              await this.queuePMOperation({
-                type: 'create_epic',
-                feature,
-                decisions,
-                isEpic,
-                subIssues,
-                timestamp: new Date().toISOString(),
-              });
-              throw error;
-            }
-          }
-          break;
-        }
-
-        case 'github': {
-          const githubRepo = process.env.GITHUB_REPO || '';
-          const githubAdapter = new GitHubAdapter({
-            config: {
-              tool: 'github' as const,
-              apiKey,
-              projectId: githubRepo,
-            },
-          });
-
-          const description = await this.formatDecisionsForPM(feature, decisions);
-          const issue = await githubAdapter.createIssue(feature, description);
-          externalId = issue.id;
-          break;
-        }
-
-        default:
-          return { created: false, error: `PM tool ${pmTool} not supported` };
+      if (!result.externalId) {
+        return { created: false, error: 'Failed to create issue' };
       }
 
       // Map the external ID
-      if (externalId) {
-        await this.idManager.mapFeature(feature, externalId, pmTool);
-        return { created: true, issueId: externalId };
-      }
-
-      return { created: false, error: 'Failed to create issue' };
+      await this.idManager.mapFeature(feature, result.externalId, pmTool);
+      return { created: true, issueId: result.externalId };
     } catch (error) {
-      // Queue for later retry
-      await this.queuePMOperation({
-        type: 'create_issue',
-        feature,
-        decisions,
-        isEpic,
-        subIssues,
-        timestamp: new Date().toISOString(),
-      });
-
-      const debugMode = await this.configManager.isDebugMode();
-      if (debugMode) {
-        this.logger.warn(
-          chalk.yellow(`   ⚠️  Queued PM issue creation for later (${String(error)})`)
-        );
-      }
-
-      return { created: false, error: String(error) };
+      return await this.handleCreateIssueError(error, feature, decisions, isEpic, subIssues);
     }
+  }
+
+  /**
+   * Create issue for specific PM tool
+   */
+  private async createIssueForTool(
+    pmTool: string,
+    apiKey: string,
+    feature: string,
+    description: string,
+    isEpic: boolean,
+    subIssues?: Array<{ id: string; title: string }>
+  ): Promise<{ externalId?: string; error?: string }> {
+    switch (pmTool) {
+      case 'linear':
+        return await this.issueCreatorService.createLinearIssue(
+          apiKey,
+          feature,
+          description,
+          isEpic,
+          subIssues
+        );
+
+      case 'github':
+        return await this.issueCreatorService.createGitHubIssue(apiKey, feature, description);
+
+      default:
+        return { error: `PM tool ${pmTool} not supported` };
+    }
+  }
+
+  /**
+   * Handle errors during issue creation
+   */
+  private async handleCreateIssueError(
+    error: unknown,
+    feature: string,
+    decisions: string[],
+    isEpic: boolean,
+    subIssues?: Array<{ id: string; title: string }>
+  ): Promise<{ created: boolean; error: string }> {
+    // Queue for later retry
+    await this.queuePMOperation({
+      type: 'create_issue',
+      feature,
+      decisions,
+      isEpic,
+      subIssues,
+      timestamp: new Date().toISOString(),
+    });
+
+    const debugMode = await this.configManager.isDebugMode();
+    if (debugMode) {
+      this.logger.warn(
+        chalk.yellow(`   ⚠️  Queued PM issue creation for later (${String(error)})`)
+      );
+    }
+
+    return { created: false, error: String(error) };
   }
 
   /**
@@ -470,6 +351,8 @@ export class PMHooks {
 
       return null;
     } catch (error) {
+      // File doesn't exist or can't be read - this is expected for new features
+      this.logger.debug('Could not extract problem statement from exploration.md', { error });
       return null;
     }
   }
@@ -508,50 +391,75 @@ export class PMHooks {
     }
 
     try {
-      const content = await fs.readFile(this.pmQueueFile, 'utf-8');
-      const queue = JSON.parse(content) as QueuedOperation[];
-
+      const queue = await this.loadQueue();
       if (queue.length === 0) {
         return;
       }
 
-      const debugMode = await this.configManager.isDebugMode();
-      if (debugMode) {
-        this.logger.info(chalk.blue(`📋 Processing ${queue.length} queued PM operations...`));
-      }
+      await this.logQueueStart(queue.length);
 
-      const remaining: QueuedOperation[] = [];
-      for (const operation of queue) {
-        try {
-          if (operation.type === 'create_issue' || operation.type === 'create_epic') {
-            const result = await this.createPMIssue(
-              operation.feature,
-              operation.decisions,
-              operation.isEpic || false,
-              operation.subIssues
-            );
-            if (!result.created && result.error !== 'Issue already exists') {
-              remaining.push(operation);
-            }
-          }
-        } catch (error) {
-          remaining.push(operation);
-        }
-      }
+      const remaining = await this.processOperations(queue);
 
-      // Update queue with remaining operations
-      if (remaining.length > 0) {
-        await fs.writeFile(this.pmQueueFile, JSON.stringify(remaining, null, 2));
-      } else {
-        // Delete queue file if empty
-        await fs.unlink(this.pmQueueFile);
+      await this.updateQueueFile(remaining);
+    } catch (error) {
+      await this.handleQueueError(error);
+    }
+  }
+
+  private async loadQueue(): Promise<QueuedOperation[]> {
+    const content = await fs.readFile(this.pmQueueFile, 'utf-8');
+    return JSON.parse(content) as QueuedOperation[];
+  }
+
+  private async logQueueStart(count: number): Promise<void> {
+    const debugMode = await this.configManager.isDebugMode();
+    if (debugMode) {
+      this.logger.info(chalk.blue(`📋 Processing ${count} queued PM operations...`));
+    }
+  }
+
+  private async processOperations(queue: QueuedOperation[]): Promise<QueuedOperation[]> {
+    const remaining: QueuedOperation[] = [];
+
+    for (const operation of queue) {
+      if (!(await this.processOperation(operation))) {
+        remaining.push(operation);
+      }
+    }
+
+    return remaining;
+  }
+
+  private async processOperation(operation: QueuedOperation): Promise<boolean> {
+    try {
+      if (operation.type === 'create_issue' || operation.type === 'create_epic') {
+        const result = await this.createPMIssue(
+          operation.feature,
+          operation.decisions,
+          operation.isEpic || false,
+          operation.subIssues
+        );
+        return result.created || result.error === 'Issue already exists';
       }
     } catch (error) {
-      // Silently fail
-      const debugMode = await this.configManager.isDebugMode();
-      if (debugMode) {
-        this.logger.info(chalk.gray(`   Could not process queue: ${String(error)}`));
-      }
+      this.logger.debug('Failed to process queued PM operation', { error });
+      return false;
+    }
+    return false;
+  }
+
+  private async updateQueueFile(remaining: QueuedOperation[]): Promise<void> {
+    if (remaining.length > 0) {
+      await fs.writeFile(this.pmQueueFile, JSON.stringify(remaining, null, 2));
+    } else {
+      await fs.unlink(this.pmQueueFile);
+    }
+  }
+
+  private async handleQueueError(error: unknown): Promise<void> {
+    const debugMode = await this.configManager.isDebugMode();
+    if (debugMode) {
+      this.logger.info(chalk.gray(`   Could not process queue: ${String(error)}`));
     }
   }
 }

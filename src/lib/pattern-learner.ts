@@ -145,10 +145,10 @@ export class PatternLearner {
       name: 'Input Validation',
       category: 'security',
       patterns: [
-        // Use non-backtracking pattern to prevent ReDoS - limit scope with [^}]*
-        /if\s*\(![\w.]+\)\s*{[^}]*throw\s+new\s+Error/,
+        // Use non-backtracking patterns to prevent ReDoS - limit scope with specific chars
+        /if\s*\(![\w.]+?\)\s*{[^}]*throw\s+new\s+Error/,
         /function\s+validate\w+/,
-        /\w+\.validate\(/,
+        /[a-zA-Z_$][\w$]{0,50}\.validate\(/,
       ],
       minOccurrences: 3,
       description: 'Input validation before processing',
@@ -347,7 +347,7 @@ export class PatternLearner {
       {
         name: 'TypeScript Strict Mode',
         rule: 'Use TypeScript with strict mode enabled',
-        pattern: /^\/\*\* @type|interface\s+\w+|type\s+\w+\s*=/m,
+        pattern: /(?:^\/\*\* @type|interface\s+\w+|type\s+\w+\s*=)/m,
         level: 'strict' as const,
       },
       {

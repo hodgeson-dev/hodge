@@ -51,65 +51,105 @@ export class AutoDetectionService {
     });
 
     const results: DetectionResult[] = [];
-
-    // Load package.json once for all detection checks
     const packageJson = await this.loadPackageJson();
 
     for (const profile of profiles) {
-      try {
-        let detected: { match: boolean; reason: string };
-
-        if (!profile.detection) {
-          // No explicit detection rules - use applies_to globs if available
-          if (profile.frontmatter.applies_to && profile.frontmatter.applies_to.length > 0) {
-            detected = await this.checkAppliesTo(profile.frontmatter.applies_to);
-            this.logger.debug(`Using applies_to detection for ${profile.path}`, {
-              detected: detected.match,
-              reason: detected.reason,
-            });
-          } else {
-            // No detection rules and no applies_to - skip
-            this.logger.debug(
-              `Skipping profile without detection rules or applies_to: ${profile.path}`
-            );
-            continue;
-          }
-        } else {
-          // Has explicit detection rules
-          detected = await this.evaluateDetectionRules(profile.detection, packageJson);
-        }
-
-        results.push({
-          profile,
-          detected: detected.match,
-          reason: detected.reason,
-        });
-
-        this.logger.debug(`Detection result for ${profile.path}`, {
-          detected: detected.match,
-          reason: detected.reason,
-        });
-      } catch (error) {
-        // Log error but continue with other profiles
-        this.logger.warn(`Detection failed for ${profile.path}`, {
-          error: error instanceof Error ? error.message : String(error),
-        });
-
-        results.push({
-          profile,
-          detected: false,
-          reason: `Detection error: ${error instanceof Error ? error.message : String(error)}`,
-        });
+      const result = await this.detectSingleProfile(profile, packageJson);
+      if (result) {
+        results.push(result);
       }
     }
 
+    this.logDetectionSummary(results);
+    return results;
+  }
+
+  /**
+   * Detect a single profile
+   */
+  private async detectSingleProfile(
+    profile: ProfileEntry,
+    packageJson: Record<string, unknown> | null
+  ): Promise<DetectionResult | null> {
+    try {
+      const detected = await this.runProfileDetection(profile, packageJson);
+
+      if (!detected) {
+        return null; // Skip profiles without detection rules
+      }
+
+      this.logger.debug(`Detection result for ${profile.path}`, {
+        detected: detected.match,
+        reason: detected.reason,
+      });
+
+      return {
+        profile,
+        detected: detected.match,
+        reason: detected.reason,
+      };
+    } catch (error) {
+      return this.createErrorResult(profile, error);
+    }
+  }
+
+  /**
+   * Run detection for a profile
+   */
+  private async runProfileDetection(
+    profile: ProfileEntry,
+    packageJson: Record<string, unknown> | null
+  ): Promise<{ match: boolean; reason: string } | null> {
+    if (!profile.detection) {
+      return this.detectViaAppliesTo(profile);
+    }
+
+    return await this.evaluateDetectionRules(profile.detection, packageJson);
+  }
+
+  /**
+   * Detect using applies_to globs
+   */
+  private async detectViaAppliesTo(
+    profile: ProfileEntry
+  ): Promise<{ match: boolean; reason: string } | null> {
+    if (profile.frontmatter.applies_to && profile.frontmatter.applies_to.length > 0) {
+      const detected = await this.checkAppliesTo(profile.frontmatter.applies_to);
+      this.logger.debug(`Using applies_to detection for ${profile.path}`, {
+        detected: detected.match,
+        reason: detected.reason,
+      });
+      return detected;
+    }
+
+    this.logger.debug(`Skipping profile without detection rules or applies_to: ${profile.path}`);
+    return null;
+  }
+
+  /**
+   * Create error result for failed detection
+   */
+  private createErrorResult(profile: ProfileEntry, error: unknown): DetectionResult {
+    this.logger.warn(`Detection failed for ${profile.path}`, {
+      error: error instanceof Error ? error.message : String(error),
+    });
+
+    return {
+      profile,
+      detected: false,
+      reason: `Detection error: ${error instanceof Error ? error.message : String(error)}`,
+    };
+  }
+
+  /**
+   * Log detection summary
+   */
+  private logDetectionSummary(results: DetectionResult[]): void {
     const detectedCount = results.filter((r) => r.detected).length;
     this.logger.debug('Auto-detection complete', {
       total: results.length,
       detected: detectedCount,
     });
-
-    return results;
   }
 
   /**
@@ -123,77 +163,15 @@ export class AutoDetectionService {
     rules: DetectionRules,
     packageJson: Record<string, unknown> | null
   ): Promise<{ match: boolean; reason: string }> {
-    const matchMode = rules.match || 'any'; // Default to 'any' (OR logic)
+    const matchMode = rules.match || 'any';
     const checks: { type: string; matched: boolean; details: string }[] = [];
 
-    // Check files
-    if (rules.files && rules.files.length > 0) {
-      const fileResults = await Promise.all(
-        rules.files.map(async (file) => {
-          const filePath = path.join(this.projectRoot, file);
-          const exists = await fs.pathExists(filePath);
-          return { file, exists };
-        })
-      );
-
-      const matchedFiles = fileResults.filter((r) => r.exists);
-
-      if (matchedFiles.length > 0) {
-        checks.push({
-          type: 'files',
-          matched: true,
-          details: `Found: ${matchedFiles.map((r) => r.file).join(', ')}`,
-        });
-      } else {
-        checks.push({
-          type: 'files',
-          matched: false,
-          details: `Not found: ${rules.files.join(', ')}`,
-        });
-      }
-    }
-
-    // Check dependencies
-    if (rules.dependencies && rules.dependencies.length > 0) {
-      if (!packageJson) {
-        checks.push({
-          type: 'dependencies',
-          matched: false,
-          details: 'No package.json found',
-        });
-      } else {
-        const allDeps = {
-          ...(packageJson.dependencies || {}),
-          ...(packageJson.devDependencies || {}),
-        };
-
-        const matchedDeps = rules.dependencies.filter((dep) => dep in allDeps);
-
-        if (matchedDeps.length > 0) {
-          checks.push({
-            type: 'dependencies',
-            matched: true,
-            details: `Found: ${matchedDeps.join(', ')}`,
-          });
-        } else {
-          checks.push({
-            type: 'dependencies',
-            matched: false,
-            details: `Not found: ${rules.dependencies.join(', ')}`,
-          });
-        }
-      }
-    }
+    // Run all checks
+    await this.checkFiles(rules, checks);
+    this.checkDependencies(rules, packageJson, checks);
 
     // Evaluate match logic
-    let finalMatch: boolean;
-    if (matchMode === 'all') {
-      // AND logic: all checks must pass
-      finalMatch = checks.length > 0 && checks.every((c) => c.matched);
-    } else {
-      // OR logic: at least one check must pass
-      finalMatch = checks.some((c) => c.matched);
-    }
+    const finalMatch = this.evaluateMatchLogic(matchMode, checks);
 
     // Build reason string
     const matchedChecks = checks.filter((c) => c.matched);
@@ -211,6 +189,98 @@ export class AutoDetectionService {
     }
 
     return { match: finalMatch, reason };
+  }
+
+  /**
+   * Check files existence
+   */
+  private async checkFiles(
+    rules: DetectionRules,
+    checks: { type: string; matched: boolean; details: string }[]
+  ): Promise<void> {
+    if (!rules.files || rules.files.length === 0) {
+      return;
+    }
+
+    const fileResults = await Promise.all(
+      rules.files.map(async (file) => {
+        const filePath = path.join(this.projectRoot, file);
+        const exists = await fs.pathExists(filePath);
+        return { file, exists };
+      })
+    );
+
+    const matchedFiles = fileResults.filter((r) => r.exists);
+
+    if (matchedFiles.length > 0) {
+      checks.push({
+        type: 'files',
+        matched: true,
+        details: `Found: ${matchedFiles.map((r) => r.file).join(', ')}`,
+      });
+    } else {
+      checks.push({
+        type: 'files',
+        matched: false,
+        details: `Not found: ${rules.files.join(', ')}`,
+      });
+    }
+  }
+
+  /**
+   * Check dependencies
+   */
+  private checkDependencies(
+    rules: DetectionRules,
+    packageJson: Record<string, unknown> | null,
+    checks: { type: string; matched: boolean; details: string }[]
+  ): void {
+    if (!rules.dependencies || rules.dependencies.length === 0) {
+      return;
+    }
+
+    if (!packageJson) {
+      checks.push({
+        type: 'dependencies',
+        matched: false,
+        details: 'No package.json found',
+      });
+      return;
+    }
+
+    const allDeps = {
+      ...(packageJson.dependencies || {}),
+      ...(packageJson.devDependencies || {}),
+    };
+
+    const matchedDeps = rules.dependencies.filter((dep) => dep in allDeps);
+
+    if (matchedDeps.length > 0) {
+      checks.push({
+        type: 'dependencies',
+        matched: true,
+        details: `Found: ${matchedDeps.join(', ')}`,
+      });
+    } else {
+      checks.push({
+        type: 'dependencies',
+        matched: false,
+        details: `Not found: ${rules.dependencies.join(', ')}`,
+      });
+    }
+  }
+
+  /**
+   * Evaluate match logic based on mode
+   */
+  private evaluateMatchLogic(
+    matchMode: string,
+    checks: { type: string; matched: boolean; details: string }[]
+  ): boolean {
+    if (matchMode === 'all') {
+      return checks.length > 0 && checks.every((c) => c.matched);
+    }
+    return checks.some((c) => c.matched);
   }
 
   /**
