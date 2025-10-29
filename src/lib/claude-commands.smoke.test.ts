@@ -260,3 +260,46 @@ describe('[smoke] explore.md template - Phase 3 preview format', () => {
     expect(exploreTemplate).toContain('d) ➖ Simplify certain areas');
   });
 });
+
+describe('[smoke] ship.md template - --skip-tests parameter support (HODGE-361)', () => {
+  it('should document --skip-tests in frontmatter argument-hint', () => {
+    const shipTemplate = readFileSync(join(__dirname, '../../.claude/commands/ship.md'), 'utf-8');
+
+    expect(shipTemplate).toContain('argument-hint: <feature-id> [--skip-tests]');
+  });
+
+  it('should parse --skip-tests flag in Step 1 bash logic', () => {
+    const shipTemplate = readFileSync(join(__dirname, '../../.claude/commands/ship.md'), 'utf-8');
+
+    // Check for flag parsing logic
+    expect(shipTemplate).toContain('raw_feature="{{feature}}"');
+    expect(shipTemplate).toContain('skip_tests_flag=""');
+    expect(shipTemplate).toContain('if [[ "$raw_feature" == *"--skip-tests"* ]]');
+    expect(shipTemplate).toContain('skip_tests_flag="--skip-tests"');
+  });
+
+  it('should pass skip_tests_flag variable to hodge ship commands', () => {
+    const shipTemplate = readFileSync(join(__dirname, '../../.claude/commands/ship.md'), 'utf-8');
+
+    // Check both locations where hodge ship is called
+    expect(shipTemplate).toContain('hodge ship "$feature" $skip_tests_flag');
+  });
+
+  it('should document --skip-tests usage in troubleshooting section', () => {
+    const shipTemplate = readFileSync(join(__dirname, '../../.claude/commands/ship.md'), 'utf-8');
+
+    expect(shipTemplate).toContain('Need to skip quality gates?');
+    expect(shipTemplate).toContain('/ship {{feature}} --skip-tests');
+    expect(shipTemplate).toContain("Quality checks will still run but won't block the commit");
+    expect(shipTemplate).toContain('emergency hotfixes');
+    expect(shipTemplate).toContain('WIP state preservation');
+    expect(shipTemplate).toContain('broken test infrastructure');
+  });
+
+  it('should recommend fixing issues first in troubleshooting', () => {
+    const shipTemplate = readFileSync(join(__dirname, '../../.claude/commands/ship.md'), 'utf-8');
+
+    expect(shipTemplate).toContain('Not recommended for regular workflow');
+    expect(shipTemplate).toContain('prefer fixing issues first');
+  });
+});

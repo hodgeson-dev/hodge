@@ -1,0 +1,156 @@
+version: '1.0'
+feature: HODGE-361
+generated_at: '2025-10-29T03:44:24.504Z'
+recommended_tier: full
+change_analysis:
+  total_files: 12
+  total_lines: 409
+  breakdown:
+    implementation: 5
+    test: 1
+    documentation: 6
+    config: 0
+changed_files:
+  - path: .claude/commands/ship.md
+    lines_changed: 23
+    change_type: documentation
+  - path: .hodge/.session
+    lines_changed: 10
+    change_type: implementation
+  - path: .hodge/HODGE.md
+    lines_changed: 25
+    change_type: documentation
+  - path: .hodge/context.json
+    lines_changed: 8
+    change_type: implementation
+  - path: .hodge/features/HODGE-361/build/build-plan.md
+    lines_changed: 74
+    change_type: documentation
+  - path: .hodge/features/HODGE-361/explore/exploration.md
+    lines_changed: 151
+    change_type: documentation
+  - path: .hodge/features/HODGE-361/explore/test-intentions.md
+    lines_changed: 43
+    change_type: documentation
+  - path: .hodge/features/HODGE-361/ship-record.json
+    lines_changed: 11
+    change_type: implementation
+  - path: .hodge/id-counter.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/id-mappings.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/project_management.md
+    lines_changed: 13
+    change_type: documentation
+  - path: src/lib/claude-commands.smoke.test.ts
+    lines_changed: 43
+    change_type: test
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - test-pattern.md
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - ux-patterns/claude-code-slash-commands.yaml
+      - testing/vitest-3.x.yaml
+      - testing/general-test-standards.yaml
+      - languages/typescript-5.x.yaml
+      - languages/general-coding-standards.yaml
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed
+scope:
+  type: feature
+  target: HODGE-361
+  fileCount: 12
+critical_files:
+  algorithm: risk-weighted-v1.0
+  total_files: 12
+  top_n: 10
+  files:
+    - path: .hodge/features/HODGE-361/build/build-plan.md
+      rank: 1
+      score: 87
+      risk_factors:
+        - new file
+    - path: .hodge/features/HODGE-361/explore/exploration.md
+      rank: 2
+      score: 75
+      risk_factors:
+        - medium change (151 lines)
+        - new file
+    - path: .hodge/features/HODGE-361/explore/test-intentions.md
+      rank: 3
+      score: 72
+      risk_factors:
+        - new file
+    - path: .hodge/project_management.md
+      rank: 4
+      score: 57
+      risk_factors:
+        - new file
+    - path: .hodge/features/HODGE-361/ship-record.json
+      rank: 5
+      score: 56
+      risk_factors:
+        - new file
+    - path: .hodge/id-mappings.json
+      rank: 6
+      score: 52
+      risk_factors:
+        - new file
+    - path: src/lib/claude-commands.smoke.test.ts
+      rank: 7
+      score: 47
+      risk_factors:
+        - 1 warning
+        - new file
+        - test file (lower priority)
+    - path: .claude/commands/ship.md
+      rank: 8
+      score: 37
+      risk_factors:
+        - 1 warning
+    - path: .hodge/HODGE.md
+      rank: 9
+      score: 13
+      risk_factors: []
+    - path: .hodge/.session
+      rank: 10
+      score: 5
+      risk_factors: []

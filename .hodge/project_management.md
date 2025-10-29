@@ -164,7 +164,35 @@ HODGE-004 (ID Management)
   - Define test intentions
   - Make architectural decisions
 
+
+
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-29
+- **Updated**: 2025-10-29
+- **Description**: the `hodge ship` command has a "--skip-tests" option, but there is currently no way to call that from the current /ship AI slash command. Occasionally, we need a way to by-pass the quality gates and commit the work. To accomplish that, the /ship command should accept a "--skip-tests" parameter and then call `hodge ship HODGE-XXX --skip-tests`. The /ship AI template will need to be carefully reviewed to ensure that it properly supports shipping with and without the quality gates.
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
 ## Completed Features
+
+### HODGE-361
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-29
+- **Updated**: 2025-10-29
+- **Description**: the `hodge ship` command has a "--skip-tests" option, but there is currently no way to call that from the current /ship AI slash command. Occasionally, we need a way to by-pass the quality gates and commit the work. To accomplish that, the /ship command should accept a "--skip-tests" parameter and then call `hodge ship HODGE-XXX --skip-tests`. The /ship AI template will need to be carefully reviewed to ensure that it properly supports shipping with and without the quality gates.
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+- **Completed**: 2025-10-29
+
+
 
 ### HODGE-360
 - **Status**: shipped

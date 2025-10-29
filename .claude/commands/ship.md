@@ -1,6 +1,6 @@
 ---
 description: Create commit, run final checks, and ship feature
-argument-hint: <feature-id>
+argument-hint: <feature-id> [--skip-tests]
 ---
 
 ┌─────────────────────────────────────────────────────────┐
@@ -46,8 +46,18 @@ Remaining:
 First, analyze the git changes to understand what was modified:
 
 ```bash
+# Parse feature argument and extract --skip-tests flag if present
+raw_feature="{{feature}}"
+skip_tests_flag=""
+if [[ "$raw_feature" == *"--skip-tests"* ]]; then
+    skip_tests_flag="--skip-tests"
+    feature="${raw_feature//--skip-tests/}"
+    feature="${feature// /}"
+else
+    feature="$raw_feature"
+fi
+
 # Check if feature is ready
-feature="{{feature}}"
 if [ ! -d ".hodge/features/$feature/harden" ]; then
     echo "⚠️ Feature has not been hardened yet"
     echo "Run: hodge harden $feature"
@@ -191,7 +201,7 @@ Use the Write tool to save the approved message to both ui.md AND state.json (Wr
 
 Finally, run ship with the message (it will detect and use the edited state):
 ```bash
-hodge ship "{{feature}}"
+hodge ship "$feature" $skip_tests_flag
 ```
 
 **If (r) Regenerate:**
@@ -246,7 +256,7 @@ Then use the Write tool to save their edited version to state files (Write tool 
 
 Finally, run ship with the edited message:
 ```bash
-hodge ship "{{feature}}"
+hodge ship "$feature" $skip_tests_flag
 ```
 
 **If (c) Cancel:**
@@ -669,4 +679,7 @@ Great work! Feature successfully shipped. ✅
 ## Troubleshooting
 - **Tests failing?** Fix them first with `/build {{feature}}`
 - **Not hardened?** Run `/harden {{feature}}` first
-- **Need to skip tests?** Add `--skip-tests` (not recommended)
+- **Need to skip quality gates?** Use `/ship {{feature}} --skip-tests`
+  - Quality checks will still run but won't block the commit
+  - Use for: emergency hotfixes, WIP state preservation, broken test infrastructure
+  - Not recommended for regular workflow - prefer fixing issues first
