@@ -16,7 +16,13 @@ import * as semver from 'semver';
 import { createCommandLogger } from './logger.js';
 import type { TierRecommendation } from './review-tier-classifier.js';
 import type { GitDiffResult } from './git-diff-analyzer.js';
-import type { ReviewManifest, ChangedFile, ManifestContext } from '../types/review-manifest.js';
+import type {
+  ReviewManifest,
+  ChangedFile,
+  ManifestContext,
+  CriticalFilesSection,
+} from '../types/review-manifest.js';
+import type { CriticalFilesReport } from './critical-file-selector.js';
 
 /**
  * Service for generating review manifests
@@ -30,6 +36,7 @@ export class ReviewManifestGenerator {
    * Generate complete review manifest
    *
    * HODGE-344.2: Enhanced to support optional file list for file-based reviews
+   * HODGE-360: Enhanced to include critical files section when provided
    *
    * @param feature - Feature ID
    * @param changedFiles - Git diff results
@@ -37,6 +44,7 @@ export class ReviewManifestGenerator {
    * @param options - Optional configuration
    * @param options.fileList - Optional explicit file list for file-based reviews
    * @param options.scope - Optional scope metadata for traceability
+   * @param options.criticalFiles - Optional critical files analysis for risk-based review
    * @returns Review manifest
    */
   generateManifest(
@@ -49,6 +57,7 @@ export class ReviewManifestGenerator {
         type: 'file' | 'directory' | 'commits' | 'feature';
         target: string;
       };
+      criticalFiles?: CriticalFilesReport;
     }
   ): ReviewManifest {
     this.logger.debug('Generating review manifest', {
@@ -85,6 +94,14 @@ export class ReviewManifestGenerator {
         fileCount: changedFiles.length,
       };
       this.logger.debug('Added scope metadata to manifest', { scope: manifest.scope });
+    }
+
+    // Add critical files section if provided (HODGE-360)
+    if (options?.criticalFiles) {
+      manifest.critical_files = this.buildCriticalFilesSection(options.criticalFiles);
+      this.logger.debug('Added critical files section to manifest', {
+        topFilesCount: manifest.critical_files.top_n,
+      });
     }
 
     this.logger.debug('Manifest generated', { tier: recommendation.tier });
@@ -436,5 +453,25 @@ export class ReviewManifestGenerator {
     }
 
     return context;
+  }
+
+  /**
+   * Build critical files section from CriticalFilesReport (HODGE-360)
+   *
+   * @param report - Critical files analysis report
+   * @returns Critical files section for manifest
+   */
+  private buildCriticalFilesSection(report: CriticalFilesReport): CriticalFilesSection {
+    return {
+      algorithm: report.algorithm,
+      total_files: report.allFiles.length,
+      top_n: report.topFiles.length,
+      files: report.topFiles.map((file, index) => ({
+        path: file.path,
+        rank: index + 1,
+        score: file.score,
+        risk_factors: file.riskFactors,
+      })),
+    };
   }
 }

@@ -65,20 +65,10 @@ export class ReviewEngineService {
     const changeStats = await getFileChangeStats(fileList);
     this.logger.debug('Got file change stats', { statsCount: changeStats.length });
 
-    // 2. Generate manifest (determines what to review)
+    // 2. Classify review tier
     const classifier = new ReviewTierClassifier();
     const tierRecommendation = classifier.classifyChanges(changeStats);
-
-    const manifest = this.manifestGenerator.generateManifest(
-      options.scope.target, // Use target as feature identifier
-      changeStats,
-      tierRecommendation,
-      {
-        fileList,
-        scope: options.scope,
-      }
-    );
-    this.logger.debug('Generated manifest', { tier: manifest.recommended_tier });
+    this.logger.debug('Classified review tier', { tier: tierRecommendation.tier });
 
     // 3. Run quality checks (get raw tool results)
     const toolResults = await this.toolchainService.runQualityChecks(fileList);
@@ -95,7 +85,20 @@ export class ReviewEngineService {
       });
     }
 
-    // 5. Package findings for AI (enrich with auto-fix info)
+    // 5. Generate manifest with critical files section (HODGE-360)
+    const manifest = this.manifestGenerator.generateManifest(
+      options.scope.target, // Use target as feature identifier
+      changeStats,
+      tierRecommendation,
+      {
+        fileList,
+        scope: options.scope,
+        criticalFiles: criticalReport, // Include critical files in manifest
+      }
+    );
+    this.logger.debug('Generated manifest', { tier: manifest.recommended_tier });
+
+    // 6. Package findings for AI (enrich with auto-fix info)
     return this.packageFindings(toolResults, criticalReport, manifest);
   }
 

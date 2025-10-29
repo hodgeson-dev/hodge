@@ -11,8 +11,6 @@ import * as yaml from 'js-yaml';
 import { createCommandLogger } from '../../lib/logger.js';
 import { GitDiffAnalyzer } from '../../lib/git-diff-analyzer.js';
 import { ReviewEngineService } from '../../lib/review-engine-service.js';
-import { CriticalFilesReportGenerator } from '../../lib/critical-files-report-generator.js';
-import type { CriticalFilesReport } from '../../lib/critical-file-selector.js';
 import type { ToolchainConfig } from '../../types/toolchain.js';
 import type { RawToolResult } from '../../types/toolchain.js';
 
@@ -56,11 +54,9 @@ export class HardenReview {
       await this.writeValidationResults(hardenDir, findings.rawToolResults);
       this.logger.info(chalk.green('✓ Quality checks complete\n'));
 
+      // HODGE-360: Manifest now includes critical_files section, no separate file needed
       this.logger.info(chalk.blue('📚 Generating review manifest...\n'));
       await this.writeManifest(hardenDir, findings.manifest);
-      if (findings.criticalFiles) {
-        await this.writeCriticalFiles(hardenDir, findings.criticalFiles);
-      }
 
       // 4. Display tier classification
       this.logger.info(chalk.green(`✓ Classification complete`));
@@ -68,7 +64,7 @@ export class HardenReview {
       this.logger.info('');
 
       // 5. Output summary for AI
-      this.displayReviewSummary(changedFiles);
+      this.displayReviewSummary(findings.manifest.critical_files !== undefined);
     } catch (error) {
       this.logger.error(
         chalk.red(
@@ -145,22 +141,16 @@ export class HardenReview {
   }
 
   /**
-   * Display review summary
+   * Display review summary (HODGE-360: Updated for manifest-only approach)
    */
-  private displayReviewSummary(
-    changedFiles: Array<{
-      path: string;
-      linesAdded: number;
-      linesDeleted: number;
-      linesChanged: number;
-    }>
-  ): void {
+  private displayReviewSummary(hasCriticalFiles: boolean): void {
     this.logger.info(chalk.bold('Review Context Ready:'));
-    this.logger.info(chalk.gray(`   review-manifest.yaml - Context files to load`));
+    this.logger.info(
+      chalk.gray(
+        `   review-manifest.yaml - Context files & ${hasCriticalFiles ? 'critical file priorities' : 'file list'}`
+      )
+    );
     this.logger.info(chalk.gray(`   validation-results.json - Tool diagnostics`));
-    if (changedFiles.length > 0) {
-      this.logger.info(chalk.gray(`   critical-files.md - Top files for deep review`));
-    }
     this.logger.info('');
     this.logger.info(chalk.green('✅ AI can now conduct comprehensive code review'));
   }
@@ -217,26 +207,12 @@ export class HardenReview {
   }
 
   /**
-   * Write review manifest
+   * Write review manifest (HODGE-360: Now includes critical_files section)
    */
   private async writeManifest(hardenDir: string, manifest: unknown): Promise<void> {
     const manifestPath = path.join(hardenDir, 'review-manifest.yaml');
     await fs.writeFile(manifestPath, yaml.dump(manifest, { lineWidth: 120, noRefs: true }));
     this.logger.info(chalk.green(`✓ Review manifest generated`));
     this.logger.info('');
-  }
-
-  /**
-   * Write critical files report
-   */
-  private async writeCriticalFiles(
-    hardenDir: string,
-    criticalFiles: CriticalFilesReport
-  ): Promise<void> {
-    this.logger.info(chalk.blue('🎯 Selecting critical files...\n'));
-    const reportGen = new CriticalFilesReportGenerator();
-    const criticalFilesMarkdown = reportGen.generateReport(criticalFiles, new Date().toISOString());
-    await fs.writeFile(path.join(hardenDir, 'critical-files.md'), criticalFilesMarkdown);
-    this.logger.info(chalk.green(`✓ Selected ${criticalFiles.topFiles.length} critical files\n`));
   }
 }

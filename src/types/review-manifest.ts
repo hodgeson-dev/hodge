@@ -50,6 +50,9 @@ export interface ReviewManifest {
 
   /** Optional scope metadata for file-based reviews (HODGE-344.2) */
   scope?: ScopeMetadata;
+
+  /** Optional critical files section for risk-based review prioritization (HODGE-360) */
+  critical_files?: CriticalFilesSection;
 }
 
 /**
@@ -135,4 +138,38 @@ export interface ContextFileList {
 
   /** Optional note */
   note?: string;
+}
+
+/**
+ * Critical files section with risk scoring (HODGE-360)
+ */
+export interface CriticalFilesSection {
+  /** Algorithm version for tracking */
+  algorithm: string;
+
+  /** Total files analyzed */
+  total_files: number;
+
+  /** Number of top files selected */
+  top_n: number;
+
+  /** Top N files ranked by risk score */
+  files: CriticalFileEntry[];
+}
+
+/**
+ * Single critical file entry with risk analysis (HODGE-360)
+ */
+export interface CriticalFileEntry {
+  /** File path relative to repository root */
+  path: string;
+
+  /** Rank in priority order (1 = highest priority) */
+  rank: number;
+
+  /** Risk score (higher = more critical) */
+  score: number;
+
+  /** Human-readable risk factors */
+  risk_factors: string[];
 }

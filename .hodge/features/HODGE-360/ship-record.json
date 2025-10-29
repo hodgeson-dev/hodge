@@ -1,0 +1,103 @@
+{
+  "feature": "HODGE-360",
+  "timestamp": "2025-10-29T03:09:07.684Z",
+  "issueId": null,
+  "pmTool": "linear",
+  "validationPassed": true,
+  "qualityResults": [
+    {
+      "type": "type_checking",
+      "tool": "typescript",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "errors": [],
+      "warnings": [],
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "type": "linting",
+      "tool": "eslint",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "errors": [],
+      "warnings": [],
+      "stdout": "/Users/michaelkelly/Projects/hodge/src/lib/review-manifest-generator.smoke.test.ts: line 0, col 0, Warning - File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override.\n\n1 problem\n",
+      "stderr": ""
+    },
+    {
+      "type": "testing",
+      "tool": "vitest",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "errors": [],
+      "warnings": [],
+      "stdout": "\n RUN  v3.2.4 /Users/michaelkelly/Projects/hodge\n\n··················································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································{\"level\":\"warn\",\"time\":\"2025-10-29T03:09:05.789Z\",\"name\":\"pm-adapter\",\"timestamp\":\"2025-10-29T03:09:05.789Z\",\"enableConsole\":false,\"msg\":\"Failed to load PM overrides\"}\n················{\"level\":\"info\",\"time\":\"2025-10-29T03:09:05.804Z\",\"msg\":\"Process terminated\"}\n·····························································································································································································································································································································\n\n Test Files  131 passed (131)\n      Tests  1343 passed (1343)\n   Start at  20:08:52\n   Duration  14.90s (transform 2.36s, setup 0ms, collect 15.77s, tests 36.46s, environment 19ms, prepare 10.82s)\n\n",
+      "stderr": "(node:55156) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:55163) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\nfatal: ambiguous argument 'HEAD~1': unknown revision or path not in the working tree.\nUse '--' to separate paths from revisions, like this:\n'git <command> [<revision>...] -- [<file>...]'\nfatal: ambiguous argument 'HEAD~1': unknown revision or path not in the working tree.\nUse '--' to separate paths from revisions, like this:\n'git <command> [<revision>...] -- [<file>...]'\nfatal: ambiguous argument 'HEAD~1': unknown revision or path not in the working tree.\nUse '--' to separate paths from revisions, like this:\n'git <command> [<revision>...] -- [<file>...]'\nfatal: ambiguous argument 'HEAD~1': unknown revision or path not in the working tree.\nUse '--' to separate paths from revisions, like this:\n'git <command> [<revision>...] -- [<file>...]'\nfatal: ambiguous argument 'HEAD~1': unknown revision or path not in the working tree.\nUse '--' to separate paths from revisions, like this:\n'git <command> [<revision>...] -- [<file>...]'\n(node:55694) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:56028) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:56119) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:56124) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:56135) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\nfatal: No names found, cannot describe anything.\n(node:56414) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\nfatal: No names found, cannot describe anything.\n(node:56451) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:56539) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:56550) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:56608) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:56609) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:56623) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:56644) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:56655) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n(node:56734) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:56779) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:56804) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:56874) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:56902) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:56911) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n"
+    },
+    {
+      "type": "formatting",
+      "tool": "prettier",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "errors": [],
+      "warnings": [],
+      "stdout": "Checking formatting...\nAll matched files use Prettier code style!\n",
+      "stderr": ""
+    },
+    {
+      "type": "complexity",
+      "tool": "none",
+      "skipped": true,
+      "reason": "No tools configured for this check type"
+    },
+    {
+      "type": "code_smells",
+      "tool": "none",
+      "skipped": true,
+      "reason": "No tools configured for this check type"
+    },
+    {
+      "type": "duplication",
+      "tool": "jscpd",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 1,
+      "errors": [],
+      "warnings": [
+        "Clone found ("
+      ],
+      "stdout": "Clone found (typescript):\n - \u001b[1m\u001b[32msrc/lib/review-manifest-generator.smoke.test.ts\u001b[39m\u001b[22m [266:64 - 282:11] (16 lines, 175 tokens)\n   \u001b[1m\u001b[32msrc/lib/review-manifest-generator.smoke.test.ts\u001b[39m\u001b[22m [178:55 - 194:11]\n\n\u001b[90m┌────────────\u001b[39m\u001b[90m┬────────────────\u001b[39m\u001b[90m┬─────────────\u001b[39m\u001b[90m┬──────────────\u001b[39m\u001b[90m┬──────────────\u001b[39m\u001b[90m┬──────────────────\u001b[39m\u001b[90m┬───────────────────┐\u001b[39m\n\u001b[90m│\u001b[39m\u001b[31m Format     \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Files analyzed \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Total lines \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Total tokens \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Clones found \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Duplicated lines \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Duplicated tokens \u001b[39m\u001b[90m│\u001b[39m\n\u001b[90m├────────────\u001b[39m\u001b[90m┼────────────────\u001b[39m\u001b[90m┼─────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────────\u001b[39m\u001b[90m┼───────────────────┤\u001b[39m\n\u001b[90m│\u001b[39m typescript \u001b[90m│\u001b[39m 5              \u001b[90m│\u001b[39m 1419        \u001b[90m│\u001b[39m 10800        \u001b[90m│\u001b[39m 1            \u001b[90m│\u001b[39m 16 (1.13%)       \u001b[90m│\u001b[39m 175 (1.62%)       \u001b[90m│\u001b[39m\n\u001b[90m├────────────\u001b[39m\u001b[90m┼────────────────\u001b[39m\u001b[90m┼─────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────────\u001b[39m\u001b[90m┼───────────────────┤\u001b[39m\n\u001b[90m│\u001b[39m \u001b[1mTotal:\u001b[22m     \u001b[90m│\u001b[39m 5              \u001b[90m│\u001b[39m 1419        \u001b[90m│\u001b[39m 10800        \u001b[90m│\u001b[39m 1            \u001b[90m│\u001b[39m 16 (1.13%)       \u001b[90m│\u001b[39m 175 (1.62%)       \u001b[90m│\u001b[39m\n\u001b[90m└────────────\u001b[39m\u001b[90m┴────────────────\u001b[39m\u001b[90m┴─────────────\u001b[39m\u001b[90m┴──────────────\u001b[39m\u001b[90m┴──────────────\u001b[39m\u001b[90m┴──────────────────\u001b[39m\u001b[90m┴───────────────────┘\u001b[39m\n\u001b[90mFound 1 clones.\u001b[39m\n\u001b[3m\u001b[90mDetection time:\u001b[39m\u001b[23m: 461.999ms\n",
+      "stderr": ""
+    },
+    {
+      "type": "architecture",
+      "tool": "dependency-cruiser",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 1,
+      "errors": [],
+      "warnings": [
+        "\n  warn no-orphans: "
+      ],
+      "stdout": "\n  warn no-orphans: src/lib/claude-commands.ts\n\nx 1 dependency violations (0 errors, 1 warnings). 35 modules, 86 dependencies cruised.\n\n",
+      "stderr": ""
+    },
+    {
+      "type": "security",
+      "tool": "semgrep",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "errors": [],
+      "warnings": [],
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "commitMessage": "feat(harden): consolidate critical files into review manifest\n\n## What Changed\n- Enhanced ReviewManifest interface with critical_files section (review-manifest.ts:74)\n- Added buildCriticalFilesSection() method to ReviewManifestGenerator (464 lines)\n- Updated ReviewEngineService to pass critical files data to manifest generator (line 96)\n- Fixed TypeScript error: removed unused changedFiles parameter from displayReviewSummary()\n- Updated /harden template to reference manifest critical_files instead of separate file\n- Added 2 smoke tests for critical_files functionality (lines 289-341)\n- Auto-generated claude-commands.ts synced from slash command updates\n\n## Why This Change\nHODGE-360 eliminates file duplication in the harden workflow by consolidating critical files analysis into the review-manifest.yaml. Previously, the same file metadata appeared in both critical-files.md (top 10 ranked files) and review-manifest.yaml (all changed files), creating redundancy and confusion.\n\nThe consolidated approach provides:\n- Single source of truth for file metadata in review-manifest.yaml\n- Reduced file count from 5 to 3 data files in harden directory\n- Cleaner harden directory with only essential data files\n- Backward compatible (critical_files is optional field)\n\n## Impact\n- Token efficiency: AI reads one manifest instead of multiple files\n- Maintainability: One place to update file prioritization logic\n- User experience: Cleaner harden directory, clearer workflow\n- Development velocity: Reduced cognitive load during code review\n- All 1343 tests passing, zero TypeScript errors\n- Production ready with 2 acceptable warnings (1.13% test duplication, auto-generated file orphan)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}

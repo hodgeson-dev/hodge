@@ -1,0 +1,175 @@
+version: '1.0'
+feature: HODGE-360
+generated_at: '2025-10-29T03:04:23.663Z'
+recommended_tier: full
+change_analysis:
+  total_files: 17
+  total_lines: 689
+  breakdown:
+    implementation: 10
+    test: 1
+    documentation: 6
+    config: 0
+changed_files:
+  - path: .claude/commands/harden.md
+    lines_changed: 33
+    change_type: documentation
+  - path: .hodge/.session
+    lines_changed: 10
+    change_type: implementation
+  - path: .hodge/HODGE.md
+    lines_changed: 24
+    change_type: documentation
+  - path: .hodge/context.json
+    lines_changed: 8
+    change_type: implementation
+  - path: .hodge/features/HODGE-360/build/build-plan.md
+    lines_changed: 68
+    change_type: documentation
+  - path: .hodge/features/HODGE-360/explore/exploration.md
+    lines_changed: 216
+    change_type: documentation
+  - path: .hodge/features/HODGE-360/explore/test-intentions.md
+    lines_changed: 27
+    change_type: documentation
+  - path: .hodge/features/HODGE-360/ship-record.json
+    lines_changed: 11
+    change_type: implementation
+  - path: .hodge/id-counter.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/id-mappings.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/project_management.md
+    lines_changed: 13
+    change_type: documentation
+  - path: src/commands/harden/harden-review.ts
+    lines_changed: 44
+    change_type: implementation
+  - path: src/lib/claude-commands.ts
+    lines_changed: 33
+    change_type: implementation
+  - path: src/lib/review-engine-service.ts
+    lines_changed: 29
+    change_type: implementation
+  - path: src/lib/review-manifest-generator.smoke.test.ts
+    lines_changed: 89
+    change_type: test
+  - path: src/lib/review-manifest-generator.ts
+    lines_changed: 39
+    change_type: implementation
+  - path: src/types/review-manifest.ts
+    lines_changed: 37
+    change_type: implementation
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - test-pattern.md
+      - error-boundary.md
+      - input-validation.md
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - ux-patterns/claude-code-slash-commands.yaml
+      - testing/vitest-3.x.yaml
+      - testing/general-test-standards.yaml
+      - languages/typescript-5.x.yaml
+      - languages/general-coding-standards.yaml
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed
+scope:
+  type: feature
+  target: HODGE-360
+  fileCount: 17
+critical_files:
+  algorithm: risk-weighted-v1.0
+  total_files: 17
+  top_n: 10
+  files:
+    - path: .hodge/features/HODGE-360/explore/exploration.md
+      rank: 1
+      score: 100
+      risk_factors:
+        - large change (216 lines)
+        - new file
+    - path: .hodge/features/HODGE-360/build/build-plan.md
+      rank: 2
+      score: 84
+      risk_factors:
+        - new file
+    - path: src/lib/review-manifest-generator.smoke.test.ts
+      rank: 3
+      score: 70
+      risk_factors:
+        - 1 warning
+        - new file
+        - test file (lower priority)
+    - path: src/types/review-manifest.ts
+      rank: 4
+      score: 69
+      risk_factors:
+        - new file
+    - path: .hodge/features/HODGE-360/explore/test-intentions.md
+      rank: 5
+      score: 64
+      risk_factors:
+        - new file
+    - path: .hodge/project_management.md
+      rank: 6
+      score: 57
+      risk_factors:
+        - new file
+    - path: .hodge/features/HODGE-360/ship-record.json
+      rank: 7
+      score: 56
+      risk_factors:
+        - new file
+    - path: .hodge/id-mappings.json
+      rank: 8
+      score: 52
+      risk_factors:
+        - new file
+    - path: .claude/commands/harden.md
+      rank: 9
+      score: 42
+      risk_factors:
+        - 1 warning
+    - path: src/lib/claude-commands.ts
+      rank: 10
+      score: 42
+      risk_factors:
+        - 1 warning

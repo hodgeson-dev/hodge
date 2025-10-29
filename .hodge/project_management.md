@@ -151,7 +151,35 @@ HODGE-004 (ID Management)
   - Define test intentions
   - Make architectural decisions
 
+
+
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-29
+- **Updated**: 2025-10-29
+- **Description**: during /harden, we are generating the following files. Do we need them all? Isn't there some duplication?* critical-files.md* harden-report.md* review-manifest.yaml* review-report.md* validation-results.json
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
 ## Completed Features
+
+### HODGE-360
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-29
+- **Updated**: 2025-10-29
+- **Description**: during /harden, we are generating the following files. Do we need them all? Isn't there some duplication?* critical-files.md* harden-report.md* review-manifest.yaml* review-report.md* validation-results.json
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+- **Completed**: 2025-10-29
+
+
 
 ### HODGE-359.1
 - **Status**: shipped

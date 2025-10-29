@@ -113,12 +113,13 @@ hodge harden {{feature}} --review
 This command will:
 1. Analyze changed files (via git diff with line counts)
 2. Run quality checks (lint, typecheck, tests, etc.) and generate validation-results.json
-3. Select critical files for deep review and generate critical-files.md
+3. Select critical files for deep review (included in review-manifest.yaml)
 4. Classify changes into review tier (SKIP/QUICK/STANDARD/FULL)
 5. Filter relevant patterns and review profiles
 6. Generate review-manifest.yaml with:
    - Recommended tier and reason
    - Changed files list with line counts
+   - Critical files section with risk-ranked priorities
    - Context files to load (organized by precedence)
    - Matched patterns and profiles
 
@@ -165,10 +166,22 @@ This contains structured results from all quality checks with extracted errors a
 
 The JSON structure makes it easy to programmatically assess status and extract specific issues.
 
-### Step 2.6: Read Critical Files Manifest (HODGE-341.3)
-```bash
-# Read critical file analysis
-cat .hodge/features/{{feature}}/harden/critical-files.md
+### Step 2.6: Read Critical Files Section (HODGE-360)
+Critical files are now included in review-manifest.yaml under the `critical_files` section (already loaded in Step 2).
+
+**Check if critical_files section exists in the manifest you read:**
+```yaml
+critical_files:
+  algorithm: "risk-weighted-v1.0"
+  total_files: 46
+  top_n: 10
+  files:
+    - path: "src/lib/toolchain-service.ts"
+      rank: 1
+      score: 116
+      risk_factors:
+        - "1 blocker issue"
+        - "large change (227 lines)"
 ```
 
 This shows which files the algorithm scored as highest risk based on:
@@ -177,11 +190,9 @@ This shows which files the algorithm scored as highest risk based on:
 - **Change size**: Lines modified
 - **Critical paths**: Configured + inferred critical infrastructure
 
-The report shows:
+The section shows:
 - Top N files (default 10) ranked by risk score
-- Risk factors for each file
-- Inferred critical paths (files with >20 imports)
-- Configured critical paths (from .hodge/toolchain.yaml)
+- Risk factors for each file explaining the score
 
 ────────────────────────────────────────────────────────────
 📍 Step 3 of 7: Choose Review Tier
@@ -313,8 +324,8 @@ Remaining:
 4. **Consider profiles/** - Does code follow language/framework best practices?
 5. **Learn from lessons/** (FULL tier) - Have we made this mistake before?
 
-**For HODGE-341.3 Risk-Based Review**:
-- **Critical files** (from critical-files.md): Deep review against ALL loaded context
+**For HODGE-360 Risk-Based Review**:
+- **Critical files** (from manifest critical_files section): Deep review against ALL loaded context
 - **Files with tool issues** (from validation-results.json): Check specific violations
 - **Other changed files**: Scan for obvious standards violations
 

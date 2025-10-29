@@ -284,4 +284,93 @@ describe('ReviewManifestGenerator - Smoke Tests', () => {
     // No file list provided = feature-based review (backward compatibility)
     expect(manifest.scope).toBeUndefined();
   });
+
+  // HODGE-360: Critical files section tests
+  smokeTest('should include critical_files section when provided', () => {
+    const generator = new ReviewManifestGenerator();
+    const changes: GitDiffResult[] = [
+      { path: 'src/lib/test.ts', linesAdded: 50, linesDeleted: 20, linesChanged: 70 },
+      { path: 'src/lib/other.ts', linesAdded: 10, linesDeleted: 5, linesChanged: 15 },
+    ];
+    const recommendation: TierRecommendation = {
+      tier: 'standard',
+      reason: 'Implementation changes',
+      metrics: {
+        totalFiles: 2,
+        totalLines: 85,
+        fileTypeBreakdown: { implementation: 2, test: 0, documentation: 0, config: 0 },
+        hasCriticalPaths: false,
+      },
+    };
+
+    const mockCriticalFiles = {
+      topFiles: [
+        {
+          path: 'src/lib/test.ts',
+          score: 100,
+          riskFactors: ['large change (70 lines)', 'high complexity'],
+          linesChanged: 70,
+          importFanIn: 5,
+          severityCounts: new Map(),
+        },
+      ],
+      allFiles: [
+        {
+          path: 'src/lib/test.ts',
+          score: 100,
+          riskFactors: ['large change (70 lines)', 'high complexity'],
+          linesChanged: 70,
+          importFanIn: 5,
+          severityCounts: new Map(),
+        },
+        {
+          path: 'src/lib/other.ts',
+          score: 25,
+          riskFactors: ['small change (15 lines)'],
+          linesChanged: 15,
+          importFanIn: 1,
+          severityCounts: new Map(),
+        },
+      ],
+      inferredCriticalPaths: [],
+      configuredCriticalPaths: [],
+      algorithm: 'risk-weighted-v1.0',
+    };
+
+    const manifest = generator.generateManifest('HODGE-360', changes, recommendation, {
+      criticalFiles: mockCriticalFiles,
+    });
+
+    expect(manifest.critical_files).toBeDefined();
+    expect(manifest.critical_files?.algorithm).toBe('risk-weighted-v1.0');
+    expect(manifest.critical_files?.total_files).toBe(2);
+    expect(manifest.critical_files?.top_n).toBe(1);
+    expect(manifest.critical_files?.files).toHaveLength(1);
+    expect(manifest.critical_files?.files[0].path).toBe('src/lib/test.ts');
+    expect(manifest.critical_files?.files[0].rank).toBe(1);
+    expect(manifest.critical_files?.files[0].score).toBe(100);
+    expect(manifest.critical_files?.files[0].risk_factors).toContain('large change (70 lines)');
+  });
+
+  smokeTest('should not include critical_files section when not provided', () => {
+    const generator = new ReviewManifestGenerator();
+    const changes: GitDiffResult[] = [
+      { path: 'src/lib/test.ts', linesAdded: 10, linesDeleted: 5, linesChanged: 15 },
+    ];
+    const recommendation: TierRecommendation = {
+      tier: 'quick',
+      reason: 'Small change',
+      metrics: {
+        totalFiles: 1,
+        totalLines: 15,
+        fileTypeBreakdown: { implementation: 1, test: 0, documentation: 0, config: 0 },
+        hasCriticalPaths: false,
+      },
+    };
+
+    const manifest = generator.generateManifest('TEST-005', changes, recommendation);
+
+    // No critical files provided (backward compatibility)
+    expect(manifest.critical_files).toBeUndefined();
+  });
 });
