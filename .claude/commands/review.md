@@ -58,7 +58,7 @@ The CLI will:
 - Generate review manifest with FULL tier and scope metadata
 - Run quality checks (scoped where possible, project-wide for tools like tsc)
 - Create review directory at `.hodge/reviews/review-{scope}-{target}-{timestamp}/`
-- Write `review-manifest.yaml` and `quality-checks.md`
+- Write `review-manifest.yaml` and `validation-results.json`
 - Output directory path for you to read
 
 ## Step 2: Read Review Files
@@ -67,7 +67,7 @@ The CLI outputs the review directory path. Read the generated files:
 
 ```bash
 cat .hodge/reviews/review-{scope}-{target}-{timestamp}/review-manifest.yaml
-cat .hodge/reviews/review-{scope}-{target}-{timestamp}/quality-checks.md
+cat .hodge/reviews/review-{scope}-{target}-{timestamp}/validation-results.json
 ```
 
 **Important**: The exact directory name will be in the CLI output. Use that path.
@@ -93,7 +93,7 @@ The review manifest includes context files to load. For `/review`, always use **
 
 ## Step 4: Interpret Findings and Present to User
 
-Parse `quality-checks.md` to understand what tools found:
+Parse `validation-results.json` to understand what tools found:
 
 **Your Analysis**:
 - Identify issues by severity (errors vs warnings)
@@ -120,14 +120,14 @@ I reviewed {N} files in {scope} and found:
 ```
 
 **No Issues Found**:
-If quality checks show all tools passed with no output, celebrate!
+If validation results show all tools with errorCount = 0 and warningCount = 0, celebrate!
 ```
 ✅ No issues found! All {N} files in {scope} meet quality standards.
 
-- Type checking: ✓ Passed
-- Linting: ✓ Passed
-- Testing: ✓ Passed
-- Formatting: ✓ Passed
+- Type checking: ✓ Passed (0 errors)
+- Linting: ✓ Passed (0 errors)
+- Testing: ✓ Passed (0 errors)
+- Formatting: ✓ Passed (0 errors)
 
 {Brief summary of what was checked}
 ```
@@ -322,7 +322,7 @@ If CLI warns about large scope (e.g., `--last 100` with 500 files), acknowledge:
 - User explicitly chose this scope, so respect their decision
 
 **Tool Failures**:
-If quality-checks.md shows tools skipped or failed:
+If validation-results.json shows tools skipped or with non-zero exit codes:
 - Explain what happened (tool not found, configuration issue)
 - Note that findings may be incomplete
 - Suggest installing missing tools if needed

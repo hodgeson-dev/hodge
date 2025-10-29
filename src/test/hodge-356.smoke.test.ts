@@ -14,6 +14,7 @@ import { HardenService } from '../lib/harden-service.js';
 import { ShipService } from '../lib/ship-service.js';
 import { ToolchainService } from '../lib/toolchain-service.js';
 import type { RawToolResult } from '../types/toolchain.js';
+import { isToolResultSuccessful } from '../types/toolchain.js';
 
 // HODGE-357.1: Create mock ToolchainService to prevent spawning real quality check processes
 let mockToolchainService: any;
@@ -41,18 +42,18 @@ describe('[smoke] HODGE-356: Standardize Quality Checking', () => {
       await validationsPromise;
     });
 
-    it('should use universal success flags (skipped or success)', () => {
+    it('should use universal success flags (skipped or errorCount)', () => {
       const mockResults: RawToolResult[] = [
-        { type: 'testing', tool: 'vitest', success: true, stdout: 'All tests passed' },
-        { type: 'linting', tool: 'eslint', success: false, stderr: 'Linting errors' },
+        { type: 'testing', tool: 'vitest', exitCode: 0, errorCount: 0, stdout: 'All tests passed' },
+        { type: 'linting', tool: 'eslint', exitCode: 1, errorCount: 5, stderr: 'Linting errors' },
         { type: 'testing', tool: 'vitest-integration', skipped: true, reason: 'Tests skipped' },
       ];
 
       const service = new HardenService(process.cwd(), mockToolchainService);
       const gateResults = service.checkQualityGates(mockResults);
 
-      // Should check success flags universally
-      expect(gateResults.allPassed).toBe(false); // linting failed
+      // Should check errorCount flags universally
+      expect(gateResults.allPassed).toBe(false); // linting failed (errorCount > 0)
       expect(gateResults.results).toEqual(mockResults);
     });
 
@@ -73,7 +74,8 @@ describe('[smoke] HODGE-356: Standardize Quality Checking', () => {
       const service = new ShipService(process.cwd(), mockToolchainService);
 
       // Type check: runQualityGates returns Promise<RawToolResult[]>
-      const qualityGatesPromise = service.runQualityGates({ skipTests: false });
+      // HODGE-359.1: Updated to pass optional feature parameter
+      const qualityGatesPromise = service.runQualityGates(undefined, { skipTests: false });
 
       expect(qualityGatesPromise).toBeInstanceOf(Promise);
       // Await to prevent unhandled rejection
@@ -83,8 +85,8 @@ describe('[smoke] HODGE-356: Standardize Quality Checking', () => {
     it('should use qualityResults in ship record (not shipChecks)', () => {
       const service = new ShipService(process.cwd(), mockToolchainService);
       const mockResults: RawToolResult[] = [
-        { type: 'testing', tool: 'vitest', success: true },
-        { type: 'linting', tool: 'eslint', success: true },
+        { type: 'testing', tool: 'vitest', errorCount: 0 },
+        { type: 'linting', tool: 'eslint', errorCount: 0 },
       ];
 
       const shipRecord = service.generateShipRecord({
@@ -103,9 +105,9 @@ describe('[smoke] HODGE-356: Standardize Quality Checking', () => {
     it('should generate release notes using qualityResults', () => {
       const service = new ShipService(process.cwd(), mockToolchainService);
       const mockResults: RawToolResult[] = [
-        { type: 'testing', tool: 'vitest', success: true },
-        { type: 'linting', tool: 'eslint', success: true },
-        { type: 'type_checking', tool: 'tsc', success: true },
+        { type: 'testing', tool: 'vitest', errorCount: 0 },
+        { type: 'linting', tool: 'eslint', errorCount: 0 },
+        { type: 'type_checking', tool: 'tsc', errorCount: 0 },
       ];
 
       const releaseNotes = service.generateReleaseNotes({
@@ -128,12 +130,19 @@ describe('[smoke] HODGE-356: Standardize Quality Checking', () => {
 
       // ESLint result
       const eslintResults: RawToolResult[] = [
-        { type: 'linting', tool: 'eslint', success: false, stderr: '94 errors, 319 warnings' },
+        {
+          type: 'linting',
+          tool: 'eslint',
+          exitCode: 1,
+          errorCount: 94,
+          warningCount: 319,
+          stderr: '94 errors, 319 warnings',
+        },
       ];
 
       // Ruff result (Python linter)
       const ruffResults: RawToolResult[] = [
-        { type: 'linting', tool: 'ruff', success: false, stderr: '94 errors found' },
+        { type: 'linting', tool: 'ruff', exitCode: 1, errorCount: 94, stderr: '94 errors found' },
       ];
 
       // Checkstyle result (Java linter)
@@ -141,12 +150,13 @@ describe('[smoke] HODGE-356: Standardize Quality Checking', () => {
         {
           type: 'linting',
           tool: 'checkstyle',
-          success: false,
+          exitCode: 1,
+          errorCount: 94,
           stderr: '[ERROR] Found 94 violations',
         },
       ];
 
-      // All three should be handled identically (universal success check)
+      // All three should be handled identically (universal errorCount check)
       const eslintGates = service.checkQualityGates(eslintResults);
       const ruffGates = service.checkQualityGates(ruffResults);
       const checkstyleGates = service.checkQualityGates(checkstyleResults);
@@ -162,9 +172,9 @@ describe('[smoke] HODGE-356: Standardize Quality Checking', () => {
       const service = new ShipService(process.cwd(), mockToolchainService);
 
       const mixedResults: RawToolResult[] = [
-        { type: 'testing', tool: 'vitest', success: true },
-        { type: 'linting', tool: 'eslint', success: false }, // This blocks
-        { type: 'type_checking', tool: 'tsc', success: true },
+        { type: 'testing', tool: 'vitest', exitCode: 0, errorCount: 0 },
+        { type: 'linting', tool: 'eslint', exitCode: 1, errorCount: 3 }, // This blocks
+        { type: 'type_checking', tool: 'tsc', exitCode: 0, errorCount: 0 },
       ];
 
       const shipRecord = service.generateShipRecord({
@@ -177,13 +187,13 @@ describe('[smoke] HODGE-356: Standardize Quality Checking', () => {
       });
 
       expect(shipRecord.validationPassed).toBe(false);
-      expect(shipRecord.qualityResults.some((r) => !r.success && !r.skipped)).toBe(true);
+      expect(shipRecord.qualityResults.some((r) => !isToolResultSuccessful(r))).toBe(true);
     });
   });
 
   describe('Exit codes are universal', () => {
-    it('should treat success=true as passing (exit code 0)', () => {
-      const results: RawToolResult[] = [{ type: 'testing', tool: 'vitest', success: true }];
+    it('should treat errorCount=0 as passing (exit code 0)', () => {
+      const results: RawToolResult[] = [{ type: 'testing', tool: 'vitest', errorCount: 0 }];
 
       const service = new HardenService(process.cwd(), mockToolchainService);
       const gates = service.checkQualityGates(results);
@@ -191,8 +201,10 @@ describe('[smoke] HODGE-356: Standardize Quality Checking', () => {
       expect(gates.allPassed).toBe(true);
     });
 
-    it('should treat success=false as failing (exit code non-zero)', () => {
-      const results: RawToolResult[] = [{ type: 'testing', tool: 'vitest', success: false }];
+    it('should treat errorCount>0 as failing (exit code non-zero)', () => {
+      const results: RawToolResult[] = [
+        { type: 'testing', tool: 'vitest', exitCode: 1, errorCount: 2 },
+      ];
 
       const service = new HardenService(process.cwd(), mockToolchainService);
       const gates = service.checkQualityGates(results);

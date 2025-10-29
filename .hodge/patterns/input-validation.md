@@ -1,8 +1,8 @@
 # Input Validation
 
 **Category**: security
-**Frequency**: Used 3 times
-**Confidence**: 60%
+**Frequency**: Used 4 times
+**Confidence**: 80%
 
 ## Description
 Input validation before processing
@@ -38,5 +38,5 @@ if (!resolvedFeature) {
 - 
 
 ---
-*First seen: 2025-10-28T05:12:11.594Z*
-*Last used: 2025-10-28T05:12:11.596Z*
+*First seen: 2025-10-29T01:19:59.140Z*
+*Last used: 2025-10-29T01:19:59.150Z*

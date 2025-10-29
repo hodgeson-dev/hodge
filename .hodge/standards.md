@@ -341,6 +341,38 @@ interface ContextSummary {
 - Prefer integration tests over unit tests
 - Use real dependencies when possible
 
+### Test Organization and Naming
+**Enforcement: ALL PHASES (mandatory)**
+**⚠️ CRITICAL**: Tests must be co-located with the code they test and named by functionality.
+
+- **Correct Pattern**: Tests live next to the code they verify
+  - `src/lib/toolchain-service.ts`
+  - `src/lib/toolchain-service.smoke.test.ts`
+  - `src/lib/toolchain-service.integration.test.ts`
+
+- **Incorrect Pattern**: Feature-named tests (ANTI-PATTERN)
+  - ❌ `src/lib/hodge-359-1.smoke.test.ts`
+  - ❌ `src/test/feature-tests/hodge-400.test.ts`
+
+**Why Feature-Named Tests Are Anti-Patterns**:
+1. **Enable duplication**: Multiple features touching the same code create duplicate test files
+2. **Undiscoverable**: Developers modifying `toolchain-service.ts` won't find `hodge-359-1.smoke.test.ts`
+3. **Lose context**: Feature IDs become meaningless trivia after shipping
+4. **Poor documentation**: Filename doesn't describe what's being tested
+
+**Test File Naming Convention**:
+- Format: `<module-name>.<test-type>.test.ts`
+- Examples:
+  - `toolchain-service.smoke.test.ts` - Smoke tests for ToolchainService
+  - `harden-service.integration.test.ts` - Integration tests for HardenService
+  - `id-manager.test.ts` - General tests for IdManager
+
+**When Adding Tests**:
+- ✅ Add to existing test file for the module
+- ✅ Create new file if module has no tests yet
+- ❌ Create feature-named test files
+- ❌ Group tests by feature instead of functionality
+
 ### Test Isolation Requirement
 **Enforcement: ALL PHASES (mandatory)**
 **⚠️ CRITICAL**: Tests must NEVER modify the Hodge project's own `.hodge` directory.
@@ -620,6 +652,60 @@ Functions should not exceed 50 lines (excluding blank lines and comments).
   - `// TODO: [ship] Add proper error messages`
 - **No Naked TODOs**: Always include what needs to be done
 - **Review TODOs**: Check all TODOs before shipping
+
+### Feature ID Comments for AI Development
+**Enforcement: Build(suggested) → Harden(required) → Ship(mandatory)**
+
+Use feature ID comments **strategically** to provide AI development context. AI lacks persistent memory between sessions, so comments serve as contextual breadcrumbs.
+
+**DO use feature ID comments when:**
+- ✅ Removing or deprecating functionality (explain what replaced it)
+- ✅ Making architectural changes (connect to exploration/decisions)
+- ✅ Implementing non-obvious patterns (reference pattern docs)
+- ✅ The "why" is not clear from code alone
+
+**DON'T use feature ID comments for:**
+- ❌ New straightforward functions/methods
+- ❌ Routine implementations following established patterns
+- ❌ Every line touched during a feature
+- ❌ Bug fixes (unless architectural)
+
+**Format**:
+```typescript
+// HODGE-XXX: [Brief what/why - connects to exploration context]
+```
+
+**Examples**:
+
+✅ **Good** - Explains removal and replacement:
+```typescript
+// HODGE-359.1: validation-results.json is now the source of truth
+// quality-checks.md generation removed - AI reads structured JSON instead
+```
+
+✅ **Good** - Architectural change with context:
+```typescript
+// HODGE-341.2: Use registry-based detection for extensibility
+// Replaces hardcoded tool list - see exploration.md for rationale
+```
+
+❌ **Bad** - Obvious from code:
+```typescript
+// HODGE-359.1: Added errorCount field
+errorCount?: number;
+```
+
+❌ **Bad** - Routine implementation:
+```typescript
+// HODGE-XXX: Created new helper function
+function formatDate(date: Date): string { ... }
+```
+
+**Why this differs from human development**:
+- Humans have persistent memory of project context
+- Git history provides temporal context for humans
+- AI needs inline signposts to understand architectural evolution
+- Comments help AI connect code to exploration documents
 
 ## Code Quality Gates
 **Enforcement: Build(monitor) → Harden(warnings) → Ship(blocking)**

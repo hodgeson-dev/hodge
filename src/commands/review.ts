@@ -39,7 +39,6 @@ import { AutoFixService } from '../lib/auto-fix-service.js';
 import * as yaml from 'js-yaml';
 import type { ScopeMetadata } from '../types/review-manifest.js';
 import type { ReviewManifest } from '../types/review-manifest.js';
-import type { EnrichedToolResult } from '../types/review-engine.js';
 
 export interface ReviewCommandOptions {
   file?: string;
@@ -132,13 +131,18 @@ export class ReviewCommand {
 
     // Write structured output files for AI
     await this.writeManifest(reviewDir, findings.manifest);
-    await this.writeQualityChecks(reviewDir, findings.toolResults);
+
+    // HODGE-359.1: Write validation-results.json for AI consumption
+    await fs.writeFile(
+      path.join(reviewDir, 'validation-results.json'),
+      JSON.stringify(findings.toolResults, null, 2)
+    );
 
     // Output review directory path for AI (via stdout)
     console.log(`\n✅ Review files generated at: ${reviewDir}`);
     console.log(`\nAI: Read the following files to interpret findings:`);
     console.log(`  1. ${path.join(reviewDir, 'review-manifest.yaml')}`);
-    console.log(`  2. ${path.join(reviewDir, 'quality-checks.md')}`);
+    console.log(`  2. ${path.join(reviewDir, 'validation-results.json')}`);
   }
 
   /**
@@ -358,49 +362,6 @@ export class ReviewCommand {
     this.logger.debug(`Wrote manifest: ${manifestPath}`);
   }
 
-  /**
-   * Write quality checks output to review directory
-   * Format matches /harden's quality-checks.md for consistency
-   */
-  private async writeQualityChecks(
-    reviewDir: string,
-    toolResults: EnrichedToolResult[]
-  ): Promise<void> {
-    const qualityChecksPath = path.join(reviewDir, 'quality-checks.md');
-
-    // Build markdown content
-    let content = '# Quality Checks Report\n\n';
-    content += `Generated: ${new Date().toISOString()}\n\n`;
-    content += '---\n\n';
-
-    for (const result of toolResults) {
-      const toolName = String(result.tool);
-      const checkType = String(result.checkType);
-      content += `## ${toolName} (${checkType})\n\n`;
-
-      if (result.skipped) {
-        const reason = result.reason ? String(result.reason) : 'Tool not available';
-        content += `**Status**: Skipped\n`;
-        content += `**Reason**: ${reason}\n\n`;
-        continue;
-      }
-
-      const status = result.success ? '✓ Passed' : '✗ Failed';
-      const autoFixable = result.autoFixable ? 'Yes' : 'No';
-      content += `**Status**: ${status}\n`;
-      content += `**Auto-fixable**: ${autoFixable}\n\n`;
-
-      if (result.output) {
-        const output = String(result.output);
-        content += '```\n';
-        content += output;
-        content += '\n```\n\n';
-      }
-
-      content += '---\n\n';
-    }
-
-    await fs.writeFile(qualityChecksPath, content, 'utf-8');
-    this.logger.debug(`Wrote quality checks: ${qualityChecksPath}`);
-  }
+  // HODGE-359.1: writeQualityChecks method removed
+  // validation-results.json is now the source of truth for quality checks
 }

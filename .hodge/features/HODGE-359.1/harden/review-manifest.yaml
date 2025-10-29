@@ -1,0 +1,204 @@
+version: '1.0'
+feature: HODGE-359.1
+generated_at: '2025-10-28T22:31:28.605Z'
+recommended_tier: full
+change_analysis:
+  total_files: 46
+  total_lines: 3136
+  breakdown:
+    implementation: 28
+    test: 5
+    documentation: 13
+    config: 0
+changed_files:
+  - path: .claude/commands/harden.md
+    lines_changed: 34
+    change_type: documentation
+  - path: .claude/commands/review.md
+    lines_changed: 18
+    change_type: documentation
+  - path: .claude/commands/ship.md
+    lines_changed: 16
+    change_type: documentation
+  - path: .dependency-cruiser.cjs
+    lines_changed: 13
+    change_type: implementation
+  - path: .hodge/.session
+    lines_changed: 12
+    change_type: implementation
+  - path: .hodge/HODGE.md
+    lines_changed: 55
+    change_type: documentation
+  - path: .hodge/context.json
+    lines_changed: 8
+    change_type: implementation
+  - path: .hodge/features/HODGE-359.1/build/build-plan.md
+    lines_changed: 46
+    change_type: documentation
+  - path: .hodge/features/HODGE-359.1/checkpoint-2025-10-28-174258.yaml
+    lines_changed: 54
+    change_type: implementation
+  - path: .hodge/features/HODGE-359.1/checkpoint-2025-10-28-191714.yaml
+    lines_changed: 46
+    change_type: implementation
+  - path: .hodge/features/HODGE-359.1/checkpoint-2025-10-28-200000.yaml
+    lines_changed: 44
+    change_type: implementation
+  - path: .hodge/features/HODGE-359.1/explore/exploration.md
+    lines_changed: 227
+    change_type: documentation
+  - path: .hodge/features/HODGE-359.1/explore/test-intentions.md
+    lines_changed: 49
+    change_type: documentation
+  - path: .hodge/features/HODGE-359.1/harden/critical-files.md
+    lines_changed: 82
+    change_type: documentation
+  - path: .hodge/features/HODGE-359.1/harden/harden-report.md
+    lines_changed: 236
+    change_type: documentation
+  - path: .hodge/features/HODGE-359.1/harden/review-manifest.yaml
+    lines_changed: 177
+    change_type: implementation
+  - path: .hodge/features/HODGE-359.1/harden/validation-results.json
+    lines_changed: 94
+    change_type: implementation
+  - path: .hodge/features/HODGE-359.1/ship-record.json
+    lines_changed: 104
+    change_type: implementation
+  - path: .hodge/features/HODGE-359/explore/exploration.md
+    lines_changed: 193
+    change_type: documentation
+  - path: .hodge/features/HODGE-359/explore/test-intentions.md
+    lines_changed: 27
+    change_type: documentation
+  - path: .hodge/features/HODGE-359/plan.json
+    lines_changed: 50
+    change_type: implementation
+  - path: .hodge/id-counter.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/id-mappings.json
+    lines_changed: 8
+    change_type: implementation
+  - path: .hodge/project_management.md
+    lines_changed: 26
+    change_type: documentation
+  - path: .hodge/standards.md
+    lines_changed: 86
+    change_type: documentation
+  - path: .hodge/toolchain.yaml
+    lines_changed: 23
+    change_type: implementation
+  - path: report/jscpd-report.json
+    lines_changed: 544
+    change_type: implementation
+  - path: src/bundled-config/tool-registry.yaml
+    lines_changed: 32
+    change_type: implementation
+  - path: src/commands/harden.ts
+    lines_changed: 9
+    change_type: implementation
+  - path: src/commands/harden/harden-review.ts
+    lines_changed: 57
+    change_type: implementation
+  - path: src/commands/harden/harden-validator.ts
+    lines_changed: 9
+    change_type: implementation
+  - path: src/commands/review.smoke.test.ts
+    lines_changed: 5
+    change_type: test
+  - path: src/commands/review.ts
+    lines_changed: 57
+    change_type: implementation
+  - path: src/commands/ship.ts
+    lines_changed: 15
+    change_type: implementation
+  - path: src/lib/claude-commands.ts
+    lines_changed: 101
+    change_type: implementation
+  - path: src/lib/harden-service.test.ts
+    lines_changed: 102
+    change_type: test
+  - path: src/lib/harden-service.ts
+    lines_changed: 5
+    change_type: implementation
+  - path: src/lib/quality-report-generator.ts
+    lines_changed: 14
+    change_type: implementation
+  - path: src/lib/review-engine-service.ts
+    lines_changed: 4
+    change_type: implementation
+  - path: src/lib/ship-service.test.ts
+    lines_changed: 11
+    change_type: test
+  - path: src/lib/ship-service.ts
+    lines_changed: 39
+    change_type: implementation
+  - path: src/lib/toolchain-service.smoke.test.ts
+    lines_changed: 192
+    change_type: test
+  - path: src/lib/toolchain-service.ts
+    lines_changed: 100
+    change_type: implementation
+  - path: src/test/hodge-356.smoke.test.ts
+    lines_changed: 58
+    change_type: test
+  - path: src/types/review-engine.ts
+    lines_changed: 3
+    change_type: implementation
+  - path: src/types/toolchain.ts
+    lines_changed: 47
+    change_type: implementation
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - test-pattern.md
+      - error-boundary.md
+      - input-validation.md
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - ux-patterns/claude-code-slash-commands.yaml
+      - testing/vitest-3.x.yaml
+      - testing/general-test-standards.yaml
+      - languages/typescript-5.x.yaml
+      - languages/general-coding-standards.yaml
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed
+scope:
+  type: feature
+  target: HODGE-359.1
+  fileCount: 46

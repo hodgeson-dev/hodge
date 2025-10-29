@@ -1964,7 +1964,7 @@ hodge harden {{feature}} --review
 
 This command will:
 1. Analyze changed files (via git diff with line counts)
-2. Run quality checks (lint, typecheck, tests, etc.) and generate quality-checks.md
+2. Run quality checks (lint, typecheck, tests, etc.) and generate validation-results.json
 3. Select critical files for deep review and generate critical-files.md
 4. Classify changes into review tier (SKIP/QUICK/STANDARD/FULL)
 5. Filter relevant patterns and review profiles
@@ -2000,22 +2000,22 @@ The manifest shows:
 - \`changed_files\`: List of files with (+added/-deleted) counts
 - \`context\`: Files to load for review (organized by precedence)
 
-### Step 2.5: Read Quality Checks Report (REQUIRED)
+### Step 2.5: Read Validation Results (REQUIRED)
 \`\`\`bash
-# Read tool diagnostics (optimized for conciseness)
-cat .hodge/features/{{feature}}/harden/quality-checks.md
+# Read structured validation data
+cat .hodge/features/{{feature}}/harden/validation-results.json
 \`\`\`
 
-This contains output from all quality checks. The toolchain has been configured to minimize noise:
-- **Concise formats**: ESLint uses compact format (one issue per line), Vitest uses dot reporter
-- **Minimal verbosity**: Tools suppress progress bars and extra formatting
-- **Organized by check type**: Type checking, linting, testing, formatting, etc.
+This contains structured results from all quality checks with extracted errors and warnings:
+- **Structured format**: JSON array with errorCount, warningCount, errors[], warnings[] for each tool
+- **Organized by tool**: Each entry shows tool name, exit code, and extracted findings
+- **Parsed diagnostics**: Errors and warnings extracted via regex patterns
 
-**Your task**: Parse this output to identify:
-- **ERRORS**: Type errors, failing tests, ESLint errors that must be fixed before proceeding
-- **WARNINGS**: ESLint warnings, code quality issues to address before ship
+**Your task**: Parse this JSON to identify:
+- **ERRORS**: Tools with errorCount > 0 or exitCode != 0 that must be fixed before proceeding
+- **WARNINGS**: Tools with warningCount > 0 to address before ship
 
-The file may be ~500 lines with issues, or very short when clean. Read the entire file to assess status.
+The JSON structure makes it easy to programmatically assess status and extract specific issues.
 
 ### Step 2.6: Read Critical Files Manifest (HODGE-341.3)
 \`\`\`bash
@@ -2024,7 +2024,7 @@ cat .hodge/features/{{feature}}/harden/critical-files.md
 \`\`\`
 
 This shows which files the algorithm scored as highest risk based on:
-- **Tool diagnostics**: Blockers, warnings, errors from quality checks
+- **Tool diagnostics**: Blockers, warnings, errors from validation-results.json
 - **Import fan-in**: Architectural impact (how many files import this file)
 - **Change size**: Lines modified
 - **Critical paths**: Configured + inferred critical infrastructure
@@ -2167,7 +2167,7 @@ Remaining:
 
 **For HODGE-341.3 Risk-Based Review**:
 - **Critical files** (from critical-files.md): Deep review against ALL loaded context
-- **Files with tool issues** (from quality-checks.md): Check specific violations
+- **Files with tool issues** (from validation-results.json): Check specific violations
 - **Other changed files**: Scan for obvious standards violations
 
 **What to look for**:
@@ -2217,7 +2217,7 @@ Remaining:
 
 After reviewing all files, determine if there are blocking issues.
 
-**Question**: Did you find any ERRORS (not warnings) in quality-checks.md or during code review?
+**Question**: Did you find any ERRORS (not warnings) in validation-results.json or during code review?
 
 #### If YES (Errors Found) → STOP HERE 🚫
 
@@ -2420,7 +2420,7 @@ None found.
 ## Command Execution (Only After Errors Are Fixed)
 
 **CHECKPOINT**: Before running this command, confirm:
-- [ ] Quality-checks.md shows 0 errors (warnings are OK)
+- [ ] validation-results.json shows 0 errors (warnings are OK)
 - [ ] Your Step 6 assessment was "Option A" or "Option B" (no blocking issues)
 - [ ] All error-level issues have been fixed
 
@@ -2533,7 +2533,7 @@ Based on the status output:
 
 There are still issues blocking production readiness.
 
-• Review quality-checks.md for specific issues
+• Review validation-results.json for specific issues
 • Fix failing tests or quality checks
 • Re-run \`/harden {{feature}} --fix\` to auto-fix simple issues
 • Re-run \`/harden {{feature}} --review\` after fixes
@@ -3436,7 +3436,7 @@ The CLI will:
 - Generate review manifest with FULL tier and scope metadata
 - Run quality checks (scoped where possible, project-wide for tools like tsc)
 - Create review directory at \`.hodge/reviews/review-{scope}-{target}-{timestamp}/\`
-- Write \`review-manifest.yaml\` and \`quality-checks.md\`
+- Write \`review-manifest.yaml\` and \`validation-results.json\`
 - Output directory path for you to read
 
 ## Step 2: Read Review Files
@@ -3445,7 +3445,7 @@ The CLI outputs the review directory path. Read the generated files:
 
 \`\`\`bash
 cat .hodge/reviews/review-{scope}-{target}-{timestamp}/review-manifest.yaml
-cat .hodge/reviews/review-{scope}-{target}-{timestamp}/quality-checks.md
+cat .hodge/reviews/review-{scope}-{target}-{timestamp}/validation-results.json
 \`\`\`
 
 **Important**: The exact directory name will be in the CLI output. Use that path.
@@ -3471,7 +3471,7 @@ The review manifest includes context files to load. For \`/review\`, always use 
 
 ## Step 4: Interpret Findings and Present to User
 
-Parse \`quality-checks.md\` to understand what tools found:
+Parse \`validation-results.json\` to understand what tools found:
 
 **Your Analysis**:
 - Identify issues by severity (errors vs warnings)
@@ -3498,14 +3498,14 @@ I reviewed {N} files in {scope} and found:
 \`\`\`
 
 **No Issues Found**:
-If quality checks show all tools passed with no output, celebrate!
+If validation results show all tools with errorCount = 0 and warningCount = 0, celebrate!
 \`\`\`
 ✅ No issues found! All {N} files in {scope} meet quality standards.
 
-- Type checking: ✓ Passed
-- Linting: ✓ Passed
-- Testing: ✓ Passed
-- Formatting: ✓ Passed
+- Type checking: ✓ Passed (0 errors)
+- Linting: ✓ Passed (0 errors)
+- Testing: ✓ Passed (0 errors)
+- Formatting: ✓ Passed (0 errors)
 
 {Brief summary of what was checked}
 \`\`\`
@@ -3700,7 +3700,7 @@ If CLI warns about large scope (e.g., \`--last 100\` with 500 files), acknowledg
 - User explicitly chose this scope, so respect their decision
 
 **Tool Failures**:
-If quality-checks.md shows tools skipped or failed:
+If validation-results.json shows tools skipped or with non-zero exit codes:
 - Explain what happened (tool not found, configuration issue)
 - Note that findings may be incomplete
 - Suggest installing missing tools if needed
@@ -4249,14 +4249,57 @@ Previously completed:
 
 ## Step 4: Ship Quality Checks & Commit
 
-The ship command will:
+The ship command will run all quality checks and generate a detailed report. **You must review this report before the feature is committed.**
+
+After running \`hodge ship "{{feature}}"\`, the CLI will:
 - ✅ Run all tests
-- ✅ Check code coverage
-- ✅ Verify documentation
+- ✅ Run linting checks
+- ✅ Run type checking
+- ✅ Generate quality-checks.md with full tool output
+- ✅ Verify all quality gates pass
 - ✅ Stage all files (including lessons if created) with \`git add -A\`
 - ✅ Create git commit with approved message
 - ✅ Update PM tracking
 - ✅ Learn patterns from shipped code
+
+### Review Quality Check Results
+
+**After the ship command completes**, read the quality check results to verify all issues are resolved:
+
+\`\`\`bash
+# Read ship validation results
+cat .hodge/features/{{feature}}/ship/validation-results.json
+\`\`\`
+
+This contains structured results from all quality checks run during ship. Review it to ensure:
+- **No test failures** - All tests must pass (errorCount = 0 for test tools)
+- **No TypeScript errors** - Type checking must be clean (errorCount = 0 for typescript)
+- **No ESLint errors** - Errors must be fixed (errorCount = 0, warningCount acceptable)
+- **No security issues** - Security scanner must pass
+- **No critical architecture violations** - Circular dependencies and major issues resolved
+
+**Question**: Did you find any ERRORS (not warnings) in the validation-results.json?
+
+#### If YES (Errors Found) → ABORT SHIP 🚫
+
+The ship command should have prevented commit if there were errors, but if you see any:
+
+\`\`\`
+🚫 SHIP ABORTED - Blocking Issues Found
+
+There are errors that must be fixed before shipping:
+
+[List the specific errors from validation-results.json]
+
+### Next Steps:
+• Fix the errors listed above
+• Re-run \`/harden {{feature}}\` to verify fixes
+• Re-run \`/ship {{feature}}\` when ready
+\`\`\`
+
+#### If NO (No Errors) → CONTINUE ✅
+
+Great! All quality gates passed. The feature has been shipped successfully
 
 ## What's Next?
 

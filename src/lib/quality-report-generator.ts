@@ -1,4 +1,4 @@
-/**
+import { isToolResultSuccessful } from '../types/toolchain.js'; /**
  * Quality Report Generation
  * Handles generating quality check reports for harden and ship phases
  */
@@ -19,10 +19,10 @@ export class QualityReportGenerator {
     const lintResults = this.getResultsByType(results, 'linting');
     const typeCheckResults = this.getResultsByType(results, 'type_checking');
 
-    const testsPassed = testResults.every((r) => r.skipped ?? r.success);
+    const testsPassed = testResults.every((r) => isToolResultSuccessful(r));
     const testsSkipped = testResults.some((r) => r.skipped);
-    const lintPassed = lintResults.every((r) => r.skipped ?? r.success);
-    const typeCheckPassed = typeCheckResults.every((r) => r.skipped ?? r.success);
+    const lintPassed = lintResults.every((r) => isToolResultSuccessful(r));
+    const typeCheckPassed = typeCheckResults.every((r) => isToolResultSuccessful(r));
 
     const header = this.generateReportHeaderSection(feature, allPassed);
     const validationResults = this.generateValidationResultsSection(
@@ -142,7 +142,7 @@ ${nextSteps}
         let status: string;
         if (r.skipped) {
           status = '⚠️ Skipped';
-        } else if (r.success) {
+        } else if (isToolResultSuccessful(r)) {
           status = '✅ Passed';
         } else {
           status = '❌ Failed';
@@ -212,7 +212,7 @@ The AI will interpret these results to identify issues that need to be fixed bef
       return `### ${check.tool} (SKIPPED)\n**Reason**: ${check.reason}\n\n`;
     }
 
-    const status = check.success ? '✅ PASSED' : '❌ FAILED';
+    const status = isToolResultSuccessful(check) ? '✅ PASSED' : '❌ FAILED';
     let result = `### ${check.tool} - ${status}\n\n`;
 
     if (check.stdout) {
@@ -237,7 +237,7 @@ The AI will interpret these results to identify issues that need to be fixed bef
    * Check if all quality checks passed
    */
   private getAllPassed(results: RawToolResult[]): boolean {
-    return results.every((r) => r.skipped ?? r.success);
+    return results.every((r) => isToolResultSuccessful(r));
   }
 
   /**

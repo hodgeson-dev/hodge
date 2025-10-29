@@ -1,0 +1,50 @@
+{
+  "feature": "HODGE-359",
+  "type": "epic",
+  "stories": [
+    {
+      "id": "HODGE-359.1",
+      "title": "Core Regex Extraction Infrastructure",
+      "description": "Add error_pattern/warning_pattern to tool-registry.yaml for common tools (eslint, tsc, vitest). Update ToolchainService to extract errors/warnings using regex. Enhance validation-results.json structure with counts and lists. Add smoke tests for regex extraction.",
+      "effort": "medium",
+      "dependencies": [],
+      "lane": 0,
+      "value": "Developers get structured validation data in JSON (can be used by scripts/tools)",
+      "testable": "Can verify JSON contains errorCount, errors[], warnings[]",
+      "shippable": "Yes - JSON is enhanced, existing workflows still work with old format"
+    },
+    {
+      "id": "HODGE-359.2",
+      "title": "Slash Command Integration",
+      "description": "Update /harden command to read validation-results.json instead of quality-checks.md. Update /ship command to use JSON for quality gates. Implement dynamic tool evaluation (all tools, not predetermined list). Add integration tests for quality gate blocking.",
+      "effort": "medium",
+      "dependencies": [
+        "HODGE-359.1"
+      ],
+      "lane": 0,
+      "value": "Users get improved /harden and /ship workflows with dynamic quality gates",
+      "testable": "Can verify quality gates block on errors, allow warnings",
+      "shippable": "Yes - workflows use new JSON format"
+    },
+    {
+      "id": "HODGE-359.3",
+      "title": "Cleanup and Documentation",
+      "description": "Remove quality-checks.md generation code. Update documentation. Add pattern customization examples. Migration guide for existing features.",
+      "effort": "small",
+      "dependencies": [
+        "HODGE-359.2"
+      ],
+      "lane": 1,
+      "value": "Clean codebase, clear documentation for users",
+      "testable": "Can verify quality-checks.md is not generated",
+      "shippable": "Yes - legacy code removed, docs updated"
+    }
+  ],
+  "lanes": {
+    "count": 2,
+    "assignments": {}
+  },
+  "dependencies": {},
+  "estimatedDays": 5,
+  "createdAt": "2025-10-28T06:30:00Z"
+}

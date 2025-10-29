@@ -203,10 +203,15 @@ module.exports = {
     },
 
     /* Which modules to exclude */
-    // exclude : {
-    //   /* path: an array of regular expressions in strings to match against */
-    //   path: '',
-    // },
+    exclude: {
+      /* path: an array of regular expressions in strings to match against */
+      path: [
+        '[.]yaml$', // YAML files are data files, not modules
+        '[.]yml$', // YML files are data files, not modules
+        '[.]json$', // JSON files are data files, not modules
+        '[.]md$', // Markdown files are documentation, not modules
+      ],
+    },
 
     /* Which modules to exclusively include (array of regular expressions in strings)
        dependency-cruiser will skip everything not matching this pattern

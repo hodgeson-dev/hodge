@@ -197,13 +197,8 @@ export class HardenCommand {
       qualityResults: results,
     });
 
-    // Save quality check results for AI review
-    const qualityChecksReport = this.reportGenerator.generateQualityChecksReport(results);
-    await fs.writeFile(path.join(hardenDir, 'quality-checks.md'), qualityChecksReport);
-    this.logger.debug('Wrote quality checks report', {
-      checkCount: results.length,
-      path: path.join(hardenDir, 'quality-checks.md'),
-    });
+    // HODGE-359.1: validation-results.json is now the source of truth
+    // quality-checks.md generation removed - AI reads structured JSON instead
 
     // Generate and save report
     const reportContent = this.reportGenerator.generateReport(feature, results);

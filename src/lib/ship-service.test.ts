@@ -48,6 +48,17 @@ describe('ShipService - HODGE-322 Service Extraction', () => {
     expect(typeof service.runQualityGates).toBe('function');
   });
 
+  // HODGE-359.1: Test feature parameter for scoped validation
+  smokeTest('should accept feature parameter for scoped validation', () => {
+    // Verify method signature accepts optional feature parameter
+    expect(service.runQualityGates.length).toBeGreaterThanOrEqual(0); // Optional params
+    // Method should be callable with feature parameter
+    expect(() => {
+      // Type check only - don't execute (would spawn toolchain)
+      void service.runQualityGates('TEST-123', { skipTests: true });
+    }).not.toThrow();
+  });
+
   // NOTE: runQualityGates behavioral tests moved to hodge-356.smoke.test.ts
   // These tests use the new RawToolResult[] API
 

@@ -56,6 +56,9 @@ commands:
       - type_checking
     # Note: TypeScript project mode doesn't accept ${files} - uses tsconfig include/exclude
     # Removed --pretty flag to avoid ANSI color codes in quality-checks.md (HODGE-344.3)
+    # HODGE-359.1: Regex patterns for structured error/warning extraction
+    error_pattern: '^.+\(\d+,\d+\):\s+error\s+TS\d+:'
+    warning_pattern: '^.+\(\d+,\d+\):\s+warning\s+TS\d+:'
   eslint:
     command: npx eslint --format compact ${files}
     fix_command: npx eslint --fix ${files}
@@ -67,12 +70,18 @@ commands:
     # More concise than default 'stylish' format
     # ESLint with sonarjs plugin provides linting, complexity, and code smell checks
     # --fix: Auto-fix issues (HODGE-341.6)
+    # HODGE-359.1: Regex patterns for structured error/warning extraction
+    error_pattern: '^.+:\d+:\d+:\s+error\s+'
+    warning_pattern: '^.+:\d+:\d+:\s+warning\s+'
   vitest:
     command: NODE_ENV=test npx vitest run --reporter=dot --silent=passed-only
     provides:
       - testing
     # --reporter=dot: Dots for passing tests, 'x' for failures
     # --silent=passed-only: Only show console output from failing tests
+    # HODGE-359.1: Regex patterns for structured error/warning extraction
+    error_pattern: '^\s*×\s+.+\s+>\s+.+'
+    warning_pattern: ''
   prettier:
     command: npx prettier --check ${files}
     fix_command: npx prettier --write ${files}
@@ -80,6 +89,11 @@ commands:
       - formatting
     # --check: Exit with error if files are not formatted (lists unformatted files)
     # --write: Auto-format files (HODGE-341.6)
+    # HODGE-359.1: Regex patterns for structured error/warning extraction
+    # Prettier outputs [warn] filename.ts for unformatted files
+    # Match lines with [warn] followed by a file path (has dot in it)
+    error_pattern: '^\[warn\]\s+\S+\.\S+'
+    warning_pattern: ''
   jscpd:
     command: npx jscpd ${files} --min-lines 10 --silent --reporters json --ignore "node_modules/**,dist/**,.hodge/**"
     provides:
@@ -87,12 +101,18 @@ commands:
     # --silent: No progress output
     # --reporters json: Structured output
     # --ignore: Exclude node_modules, dist, and .hodge directories
+    # HODGE-359.1: Regex patterns for structured error/warning extraction (JSON output)
+    error_pattern: '"duplicates":\s*\[\s*\{'
+    warning_pattern: ''
   dependency-cruiser:
     command: npx depcruise --config .dependency-cruiser.cjs --output-type err ${files} || true
     provides:
       - architecture
     # --output-type err: Only show violations
     # || true: Exit 0 even with warnings (exit code 7), AI interprets stdout
+    # HODGE-359.1: Regex patterns for structured error/warning extraction
+    error_pattern: '^\s*error\s+.+:\s+'
+    warning_pattern: '^\s*warn\s+.+:\s+'
   semgrep:
     command: semgrep --config .hodge/semgrep-rules/ --config auto --quiet ${files} 2>&1 | grep -v "ca-certs" || true
     provides:
@@ -100,3 +120,6 @@ commands:
       - patterns
     # --quiet: Only show findings, suppress progress
     # 2>&1 | grep -v "ca-certs" || true: Filter out certificate warnings, return success if no output
+    # HODGE-359.1: Regex patterns for structured error/warning extraction
+    error_pattern: '^\s*❯❯❱\s+.+'
+    warning_pattern: '^\s*▶▶▷\s+.+'

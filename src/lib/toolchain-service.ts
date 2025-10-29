@@ -3,7 +3,7 @@
  * Part of HODGE-341.1: Build System Detection and Toolchain Infrastructure
  */
 
-import { promises as fs } from 'fs';
+import { promises as fs, existsSync } from 'fs';
 import { join } from 'path';
 import { exec as execCallback } from 'child_process';
 import { promisify } from 'util';
@@ -313,6 +313,31 @@ export class ToolchainService {
       logger.info('Running quality checks', { scope, feature, fileCount: files?.length });
     }
 
+    // HODGE-359.1: Filter out .hodge directory and non-existent files
+    // .hodge contains generated reports/config, not source code to validate
+    // Non-existent files can appear when git diff includes deleted files
+    if (files) {
+      const originalCount = files.length;
+      files = files.filter((file) => {
+        // Exclude .hodge directory entirely
+        if (file.startsWith('.hodge/')) {
+          return false;
+        }
+        // Exclude files that don't exist on disk
+        if (!existsSync(file)) {
+          return false;
+        }
+        return true;
+      });
+      const filteredCount = originalCount - files.length;
+      if (filteredCount > 0) {
+        logger.debug(`Filtered ${filteredCount} files (.hodge/* or non-existent)`, {
+          originalCount,
+          filteredCount: files.length,
+        });
+      }
+    }
+
     const results = await Promise.all([
       this.runCheckType('type_checking', config, files),
       this.runCheckType('linting', config, files),
@@ -362,7 +387,62 @@ export class ToolchainService {
   }
 
   /**
+   * Extract errors and warnings from tool output using regex patterns
+   * HODGE-359.1: Regex-based extraction infrastructure
+   */
+  private async extractErrorsAndWarnings(
+    toolName: string,
+    stdout: string,
+    stderr: string
+  ): Promise<{
+    errorCount: number;
+    warningCount: number;
+    errors: string[];
+    warnings: string[];
+  }> {
+    // Get patterns from toolchain config (takes precedence) or registry
+    const config = await this.loadConfig();
+    const toolConfig = config.commands[toolName];
+    const registry = await this.registryLoader.load();
+    const registryEntry = registry.tools[toolName];
+
+    const errorPattern = toolConfig.error_pattern ?? registryEntry.error_pattern;
+    const warningPattern = toolConfig.warning_pattern ?? registryEntry.warning_pattern;
+
+    // Combine stdout and stderr for searching (tools write to either or both)
+    const combinedOutput = `${stdout}\n${stderr}`;
+
+    // Extract errors (case-insensitive to catch ERROR, error, Error, etc.)
+    const errors: string[] = [];
+    if (errorPattern && errorPattern.trim() !== '') {
+      const regex = new RegExp(errorPattern, 'gmi');
+      let match: RegExpExecArray | null;
+      while ((match = regex.exec(combinedOutput)) !== null) {
+        errors.push(match[0]);
+      }
+    }
+
+    // Extract warnings (case-insensitive)
+    const warnings: string[] = [];
+    if (warningPattern && warningPattern.trim() !== '') {
+      const regex = new RegExp(warningPattern, 'gmi');
+      let match: RegExpExecArray | null;
+      while ((match = regex.exec(combinedOutput)) !== null) {
+        warnings.push(match[0]);
+      }
+    }
+
+    return {
+      errorCount: errors.length,
+      warningCount: warnings.length,
+      errors,
+      warnings,
+    };
+  }
+
+  /**
    * Execute a tool command with file scoping
+   * HODGE-359.1: Enhanced with regex-based error/warning extraction
    */
   private async executeTool(
     checkType: keyof QualityChecksMapping,
@@ -378,10 +458,14 @@ export class ToolchainService {
     try {
       const { stdout, stderr } = await exec(command, { cwd: this.cwd });
 
+      // HODGE-359.1: Extract errors/warnings using regex patterns from stdout and stderr
+      const extracted = await this.extractErrorsAndWarnings(toolName, stdout, stderr);
+
       return {
         type: checkType,
         tool: toolName,
-        success: true,
+        exitCode: 0,
+        ...extracted,
         stdout,
         stderr,
       };
@@ -400,11 +484,19 @@ export class ToolchainService {
         };
       }
 
-      // Tool ran but found issues (exit code 1)
+      // Tool ran but found issues (non-zero exit code)
+      // HODGE-359.1: Extract errors/warnings using regex patterns from stdout and stderr
+      const extracted = await this.extractErrorsAndWarnings(
+        toolName,
+        execError.stdout ?? '',
+        execError.stderr ?? ''
+      );
+
       return {
         type: checkType,
         tool: toolName,
-        success: false,
+        exitCode: typeof execError.code === 'string' ? 1 : execError.code,
+        ...extracted,
         stdout: execError.stdout ?? '',
         stderr: execError.stderr ?? '',
       };

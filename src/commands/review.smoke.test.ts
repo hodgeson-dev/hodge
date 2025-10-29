@@ -121,11 +121,6 @@ describe('ReviewCommand - Smoke Tests (HODGE-344.4)', () => {
     expect(proto.writeManifest).toBeDefined();
   });
 
-  smokeTest('should have private writeQualityChecks method', () => {
-    const proto = Object.getPrototypeOf(command);
-    expect(proto.writeQualityChecks).toBeDefined();
-  });
-
   smokeTest('should have private handleAutoFix method', () => {
     const proto = Object.getPrototypeOf(command);
     expect(proto.handleAutoFix).toBeDefined();

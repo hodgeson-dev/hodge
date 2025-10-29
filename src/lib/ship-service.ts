@@ -3,6 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { ToolchainService } from './toolchain-service.js';
 import type { RawToolResult } from '../types/toolchain.js';
+import { isToolResultSuccessful } from '../types/toolchain.js';
 
 /**
  * Ship record data structure
@@ -49,11 +50,18 @@ export class ShipService {
   /**
    * Run all quality gates using toolchain
    * HODGE-356: Returns RawToolResult[] directly (no conversion)
+   * HODGE-359.1: Added feature parameter to scope validation to buildStartCommit
+   * @param feature - Feature name for scoping file checks (uses buildStartCommit from ship-record.json)
    * @param options - Quality gate options
    * @returns RawToolResult[] - Raw tool results from toolchain
    */
-  async runQualityGates(options: { skipTests?: boolean }): Promise<RawToolResult[]> {
-    const results = await this.toolchainService.runQualityChecks('all');
+  async runQualityGates(
+    feature?: string,
+    options: { skipTests?: boolean } = {}
+  ): Promise<RawToolResult[]> {
+    // HODGE-359.1: Use 'feature' scope when feature provided to check files since buildStartCommit
+    const scope = feature ? 'feature' : 'all';
+    const results = await this.toolchainService.runQualityChecks(scope, feature);
 
     // Handle skipTests option by marking test results as skipped
     if (options.skipTests) {
@@ -116,7 +124,7 @@ export class ShipService {
     if (testResults.length === 0) {
       testsStatus = '⚠️ Not Configured';
       // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- Boolean OR for .every() logic
-    } else if (testResults.every((r) => r.skipped || r.success)) {
+    } else if (testResults.every((r) => isToolResultSuccessful(r))) {
       testsStatus = '✅ Passing';
     } else {
       testsStatus = '❌ Failed';
@@ -126,7 +134,7 @@ export class ShipService {
     if (lintResults.length === 0) {
       lintStatus = '⚠️ Not Configured';
       // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- Boolean OR for .every() logic
-    } else if (lintResults.every((r) => r.skipped || r.success)) {
+    } else if (lintResults.every((r) => isToolResultSuccessful(r))) {
       lintStatus = '✅ Passing';
     } else {
       lintStatus = '❌ Failed';
@@ -136,7 +144,7 @@ export class ShipService {
     if (typeCheckResults.length === 0) {
       typeCheckStatus = '⚠️ Not Configured';
       // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- Boolean OR for .every() logic
-    } else if (typeCheckResults.every((r) => r.skipped || r.success)) {
+    } else if (typeCheckResults.every((r) => isToolResultSuccessful(r))) {
       typeCheckStatus = '✅ Passing';
     } else {
       typeCheckStatus = '❌ Failed';
@@ -300,13 +308,10 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}**Shipped**: ${date}
 
     if (existsSync(validationFile)) {
       try {
-        const results = JSON.parse(await fs.readFile(validationFile, 'utf-8')) as Array<{
-          success?: boolean;
-          skipped?: boolean;
-        }>;
-        // All non-skipped checks must have success: true
+        const results = JSON.parse(await fs.readFile(validationFile, 'utf-8')) as RawToolResult[];
+        // All non-skipped checks must have errorCount === 0 (or success for legacy)
         // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- Boolean OR for .every() logic
-        validationPassed = results.every((r) => r.skipped || r.success === true);
+        validationPassed = results.every((r) => isToolResultSuccessful(r));
 
         if (!validationPassed && !skipTests) {
           return {
@@ -396,15 +401,15 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}**Shipped**: ${date}
   checkQualityGatesPassed(qualityResults: RawToolResult[], skipTests: boolean): boolean {
     // Debug: Log each result to understand failures
     qualityResults.forEach((r) => {
-      const passed = r.skipped || r.success;
+      const passed = isToolResultSuccessful(r);
       if (!passed) {
         console.error(
-          `❌ Quality gate failed: ${r.type}:${r.tool} - skipped=${r.skipped} success=${r.success}`
+          `❌ Quality gate failed: ${r.type}:${r.tool} - skipped=${r.skipped} success=${isToolResultSuccessful(r)}`
         );
       }
     });
     // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- Boolean OR for .every() logic
-    const allPassed = qualityResults.every((r) => r.skipped || r.success);
+    const allPassed = qualityResults.every((r) => isToolResultSuccessful(r));
     return allPassed || skipTests;
   }
 
@@ -430,11 +435,11 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}**Shipped**: ${date}
       lintResults,
       typeCheckResults,
       // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- Boolean OR for .every() logic
-      testsPassed: testResults.every((r) => r.skipped || r.success),
+      testsPassed: testResults.every((r) => isToolResultSuccessful(r)),
       // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- Boolean OR for .every() logic
-      lintPassed: lintResults.every((r) => r.skipped || r.success),
+      lintPassed: lintResults.every((r) => isToolResultSuccessful(r)),
       // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- Boolean OR for .every() logic
-      typeCheckPassed: typeCheckResults.every((r) => r.skipped || r.success),
+      typeCheckPassed: typeCheckResults.every((r) => isToolResultSuccessful(r)),
     };
   }
 
@@ -535,7 +540,8 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}**Shipped**: ${date}
     }
 
     // Could not read validation results
-    if (!prerequisites.validationPassed && prerequisites.hardenDirExists) {
+    // HODGE-359.1: Simplified conditional - hardenDirExists is always true here due to line 530 check
+    if (!prerequisites.validationPassed) {
       return { action: 'continue', warning: 'no-validation-data' };
     }
 

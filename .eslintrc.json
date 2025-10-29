@@ -103,6 +103,10 @@
     "dist/",
     "node_modules/",
     "*.js",
+    "*.yaml",
+    "*.yml",
+    "*.json",
+    "*.md",
     "scripts/"
   ],
   "overrides": [

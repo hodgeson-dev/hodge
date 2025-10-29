@@ -3,15 +3,15 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: HODGE-358
-**Mode**: explore
-**Last Updated**: 2025-10-28T03:13:17.308Z
+**Feature**: HODGE-359.1
+**Mode**: shipped
+**Last Updated**: 2025-10-29T00:34:01.803Z
 ## Current Session
-**Resumed**: 2 hours ago
-**Progress**: Explored HODGE-358 - template ready for AI approach generation
-**Working on**: HODGE-358 (explore mode)
+**Resumed**: 17 hours ago
+**Progress**: Explored HODGE-359.1 - template ready for AI approach generation
+**Working on**: HODGE-359.1 (explore mode)
 ## AI Context Restoration
-You were helping with HODGE-358. Explored HODGE-358 - template ready for AI approach generation
+You were helping with HODGE-359.1. Explored HODGE-359.1 - template ready for AI approach generation
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
@@ -54,6 +54,10 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - TypeScript with strict mode
 - ESLint rules enforced
 - Prettier formatting
+- `||` treats ALL falsy values as "missing" (0, '', false, null, undefined)
+- `??` only treats null/undefined as "missing", preserving valid falsy values
+- Common bug source: `count || 0` evaluates to 0 when count is 0
+- Explicit about intent: "use default only if null/undefined"
 
 ### Logging Standards (HODGE-330)
 - Console output provides immediate user feedback
@@ -129,6 +133,22 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - Focus on behavior and contracts
 - Prefer integration tests over unit tests
 - Use real dependencies when possible
+- **Correct Pattern**: Tests live next to the code they verify
+- - `src/lib/toolchain-service.ts`
+- - `src/lib/toolchain-service.smoke.test.ts`
+- - `src/lib/toolchain-service.integration.test.ts`
+- **Incorrect Pattern**: Feature-named tests (ANTI-PATTERN)
+- - ❌ `src/lib/hodge-359-1.smoke.test.ts`
+- - ❌ `src/test/feature-tests/hodge-400.test.ts`
+- Format: `<module-name>.<test-type>.test.ts`
+- Examples:
+- - `toolchain-service.smoke.test.ts` - Smoke tests for ToolchainService
+- - `harden-service.integration.test.ts` - Integration tests for HardenService
+- - `id-manager.test.ts` - General tests for IdManager
+- ✅ Add to existing test file for the module
+- ✅ Create new file if module has no tests yet
+- ❌ Create feature-named test files
+- ❌ Group tests by feature instead of functionality
 - All tests must use temporary directories (`os.tmpdir()`) for file operations
 - Use mocks or stubs instead of modifying actual project state
 - Any test that needs a `.hodge` structure should create it in an isolated temp directory
@@ -196,6 +216,18 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - - `// TODO: [ship] Add proper error messages`
 - **No Naked TODOs**: Always include what needs to be done
 - **Review TODOs**: Check all TODOs before shipping
+- ✅ Removing or deprecating functionality (explain what replaced it)
+- ✅ Making architectural changes (connect to exploration/decisions)
+- ✅ Implementing non-obvious patterns (reference pattern docs)
+- ✅ The "why" is not clear from code alone
+- ❌ New straightforward functions/methods
+- ❌ Routine implementations following established patterns
+- ❌ Every line touched during a feature
+- ❌ Bug fixes (unless architectural)
+- Humans have persistent memory of project context
+- Git history provides temporal context for humans
+- AI needs inline signposts to understand architectural evolution
+- Comments help AI connect code to exploration documents
 
 ### Code Quality Gates
 - No ESLint errors
@@ -228,14 +260,13 @@ Suggested next: Review exploration and decide with 'hodge decide'
 
 ## Working Files
 
-- `.hodge/features/HODGE-358/explore/exploration.md`
-- `.hodge/features/HODGE-358/explore/test-intentions.md`
+- `.hodge/features/HODGE-359.1/explore/exploration.md`
+- `.hodge/features/HODGE-359.1/explore/test-intentions.md`
+- `.hodge/features/HODGE-359.1/build/build-plan.md`
 
 ## Next Steps
 
-1. Review exploration approaches
-2. Make decision with `hodge decide`
-3. Start building with `hodge build HODGE-358`
+1. Feature completed. Start new work with `hodge explore <feature>`
 
 
 ---

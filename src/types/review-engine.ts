@@ -5,6 +5,7 @@
 
 import type { ReviewManifest, ScopeMetadata } from './review-manifest.js';
 import type { CriticalFilesReport } from '../lib/critical-file-selector.js';
+import type { RawToolResult } from './toolchain.js';
 
 /**
  * Configuration options for review engine
@@ -47,6 +48,8 @@ export interface EnrichedToolResult {
 export interface ReviewFindings {
   /** Raw tool results enriched with auto-fix flags */
   toolResults: EnrichedToolResult[];
+  /** Raw unprocessed tool results (HODGE-359.1: for validation-results.json) */
+  rawToolResults: RawToolResult[];
   /** Critical files analysis (if enabled) */
   criticalFiles?: CriticalFilesReport;
   /** Review manifest with profiles and context */

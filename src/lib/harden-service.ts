@@ -1,3 +1,4 @@
+import { isToolResultSuccessful } from '../types/toolchain.js';
 import { ToolchainService } from './toolchain-service.js';
 import type { RawToolResult } from '../types/toolchain.js';
 import { createCommandLogger } from './logger.js';
@@ -66,7 +67,7 @@ export class HardenService {
     allPassed: boolean;
     results: RawToolResult[];
   } {
-    const allPassed = results.every((r) => r.skipped || r.success);
+    const allPassed = results.every((r) => isToolResultSuccessful(r));
 
     return {
       allPassed,
@@ -93,7 +94,7 @@ export class HardenService {
     results: RawToolResult[];
     skipTests: boolean;
   } {
-    const allPassed = results.every((r) => r.skipped || r.success);
+    const allPassed = results.every((r) => isToolResultSuccessful(r));
 
     return {
       feature,

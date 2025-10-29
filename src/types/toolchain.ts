@@ -125,6 +125,10 @@ export interface ToolRegistryEntry {
   version_command?: string;
   /** Quality check categories this tool provides */
   categories: QualityCheckCategory[];
+  /** Regex pattern for extracting errors (HODGE-359.1) */
+  error_pattern?: string;
+  /** Regex pattern for extracting warnings (HODGE-359.1) */
+  warning_pattern?: string;
 }
 
 /**
@@ -164,6 +168,12 @@ export interface ToolCommand {
 
   /** Quality check types this tool provides */
   provides: string[];
+
+  /** Regex pattern for extracting errors (HODGE-359.1) */
+  error_pattern?: string;
+
+  /** Regex pattern for extracting warnings (HODGE-359.1) */
+  warning_pattern?: string;
 }
 
 /**
@@ -240,6 +250,7 @@ export interface QualityChecksMapping {
 
 /**
  * Raw tool execution result
+ * HODGE-359.1: Enhanced with structured error/warning extraction
  */
 export interface RawToolResult {
   /** Type of check performed */
@@ -248,8 +259,20 @@ export interface RawToolResult {
   /** Tool name that produced this result */
   tool: string;
 
-  /** Whether execution succeeded (exit code 0) */
-  success?: boolean;
+  /** Exit code from tool execution */
+  exitCode?: number;
+
+  /** Number of errors found (HODGE-359.1) */
+  errorCount?: number;
+
+  /** Number of warnings found (HODGE-359.1) */
+  warningCount?: number;
+
+  /** Extracted error messages (HODGE-359.1) */
+  errors?: string[];
+
+  /** Extracted warning messages (HODGE-359.1) */
+  warnings?: string[];
 
   /** Standard output from tool */
   stdout?: string;
@@ -264,6 +287,26 @@ export interface RawToolResult {
   reason?: string;
 }
 
+/**
+ * Helper to check if a tool result indicates success
+ * HODGE-359.1: Replaces deprecated `success` field
+ * @param result Tool execution result
+ * @returns true if no errors found and not skipped
+ */
+export function isToolResultSuccessful(result: RawToolResult): boolean {
+  if (result.skipped) {
+    return true; // Skipped checks are considered passing
+  }
+  // Success means no errors found (errorCount === 0 or undefined)
+  const success = (result.errorCount ?? 0) === 0;
+  // TEMP DEBUG
+  if (!success) {
+    console.error(
+      `DEBUG isToolResultSuccessful: ${result.tool} - errorCount=${result.errorCount}, success=${success}`
+    );
+  }
+  return success;
+}
 /**
  * Severity levels for diagnostic issues
  */

@@ -112,7 +112,7 @@ hodge harden {{feature}} --review
 
 This command will:
 1. Analyze changed files (via git diff with line counts)
-2. Run quality checks (lint, typecheck, tests, etc.) and generate quality-checks.md
+2. Run quality checks (lint, typecheck, tests, etc.) and generate validation-results.json
 3. Select critical files for deep review and generate critical-files.md
 4. Classify changes into review tier (SKIP/QUICK/STANDARD/FULL)
 5. Filter relevant patterns and review profiles
@@ -148,22 +148,22 @@ The manifest shows:
 - `changed_files`: List of files with (+added/-deleted) counts
 - `context`: Files to load for review (organized by precedence)
 
-### Step 2.5: Read Quality Checks Report (REQUIRED)
+### Step 2.5: Read Validation Results (REQUIRED)
 ```bash
-# Read tool diagnostics (optimized for conciseness)
-cat .hodge/features/{{feature}}/harden/quality-checks.md
+# Read structured validation data
+cat .hodge/features/{{feature}}/harden/validation-results.json
 ```
 
-This contains output from all quality checks. The toolchain has been configured to minimize noise:
-- **Concise formats**: ESLint uses compact format (one issue per line), Vitest uses dot reporter
-- **Minimal verbosity**: Tools suppress progress bars and extra formatting
-- **Organized by check type**: Type checking, linting, testing, formatting, etc.
+This contains structured results from all quality checks with extracted errors and warnings:
+- **Structured format**: JSON array with errorCount, warningCount, errors[], warnings[] for each tool
+- **Organized by tool**: Each entry shows tool name, exit code, and extracted findings
+- **Parsed diagnostics**: Errors and warnings extracted via regex patterns
 
-**Your task**: Parse this output to identify:
-- **ERRORS**: Type errors, failing tests, ESLint errors that must be fixed before proceeding
-- **WARNINGS**: ESLint warnings, code quality issues to address before ship
+**Your task**: Parse this JSON to identify:
+- **ERRORS**: Tools with errorCount > 0 or exitCode != 0 that must be fixed before proceeding
+- **WARNINGS**: Tools with warningCount > 0 to address before ship
 
-The file may be ~500 lines with issues, or very short when clean. Read the entire file to assess status.
+The JSON structure makes it easy to programmatically assess status and extract specific issues.
 
 ### Step 2.6: Read Critical Files Manifest (HODGE-341.3)
 ```bash
@@ -172,7 +172,7 @@ cat .hodge/features/{{feature}}/harden/critical-files.md
 ```
 
 This shows which files the algorithm scored as highest risk based on:
-- **Tool diagnostics**: Blockers, warnings, errors from quality checks
+- **Tool diagnostics**: Blockers, warnings, errors from validation-results.json
 - **Import fan-in**: Architectural impact (how many files import this file)
 - **Change size**: Lines modified
 - **Critical paths**: Configured + inferred critical infrastructure
@@ -315,7 +315,7 @@ Remaining:
 
 **For HODGE-341.3 Risk-Based Review**:
 - **Critical files** (from critical-files.md): Deep review against ALL loaded context
-- **Files with tool issues** (from quality-checks.md): Check specific violations
+- **Files with tool issues** (from validation-results.json): Check specific violations
 - **Other changed files**: Scan for obvious standards violations
 
 **What to look for**:
@@ -365,7 +365,7 @@ Remaining:
 
 After reviewing all files, determine if there are blocking issues.
 
-**Question**: Did you find any ERRORS (not warnings) in quality-checks.md or during code review?
+**Question**: Did you find any ERRORS (not warnings) in validation-results.json or during code review?
 
 #### If YES (Errors Found) → STOP HERE 🚫
 
@@ -568,7 +568,7 @@ None found.
 ## Command Execution (Only After Errors Are Fixed)
 
 **CHECKPOINT**: Before running this command, confirm:
-- [ ] Quality-checks.md shows 0 errors (warnings are OK)
+- [ ] validation-results.json shows 0 errors (warnings are OK)
 - [ ] Your Step 6 assessment was "Option A" or "Option B" (no blocking issues)
 - [ ] All error-level issues have been fixed
 
@@ -681,7 +681,7 @@ Based on the status output:
 
 There are still issues blocking production readiness.
 
-• Review quality-checks.md for specific issues
+• Review validation-results.json for specific issues
 • Fix failing tests or quality checks
 • Re-run `/harden {{feature}} --fix` to auto-fix simple issues
 • Re-run `/harden {{feature}} --review` after fixes

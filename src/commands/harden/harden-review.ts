@@ -13,20 +13,14 @@ import { GitDiffAnalyzer } from '../../lib/git-diff-analyzer.js';
 import { ReviewEngineService } from '../../lib/review-engine-service.js';
 import { CriticalFilesReportGenerator } from '../../lib/critical-files-report-generator.js';
 import type { CriticalFilesReport } from '../../lib/critical-file-selector.js';
-import type { EnrichedToolResult } from '../../types/review-engine.js';
-import type {
-  RawToolResult,
-  QualityChecksMapping,
-  ToolchainConfig,
-} from '../../types/toolchain.js';
-import { QualityReportGenerator } from '../../lib/quality-report-generator.js';
+import type { ToolchainConfig } from '../../types/toolchain.js';
+import type { RawToolResult } from '../../types/toolchain.js';
 
 /**
  * Handles review mode workflow
  */
 export class HardenReview {
   private logger = createCommandLogger('harden-review', { enableConsole: true });
-  private reportGenerator = new QualityReportGenerator();
 
   constructor(private reviewEngineService: ReviewEngineService) {}
 
@@ -57,7 +51,12 @@ export class HardenReview {
       });
 
       // 3. Write reports
-      await this.writeQualityChecks(hardenDir, findings.toolResults);
+      // HODGE-359.1: Write validation-results.json (replaces quality-checks.md)
+      this.logger.info(chalk.blue('🔍 Running quality checks...\n'));
+      await this.writeValidationResults(hardenDir, findings.rawToolResults);
+      this.logger.info(chalk.green('✓ Quality checks complete\n'));
+
+      this.logger.info(chalk.blue('📚 Generating review manifest...\n'));
       await this.writeManifest(hardenDir, findings.manifest);
       if (findings.criticalFiles) {
         await this.writeCriticalFiles(hardenDir, findings.criticalFiles);
@@ -103,10 +102,10 @@ export class HardenReview {
         return; // Warning review disabled
       }
 
-      // Check if quality-checks.md exists
-      const qualityChecksPath = path.join(hardenDir, 'quality-checks.md');
-      if (!existsSync(qualityChecksPath)) {
-        return; // No quality checks to review
+      // HODGE-359.1: Check if validation-results.json exists
+      const validationResultsPath = path.join(hardenDir, 'validation-results.json');
+      if (!existsSync(validationResultsPath)) {
+        return; // No validation results to review
       }
 
       // Display prompt for AI
@@ -158,7 +157,7 @@ export class HardenReview {
   ): void {
     this.logger.info(chalk.bold('Review Context Ready:'));
     this.logger.info(chalk.gray(`   review-manifest.yaml - Context files to load`));
-    this.logger.info(chalk.gray(`   quality-checks.md - Tool diagnostics`));
+    this.logger.info(chalk.gray(`   validation-results.json - Tool diagnostics`));
     if (changedFiles.length > 0) {
       this.logger.info(chalk.gray(`   critical-files.md - Top files for deep review`));
     }
@@ -175,7 +174,7 @@ export class HardenReview {
     this.logger.info(chalk.bold('═'.repeat(70)));
 
     this.logger.info(
-      '\n' + chalk.yellow('⚠️  Some warnings remain in ') + chalk.cyan('quality-checks.md')
+      '\n' + chalk.yellow('⚠️  Some warnings remain in ') + chalk.cyan('validation-results.json')
     );
 
     // Load and display warning guidance if configured
@@ -188,7 +187,7 @@ export class HardenReview {
     this.logger.info('\n' + chalk.bold('AI Prompt:'));
     this.logger.info(
       chalk.cyan(
-        `Please review ${chalk.yellow('quality-checks.md')} and identify any warnings that should be fixed before shipping.`
+        `Please review ${chalk.yellow('validation-results.json')} and identify any warnings that should be fixed before shipping.`
       )
     );
     this.logger.info(
@@ -206,35 +205,21 @@ export class HardenReview {
   }
 
   /**
-   * Write quality checks report
+   * Write validation results JSON
+   * HODGE-359.1: Core structured validation data for AI consumption
    */
-  private async writeQualityChecks(
+  private async writeValidationResults(
     hardenDir: string,
-    enrichedResults: EnrichedToolResult[]
+    toolResults: RawToolResult[]
   ): Promise<void> {
-    this.logger.info(chalk.blue('🔍 Running quality checks...\n'));
-
-    // Convert EnrichedToolResult to RawToolResult for report generation
-    const rawResults: RawToolResult[] = enrichedResults.map((enriched) => ({
-      type: enriched.checkType as keyof QualityChecksMapping,
-      tool: enriched.tool,
-      success: enriched.success,
-      stdout: enriched.output,
-      stderr: '',
-      skipped: enriched.skipped,
-      reason: enriched.reason,
-    }));
-
-    const qualityChecksReport = this.reportGenerator.generateQualityChecksReport(rawResults);
-    await fs.writeFile(path.join(hardenDir, 'quality-checks.md'), qualityChecksReport);
-    this.logger.info(chalk.green('✓ Quality checks complete\n'));
+    const validationResultsPath = path.join(hardenDir, 'validation-results.json');
+    await fs.writeFile(validationResultsPath, JSON.stringify(toolResults, null, 2));
   }
 
   /**
    * Write review manifest
    */
   private async writeManifest(hardenDir: string, manifest: unknown): Promise<void> {
-    this.logger.info(chalk.blue('📚 Generating review manifest...'));
     const manifestPath = path.join(hardenDir, 'review-manifest.yaml');
     await fs.writeFile(manifestPath, yaml.dump(manifest, { lineWidth: 120, noRefs: true }));
     this.logger.info(chalk.green(`✓ Review manifest generated`));

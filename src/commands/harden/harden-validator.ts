@@ -7,13 +7,14 @@ import chalk from 'chalk';
 import { HardenService } from '../../lib/harden-service.js';
 import { createCommandLogger } from '../../lib/logger.js';
 import type { RawToolResult, QualityChecksMapping } from '../../types/toolchain.js';
+import { isToolResultSuccessful } from '../../types/toolchain.js';
 import type { HardenOptions } from '../harden.js';
 
 /**
  * Helper functions for working with RawToolResult[]
  */
 export function getAllPassed(results: RawToolResult[]): boolean {
-  return results.every((r) => r.skipped ?? r.success);
+  return results.every((r) => isToolResultSuccessful(r));
 }
 
 export function getResultsByType(
@@ -69,18 +70,18 @@ export class HardenValidator {
     const typeCheckResults = getResultsByType(results, 'type_checking');
 
     // Tests status
-    const testsPassed = testResults.every((r) => r.skipped ?? r.success);
+    const testsPassed = testResults.every((r) => isToolResultSuccessful(r));
     const testsSkipped = testResults.some((r) => r.skipped);
     this.logger.info(this.getTestStatusMessage(testsPassed, testsSkipped));
 
     // Linting status
-    const lintPassed = lintResults.every((r) => r.skipped ?? r.success);
+    const lintPassed = lintResults.every((r) => isToolResultSuccessful(r));
     this.logger.info(
       lintPassed ? chalk.green('   ✓ Linting passed') : chalk.red('   ✗ Linting failed')
     );
 
     // Type checking status
-    const typeCheckPassed = typeCheckResults.every((r) => r.skipped ?? r.success);
+    const typeCheckPassed = typeCheckResults.every((r) => isToolResultSuccessful(r));
     this.logger.info(
       typeCheckPassed ? chalk.green('   ✓ Type check passed') : chalk.red('   ✗ Type check failed')
     );

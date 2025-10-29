@@ -514,18 +514,18 @@ After running `hodge ship "{{feature}}"`, the CLI will:
 **After the ship command completes**, read the quality check results to verify all issues are resolved:
 
 ```bash
-# Read ship quality check results
-cat .hodge/features/{{feature}}/ship/quality-checks.md
+# Read ship validation results
+cat .hodge/features/{{feature}}/ship/validation-results.json
 ```
 
-This contains the raw output from all quality checks run during ship. Review it to ensure:
-- **No test failures** - All tests must pass
-- **No TypeScript errors** - Type checking must be clean
-- **No ESLint errors** - Errors must be fixed (warnings are acceptable)
+This contains structured results from all quality checks run during ship. Review it to ensure:
+- **No test failures** - All tests must pass (errorCount = 0 for test tools)
+- **No TypeScript errors** - Type checking must be clean (errorCount = 0 for typescript)
+- **No ESLint errors** - Errors must be fixed (errorCount = 0, warningCount acceptable)
 - **No security issues** - Security scanner must pass
 - **No critical architecture violations** - Circular dependencies and major issues resolved
 
-**Question**: Did you find any ERRORS (not warnings) in the quality-checks.md?
+**Question**: Did you find any ERRORS (not warnings) in the validation-results.json?
 
 #### If YES (Errors Found) → ABORT SHIP 🚫
 
@@ -536,7 +536,7 @@ The ship command should have prevented commit if there were errors, but if you s
 
 There are errors that must be fixed before shipping:
 
-[List the specific errors from quality-checks.md]
+[List the specific errors from validation-results.json]
 
 ### Next Steps:
 • Fix the errors listed above

@@ -22,6 +22,7 @@ import { CriticalFileSelector } from './critical-file-selector.js';
 import { ToolRegistryLoader } from './tool-registry-loader.js';
 import type { ReviewOptions, ReviewFindings, EnrichedToolResult } from '../types/review-engine.js';
 import type { RawToolResult } from '../types/toolchain.js';
+import { isToolResultSuccessful } from '../types/toolchain.js';
 import type { CriticalFilesReport } from './critical-file-selector.js';
 import type { ReviewManifest } from '../types/review-manifest.js';
 
@@ -114,7 +115,7 @@ export class ReviewEngineService {
     const enrichedResults: EnrichedToolResult[] = toolResults.map((result) => ({
       tool: result.tool,
       checkType: result.type,
-      success: result.success ?? false,
+      success: isToolResultSuccessful(result),
       output: this.combineOutput(result.stdout, result.stderr),
       autoFixable: this.isAutoFixable(result.tool, registry.tools),
       skipped: result.skipped,
@@ -127,6 +128,7 @@ export class ReviewEngineService {
     });
 
     return {
+      rawToolResults: toolResults,
       toolResults: enrichedResults,
       criticalFiles: criticalReport,
       manifest,
@@ -165,6 +167,8 @@ export class ReviewEngineService {
     toolRegistry: Record<string, import('../types/toolchain.js').ToolRegistryEntry>
   ): boolean {
     const toolInfo = toolRegistry[toolName];
+    // HODGE-359.1: Defensive check - toolName may not exist in registry
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!toolInfo) return false;
     return !!toolInfo.fix_command;
   }

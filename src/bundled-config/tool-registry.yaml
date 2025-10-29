@@ -22,6 +22,9 @@ tools:
     categories: [type_checking]
     # Note: TypeScript project mode doesn't accept ${files} - uses tsconfig include/exclude
     # Removed --pretty flag to avoid ANSI color codes in quality-checks.md (HODGE-344.3)
+    # HODGE-359.1: Regex patterns for structured error/warning extraction
+    error_pattern: '^.+\(\d+,\d+\):\s+error\s+TS\d+:'
+    warning_pattern: '^.+\(\d+,\d+\):\s+warning\s+TS\d+:'
 
   eslint:
     languages: [typescript, javascript]
@@ -51,6 +54,9 @@ tools:
     # More concise than default 'stylish' format
     # ESLint with sonarjs plugin provides linting, complexity, and code smell checks
     # --fix: Auto-fix issues (HODGE-341.6)
+    # HODGE-359.1: Regex patterns for structured error/warning extraction
+    error_pattern: '^.+:\d+:\d+:\s+error\s+'
+    warning_pattern: '^.+:\d+:\d+:\s+warning\s+'
 
   prettier:
     languages: [typescript, javascript, json, yaml, markdown, html, css]
@@ -78,6 +84,11 @@ tools:
     categories: [formatting]
     # --check: Exit with error if files are not formatted (lists unformatted files)
     # --write: Auto-format files (HODGE-341.6)
+    # HODGE-359.1: Regex patterns for structured error/warning extraction
+    # Prettier outputs [warn] filename.ts for unformatted files
+    # Match lines with [warn] followed by a file path (has dot in it)
+    error_pattern: '^\[warn\]\s+\S+\.\S+'
+    warning_pattern: ''
 
   vitest:
     languages: [typescript, javascript]
@@ -96,6 +107,9 @@ tools:
     categories: [testing]
     # --reporter=dot: Dots for passing tests, 'x' for failures
     # --silent=passed-only: Only show console output from failing tests
+    # HODGE-359.1: Regex patterns for structured error/warning extraction
+    error_pattern: '^\s*×\s+.+\s+>\s+.+'
+    warning_pattern: ''
 
   # ==================== Advanced TypeScript/JavaScript Tools (HODGE-341.2) ====================
 
@@ -128,11 +142,15 @@ tools:
         npm:
           package: jscpd
           install_command: npm install --save-dev jscpd
-    default_command: npx jscpd ${files} --min-lines 10 --silent --reporters json
+    default_command: npx jscpd ${files} --min-lines 10 --silent --reporters json --ignore "node_modules/**,dist/**,.hodge/**"
     version_command: jscpd --version
     categories: [duplication]
     # --silent: No progress output
     # --reporters json: Structured output for easier parsing
+    # --ignore: Exclude node_modules, dist, and .hodge directories
+    # HODGE-359.1: Regex patterns for structured error/warning extraction (JSON output)
+    error_pattern: '"duplicates":\s*\[\s*\{'
+    warning_pattern: ''
 
   dependency-cruiser:
     languages: [typescript, javascript]
@@ -144,10 +162,14 @@ tools:
         npm:
           package: dependency-cruiser
           install_command: npm install --save-dev dependency-cruiser
-    default_command: npx depcruise --config .dependency-cruiser.cjs --output-type err ${files}
+    default_command: npx depcruise --config .dependency-cruiser.cjs --output-type err ${files} || true
     version_command: depcruise --version
     categories: [architecture]
     # --output-type err: Only show violations, suppresses graph output
+    # || true: Exit 0 even with warnings (exit code 7), AI interprets stdout
+    # HODGE-359.1: Regex patterns for structured error/warning extraction
+    error_pattern: '^\s*error\s+.+:\s+'
+    warning_pattern: '^\s*warn\s+.+:\s+'
 
   semgrep:
     languages: [typescript, javascript, python, go, ruby, java, php, c, cpp, rust, kotlin]
@@ -157,10 +179,14 @@ tools:
     installation:
       external: true
       install_instructions: 'Install from https://semgrep.dev/docs/getting-started/'
-    default_command: semgrep --config .hodge/semgrep-rules/ --config auto --quiet ${files}
+    default_command: semgrep --config .hodge/semgrep-rules/ --config auto --quiet ${files} 2>&1 | grep -v "ca-certs" || true
     version_command: semgrep --version
     categories: [security, patterns]
     # --quiet: Only show findings, suppress progress output
+    # 2>&1 | grep -v "ca-certs" || true: Filter out certificate warnings, return success if no output
+    # HODGE-359.1: Regex patterns for structured error/warning extraction
+    error_pattern: '^\s*❯❯❱\s+.+'
+    warning_pattern: '^\s*▶▶▷\s+.+'
 
   # ==================== Python Tools ====================
 

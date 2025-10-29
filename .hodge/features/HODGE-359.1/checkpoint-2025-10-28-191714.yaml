@@ -1,0 +1,46 @@
+timestamp: 2025-10-28T19:17:14Z
+phase: harden
+featureId: HODGE-359.1
+summary: 'Core feature working - validation-results.json generated, all tests passing'
+
+progress:
+  - 'Fixed core bug: validation-results.json now generated instead of quality-checks.md'
+  - 'Fixed stderr extraction bug (was only checking stdout)'
+  - 'Added case-insensitive regex matching for errors/warnings'
+  - 'Implemented .hodge directory filtering from quality checks'
+  - 'Fixed non-existent file filtering (deleted but in git index)'
+  - 'Fixed TypeScript type error in ship-service.ts'
+  - 'Updated 5 failing tests to use errorCount instead of legacy success field'
+  - 'All 1340 tests now passing (131 test files)'
+
+decisions:
+  - 'Use code-based filtering for .hodge/* instead of tool configuration (explicit file paths bypass tool ignore patterns)'
+  - 'Search both stdout AND stderr for error/warning extraction (tools write to either)'
+  - 'Use case-insensitive regex (catch ERROR/error/Error variants)'
+  - 'RawToolResult now uses errorCount/warningCount instead of success boolean'
+
+blockers: []
+
+nextSteps:
+  - 'Run /ship to commit all changes'
+  - 'Consider creating PR for review'
+  - 'Document lessons learned from debugging process'
+
+context:
+  filesModified:
+    - 'src/lib/toolchain-service.ts'
+    - 'src/lib/ship-service.ts'
+    - 'src/test/hodge-356.smoke.test.ts'
+    - 'src/lib/harden-service.test.ts'
+  majorBugFixed: 'validation-results.json not being generated due to old compiled code in dist/'
+  testResults:
+    total: 1340
+    passing: 1340
+    failing: 0
+    files: 131
+  qualityGates:
+    linting: true
+    typeChecking: true
+    tests: true
+    formatting: true
+  conversationHighlights: 'Discovered build was running old code from dist/ - needed npm run build to compile changes. Found 3 critical bugs: stderr not searched, .hodge files not filtered, case-sensitive regex.'

@@ -1,0 +1,44 @@
+timestamp: 2025-10-28T20:00:00Z
+phase: ship
+featureId: HODGE-359.1
+summary: "Discovered ship scope bug - uses 'all' instead of checking since buildStartCommit"
+
+progress:
+  - "Fixed 5 failing tests that used deprecated 'success' field (converted to errorCount)"
+  - "Fixed prettier error_pattern regex (was matching all lines including success messages)"
+  - "Fixed dependency-cruiser YAML file error (excluded .yaml/.json/.md from dependency checks)"
+  - "Added debug logging to isToolResultSuccessful to trace validation failures"
+  - "All harden quality gates passing (tests, linting, type checking, formatting, architecture, security)"
+
+decisions:
+  - "Prettier error pattern should be '^\[warn\]\s+\S+\.\S+' to match only file paths, not success messages"
+  - "dependency-cruiser should exclude data files (.yaml, .json, .md) from module resolution"
+  - "Both .hodge/toolchain.yaml AND src/bundled-config/tool-registry.yaml need pattern updates (project vs tests)"
+  - "Tests use mocked stdout strings, not real tool execution (HODGE-357.1 standard)"
+
+blockers:
+  - "Ship command uses scope 'all' which checks entire codebase, not just feature changes"
+  - "Ship should check files since buildStartCommit (from ship-record.json), not all files or just uncommitted"
+  - "Currently ship fails with prettier errorCount=2 and dependency-cruiser errorCount=7 on unrelated files"
+
+nextSteps:
+  - "Fix ship scope: Read buildStartCommit from ship-record.json and validate files changed since that commit"
+  - "Add new ToolchainService method: getFilesSinceCommit(commitSha) using git diff <sha>...HEAD"
+  - "Update ShipService.runQualityGates() to use commit-based scope instead of 'all'"
+  - "Remove debug logging from isToolResultSuccessful after ship works"
+  - "Update commit message to include ship scope bug fix"
+
+context:
+  filesModified:
+    - ".dependency-cruiser.cjs"
+    - ".hodge/toolchain.yaml"
+    - "src/bundled-config/tool-registry.yaml"
+    - "src/test/hodge-356.smoke.test.ts"
+    - "src/lib/harden-service.test.ts"
+    - "src/types/toolchain.ts"
+  buildStartCommit: "f72b9dfbd5d5fdb91e8d2c25b50351035e56f4f6"
+  shipScopeBug: "Ship uses runQualityChecks('all') instead of checking files since buildStartCommit"
+  currentShipFailure: "prettier errorCount=2, dependency-cruiser errorCount=7 (checking files outside feature scope)"
+  allChangesStaged: true
+  testsStatus: "1340/1340 passing"
+  conversationHighlights: "User identified critical insight: ship should validate all changes since buildStartCommit (tracked in ship-record.json), not just uncommitted files or entire codebase. This is the root cause of ship validation failures."

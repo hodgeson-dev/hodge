@@ -1,0 +1,54 @@
+timestamp: 2025-10-28T17:42:58Z
+phase: harden
+featureId: HODGE-359.1
+summary: 'Fixed implementation issues: removed success field, added validation-results.json generation'
+
+progress:
+  - 'Discovered and fixed missing validation-results.json generation in review mode'
+  - 'Removed quality-checks.md generation (feature goal: replace with validation-results.json)'
+  - 'Created isToolResultSuccessful() helper function to replace success field'
+  - 'Fixed all 22 TypeScript errors referencing removed success field in production code'
+  - 'Fixed 3 ESLint errors in toolchain-service.ts (RegExp.exec instead of String.match)'
+  - 'Updated ReviewFindings interface to include rawToolResults'
+  - 'Updated ReviewEngineService to pass through raw tool results'
+  - 'Added writeValidationResults() method to HardenReview class'
+
+decisions:
+  - 'Keep quality-checks.md generation REMOVED (feature explicitly replaces it with validation-results.json)'
+  - 'Use helper function isToolResultSuccessful() instead of direct success field checks'
+  - 'Success = errorCount === 0, skipped checks count as passing'
+  - 'validation-results.json is the source of truth, quality-checks.md is legacy'
+
+blockers:
+  - 'Test file (hodge-356.smoke.test.ts) uses success:true in mock data (needs errorCount instead)'
+  - 'Need to verify validation-results.json is generated correctly in review mode'
+
+nextSteps:
+  - "Re-run 'hodge harden HODGE-359.1 --review' to verify validation-results.json generation"
+  - 'Fix test mock data in hodge-356.smoke.test.ts to use errorCount: 0 instead of success: true'
+  - 'Verify all quality checks pass'
+  - 'Complete harden review workflow'
+
+context:
+  filesModified:
+    - 'src/types/toolchain.ts' # Added isToolResultSuccessful() helper
+    - 'src/types/review-engine.ts' # Added rawToolResults to ReviewFindings
+    - 'src/lib/review-engine-service.ts' # Pass through raw results, use helper
+    - 'src/commands/harden/harden-review.ts' # Added writeValidationResults(), removed quality-checks.md
+    - 'src/commands/harden/harden-validator.ts' # Use helper function
+    - 'src/lib/harden-service.ts' # Use helper function
+    - 'src/lib/quality-report-generator.ts' # Use helper function
+    - 'src/lib/ship-service.ts' # Use helper function
+    - 'src/lib/toolchain-service.ts' # Fixed RegExp.exec usage
+    - 'src/test/hodge-356.smoke.test.ts' # Needs mock data fix
+  implementationIssues: |
+    During harden, discovered that build phase implementation was incomplete:
+    1. validation-results.json not generated in --review mode
+    2. quality-checks.md was being generated (should be removed)
+    3. All references to removed 'success' field needed updating
+    4. Test mocks still use old success field
+  conversationHighlights: |
+    User asked why quality-checks.md was being generated when it should be removed.
+    Investigation revealed ReviewEngineService runs quality checks but doesn't save
+    validation-results.json. Fixed by adding rawToolResults to ReviewFindings and
+    creating writeValidationResults() method in HardenReview.

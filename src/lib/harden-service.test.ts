@@ -31,10 +31,22 @@ describe('HardenService - HODGE-321 Service Extraction', () => {
     const service = new HardenService();
 
     const allPassedResults = [
-      { type: 'testing' as const, tool: 'vitest', success: true, stdout: 'all good' },
-      { type: 'linting' as const, tool: 'eslint', success: true, stdout: 'all good' },
-      { type: 'type_checking' as const, tool: 'tsc', success: true, stdout: 'all good' },
-      { type: 'formatting' as const, tool: 'prettier', success: true, stdout: 'all good' },
+      { type: 'testing' as const, tool: 'vitest', exitCode: 0, errorCount: 0, stdout: 'all good' },
+      { type: 'linting' as const, tool: 'eslint', exitCode: 0, errorCount: 0, stdout: 'all good' },
+      {
+        type: 'type_checking' as const,
+        tool: 'tsc',
+        exitCode: 0,
+        errorCount: 0,
+        stdout: 'all good',
+      },
+      {
+        type: 'formatting' as const,
+        tool: 'prettier',
+        exitCode: 0,
+        errorCount: 0,
+        stdout: 'all good',
+      },
     ];
 
     const gateCheck = service.checkQualityGates(allPassedResults);
@@ -47,10 +59,28 @@ describe('HardenService - HODGE-321 Service Extraction', () => {
     const service = new HardenService();
 
     const someFailedResults = [
-      { type: 'testing' as const, tool: 'vitest', success: true, stdout: 'all good' },
-      { type: 'linting' as const, tool: 'eslint', success: false, stdout: 'errors found' },
-      { type: 'type_checking' as const, tool: 'tsc', success: true, stdout: 'all good' },
-      { type: 'formatting' as const, tool: 'prettier', success: true, stdout: 'all good' },
+      { type: 'testing' as const, tool: 'vitest', exitCode: 0, errorCount: 0, stdout: 'all good' },
+      {
+        type: 'linting' as const,
+        tool: 'eslint',
+        exitCode: 1,
+        errorCount: 5,
+        stdout: 'errors found',
+      },
+      {
+        type: 'type_checking' as const,
+        tool: 'tsc',
+        exitCode: 0,
+        errorCount: 0,
+        stdout: 'all good',
+      },
+      {
+        type: 'formatting' as const,
+        tool: 'prettier',
+        exitCode: 0,
+        errorCount: 0,
+        stdout: 'all good',
+      },
     ];
 
     const gateCheck = service.checkQualityGates(someFailedResults);
@@ -63,10 +93,34 @@ describe('HardenService - HODGE-321 Service Extraction', () => {
     const service = new HardenService();
 
     const validationResults = [
-      { type: 'testing' as const, tool: 'vitest', success: true, stdout: 'all tests passed' },
-      { type: 'linting' as const, tool: 'eslint', success: true, stdout: 'no lint errors' },
-      { type: 'type_checking' as const, tool: 'tsc', success: true, stdout: 'no type errors' },
-      { type: 'formatting' as const, tool: 'prettier', success: true, stdout: 'formatting ok' },
+      {
+        type: 'testing' as const,
+        tool: 'vitest',
+        exitCode: 0,
+        errorCount: 0,
+        stdout: 'all tests passed',
+      },
+      {
+        type: 'linting' as const,
+        tool: 'eslint',
+        exitCode: 0,
+        errorCount: 0,
+        stdout: 'no lint errors',
+      },
+      {
+        type: 'type_checking' as const,
+        tool: 'tsc',
+        exitCode: 0,
+        errorCount: 0,
+        stdout: 'no type errors',
+      },
+      {
+        type: 'formatting' as const,
+        tool: 'prettier',
+        exitCode: 0,
+        errorCount: 0,
+        stdout: 'formatting ok',
+      },
     ];
 
     const reportData = service.generateReportData('test-feature', validationResults, {
@@ -86,9 +140,27 @@ describe('HardenService - HODGE-321 Service Extraction', () => {
 
     const validationResults = [
       { type: 'testing' as const, tool: 'vitest', skipped: true, reason: 'tests skipped' },
-      { type: 'linting' as const, tool: 'eslint', success: true, stdout: 'no lint errors' },
-      { type: 'type_checking' as const, tool: 'tsc', success: true, stdout: 'no type errors' },
-      { type: 'formatting' as const, tool: 'prettier', success: true, stdout: 'formatting ok' },
+      {
+        type: 'linting' as const,
+        tool: 'eslint',
+        exitCode: 0,
+        errorCount: 0,
+        stdout: 'no lint errors',
+      },
+      {
+        type: 'type_checking' as const,
+        tool: 'tsc',
+        exitCode: 0,
+        errorCount: 0,
+        stdout: 'no type errors',
+      },
+      {
+        type: 'formatting' as const,
+        tool: 'prettier',
+        exitCode: 0,
+        errorCount: 0,
+        stdout: 'formatting ok',
+      },
     ];
 
     const reportData = service.generateReportData('test-feature', validationResults, {
