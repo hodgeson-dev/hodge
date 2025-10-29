@@ -11,7 +11,7 @@ progress:
   - "All harden quality gates passing (tests, linting, type checking, formatting, architecture, security)"
 
 decisions:
-  - "Prettier error pattern should be '^\[warn\]\s+\S+\.\S+' to match only file paths, not success messages"
+  - 'Prettier error pattern should be ''^\[warn\]\s+\S+\.\S+'' to match only file paths, not success messages'
   - "dependency-cruiser should exclude data files (.yaml, .json, .md) from module resolution"
   - "Both .hodge/toolchain.yaml AND src/bundled-config/tool-registry.yaml need pattern updates (project vs tests)"
   - "Tests use mocked stdout strings, not real tool execution (HODGE-357.1 standard)"
