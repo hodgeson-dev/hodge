@@ -1,10 +1,20 @@
 import chalk from 'chalk';
 import { promises as fs, existsSync } from 'fs';
 import path from 'path';
+import yaml from 'js-yaml';
 import { HodgeMDGenerator } from '../lib/hodge-md-generator.js';
 import { sessionManager } from '../lib/session-manager.js';
 import { createCommandLogger } from '../lib/logger.js';
 import { ArchitectureGraphService } from '../lib/architecture-graph-service.js';
+import { PatternMetadataService } from '../lib/pattern-metadata-service.js';
+import { SaveDiscoveryService } from '../lib/save-discovery-service.js';
+import type {
+  ContextManifest,
+  GlobalFile,
+  ArchitectureGraph,
+  FeatureContext,
+  FileStatus,
+} from '../types/context-manifest.js';
 
 export interface ContextOptions {
   list?: boolean;
@@ -14,14 +24,7 @@ export interface ContextOptions {
   todos?: boolean;
 }
 
-interface SavedContext {
-  name: string;
-  path: string;
-  feature?: string;
-  mode?: string;
-  timestamp: string;
-  summary?: string;
-}
+// SavedContext type moved to SaveDiscoveryService (HODGE-363 refactoring)
 
 /**
  * Context command for managing Hodge sessions
@@ -36,26 +39,28 @@ interface SavedContext {
  */
 export class ContextCommand {
   private hodgeMDGenerator: HodgeMDGenerator;
+  private saveDiscoveryService: SaveDiscoveryService;
   private basePath: string;
   private logger = createCommandLogger('context', { enableConsole: true });
 
   constructor(basePath?: string) {
     this.basePath = basePath ?? process.cwd();
     this.hodgeMDGenerator = new HodgeMDGenerator(this.basePath);
+    this.saveDiscoveryService = new SaveDiscoveryService(this.basePath);
   }
 
   async execute(options: ContextOptions = {}): Promise<void> {
     try {
+      // HODGE-363: Special modes use legacy console output
       if (options.todos) {
         await this.countTodos(options.feature);
       } else if (options.list) {
         await this.listSaves();
       } else if (options.recent) {
         await this.loadRecentSave();
-      } else if (options.feature) {
-        await this.loadFeatureContext(options.feature);
       } else {
-        await this.loadDefaultContext();
+        // HODGE-363: Default mode generates YAML manifest for AI consumption
+        await this.generateManifest(options.feature);
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
@@ -67,58 +72,189 @@ export class ContextCommand {
   }
 
   /**
-   * Load default context (HODGE.md + save discovery)
+   * Generate YAML manifest for AI context loading (HODGE-363)
+   *
+   * Outputs structured YAML manifest to stdout containing:
+   * - Global files (standards, decisions, principles, etc.)
+   * - Architecture graph statistics
+   * - Pattern metadata (titles and overviews)
+   * - Feature context (when feature specified or from session)
+   *
+   * Follows HODGE-334: CLI discovers structure, AI interprets content
    */
-  private async loadDefaultContext(): Promise<void> {
-    this.logger.info(chalk.cyan('📚 Loading Hodge Context'));
-    this.logger.info('');
+  private async generateManifest(featureArg?: string): Promise<void> {
+    this.logger.info('Generating context manifest');
 
-    // Load session first to get actual feature for accurate mode detection (HODGE-313)
+    // Determine feature from argument or session
     const session = await sessionManager.load();
-    const featureToCheck = session?.feature ?? 'general';
+    const feature = featureArg ?? session?.feature;
 
-    // Generate fresh HODGE.md with actual feature for accurate mode detection
-    await this.hodgeMDGenerator.saveToFile(featureToCheck);
-    this.logger.info(chalk.green('✓ Generated fresh HODGE.md'));
+    // Generate HODGE.md for session state (writes to file for reference)
+    await this.hodgeMDGenerator.saveToFile(feature ?? 'general');
+    this.logger.info('Generated feature-specific HODGE.md');
 
-    // Load and display principles if they exist
-    await this.displayPrinciples();
+    // Build manifest
+    const manifest: ContextManifest = {
+      version: '1.0',
+      global_files: await this.buildGlobalFiles(),
+      patterns: await this.buildPatternsSection(),
+    };
 
-    // HODGE-362: Display architecture graph status
-    await this.displayArchitectureGraph();
-
-    // Discover recent saves
-    const saves = await this.discoverSaves();
-    if (saves.length > 0) {
-      this.logger.info('');
-      this.logger.info(chalk.bold('Recent Saved Sessions:'));
-
-      saves.slice(0, 5).forEach((save, index) => {
-        this.logger.info(
-          chalk.gray(`${index + 1}. `) +
-            chalk.yellow(save.name) +
-            chalk.gray(` (${this.formatTimeAgo(save.timestamp)})`)
-        );
-        if (save.feature) {
-          this.logger.info(
-            chalk.gray(`   Feature: ${save.feature}, Mode: ${save.mode ?? 'unknown'}`)
-          );
-        }
-        if (save.summary) {
-          this.logger.info(chalk.gray(`   ${save.summary}`));
-        }
-      });
-
-      this.logger.info('');
-      this.logger.info(chalk.gray('To load a save: ') + chalk.cyan('hodge context --recent'));
-      this.logger.info(chalk.gray('To list all saves: ') + chalk.cyan('hodge context --list'));
-    } else {
-      this.logger.info(chalk.gray('No saved sessions found.'));
+    // Add architecture graph if available
+    const graphSection = await this.buildArchitectureGraphSection();
+    if (graphSection) {
+      manifest.architecture_graph = graphSection;
     }
 
-    this.logger.info('');
-    this.logger.info(chalk.bold('Context loaded. Ready to work!'));
+    // Add feature context if feature specified
+    if (feature) {
+      manifest.feature_context = await this.buildFeatureContext(feature);
+    }
+
+    // Output YAML to stdout (for AI consumption)
+    // Use console.log (not logger) - logger goes to pino files, console.log to stdout
+    console.log(yaml.dump(manifest, { lineWidth: 100, noRefs: true }));
+
+    this.logger.info(`Context manifest generated for ${feature ?? 'project'}`);
   }
+
+  /**
+   * Build global files list with availability status
+   */
+  private async buildGlobalFiles(): Promise<GlobalFile[]> {
+    const globalFilePaths = [
+      { path: '.hodge/HODGE.md', note: 'Session state and current feature' },
+      { path: '.hodge/standards.md', note: 'Enforceable project standards' },
+      { path: '.hodge/decisions.md', note: 'Architectural decisions' },
+      { path: '.hodge/principles.md' },
+      { path: '.hodge/architecture-graph.dot' },
+      { path: '.hodge/context.json' },
+    ];
+
+    const globalFiles: GlobalFile[] = [];
+
+    for (const { path: filePath, note } of globalFilePaths) {
+      const fullPath = path.join(this.basePath, filePath);
+      const status: FileStatus = (await this.fileExists(fullPath)) ? 'available' : 'not_found';
+
+      globalFiles.push({
+        path: filePath,
+        status,
+        ...(note && { note }),
+      });
+    }
+
+    return globalFiles;
+  }
+
+  /**
+   * Build patterns section with extracted metadata
+   */
+  private async buildPatternsSection() {
+    const patternsDir = path.join(this.basePath, '.hodge', 'patterns');
+    const patternService = new PatternMetadataService();
+
+    const patterns = await patternService.extractAllPatterns(patternsDir);
+
+    return {
+      location: '.hodge/patterns/',
+      files: patterns,
+    };
+  }
+
+  /**
+   * Build architecture graph section with statistics
+   */
+  private async buildArchitectureGraphSection(): Promise<ArchitectureGraph | null> {
+    try {
+      const graphService = new ArchitectureGraphService();
+      const graphExists = graphService.graphExists(this.basePath);
+
+      if (!graphExists) {
+        return null;
+      }
+
+      const graphContent = await graphService.loadGraph(this.basePath);
+
+      if (!graphContent) {
+        return null;
+      }
+
+      // Count modules and dependencies from DOT format
+      const nodeMatches = graphContent.match(/"\w+"/g);
+      const edgeMatches = graphContent.match(/->/g);
+
+      const modules = nodeMatches ? Math.floor(nodeMatches.length / 2) : 0;
+      const dependencies = edgeMatches ? edgeMatches.length : 0;
+
+      return {
+        status: 'available',
+        modules,
+        dependencies,
+        location: '.hodge/architecture-graph.dot',
+        note: 'Updated after each successful /ship',
+      };
+    } catch (error) {
+      this.logger.debug('Failed to build architecture graph section', {
+        error: error as Error,
+      });
+      return null;
+    }
+  }
+
+  /**
+   * Build feature context section
+   */
+  private async buildFeatureContext(feature: string): Promise<FeatureContext> {
+    const featureDir = path.join(this.basePath, '.hodge', 'features', feature);
+
+    // Recursively discover all files in feature directory
+    const files = await this.discoverFeatureFiles(featureDir);
+
+    return {
+      feature_id: feature,
+      files,
+    };
+  }
+
+  /**
+   * Recursively discover all files in feature directory
+   */
+  private async discoverFeatureFiles(
+    dir: string,
+    baseDir: string = dir
+  ): Promise<Array<{ path: string; status: FileStatus }>> {
+    const files: Array<{ path: string; status: FileStatus }> = [];
+
+    try {
+      const entries = await fs.readdir(dir, { withFileTypes: true });
+
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name);
+
+        if (entry.isDirectory()) {
+          // Recursively scan subdirectories
+          const subFiles = await this.discoverFeatureFiles(fullPath, baseDir);
+          files.push(...subFiles);
+        } else if (entry.isFile()) {
+          // Add file with relative path from feature directory
+          const relativePath = path.relative(this.basePath, fullPath);
+          files.push({
+            path: relativePath,
+            status: 'available',
+          });
+        }
+      }
+    } catch (error) {
+      this.logger.debug(`Failed to scan directory: ${dir}`, { error: error as Error });
+    }
+
+    return files;
+  }
+
+  // HODGE-363: loadDefaultContext() removed - replaced by generateManifest() YAML approach
+  // Previously loaded context with hardcoded console output for human-readable display
+  // Now outputs structured YAML manifest for AI consumption via /hodge slash command
 
   /**
    * List all available saves
@@ -127,7 +263,7 @@ export class ContextCommand {
     this.logger.info(chalk.cyan('📋 Available Saved Sessions'));
     this.logger.info('');
 
-    const saves = await this.discoverSaves();
+    const saves = await this.saveDiscoveryService.discoverSaves();
 
     if (saves.length === 0) {
       this.logger.info(chalk.gray('No saved sessions found.'));
@@ -138,7 +274,9 @@ export class ContextCommand {
       this.logger.info(chalk.bold(`${index + 1}. ${save.name}`));
       this.logger.info(chalk.gray(`   Path: ${save.path}`));
       this.logger.info(
-        chalk.gray(`   Saved: ${save.timestamp} (${this.formatTimeAgo(save.timestamp)})`)
+        chalk.gray(
+          `   Saved: ${save.timestamp} (${this.saveDiscoveryService.formatTimeAgo(save.timestamp)})`
+        )
       );
 
       if (save.feature) {
@@ -166,7 +304,7 @@ export class ContextCommand {
     this.logger.info(chalk.cyan('🔄 Loading Most Recent Save'));
     this.logger.info('');
 
-    const saves = await this.discoverSaves();
+    const saves = await this.saveDiscoveryService.discoverSaves();
 
     if (saves.length === 0) {
       this.logger.info(chalk.yellow('No saved sessions found.'));
@@ -191,210 +329,22 @@ export class ContextCommand {
     this.logger.info(chalk.bold('Session restored!'));
 
     if (mostRecent.feature) {
+      const mode = mostRecent.mode || 'explore';
       this.logger.info(
-        chalk.gray(`Continue with: `) +
-          chalk.cyan(`/${mostRecent.mode ?? 'explore'} ${mostRecent.feature}`)
+        chalk.gray(`Continue with: `) + chalk.cyan(`/${mode} ${mostRecent.feature}`)
       );
     }
   }
 
-  /**
-   * Load context for a specific feature
-   * HODGE-358: Includes checkpoint file discovery and precedence hints
-   */
-  private async loadFeatureContext(feature: string): Promise<void> {
-    this.logger.info(chalk.cyan(`📂 Loading Context for: ${feature}`));
-    this.logger.info('');
+  // HODGE-363: loadFeatureContext() removed - replaced by generateManifest() YAML approach
+  // Previously loaded feature context with console output for human-readable display
+  // Now outputs structured YAML manifest including feature_context section for AI consumption
 
-    // Generate HODGE.md with feature focus
-    await this.hodgeMDGenerator.saveToFile(feature);
-    this.logger.info(chalk.green('✓ Generated feature-specific HODGE.md'));
+  // HODGE-363: displayPrinciples() removed - principles now included in YAML manifest
+  // Principles file path and availability status provided in global_files section
 
-    // Check for feature directory
-    const featureDir = path.join('.hodge', 'features', feature);
-    const featureExists = await this.fileExists(featureDir);
-
-    if (featureExists) {
-      this.logger.info(chalk.green(`✓ Found feature directory`));
-
-      // List key files
-      const exploreFile = path.join(featureDir, 'explore', 'exploration.md');
-      const buildFile = path.join(featureDir, 'build', 'build-plan.md');
-      const decisionsFile = path.join(featureDir, 'linked-decisions.md');
-
-      this.logger.info('');
-      this.logger.info(chalk.bold('Feature Files:'));
-
-      if (await this.fileExists(exploreFile)) {
-        this.logger.info(chalk.gray('• ') + 'exploration.md');
-      }
-      if (await this.fileExists(buildFile)) {
-        this.logger.info(chalk.gray('• ') + 'build-plan.md');
-      }
-      if (await this.fileExists(decisionsFile)) {
-        this.logger.info(chalk.gray('• ') + 'linked-decisions.md');
-      }
-
-      // HODGE-358: Discover checkpoint files
-      const checkpoints = await this.discoverCheckpoints(featureDir);
-      if (checkpoints.length > 0) {
-        this.logger.info('');
-        this.logger.info(chalk.bold('Checkpoints:'));
-
-        checkpoints.forEach((checkpoint, index) => {
-          const precedence = index === 0 ? chalk.yellow('(most recent)') : chalk.gray('(older)');
-          this.logger.info(chalk.gray('• ') + checkpoint.name + ' ' + precedence);
-        });
-
-        this.logger.info('');
-        this.logger.info(
-          chalk.gray('💡 Tip: Most recent checkpoint has high precedence for context restoration')
-        );
-      }
-    } else {
-      this.logger.info(chalk.yellow(`Feature directory not found: ${feature}`));
-      this.logger.info(chalk.gray('Start with: ') + chalk.cyan(`/explore ${feature}`));
-    }
-
-    // HODGE-362: Display architecture graph status
-    await this.displayArchitectureGraph();
-
-    // Find feature-specific saves
-    const saves = await this.discoverSaves();
-    const featureSaves = saves.filter((s) => s.feature === feature);
-
-    if (featureSaves.length > 0) {
-      this.logger.info('');
-      this.logger.info(chalk.bold('Feature-Specific Saves:'));
-
-      featureSaves.slice(0, 3).forEach((save, index) => {
-        this.logger.info(
-          chalk.gray(`${index + 1}. `) +
-            chalk.yellow(save.name) +
-            chalk.gray(` (${this.formatTimeAgo(save.timestamp)})`)
-        );
-      });
-    }
-
-    this.logger.info('');
-    this.logger.info(chalk.bold(`Context loaded for ${feature}!`));
-  }
-
-  /**
-   * Display principles if they exist
-   */
-  private async displayPrinciples(): Promise<void> {
-    const principlesPath = path.join('.hodge', 'principles.md');
-
-    try {
-      const principles = await fs.readFile(principlesPath, 'utf-8');
-
-      // Extract just core principles section
-      const coreRegex = /## Core Principles\n\n([\s\S]*?)(?=\n##|$)/;
-      const coreMatch = coreRegex.exec(principles);
-
-      if (coreMatch) {
-        this.logger.info('');
-        this.logger.info(chalk.bold('Core Principles:'));
-
-        // Extract and display just the principle titles
-        const lines = coreMatch[1].split('\n');
-        lines.forEach((line) => {
-          if (line.startsWith('### ')) {
-            this.logger.info(chalk.yellow(`  ${line.substring(4)}`));
-          }
-        });
-      }
-    } catch {
-      // No principles file, that's OK
-    }
-  }
-
-  /**
-   * Discover saved contexts
-   */
-  private async discoverSaves(): Promise<SavedContext[]> {
-    const savesDir = path.join('.hodge', 'saves');
-
-    try {
-      const dirs = await fs.readdir(savesDir);
-      const saves: SavedContext[] = [];
-
-      for (const dir of dirs) {
-        const contextPath = path.join(savesDir, dir, 'context.json');
-
-        try {
-          const contextData = await fs.readFile(contextPath, 'utf-8');
-          const context = JSON.parse(contextData) as {
-            feature?: string;
-            mode?: string;
-            timestamp?: string;
-            session?: { keyAchievements?: string[] };
-            nextPhase?: string;
-          };
-
-          saves.push({
-            name: dir,
-            path: path.join(savesDir, dir),
-            feature: context.feature ?? 'unknown',
-            mode: context.mode ?? 'unknown',
-            timestamp: context.timestamp ?? 'unknown',
-            summary: context.session?.keyAchievements?.[0] ?? context.nextPhase ?? '',
-          });
-        } catch {
-          // Skip invalid saves
-        }
-      }
-
-      // Sort by timestamp (most recent first)
-      saves.sort((a, b) => {
-        const timeA = new Date(a.timestamp).getTime();
-        const timeB = new Date(b.timestamp).getTime();
-        return timeB - timeA;
-      });
-
-      return saves;
-    } catch {
-      return [];
-    }
-  }
-
-  /**
-   * HODGE-358: Discover checkpoint files in feature directory
-   * Returns checkpoints sorted by timestamp (newest first) with precedence hints
-   */
-  private async discoverCheckpoints(
-    featureDir: string
-  ): Promise<Array<{ name: string; timestamp: string }>> {
-    try {
-      const files = await fs.readdir(featureDir);
-
-      // Filter for checkpoint files (checkpoint-*.yaml)
-      const checkpointFiles = files.filter(
-        (file) => file.startsWith('checkpoint-') && file.endsWith('.yaml')
-      );
-
-      if (checkpointFiles.length === 0) {
-        return [];
-      }
-
-      // Parse timestamps and sort (newest first)
-      const timestampRegex = /checkpoint-(\d{4}-\d{2}-\d{2}-\d{6})\.yaml/;
-      const checkpoints = checkpointFiles
-        .map((file) => {
-          // Extract timestamp from filename: checkpoint-YYYY-MM-DD-HHMMSS.yaml
-          const timestampMatch = timestampRegex.exec(file);
-          const timestamp = timestampMatch ? timestampMatch[1] : file;
-
-          return { name: file, timestamp };
-        })
-        .sort((a, b) => b.timestamp.localeCompare(a.timestamp)); // Newest first
-
-      return checkpoints;
-    } catch {
-      return [];
-    }
-  }
+  // HODGE-363: discoverSaves() and discoverCheckpoints() moved to SaveDiscoveryService
+  // Extracted for file length compliance (reduce from 574 to <400 lines)
 
   /**
    * Check if file exists
@@ -408,29 +358,7 @@ export class ContextCommand {
     }
   }
 
-  /**
-   * Format timestamp as time ago
-   */
-  private formatTimeAgo(timestamp: string): string {
-    try {
-      const date = new Date(timestamp);
-      const now = new Date();
-      const diffMs = now.getTime() - date.getTime();
-      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-      const diffDays = Math.floor(diffHours / 24);
-
-      if (diffDays > 0) {
-        return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
-      } else if (diffHours > 0) {
-        return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
-      } else {
-        const diffMins = Math.floor(diffMs / (1000 * 60));
-        return `${diffMins} minute${diffMins === 1 ? '' : 's'} ago`;
-      }
-    } catch {
-      return 'recently';
-    }
-  }
+  // HODGE-363: formatTimeAgo() moved to SaveDiscoveryService for file length compliance
 
   /**
    * HODGE-297: Load recent N decisions instead of full file
@@ -614,39 +542,7 @@ export class ContextCommand {
     }
   }
 
-  /**
-   * Display architecture graph status and load content for AI
-   * HODGE-362: Non-blocking graph loading for AI codebase awareness
-   */
-  private async displayArchitectureGraph(): Promise<void> {
-    try {
-      const graphService = new ArchitectureGraphService();
-      const graphExists = graphService.graphExists(this.basePath);
-
-      if (graphExists) {
-        const graphContent = await graphService.loadGraph(this.basePath);
-
-        if (graphContent) {
-          // Count nodes/edges for summary
-          const nodeMatches = graphContent.match(/"\w+"/g);
-          const edgeMatches = graphContent.match(/->/g);
-          const nodeCount = nodeMatches ? nodeMatches.length / 2 : 0; // Each node appears twice (declaration + edges)
-          const edgeCount = edgeMatches ? edgeMatches.length : 0;
-
-          this.logger.info('');
-          this.logger.info(chalk.bold('Architecture Graph:'));
-          this.logger.info(chalk.gray(`  ${nodeCount} modules, ${edgeCount} dependencies`));
-          this.logger.info(chalk.dim('  Location: .hodge/architecture-graph.dot'));
-          this.logger.info(chalk.dim('  💡 Graph updated after each successful /ship'));
-        }
-      } else {
-        // Graph doesn't exist yet - normal for new projects
-        this.logger.debug('No architecture graph found (will be generated after first /ship)');
-      }
-    } catch (error) {
-      // Non-blocking: silently log errors
-      const err = error as Error;
-      this.logger.debug('Failed to load architecture graph', { error: err });
-    }
-  }
+  // HODGE-363: displayArchitectureGraph() removed - graph info now in YAML manifest
+  // Architecture graph statistics (module count, dependency count) included in architecture_graph section
+  // Graph content available for AI to read from .hodge/architecture-graph.dot when needed
 }

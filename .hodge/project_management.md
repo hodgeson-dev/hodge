@@ -190,7 +190,51 @@ HODGE-004 (ID Management)
   - Define test intentions
   - Make architectural decisions
 
+
+
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-29
+- **Updated**: 2025-10-29
+- **Description**: when /hodge calls the `hodge context` CLI command, that command should return a list of files that the AI then reads into the current context. We need to stop hardcoding the file reads in the /hodge AI template (e.g., "cat .hodge/HODGE.md"), and return those files paths from `hodge context` which AI then reads.
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
 ## Completed Features
+
+### HODGE-363
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-29
+- **Updated**: 2025-10-29
+- **Description**: when /hodge calls the `hodge context` CLI command, that command should return a list of files that the AI then reads into the current context. We need to stop hardcoding the file reads in the /hodge AI template (e.g., "cat .hodge/HODGE.md"), and return those files paths from `hodge context` which AI then reads.
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+- **Completed**: 2025-10-29
+- **Completed**: 2025-10-29
+
+
+
+
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-29
+- **Updated**: 2025-10-29
+- **Description**: when /hodge calls the `hodge context` CLI command, that command should return a list of files that the AI then reads into the current context. We need to stop hardcoding the file reads in the /hodge AI template (e.g., "cat .hodge/HODGE.md"), and return those files paths from `hodge context` which AI then reads.
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+- **Completed**: 2025-10-29
+
+
 
 ### HODGE-362
 - **Status**: shipped

@@ -1,10 +1,13 @@
-import { describe, expect } from 'vitest';
+import { describe, expect, beforeEach, afterEach } from 'vitest';
 import { smokeTest } from '../test/helpers.js';
 import { withTestWorkspace } from '../test/runners.js';
 import { ContextCommand } from './context.js';
+import { TempDirectoryFixture } from '../test/temp-directory-fixture.js';
 import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs/promises';
+import yaml from 'js-yaml';
+import type { ContextManifest } from '../types/context-manifest.js';
 
 /**
  * Smoke tests for HODGE-297: Enhanced Context Loading
@@ -332,5 +335,216 @@ Some regular text here.
         command.execute({ todos: true, feature: 'TEST-EXPLICIT' })
       ).resolves.not.toThrow();
     });
+  });
+});
+
+/**
+ * Smoke tests for HODGE-363: YAML Manifest Generation
+ *
+ * Tests verify the new context manifest features:
+ * - YAML manifest generation with global files, patterns, and feature context
+ * - Pattern metadata extraction (titles and overviews)
+ * - Architecture graph statistics inclusion
+ * - Session-aware feature detection
+ */
+describe('ContextCommand - HODGE-363 YAML Manifest Generation', () => {
+  let fixture: TempDirectoryFixture;
+  let command: ContextCommand;
+  let originalLog: typeof console.log;
+  let capturedOutput: string[] = [];
+
+  beforeEach(async () => {
+    fixture = new TempDirectoryFixture();
+    await fixture.setup();
+    command = new ContextCommand(fixture.getPath());
+
+    // Capture console.log output (YAML goes to stdout via console.log)
+    originalLog = console.log;
+    capturedOutput = [];
+    console.log = (...args: unknown[]) => {
+      capturedOutput.push(args.join(' '));
+    };
+  });
+
+  afterEach(async () => {
+    console.log = originalLog;
+    await fixture.cleanup();
+  });
+
+  /**
+   * Helper to extract YAML from captured output (filters out logger messages)
+   */
+  const extractYaml = (output: string[]): string => {
+    // Find first line that starts with "version:"
+    const startIndex = output.findIndex((line) => line.trim().startsWith('version:'));
+    if (startIndex === -1) {
+      return '';
+    }
+
+    // Find end of YAML (last line that looks like YAML content)
+    let endIndex = startIndex;
+    for (let i = startIndex + 1; i < output.length; i++) {
+      const line = output[i];
+      // YAML lines either start with spaces (indented), are key: value, or are arrays
+      if (
+        line.trim().length === 0 || // blank lines within YAML
+        /^\s+/.test(line) || // indented content
+        /^\s*-\s/.test(line) || // array items
+        /^\s*\w+:/.test(line) // key: value pairs
+      ) {
+        endIndex = i;
+      } else {
+        // Found non-YAML line (like logger message), stop here
+        break;
+      }
+    }
+
+    return output.slice(startIndex, endIndex + 1).join('\n');
+  };
+
+  smokeTest('should generate valid YAML manifest', async () => {
+    // Setup minimal .hodge structure
+    await fixture.writeFile('.hodge/HODGE.md', '# HODGE.md\ntest content');
+    await fixture.writeFile('.hodge/standards.md', '# Standards');
+    await fixture.writeFile('.hodge/decisions.md', '# Decisions');
+
+    await command.execute({});
+
+    // Should have captured YAML output
+    expect(capturedOutput.length).toBeGreaterThan(0);
+
+    const yamlOutput = extractYaml(capturedOutput);
+    const manifest = yaml.load(yamlOutput) as ContextManifest;
+
+    expect(manifest).toBeDefined();
+    expect(manifest.version).toBe('1.0');
+    expect(manifest.global_files).toBeDefined();
+    expect(manifest.patterns).toBeDefined();
+  });
+
+  smokeTest('should include global files with availability status', async () => {
+    await fixture.writeFile('.hodge/HODGE.md', 'test');
+    await fixture.writeFile('.hodge/standards.md', 'test');
+
+    await command.execute({});
+
+    const yamlOutput = extractYaml(capturedOutput);
+    const manifest = yaml.load(yamlOutput) as ContextManifest;
+
+    const hodgeMd = manifest.global_files.find((f) => f.path === '.hodge/HODGE.md');
+    expect(hodgeMd).toBeDefined();
+    expect(hodgeMd?.status).toBe('available');
+
+    const principles = manifest.global_files.find((f) => f.path === '.hodge/principles.md');
+    expect(principles).toBeDefined();
+    expect(principles?.status).toBe('not_found');
+  });
+
+  smokeTest('should extract pattern metadata', async () => {
+    await fixture.writeFile('.hodge/HODGE.md', 'test');
+    await fixture.writeFile(
+      '.hodge/patterns/test-pattern.md',
+      `# Testing Patterns
+
+## Overview
+This is a test pattern demonstrating smoke tests.
+
+## Details
+More content here.`
+    );
+
+    await command.execute({});
+
+    const yamlOutput = extractYaml(capturedOutput);
+    const manifest = yaml.load(yamlOutput) as ContextManifest;
+
+    expect(manifest.patterns.files).toBeDefined();
+    expect(manifest.patterns.files.length).toBeGreaterThan(0);
+
+    const testPattern = manifest.patterns.files.find((p) => p.path === 'test-pattern.md');
+    expect(testPattern).toBeDefined();
+    expect(testPattern?.title).toBe('Testing Patterns');
+    expect(testPattern?.overview).toContain('smoke tests');
+  });
+
+  smokeTest('should include architecture graph when available', async () => {
+    await fixture.writeFile('.hodge/HODGE.md', 'test');
+    await fixture.writeFile(
+      '.hodge/architecture-graph.dot',
+      `digraph {
+  "module1" -> "module2"
+  "module2" -> "module3"
+}`
+    );
+
+    await command.execute({});
+
+    const yamlOutput = extractYaml(capturedOutput);
+    const manifest = yaml.load(yamlOutput) as ContextManifest;
+
+    expect(manifest.architecture_graph).toBeDefined();
+    expect(manifest.architecture_graph?.status).toBe('available');
+    expect(manifest.architecture_graph?.modules).toBeGreaterThan(0);
+    expect(manifest.architecture_graph?.dependencies).toBeGreaterThan(0);
+  });
+
+  smokeTest('should include feature context when feature specified', async () => {
+    await fixture.writeFile('.hodge/HODGE.md', 'test');
+    await fixture.writeFile(
+      '.hodge/features/TEST-001/explore/exploration.md',
+      '# Exploration\nTest exploration'
+    );
+    await fixture.writeFile(
+      '.hodge/features/TEST-001/build/build-plan.md',
+      '# Build Plan\nTest plan'
+    );
+
+    await command.execute({ feature: 'TEST-001' });
+
+    const yamlOutput = extractYaml(capturedOutput);
+    const manifest = yaml.load(yamlOutput) as ContextManifest;
+
+    expect(manifest.feature_context).toBeDefined();
+    expect(manifest.feature_context?.feature_id).toBe('TEST-001');
+    expect(manifest.feature_context?.files.length).toBeGreaterThan(0);
+
+    const explorationFile = manifest.feature_context?.files.find((f) =>
+      f.path.includes('exploration.md')
+    );
+    expect(explorationFile).toBeDefined();
+    expect(explorationFile?.status).toBe('available');
+  });
+
+  smokeTest('should handle missing patterns directory gracefully', async () => {
+    await fixture.writeFile('.hodge/HODGE.md', 'test');
+    // Don't create .hodge/patterns directory
+
+    await command.execute({});
+
+    const yamlOutput = extractYaml(capturedOutput);
+    const manifest = yaml.load(yamlOutput) as ContextManifest;
+
+    expect(manifest.patterns).toBeDefined();
+    expect(manifest.patterns.files).toEqual([]);
+  });
+
+  smokeTest('should exclude README.md from patterns', async () => {
+    await fixture.writeFile('.hodge/HODGE.md', 'test');
+    await fixture.writeFile('.hodge/patterns/README.md', '# README\n\n## Overview\nIgnore this');
+    await fixture.writeFile(
+      '.hodge/patterns/real-pattern.md',
+      '# Real Pattern\n\n## Overview\nInclude this'
+    );
+
+    await command.execute({});
+
+    const yamlOutput = extractYaml(capturedOutput);
+    const manifest = yaml.load(yamlOutput) as ContextManifest;
+
+    const readmePattern = manifest.patterns.files.find((p) => p.path === 'README.md');
+    expect(readmePattern).toBeUndefined();
+
+    const realPattern = manifest.patterns.files.find((p) => p.path === 'real-pattern.md');
+    expect(realPattern).toBeDefined();
   });
 });

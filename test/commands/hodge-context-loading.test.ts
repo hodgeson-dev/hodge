@@ -32,52 +32,70 @@ describe('hodge command context loading', () => {
     await fs.writeFile(path.join(hodgeDir, 'patterns', 'test.md'), '# Test Pattern');
   });
 
-  smokeTest('should load core context for standard mode', async () => {
+  smokeTest('should use YAML manifest approach (HODGE-363)', async () => {
     // This test verifies that the /hodge command template
-    // will always load core context files first
+    // uses the YAML manifest approach instead of hardcoded bash commands
     const templatePath = path.join(process.cwd(), '.claude/commands/hodge.md');
 
     const content = await fs.readFile(templatePath, 'utf-8');
 
-    // Check that core loading happens before any conditionals
-    expect(content).toContain('### 1. Always Load Core Context First (ALL MODES)');
+    // HODGE-363: Should call hodge context command to generate manifest
+    expect(content).toContain('hodge context --feature {{feature}}');
+    expect(content).toContain('hodge context');
+
+    // Should describe YAML manifest structure
+    expect(content).toContain('YAML manifest');
+    expect(content).toContain('global_files');
+    expect(content).toContain('patterns');
+    expect(content).toContain('architecture_graph');
+
+    // Should have AI instructions for reading manifest
+    expect(content).toContain('Parse the YAML manifest');
+    expect(content).toContain('status: available');
+
+    // Should NOT use hardcoded primary bash commands (only examples)
+    // The template should call hodge context, not directly cat files as primary flow
+    const hodgeContextIndex = content.indexOf('hodge context');
+    const firstCatIndex = content.indexOf('cat .hodge/HODGE.md');
+
+    // hodge context command should appear before any cat examples
+    expect(hodgeContextIndex).toBeGreaterThan(-1);
+    expect(hodgeContextIndex).toBeLessThan(firstCatIndex);
+
+    // Should NOT have old hardcoded ls patterns command
+    expect(content).not.toContain('ls -la .hodge/patterns/');
+  });
+
+  smokeTest('should provide AI instructions for manifest parsing', async () => {
+    const templatePath = path.join(process.cwd(), '.claude/commands/hodge.md');
+
+    const content = await fs.readFile(templatePath, 'utf-8');
+
+    // Should have clear AI instructions for reading files from manifest
+    expect(content).toContain('MANDATORY');
+    expect(content).toContain('MUST READ ALL');
+
+    // Should explain feature_context section
+    expect(content).toContain('feature_context');
+
+    // Should provide example read sequence with cat commands
     expect(content).toContain('cat .hodge/HODGE.md');
     expect(content).toContain('cat .hodge/standards.md');
-    expect(content).toContain('cat .hodge/decisions.md');
-    expect(content).toContain('ls -la .hodge/patterns/');
-
-    // Verify core loading is outside the conditional blocks
-    const coreLoadingIndex = content.indexOf('### 1. Always Load Core Context First');
-    const ifFeatureIndex = content.indexOf('{{#if feature}}');
-    const elseIndex = content.indexOf('{{else}}');
-
-    expect(coreLoadingIndex).toBeGreaterThan(-1);
-    expect(coreLoadingIndex).toBeLessThan(ifFeatureIndex);
-    expect(coreLoadingIndex).toBeLessThan(elseIndex);
   });
 
-  smokeTest('should load core context for feature mode', async () => {
+  smokeTest('should describe manifest format and context-aware suggestions', async () => {
     const templatePath = path.join(process.cwd(), '.claude/commands/hodge.md');
 
     const content = await fs.readFile(templatePath, 'utf-8');
 
-    // Verify feature mode is now "Handle Feature Mode" not primary
-    expect(content).toContain('### 2. Handle Feature Mode');
+    // Should describe the Load Context Manifest step
+    expect(content).toContain('Load Context Manifest');
 
-    // Core context should be loaded before feature mode
-    const coreLoadingIndex = content.indexOf('### 1. Always Load Core Context First');
-    const featureModeIndex = content.indexOf('### 2. Handle Feature Mode');
+    // Should provide context-aware suggestions based on status
+    expect(content).toContain('hodge status');
+    expect(content).toContain('Based on the status output');
 
-    expect(coreLoadingIndex).toBeLessThan(featureModeIndex);
-  });
-
-  smokeTest('should have consistent section numbering', async () => {
-    const templatePath = path.join(process.cwd(), '.claude/commands/hodge.md');
-
-    const content = await fs.readFile(templatePath, 'utf-8');
-
-    // All mode handlers should be section 2
-    expect(content).toContain('### 2. Handle Feature Mode');
-    expect(content).toContain('### 2. Handle Standard Mode');
+    // Should have usage patterns
+    expect(content).toContain('Usage Patterns');
   });
 });

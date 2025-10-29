@@ -30,64 +30,64 @@ Initialize or resume your Hodge development session with appropriate context.
 
 ## Command Execution
 
-### 1. Always Load Core Context First (ALL MODES)
-```bash
-# Load project HODGE.md (session info)
-cat .hodge/HODGE.md
-
-# Load complete standards
-echo "=== PROJECT STANDARDS ==="
-cat .hodge/standards.md
-
-# Load all decisions
-echo "=== PROJECT DECISIONS ==="
-cat .hodge/decisions.md
-
-# List available patterns
-echo "=== AVAILABLE PATTERNS ==="
-ls -la .hodge/patterns/
-```
-
-This provides core context for ALL modes:
-- Current feature and mode (from HODGE.md)
-- Complete standards (full file)
-- All decisions (full file)
-- Available patterns (list)
+### 1. Load Context Manifest (HODGE-363)
 
 {{#if feature}}
-### 2. Handle Feature Mode - Loading Feature-Specific Context
-
-**IMPORTANT: This command ONLY loads context. It does not start any work.**
-
-Load the project state and feature-specific context:
+Generate context manifest for feature:
 ```bash
-# Get current project status
-hodge status
-
-# Check for feature directory
-ls -la .hodge/features/{{feature}}/ 2>/dev/null || echo "No feature directory yet"
-
-# Load feature-specific context
 hodge context --feature {{feature}}
-
-# Load feature HODGE.md if it exists
-echo "=== FEATURE CONTEXT ==="
-cat .hodge/features/{{feature}}/HODGE.md 2>/dev/null || echo "No feature HODGE.md yet"
 ```
+{{else}}
+Generate context manifest for project:
+```bash
+hodge context
+```
+{{/if}}
 
-After loading context, these files are available:
-- Feature HODGE.md: `.hodge/features/{{feature}}/HODGE.md` (if generated)
-- Exploration: `.hodge/features/{{feature}}/explore/exploration.md`
-- Decisions: `.hodge/features/{{feature}}/linked-decisions.md`
-- Build plan: `.hodge/features/{{feature}}/build/build-plan.md`
-- Test intentions: `.hodge/features/{{feature}}/explore/test-intentions.md`
+The `hodge context` command outputs a YAML manifest containing:
+- **global_files**: Core project files (standards, decisions, principles, etc.) with availability status
+- **patterns**: Available patterns with extracted titles and overviews (token-efficient awareness)
+- **architecture_graph**: Codebase structure statistics (modules and dependencies)
+- **feature_context** (when feature specified): All files in feature directory
+
+**AI Instructions:**
+
+1. Parse the YAML manifest output from `hodge context`
+2. **MANDATORY**: Read ALL files marked as `status: available` in the manifest:
+   - **MUST READ ALL** global_files with `status: available` - NO EXCEPTIONS
+   - **MUST READ ALL** feature_context files with `status: available` - NO EXCEPTIONS
+   - **patterns** section provides awareness without reading full files (read specific patterns only when needed)
+   - Architecture graph (.dot file) provides codebase structure when needed
+
+3. Example Read sequence:
+```bash
+# Read available global files
+cat .hodge/HODGE.md
+cat .hodge/standards.md
+cat .hodge/decisions.md
+# (skip .hodge/principles.md if status: not_found)
+
+# Read feature files if working on a feature
+{{#if feature}}
+cat .hodge/features/{{feature}}/explore/exploration.md
+cat .hodge/features/{{feature}}/build/build-plan.md
+# (read other feature files as shown in manifest)
+{{/if}}
+```
 
 **STOP HERE and present the context to the user.**
 
+{{#if feature}}
 Check feature status to provide smart suggestions:
 ```bash
 hodge status {{feature}}
 ```
+{{else}}
+Get project overview:
+```bash
+hodge status
+```
+{{/if}}
 
 Based on the status output, present context-aware options:
 
@@ -157,16 +157,6 @@ No work started on {{feature}} yet.
 ```
 
 **Wait for explicit user direction before proceeding.**
-
-{{else}}
-### 2. Handle Standard Mode - Session Initialization
-
-Load current project state:
-```bash
-hodge context
-```
-
-{{/if}}
 
 ## Core Principles
 Before starting work, remember:

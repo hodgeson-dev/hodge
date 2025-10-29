@@ -1,0 +1,44 @@
+{
+  "timestamp": "2025-10-29T07:19:45.003Z",
+  "stagedFiles": [
+    ".claude/commands/hodge.md",
+    ".hodge/.session",
+    ".hodge/HODGE.md",
+    ".hodge/context.json",
+    ".hodge/features/HODGE-363/build/build-plan.md",
+    ".hodge/features/HODGE-363/explore/exploration.md",
+    ".hodge/features/HODGE-363/explore/test-intentions.md",
+    ".hodge/features/HODGE-363/ship-record.json",
+    ".hodge/id-counter.json",
+    ".hodge/id-mappings.json",
+    ".hodge/project_management.md",
+    "src/commands/context.smoke.test.ts",
+    "src/commands/context.ts",
+    "src/lib/claude-commands.ts",
+    "src/lib/pattern-metadata-service.ts",
+    "src/types/context-manifest.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 15,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": "src/commands/context.smoke.test.ts 122ms (unchanged)\nsrc/commands/context.ts 194ms (unchanged)\nsrc/lib/claude-commands.ts 20ms (unchanged)\nsrc/lib/pattern-metadata-service.ts 5ms (unchanged)\nsrc/types/context-manifest.ts 3ms (unchanged)\n",
+      "stderr": "",
+      "duration": 1121
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 5,
+      "issuesFixed": 9,
+      "success": true,
+      "stdout": "\n/Users/michaelkelly/Projects/hodge/src/commands/context.smoke.test.ts\n  0:0  warning  File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override\n\n/Users/michaelkelly/Projects/hodge/src/commands/context.ts\n  395:3   warning  Async method 'loadFeatureContext' has too many lines (57). Maximum allowed is 50  max-lines-per-function\n  593:1   warning  File has too many lines (574). Maximum allowed is 400                             max-lines\n  741:12  warning  Complete the task associated to this \"TODO\" comment                               sonarjs/todo-tag\n  772:33  warning  Complete the task associated to this \"TODO\" comment                               sonarjs/todo-tag\n  773:23  warning  Complete the task associated to this \"TODO\" comment                               sonarjs/todo-tag\n  774:34  warning  Complete the task associated to this \"TODO\" comment                               sonarjs/todo-tag\n  775:40  warning  Complete the task associated to this \"TODO\" comment                               sonarjs/todo-tag\n\n/Users/michaelkelly/Projects/hodge/src/lib/pattern-metadata-service.ts\n  84:26  error  Make sure the regex used here, which is vulnerable to super-linear runtime due to backtracking, cannot lead to denial of service  sonarjs/slow-regex\n\n✖ 9 problems (1 error, 8 warnings)\n\n",
+      "stderr": "",
+      "duration": 4234
+    }
+  ],
+  "totalIssuesFixed": 9,
+  "totalFilesModified": 20,
+  "failures": []
+}
