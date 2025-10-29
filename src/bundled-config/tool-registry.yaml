@@ -164,9 +164,12 @@ tools:
           package: dependency-cruiser
           install_command: npm install --save-dev dependency-cruiser
     default_command: npx depcruise --config .dependency-cruiser.cjs --output-type err ${files} || true
+    graph_command: npx depcruise --config .dependency-cruiser.cjs --output-type dot --collapse 2 . > .hodge/architecture-graph.dot || true
     version_command: depcruise --version
-    categories: [architecture]
+    categories: [architecture, architecture_graphing]
     # --output-type err: Only show violations, suppresses graph output
+    # --collapse 2: Group modules at directory depth 2 (src/commands, src/lib)
+    # graph_command: Generates DOT format architecture graph (HODGE-362)
     # || true: Exit 0 even with warnings (exit code 7), AI interprets stdout
     # HODGE-359.1: Regex patterns for structured error/warning extraction
     error_pattern: '^\s*error\s+.+:\s+'
@@ -337,6 +340,28 @@ tools:
     version_command: lint-imports --version
     categories: [architecture]
     # --no-color: Plain text output (easier for AI to parse)
+
+  pydeps:
+    languages: [python]
+    detection:
+      - type: command
+        command: pydeps
+    installation:
+      package_managers:
+        pip:
+          package: pydeps
+          install_command: pip install pydeps
+        poetry:
+          package: pydeps
+          install_command: poetry add --group dev pydeps
+    graph_command: pydeps --max-bacon 2 --noshow --cluster --output .hodge/architecture-graph.dot . || true
+    version_command: pydeps --version
+    categories: [architecture, architecture_graphing]
+    # --max-bacon 2: Limit depth to 2 levels (module-level grouping)
+    # --noshow: Don't open graphical viewer, just generate file
+    # --cluster: Group related modules together
+    # --output: Specify DOT file output path (HODGE-362)
+    # || true: Non-blocking failures
 
   # ==================== Kotlin Tools ====================
 
@@ -531,7 +556,7 @@ tools:
     # --quiet: Only show errors
 
   jdepend:
-    languages: [java]
+    languages: [java, kotlin]
     detection:
       - type: command
         command: jdepend
@@ -552,6 +577,90 @@ tools:
               <version>2.10</version>
             </dependency>
     default_command: jdepend -file - ${files}
+    graph_command: jdepend -components ${files} | python3 -c "import sys; print('digraph {'); [print(f'  \"{line.split()[0]}\" -> \"{line.split()[2]}\"') for line in sys.stdin if '->' in line]; print('}')" > .hodge/architecture-graph.dot || true
     version_command: jdepend -version
-    categories: [architecture]
+    categories: [architecture, architecture_graphing]
     # -file -: Output to stdout instead of file
+    # graph_command: Parse jdepend output to DOT format (HODGE-362)
+    # Note: jdepend doesn't natively output DOT, so we convert via Python one-liner
+    # || true: Non-blocking failures
+
+  # ==================== Go Tools ====================
+
+  go-build:
+    languages: [go]
+    detection:
+      - type: config_file
+        paths: [go.mod]
+      - type: command
+        command: go
+    installation:
+      external: true
+      install_instructions: 'Install Go from https://go.dev/doc/install'
+    default_command: go build -o /dev/null ./...
+    version_command: go version
+    categories: [type_checking]
+    # -o /dev/null: Compile but don't save binary (check only)
+    # ./...: Build all packages in current directory and subdirectories
+
+  golangci-lint:
+    languages: [go]
+    detection:
+      - type: config_file
+        paths: [.golangci.yml, .golangci.yaml, .golangci.toml]
+      - type: command
+        command: golangci-lint
+    installation:
+      external: true
+      install_instructions: 'Install from https://golangci-lint.run/usage/install/'
+    default_command: golangci-lint run --out-format=line-number ${files}
+    fix_command: golangci-lint run --fix ${files}
+    version_command: golangci-lint --version
+    categories: [linting, complexity, code_smells]
+    # --out-format=line-number: One issue per line (file:line:column: message)
+    # --fix: Auto-fix issues (HODGE-341.6)
+
+  gofmt:
+    languages: [go]
+    detection:
+      - type: command
+        command: gofmt
+    installation:
+      external: true
+      install_instructions: 'Included with Go installation'
+    default_command: gofmt -l ${files}
+    fix_command: gofmt -w ${files}
+    version_command: go version
+    categories: [formatting]
+    # -l: List files that need formatting
+    # -w: Write formatted output back to files (HODGE-341.6)
+
+  go-test:
+    languages: [go]
+    detection:
+      - type: config_file
+        paths: [go.mod]
+    installation:
+      external: true
+      install_instructions: 'Included with Go installation'
+    default_command: go test -short ./...
+    version_command: go version
+    categories: [testing]
+    # -short: Run only short tests (skip long-running tests)
+    # ./...: Test all packages
+
+  godepgraph:
+    languages: [go]
+    detection:
+      - type: command
+        command: godepgraph
+    installation:
+      external: true
+      install_instructions: 'Install with: go install github.com/kisielk/godepgraph@latest'
+    graph_command: godepgraph -s -p github.com,golang.org,gopkg.in . > .hodge/architecture-graph.dot || true
+    version_command: godepgraph -version
+    categories: [architecture, architecture_graphing]
+    # -s: Only show packages in current module (not stdlib/external)
+    # -p: Additional packages to exclude (common third-party domains)
+    # Outputs DOT format natively (HODGE-362)
+    # || true: Non-blocking failures

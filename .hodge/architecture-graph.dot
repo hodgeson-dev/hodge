@@ -1,0 +1,276 @@
+strict digraph "dependency-cruiser output"{
+    rankdir="LR" splines="true" overlap="false" nodesep="0.16" ranksep="0.18" fontname="Helvetica-bold" fontsize="9" style="rounded,bold,filled" fillcolor="#ffffff" compound="true"
+    node [shape="box" style="rounded, filled" height="0.2" color="black" fillcolor="#ffffcc" fontcolor="black" fontname="Helvetica" fontsize="9"]
+    edge [arrowhead="normal" arrowsize="0.6" penwidth="2.0" color="#00000033" fontname="Helvetica" fontsize="9"]
+
+    ".dependency-cruiser.cjs" [label=<.dependency-cruiser.cjs> tooltip=".dependency-cruiser.cjs" URL=".dependency-cruiser.cjs" fillcolor="#ccffcc"]
+    subgraph "cluster_.hodge" {label=".hodge" ".hodge/features/" [label=<features> tooltip="no-orphans" URL=".hodge/features/" fontcolor="orange" color="orange" shape="box3d"] }
+    ".hodge/features/" -> "fs" [style="dashed" penwidth="1.0"]
+    ".hodge/features/" -> "path" [style="dashed" penwidth="1.0"]
+    ".hodge/features/" -> "node_modules/@linear" [penwidth="1.0"]
+    ".hodge/features/" -> "crypto" [style="dashed" penwidth="1.0"]
+    "child_process" [label=<child_process> tooltip="child_process" URL="https://nodejs.org/api/child_process.html" color="grey" fontcolor="grey"]
+    subgraph "cluster_coverage" {label="coverage" "coverage/block-navigation.js" [label=<block-navigation.js> tooltip="no-orphans" URL="coverage/block-navigation.js" fillcolor="#ccffcc" fontcolor="orange" color="orange"] }
+    subgraph "cluster_coverage" {label="coverage" "coverage/prettify.js" [label=<prettify.js> tooltip="no-orphans" URL="coverage/prettify.js" fillcolor="#ccffcc" fontcolor="orange" color="orange"] }
+    subgraph "cluster_coverage" {label="coverage" "coverage/sorter.js" [label=<sorter.js> tooltip="no-orphans" URL="coverage/sorter.js" fillcolor="#ccffcc" fontcolor="orange" color="orange"] }
+    "crypto" [label=<crypto> tooltip="crypto" URL="https://nodejs.org/api/crypto.html" color="grey" fontcolor="grey"]
+    subgraph "cluster_dist" {label="dist" "dist/index.d.ts" [label=<index.d.ts> tooltip="index.d.ts" URL="dist/index.d.ts" fillcolor="#ddfeff"] }
+    "dist/index.d.ts" -> "dist/src/" [arrowhead="inv"]
+    subgraph "cluster_dist" {label="dist" "dist/index.js" [label=<index.js> tooltip="index.js" URL="dist/index.js" ] }
+    "dist/index.js" -> "dist/src/" [arrowhead="inv"]
+    subgraph "cluster_dist" {label="dist" "dist/src/" [label=<src> tooltip="no-orphans" URL="dist/src/" fillcolor="#ccffcc" fontcolor="orange" color="orange" shape="box3d"] }
+    "dist/src/" -> "node_modules/fs-extra" [penwidth="1.0"]
+    "dist/src/" -> "os" [style="dashed" penwidth="1.0"]
+    "dist/src/" -> "path" [style="dashed" penwidth="1.0"]
+    "dist/src/" -> "node_modules/pino" [penwidth="1.0"]
+    "dist/src/" -> "node_modules/strip-ansi" [penwidth="1.0"]
+    "dist/src/" -> "fs" [style="dashed" penwidth="1.0"]
+    "dist/src/" -> "node_modules/@linear" [penwidth="1.0"]
+    "dist/src/" -> "node_modules/commander" [penwidth="1.0"]
+    "dist/src/" -> "url" [style="dashed" penwidth="1.0"]
+    "dist/src/" -> "node_modules/chalk" [penwidth="1.0"]
+    "dist/src/" -> "crypto" [style="dashed" penwidth="1.0"]
+    "dist/src/" -> "child_process" [style="dashed" penwidth="1.0"]
+    "dist/src/" -> "util" [style="dashed" penwidth="1.0"]
+    "dist/src/" -> "fs/promises" [style="dashed" penwidth="1.0"]
+    "dist/src/" -> "node_modules/@octokit" [penwidth="1.0" style="dashed"]
+    "dist/src/" -> "node_modules/js-yaml" [penwidth="1.0"]
+    "dist/src/" -> "node_modules/glob" [penwidth="1.0"]
+    "dist/src/" -> "node_modules/micromatch" [penwidth="1.0"]
+    "dist/src/" -> "node_modules/semver" [penwidth="1.0"]
+    "dist/src/" -> "node_modules/ora" [penwidth="1.0"]
+    "dist/src/" -> "node_modules/gray-matter" [penwidth="1.0"]
+    "dist/src/" -> "node_modules/inquirer" [penwidth="1.0"]
+    "dist/src/" -> "readline" [style="dashed" penwidth="1.0"]
+    "dist/src/" -> "node_modules/vitest" [penwidth="1.0"]
+    "dist/src/" -> "handlebars" [xlabel="not-to-unresolvable" tooltip="not-to-unresolvable" fontcolor="red" color="red"]
+    "dist/src/" -> "jsonpath" [xlabel="not-to-unresolvable" tooltip="not-to-unresolvable" fontcolor="red" color="red"]
+    "dist/src/" -> "node_modules/yaml" [xlabel="no-non-package-json" tooltip="no-non-package-json" penwidth="1.0" fontcolor="red" color="red"]
+    subgraph "cluster_dist" {label="dist" "dist/vitest.config.d.ts" [label=<vitest.config.d.ts> tooltip="vitest.config.d.ts" URL="dist/vitest.config.d.ts" fillcolor="#ddfeff"] }
+    "dist/vitest.config.d.ts" -> "node_modules/vite" [xlabel="no-non-package-json" tooltip="no-non-package-json" penwidth="1.0" arrowhead="onormal" fontcolor="red" color="red"]
+    subgraph "cluster_dist" {label="dist" "dist/vitest.config.js" [label=<vitest.config.js> tooltip="vitest.config.js" URL="dist/vitest.config.js" ] }
+    "dist/vitest.config.js" -> "path" [style="dashed" penwidth="1.0"]
+    "dist/vitest.config.js" -> "node_modules/vitest" [penwidth="1.0"]
+    "eslint-local-rules.cjs" [label=<eslint-local-rules.cjs> tooltip="no-orphans" URL="eslint-local-rules.cjs" fillcolor="#ccffcc" fontcolor="orange" color="orange"]
+    "fs" [label=<fs> tooltip="fs" URL="https://nodejs.org/api/fs.html" color="grey" fontcolor="grey"]
+    subgraph "cluster_fs" {label="fs" "fs/promises" [label=<promises> tooltip="promises" URL="https://nodejs.org/api/fs.html" color="grey" fontcolor="grey"] }
+    "handlebars" [label=<handlebars> tooltip="handlebars" ]
+    "index.ts" [label=<index.ts> tooltip="index.ts" URL="index.ts" fillcolor="#ddfeff"]
+    "index.ts" -> "src/lib/" [arrowhead="inv"]
+    "jsonpath" [label=<jsonpath> tooltip="jsonpath" ]
+    subgraph "cluster_node_modules" {label="node_modules" "node_modules/@linear" [label=<@linear> tooltip="@linear" URL="https://www.npmjs.com/package/" shape="box3d" fillcolor="#c40b0a1a" fontcolor="#c40b0a"] }
+    subgraph "cluster_node_modules" {label="node_modules" "node_modules/@octokit" [label=<@octokit> tooltip="@octokit" URL="https://www.npmjs.com/package/" shape="box3d" fillcolor="#c40b0a1a" fontcolor="#c40b0a"] }
+    subgraph "cluster_node_modules" {label="node_modules" "node_modules/chalk" [label=<chalk> tooltip="chalk" URL="https://www.npmjs.com/package/chalk" shape="box3d" fillcolor="#c40b0a1a" fontcolor="#c40b0a"] }
+    subgraph "cluster_node_modules" {label="node_modules" "node_modules/commander" [label=<commander> tooltip="commander" URL="https://www.npmjs.com/package/commander" shape="box3d" fillcolor="#c40b0a1a" fontcolor="#c40b0a"] }
+    subgraph "cluster_node_modules" {label="node_modules" "node_modules/dotenv" [label=<dotenv> tooltip="dotenv" URL="https://www.npmjs.com/package/dotenv" shape="box3d" fillcolor="#c40b0a1a" fontcolor="#c40b0a"] }
+    subgraph "cluster_node_modules" {label="node_modules" "node_modules/fs-extra" [label=<fs-extra> tooltip="fs-extra" URL="https://www.npmjs.com/package/fs-extra" shape="box3d" fillcolor="#c40b0a1a" fontcolor="#c40b0a"] }
+    subgraph "cluster_node_modules" {label="node_modules" "node_modules/glob" [label=<glob> tooltip="glob" URL="https://www.npmjs.com/package/glob" shape="box3d" fillcolor="#c40b0a1a" fontcolor="#c40b0a"] }
+    subgraph "cluster_node_modules" {label="node_modules" "node_modules/gray-matter" [label=<gray-matter> tooltip="gray-matter" URL="https://www.npmjs.com/package/gray-matter" shape="box3d" fillcolor="#c40b0a1a" fontcolor="#c40b0a"] }
+    subgraph "cluster_node_modules" {label="node_modules" "node_modules/inquirer" [label=<inquirer> tooltip="inquirer" URL="https://www.npmjs.com/package/inquirer" shape="box3d" fillcolor="#c40b0a1a" fontcolor="#c40b0a"] }
+    subgraph "cluster_node_modules" {label="node_modules" "node_modules/js-yaml" [label=<js-yaml> tooltip="js-yaml" URL="https://www.npmjs.com/package/js-yaml" shape="box3d" fillcolor="#c40b0a1a" fontcolor="#c40b0a"] }
+    subgraph "cluster_node_modules" {label="node_modules" "node_modules/micromatch" [label=<micromatch> tooltip="micromatch" URL="https://www.npmjs.com/package/micromatch" shape="box3d" fillcolor="#c40b0a1a" fontcolor="#c40b0a"] }
+    subgraph "cluster_node_modules" {label="node_modules" "node_modules/ora" [label=<ora> tooltip="ora" URL="https://www.npmjs.com/package/ora" shape="box3d" fillcolor="#c40b0a1a" fontcolor="#c40b0a"] }
+    subgraph "cluster_node_modules" {label="node_modules" "node_modules/pino" [label=<pino> tooltip="pino" URL="https://www.npmjs.com/package/pino" shape="box3d" fillcolor="#c40b0a1a" fontcolor="#c40b0a"] }
+    subgraph "cluster_node_modules" {label="node_modules" "node_modules/semver" [label=<semver> tooltip="semver" URL="https://www.npmjs.com/package/semver" shape="box3d" fillcolor="#c40b0a1a" fontcolor="#c40b0a"] }
+    subgraph "cluster_node_modules" {label="node_modules" "node_modules/strip-ansi" [label=<strip-ansi> tooltip="strip-ansi" URL="https://www.npmjs.com/package/strip-ansi" shape="box3d" fillcolor="#c40b0a1a" fontcolor="#c40b0a"] }
+    subgraph "cluster_node_modules" {label="node_modules" "node_modules/vite" [label=<vite> tooltip="vite" URL="https://www.npmjs.com/package/vite" shape="box3d" fillcolor="#c40b0a1a" fontcolor="#c40b0a"] }
+    subgraph "cluster_node_modules" {label="node_modules" "node_modules/vitest" [label=<vitest> tooltip="vitest" URL="https://www.npmjs.com/package/vitest" shape="box3d" fillcolor="#c40b0a1a" fontcolor="#c40b0a"] }
+    subgraph "cluster_node_modules" {label="node_modules" "node_modules/yaml" [label=<yaml> tooltip="yaml" URL="https://www.npmjs.com/package/yaml" shape="box3d" fillcolor="#c40b0a1a" fontcolor="#c40b0a"] }
+    subgraph "cluster_node_modules" {label="node_modules" "node_modules/zod" [label=<zod> tooltip="zod" URL="https://www.npmjs.com/package/zod" shape="box3d" fillcolor="#c40b0a1a" fontcolor="#c40b0a"] }
+    "os" [label=<os> tooltip="os" URL="https://nodejs.org/api/os.html" color="grey" fontcolor="grey"]
+    "path" [label=<path> tooltip="path" URL="https://nodejs.org/api/path.html" color="grey" fontcolor="grey"]
+    "readline" [label=<readline> tooltip="readline" URL="https://nodejs.org/api/readline.html" color="grey" fontcolor="grey"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/create-linear-project.js" [label=<create-linear-project.js> tooltip="create-linear-project.js" URL="scripts/create-linear-project.js" ] }
+    "scripts/create-linear-project.js" -> "node_modules/@linear" [penwidth="1.0"]
+    "scripts/create-linear-project.js" -> "node_modules/dotenv" [penwidth="1.0"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/create-test-workspace.test.ts" [label=<create-test-workspace.test.ts> tooltip="create-test-workspace.test.ts" URL="scripts/create-test-workspace.test.ts" fillcolor="#ddfeff"] }
+    "scripts/create-test-workspace.test.ts" -> "scripts/create-test-workspace.ts"
+    "scripts/create-test-workspace.test.ts" -> "node_modules/fs-extra" [penwidth="1.0"]
+    "scripts/create-test-workspace.test.ts" -> "os" [style="dashed" penwidth="1.0"]
+    "scripts/create-test-workspace.test.ts" -> "path" [style="dashed" penwidth="1.0"]
+    "scripts/create-test-workspace.test.ts" -> "node_modules/vitest" [penwidth="1.0"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/create-test-workspace.ts" [label=<create-test-workspace.ts> tooltip="create-test-workspace.ts" URL="scripts/create-test-workspace.ts" fillcolor="#ddfeff"] }
+    "scripts/create-test-workspace.ts" -> "node_modules/fs-extra" [penwidth="1.0"]
+    "scripts/create-test-workspace.ts" -> "os" [style="dashed" penwidth="1.0"]
+    "scripts/create-test-workspace.ts" -> "path" [style="dashed" penwidth="1.0"]
+    "scripts/create-test-workspace.ts" -> "node_modules/zod" [penwidth="1.0"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/cross-platform.test.ts" [label=<cross-platform.test.ts> tooltip="cross-platform.test.ts" URL="scripts/cross-platform.test.ts" fillcolor="#ddfeff"] }
+    "scripts/cross-platform.test.ts" -> "scripts/create-test-workspace.ts"
+    "scripts/cross-platform.test.ts" -> "node_modules/fs-extra" [penwidth="1.0"]
+    "scripts/cross-platform.test.ts" -> "os" [style="dashed" penwidth="1.0"]
+    "scripts/cross-platform.test.ts" -> "path" [style="dashed" penwidth="1.0"]
+    "scripts/cross-platform.test.ts" -> "node_modules/vitest" [penwidth="1.0"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/fetch-issue-hod20.js" [label=<fetch-issue-hod20.js> tooltip="fetch-issue-hod20.js" URL="scripts/fetch-issue-hod20.js" ] }
+    "scripts/fetch-issue-hod20.js" -> "node_modules/@linear" [penwidth="1.0"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/fetch-issue-hod6.js" [label=<fetch-issue-hod6.js> tooltip="fetch-issue-hod6.js" URL="scripts/fetch-issue-hod6.js" ] }
+    "scripts/fetch-issue-hod6.js" -> "node_modules/@linear" [penwidth="1.0"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/fetch-issue.js" [label=<fetch-issue.js> tooltip="fetch-issue.js" URL="scripts/fetch-issue.js" ] }
+    "scripts/fetch-issue.js" -> "node_modules/@linear" [penwidth="1.0"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/lib/" [label=<lib> tooltip="lib" URL="scripts/lib/" shape="box3d"] }
+    "scripts/lib/" -> "node_modules/@octokit" [penwidth="1.0"]
+    "scripts/lib/" -> "child_process" [style="dashed" penwidth="1.0"]
+    "scripts/lib/" -> "fs" [style="dashed" penwidth="1.0"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/list-linear-teams.js" [label=<list-linear-teams.js> tooltip="list-linear-teams.js" URL="scripts/list-linear-teams.js" ] }
+    "scripts/list-linear-teams.js" -> "node_modules/@linear" [penwidth="1.0"]
+    "scripts/list-linear-teams.js" -> "node_modules/dotenv" [penwidth="1.0"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/release-check.js" [label=<release-check.js> tooltip="release-check.js" URL="scripts/release-check.js" ] }
+    "scripts/release-check.js" -> "scripts/lib/"
+    "scripts/release-check.js" -> "fs" [style="dashed" penwidth="1.0"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/release-prepare.js" [label=<release-prepare.js> tooltip="release-prepare.js" URL="scripts/release-prepare.js" ] }
+    "scripts/release-prepare.js" -> "scripts/lib/"
+    "scripts/release-prepare.js" -> "child_process" [style="dashed" penwidth="1.0"]
+    "scripts/release-prepare.js" -> "fs" [style="dashed" penwidth="1.0"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/release-publish.js" [label=<release-publish.js> tooltip="release-publish.js" URL="scripts/release-publish.js" ] }
+    "scripts/release-publish.js" -> "scripts/lib/"
+    "scripts/release-publish.js" -> "child_process" [style="dashed" penwidth="1.0"]
+    "scripts/release-publish.js" -> "fs" [style="dashed" penwidth="1.0"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/remove-skipped-tests.js" [label=<remove-skipped-tests.js> tooltip="remove-skipped-tests.js" URL="scripts/remove-skipped-tests.js" ] }
+    "scripts/remove-skipped-tests.js" -> "fs" [style="dashed" penwidth="1.0"]
+    "scripts/remove-skipped-tests.js" -> "path" [style="dashed" penwidth="1.0"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/ship-issue.js" [label=<ship-issue.js> tooltip="ship-issue.js" URL="scripts/ship-issue.js" ] }
+    "scripts/ship-issue.js" -> "node_modules/@linear" [penwidth="1.0"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/sync-claude-commands.js" [label=<sync-claude-commands.js> tooltip="sync-claude-commands.js" URL="scripts/sync-claude-commands.js" ] }
+    "scripts/sync-claude-commands.js" -> "child_process" [style="dashed" penwidth="1.0"]
+    "scripts/sync-claude-commands.js" -> "fs" [style="dashed" penwidth="1.0"]
+    "scripts/sync-claude-commands.js" -> "path" [style="dashed" penwidth="1.0"]
+    "scripts/sync-claude-commands.js" -> "url" [style="dashed" penwidth="1.0"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/sync-claude-commands.test.ts" [label=<sync-claude-commands.test.ts> tooltip="sync-claude-commands.test.ts" URL="scripts/sync-claude-commands.test.ts" fillcolor="#ddfeff"] }
+    "scripts/sync-claude-commands.test.ts" -> "src/test/"
+    "scripts/sync-claude-commands.test.ts" -> "child_process" [style="dashed" penwidth="1.0"]
+    "scripts/sync-claude-commands.test.ts" -> "node_modules/fs-extra" [penwidth="1.0"]
+    "scripts/sync-claude-commands.test.ts" -> "os" [style="dashed" penwidth="1.0"]
+    "scripts/sync-claude-commands.test.ts" -> "path" [style="dashed" penwidth="1.0"]
+    "scripts/sync-claude-commands.test.ts" -> "node_modules/vitest" [penwidth="1.0"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/sync-review-profiles.js" [label=<sync-review-profiles.js> tooltip="sync-review-profiles.js" URL="scripts/sync-review-profiles.js" ] }
+    "scripts/sync-review-profiles.js" -> "node_modules/fs-extra" [penwidth="1.0"]
+    "scripts/sync-review-profiles.js" -> "path" [style="dashed" penwidth="1.0"]
+    "scripts/sync-review-profiles.js" -> "url" [style="dashed" penwidth="1.0"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/test-build-performance.js" [label=<test-build-performance.js> tooltip="test-build-performance.js" URL="scripts/test-build-performance.js" ] }
+    "scripts/test-build-performance.js" -> "dist/src/"
+    "scripts/test-build-performance.js" -> "node_modules/chalk" [penwidth="1.0"]
+    "scripts/test-build-performance.js" -> "fs" [style="dashed" penwidth="1.0"]
+    "scripts/test-build-performance.js" -> "path" [style="dashed" penwidth="1.0"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/test-harden-performance.js" [label=<test-harden-performance.js> tooltip="test-harden-performance.js" URL="scripts/test-harden-performance.js" ] }
+    "scripts/test-harden-performance.js" -> "dist/src/"
+    "scripts/test-harden-performance.js" -> "node_modules/chalk" [penwidth="1.0"]
+    "scripts/test-harden-performance.js" -> "child_process" [style="dashed" penwidth="1.0"]
+    "scripts/test-harden-performance.js" -> "fs" [style="dashed" penwidth="1.0"]
+    "scripts/test-harden-performance.js" -> "path" [style="dashed" penwidth="1.0"]
+    "scripts/test-harden-performance.js" -> "util" [style="dashed" penwidth="1.0"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/test-performance.js" [label=<test-performance.js> tooltip="test-performance.js" URL="scripts/test-performance.js" ] }
+    "scripts/test-performance.js" -> "dist/src/"
+    "scripts/test-performance.js" -> "node_modules/chalk" [penwidth="1.0"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/test-pm-connection.js" [label=<test-pm-connection.js> tooltip="test-pm-connection.js" URL="scripts/test-pm-connection.js" ] }
+    "scripts/test-pm-connection.js" -> "dist/src/"
+    "scripts/test-pm-connection.js" -> "node_modules/dotenv" [penwidth="1.0"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/update-issue-decision.js" [label=<update-issue-decision.js> tooltip="update-issue-decision.js" URL="scripts/update-issue-decision.js" ] }
+    "scripts/update-issue-decision.js" -> "node_modules/@linear" [penwidth="1.0"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/update-issue-hod6.js" [label=<update-issue-hod6.js> tooltip="update-issue-hod6.js" URL="scripts/update-issue-hod6.js" ] }
+    "scripts/update-issue-hod6.js" -> "node_modules/@linear" [penwidth="1.0"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/update-pm-scripts.js" [label=<update-pm-scripts.js> tooltip="update-pm-scripts.js" URL="scripts/update-pm-scripts.js" ] }
+    "scripts/update-pm-scripts.js" -> "dist/src/"
+    "scripts/update-pm-scripts.js" -> "node_modules/chalk" [penwidth="1.0"]
+    "scripts/update-pm-scripts.js" -> "node_modules/fs-extra" [penwidth="1.0"]
+    "scripts/update-pm-scripts.js" -> "path" [style="dashed" penwidth="1.0"]
+    "scripts/update-pm-scripts.js" -> "url" [style="dashed" penwidth="1.0"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/validate-standards.js" [label=<validate-standards.js> tooltip="validate-standards.js" URL="scripts/validate-standards.js" ] }
+    "scripts/validate-standards.js" -> "child_process" [style="dashed" penwidth="1.0"]
+    "scripts/validate-standards.js" -> "fs" [style="dashed" penwidth="1.0"]
+    subgraph "cluster_src" {label="src" "src/bin/" [label=<bin> tooltip="bin" URL="src/bin/" shape="box3d"] }
+    "src/bin/" -> "src/commands/" [style="dashed"]
+    "src/bin/" -> "node_modules/commander" [penwidth="1.0"]
+    "src/bin/" -> "fs" [style="dashed" penwidth="1.0"]
+    "src/bin/" -> "path" [style="dashed" penwidth="1.0"]
+    "src/bin/" -> "url" [style="dashed" penwidth="1.0"]
+    subgraph "cluster_src" {label="src" "src/commands/" [label=<commands> tooltip="commands" URL="src/commands/" shape="box3d"] }
+    "src/commands/" -> "src/lib/"
+    "src/commands/" -> "node_modules/chalk" [penwidth="1.0"]
+    "src/commands/" -> "fs" [style="dashed" penwidth="1.0"]
+    "src/commands/" -> "path" [style="dashed" penwidth="1.0"]
+    "src/commands/" -> "fs/promises" [style="dashed" penwidth="1.0"]
+    "src/commands/" -> "src/types/" [arrowhead="onormal" penwidth="1.0"]
+    "src/commands/" -> "node_modules/js-yaml" [penwidth="1.0"]
+    "src/commands/" -> "node_modules/ora" [penwidth="1.0"]
+    "src/commands/" -> "node_modules/fs-extra" [penwidth="1.0"]
+    "src/commands/" -> "node_modules/inquirer" [penwidth="1.0"]
+    "src/commands/" -> "node_modules/glob" [penwidth="1.0"]
+    "src/commands/" -> "node_modules/gray-matter" [penwidth="1.0"]
+    "src/commands/" -> "readline" [style="dashed" penwidth="1.0"]
+    "src/commands/" -> "child_process" [style="dashed" penwidth="1.0"]
+    "src/commands/" -> "src/test/"
+    "src/commands/" -> "node_modules/vitest" [penwidth="1.0"]
+    "src/commands/" -> "os" [style="dashed" penwidth="1.0"]
+    "src/commands/" -> "util" [style="dashed" penwidth="1.0"]
+    subgraph "cluster_src" {label="src" "src/lib/" [label=<lib> tooltip="no-orphans" URL="src/lib/" fontcolor="orange" color="orange" shape="box3d"] }
+    "src/lib/" -> "node_modules/fs-extra" [penwidth="1.0"]
+    "src/lib/" -> "os" [style="dashed" penwidth="1.0"]
+    "src/lib/" -> "path" [style="dashed" penwidth="1.0"]
+    "src/lib/" -> "node_modules/pino" [penwidth="1.0"]
+    "src/lib/" -> "node_modules/strip-ansi" [penwidth="1.0"]
+    "src/lib/" -> "fs" [style="dashed" penwidth="1.0"]
+    "src/lib/" -> "node_modules/@linear" [penwidth="1.0"]
+    "src/lib/" -> "crypto" [style="dashed" penwidth="1.0"]
+    "src/lib/" -> "node_modules/chalk" [penwidth="1.0"]
+    "src/lib/" -> "child_process" [style="dashed" penwidth="1.0"]
+    "src/lib/" -> "util" [style="dashed" penwidth="1.0"]
+    "src/lib/" -> "fs/promises" [style="dashed" penwidth="1.0"]
+    "src/lib/" -> "node_modules/@octokit" [penwidth="1.0" style="dashed"]
+    "src/lib/" -> "src/types/"
+    "src/lib/" -> "node_modules/js-yaml" [penwidth="1.0"]
+    "src/lib/" -> "url" [style="dashed" penwidth="1.0"]
+    "src/lib/" -> "node_modules/glob" [penwidth="1.0"]
+    "src/lib/" -> "node_modules/micromatch" [penwidth="1.0"]
+    "src/lib/" -> "node_modules/semver" [penwidth="1.0"]
+    "src/lib/" -> "node_modules/gray-matter" [penwidth="1.0"]
+    "src/lib/" -> "src/test/"
+    "src/lib/" -> "node_modules/vitest" [penwidth="1.0"]
+    "src/lib/" -> "src/commands/"
+    "src/lib/" -> "node_modules/yaml" [xlabel="no-non-package-json" tooltip="no-non-package-json" penwidth="1.0" fontcolor="red" color="red"]
+    "src/lib/" -> "node_modules/inquirer" [penwidth="1.0"]
+    subgraph "cluster_src" {label="src" "src/test/" [label=<test> tooltip="test" URL="src/test/" shape="box3d"] }
+    "src/test/" -> "node_modules/vitest" [penwidth="1.0"]
+    "src/test/" -> "crypto" [style="dashed" penwidth="1.0"]
+    "src/test/" -> "fs" [style="dashed" penwidth="1.0"]
+    "src/test/" -> "os" [style="dashed" penwidth="1.0"]
+    "src/test/" -> "path" [style="dashed" penwidth="1.0"]
+    "src/test/" -> "child_process" [style="dashed" penwidth="1.0"]
+    "src/test/" -> "node_modules/fs-extra" [penwidth="1.0"]
+    "src/test/" -> "util" [style="dashed" penwidth="1.0"]
+    "src/test/" -> "src/commands/"
+    "src/test/" -> "src/lib/"
+    "src/test/" -> "fs/promises" [style="dashed" penwidth="1.0"]
+    "src/test/" -> "node_modules/js-yaml" [penwidth="1.0"]
+    "src/test/" -> "scripts/lib/"
+    "src/test/" -> "src/types/"
+    subgraph "cluster_src" {label="src" "src/types/" [label=<types> tooltip="types" URL="src/types/" shape="box3d"] }
+    "src/types/" -> "src/lib/" [arrowhead="onormal" penwidth="1.0"]
+    subgraph "cluster_test" {label="test" "test/commands/" [label=<commands> tooltip="commands" URL="test/commands/" shape="box3d"] }
+    "test/commands/" -> "src/test/"
+    "test/commands/" -> "node_modules/fs-extra" [penwidth="1.0"]
+    "test/commands/" -> "os" [style="dashed" penwidth="1.0"]
+    "test/commands/" -> "path" [style="dashed" penwidth="1.0"]
+    "test/commands/" -> "node_modules/vitest" [penwidth="1.0"]
+    subgraph "cluster_test" {label="test" "test/pm-integration.integration.test.ts" [label=<pm-integration.integration.test.ts> tooltip="pm-integration.integration.test.ts" URL="test/pm-integration.integration.test.ts" fillcolor="#ddfeff"] }
+    "test/pm-integration.integration.test.ts" -> "src/commands/"
+    "test/pm-integration.integration.test.ts" -> "src/lib/"
+    "test/pm-integration.integration.test.ts" -> "src/test/"
+    "test/pm-integration.integration.test.ts" -> "fs" [style="dashed" penwidth="1.0"]
+    "test/pm-integration.integration.test.ts" -> "fs/promises" [style="dashed" penwidth="1.0"]
+    "test/pm-integration.integration.test.ts" -> "path" [style="dashed" penwidth="1.0"]
+    subgraph "cluster_test" {label="test" "test/pm-integration.smoke.test.ts" [label=<pm-integration.smoke.test.ts> tooltip="pm-integration.smoke.test.ts" URL="test/pm-integration.smoke.test.ts" fillcolor="#ddfeff"] }
+    "test/pm-integration.smoke.test.ts" -> "src/commands/"
+    "test/pm-integration.smoke.test.ts" -> "src/lib/"
+    "test/pm-integration.smoke.test.ts" -> "src/test/"
+    "test/pm-integration.smoke.test.ts" -> "fs/promises" [style="dashed" penwidth="1.0"]
+    "test/pm-integration.smoke.test.ts" -> "path" [style="dashed" penwidth="1.0"]
+    subgraph "cluster_test" {label="test" "test/pre-push-hook.test.ts" [label=<pre-push-hook.test.ts> tooltip="pre-push-hook.test.ts" URL="test/pre-push-hook.test.ts" fillcolor="#ddfeff"] }
+    "test/pre-push-hook.test.ts" -> "src/test/"
+    "test/pre-push-hook.test.ts" -> "fs" [style="dashed" penwidth="1.0"]
+    "test/pre-push-hook.test.ts" -> "path" [style="dashed" penwidth="1.0"]
+    "test/pre-push-hook.test.ts" -> "node_modules/vitest" [penwidth="1.0"]
+    "url" [label=<url> tooltip="url" URL="https://nodejs.org/api/url.html" color="grey" fontcolor="grey"]
+    "util" [label=<util> tooltip="util" URL="https://nodejs.org/api/util.html" color="grey" fontcolor="grey"]
+    "vitest.config.ts" [label=<vitest.config.ts> tooltip="vitest.config.ts" URL="vitest.config.ts" fillcolor="#ddfeff"]
+    "vitest.config.ts" -> "path" [style="dashed" penwidth="1.0"]
+    "vitest.config.ts" -> "node_modules/vitest" [penwidth="1.0"]
+}

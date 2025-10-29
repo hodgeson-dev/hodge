@@ -68,11 +68,11 @@ export class StatusCommand {
 
   private async getFeatureState(featureDir: string) {
     const hasExploration = existsSync(path.join(featureDir, 'explore'));
-    const hasDecision = existsSync(path.join(featureDir, 'decision.md'));
+    const hasDecision = existsSync(path.join(featureDir, 'decisions.md'));
     const hasBuild = existsSync(path.join(featureDir, 'build'));
     const hasHarden = existsSync(path.join(featureDir, 'harden'));
     const isProductionReady = await this.checkProductionReady(featureDir);
-    const isShipped = existsSync(path.join(featureDir, 'ship-record.json'));
+    const isShipped = await this.checkShipped(featureDir);
 
     return { hasExploration, hasDecision, hasBuild, hasHarden, isProductionReady, isShipped };
   }
@@ -89,6 +89,20 @@ export class StatusCommand {
         { passed: boolean }
       >;
       return Object.values(results).every((r) => r.passed);
+    } catch {
+      return false;
+    }
+  }
+
+  private async checkShipped(featureDir: string): Promise<boolean> {
+    const shipRecordFile = path.join(featureDir, 'ship-record.json');
+    if (!existsSync(shipRecordFile)) {
+      return false;
+    }
+
+    try {
+      const record = JSON.parse(await fs.readFile(shipRecordFile, 'utf-8')) as ShipRecord;
+      return record.validationPassed === true;
     } catch {
       return false;
     }
@@ -189,8 +203,8 @@ export class StatusCommand {
     };
 
     this.logger.info(chalk.bold('Project Configuration:'));
-    this.logger.info(`  Name: ${config.projectName || 'Unknown'}`);
-    this.logger.info(`  Type: ${config.projectType || 'Unknown'}`);
+    this.logger.info(`  Name: ${config.projectName ?? 'Unknown'}`);
+    this.logger.info(`  Type: ${config.projectType ?? 'Unknown'}`);
     if (config.pmTool) {
       this.logger.info(`  PM Tool: ${config.pmTool}`);
     }
@@ -225,7 +239,7 @@ export class StatusCommand {
     let decisionCount = 0;
     if (existsSync(decisionsFile)) {
       const content = await fs.readFile(decisionsFile, 'utf-8');
-      decisionCount = (content.match(/^### \d{4}-/gm) || []).length;
+      decisionCount = (content.match(/^### \d{4}-/gm) ?? []).length;
     }
 
     // Display statistics
@@ -252,7 +266,7 @@ export class StatusCommand {
     this.logger.info(chalk.bold('═'.repeat(60)));
     this.logger.info(chalk.blue.bold('PROJECT CONTEXT SUMMARY:'));
     this.logger.info(chalk.bold('═'.repeat(60)));
-    this.logger.info(`Project: ${config.projectName || 'Unknown'}`);
+    this.logger.info(`Project: ${config.projectName ?? 'Unknown'}`);
     this.logger.info(`Active Features: ${activeFeatures.join(', ') || 'None'}`);
     this.logger.info(`Patterns Available: ${patternCount}`);
     this.logger.info(`Decisions Made: ${decisionCount}`);

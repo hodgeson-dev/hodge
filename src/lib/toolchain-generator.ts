@@ -6,7 +6,7 @@
 import { promises as fs } from 'fs';
 import { dirname } from 'path';
 import yaml from 'js-yaml';
-import type { DetectedTool, ToolchainConfig } from '../types/toolchain.js';
+import type { DetectedTool, ToolchainConfig, ToolRegistryEntry } from '../types/toolchain.js';
 import { ToolRegistryLoader } from './tool-registry-loader.js';
 import { ToolCategoryMapper } from './tool-category-mapper.js';
 import { createCommandLogger } from './logger.js';
@@ -55,30 +55,25 @@ export class ToolchainGenerator {
         commands: {},
       };
 
+      // HODGE-362: Find tool with architecture graphing capability for codebase_analysis
+      let architectureGraphTool: string | null = null;
+
       // Build quality_checks mapping and commands from detected tools
       for (const detectedTool of detectedTools) {
+        // TypeScript guarantees toolInfo exists because detectedTools only contains tools from registry
         const toolInfo = registry.tools[detectedTool.name];
-        if (!toolInfo) {
-          logger.warn(`Tool ${detectedTool.name} not found in registry, skipping`);
-          continue;
-        }
 
-        // Add tool to appropriate quality check categories
-        for (const category of toolInfo.categories) {
-          // Skip tools without default commands (e.g., eslint plugins that run via eslint)
-          if (!toolInfo.default_command) {
-            continue;
-          }
+        // Process tool for quality checks and commands
+        this.processDetectedTool(config, detectedTool, toolInfo);
 
-          this.categoryMapper.addToolToCategory(config, detectedTool.name, category);
-        }
-
-        // Add command configuration if default_command exists
-        const commandConfig = this.categoryMapper.buildCommandConfig(detectedTool, toolInfo);
-        if (commandConfig) {
-          config.commands[detectedTool.name] = commandConfig;
+        // HODGE-362: Check if tool supports architecture graph generation
+        if (!architectureGraphTool && this.isArchitectureGraphTool(toolInfo)) {
+          architectureGraphTool = detectedTool.name;
         }
       }
+
+      // HODGE-362: Add codebase_analysis section if architecture graphing tool found
+      this.addCodebaseAnalysis(config, architectureGraphTool);
 
       // Ensure parent directory exists
       await fs.mkdir(dirname(outputPath), { recursive: true });
@@ -109,6 +104,54 @@ export class ToolchainGenerator {
       throw new Error(
         `Failed to generate toolchain.yaml: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
+    }
+  }
+
+  /**
+   * Process a detected tool: add to quality check categories and commands
+   */
+  private processDetectedTool(
+    config: ToolchainConfig,
+    detectedTool: DetectedTool,
+    toolInfo: ToolRegistryEntry
+  ): void {
+    // Add tool to appropriate quality check categories
+    for (const category of toolInfo.categories) {
+      // Skip tools without default commands (e.g., eslint plugins that run via eslint)
+      if (!toolInfo.default_command) {
+        continue;
+      }
+
+      this.categoryMapper.addToolToCategory(config, detectedTool.name, category);
+    }
+
+    // Add command configuration if default_command exists
+    const commandConfig = this.categoryMapper.buildCommandConfig(detectedTool, toolInfo);
+    if (commandConfig) {
+      config.commands[detectedTool.name] = commandConfig;
+    }
+  }
+
+  /**
+   * Check if tool supports architecture graph generation
+   */
+  private isArchitectureGraphTool(toolInfo: ToolRegistryEntry): boolean {
+    return toolInfo.categories.includes('architecture_graphing') && Boolean(toolInfo.graph_command);
+  }
+
+  /**
+   * Add codebase_analysis section to config if architecture graph tool is available
+   */
+  private addCodebaseAnalysis(config: ToolchainConfig, architectureGraphTool: string | null): void {
+    if (architectureGraphTool) {
+      config.codebase_analysis = {
+        architecture_graph: {
+          tool: architectureGraphTool,
+          enabled: true,
+          output_path: '.hodge/architecture-graph.dot',
+        },
+      };
+      logger.info(`Configured ${architectureGraphTool} for architecture graph generation`);
     }
   }
 }

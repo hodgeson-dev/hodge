@@ -6,6 +6,10 @@ import { PMHooks } from '../lib/pm/pm-hooks.js';
 import { ShipService } from '../lib/ship-service.js';
 import type { LearningResult } from '../lib/pattern-learner.js';
 import { createCommandLogger } from '../lib/logger.js';
+import { ArchitectureGraphService } from '../lib/architecture-graph-service.js';
+import { ToolchainService } from '../lib/toolchain-service.js';
+import yaml from 'js-yaml';
+import type { ToolRegistry } from '../types/toolchain.js';
 
 export interface ShipOptions {
   skipTests?: boolean;
@@ -253,6 +257,9 @@ export class ShipCommand {
     // Note: Lessons learned are now captured in the /ship slash command BEFORE this CLI command runs
     // This ensures lessons are committed with the feature (see .claude/commands/ship.md Step 3.5)
 
+    // HODGE-362: Generate architecture graph after successful ship
+    await this.generateArchitectureGraph();
+
     // Update PM issue to Done
     if (pmTool && issueId) {
       this.logger.info(chalk.blue(`\n📋 Updating ${pmTool} issue ${issueId} to Done...`));
@@ -497,5 +504,52 @@ export class ShipCommand {
     }
 
     this.logger.info(chalk.green('\n   ✓ Patterns saved to .hodge/patterns/'));
+  }
+
+  /**
+   * Generate architecture graph using configured tool
+   * HODGE-362: Non-blocking graph generation for AI codebase awareness
+   */
+  private async generateArchitectureGraph(): Promise<void> {
+    try {
+      this.logger.info(chalk.cyan.bold('\n📊 Generating architecture graph...'));
+
+      // Load toolchain config
+      const toolchainService = new ToolchainService(process.cwd());
+      const toolchainConfig = await toolchainService.loadConfig();
+
+      // Load tool registry
+      const registryPath = path.join(
+        path.dirname(new URL(import.meta.url).pathname),
+        '../bundled-config/tool-registry.yaml'
+      );
+      const registryContent = await fs.readFile(registryPath, 'utf-8');
+      const toolRegistry = yaml.load(registryContent) as ToolRegistry;
+
+      // Generate graph
+      const graphService = new ArchitectureGraphService();
+      const result = await graphService.generateGraph({
+        projectRoot: process.cwd(),
+        toolchainConfig,
+        toolRegistry,
+        quiet: false,
+      });
+
+      if (result.success) {
+        this.logger.info(chalk.green(`   ✓ Architecture graph generated`));
+        this.logger.info(chalk.dim(`   Tool: ${result.tool}`));
+        this.logger.info(chalk.dim(`   Location: ${result.graphPath}`));
+      } else {
+        // Non-blocking: just log warning
+        this.logger.warn(
+          chalk.yellow(`   ⚠️  Graph generation skipped: ${result.error ?? 'unknown error'}`)
+        );
+      }
+    } catch (error) {
+      // Non-blocking: catch all errors
+      const err = error as Error;
+      this.logger.warn(chalk.yellow(`   ⚠️  Graph generation failed: ${err.message}`));
+      this.logger.debug('Graph generation error details', { error: err });
+    }
   }
 }

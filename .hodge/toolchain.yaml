@@ -31,6 +31,14 @@ quality_gates:
       - Minor TypeScript inference warnings
       - Overly strict linting rules
 
+# Codebase Analysis (HODGE-362)
+# Architecture graph generation for AI codebase structure awareness
+codebase_analysis:
+  architecture_graph:
+    tool: dependency-cruiser
+    enabled: true
+    output_path: .hodge/architecture-graph.dot
+
 quality_checks:
   type_checking:
     - typescript

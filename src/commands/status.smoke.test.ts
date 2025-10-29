@@ -58,31 +58,18 @@ describe('StatusCommand - Non-Interactive Smoke Tests', () => {
     });
   });
 
-  smokeTest('should detect decision.md at feature root (not in explore/)', async () => {
-    await withTestWorkspace('status-decision-root', async (workspace) => {
-      const command = new StatusCommand();
-
-      // Create feature with decision.md at root (not in explore/ subdirectory)
-      await workspace.writeFile('.hodge/features/TEST-002/explore/context.json', '{}');
-      await workspace.writeFile('.hodge/features/TEST-002/decision.md', 'Decision content');
-
-      // Run without throwing - should detect decision at root
-      await expect(command.execute('TEST-002')).resolves.not.toThrow();
-    });
-  });
-
-  smokeTest('should detect shipped status when ship-record.json exists', async () => {
+  smokeTest('should detect shipped status when validationPassed is true', async () => {
     await withTestWorkspace('status-shipped', async (workspace) => {
       const command = new StatusCommand();
 
-      // Create fully shipped feature with ship-record.json
+      // Create fully shipped feature with validationPassed: true
       await workspace.writeFile('.hodge/features/TEST-003/explore/context.json', '{}');
-      await workspace.writeFile('.hodge/features/TEST-003/decision.md', 'Decision');
+      await workspace.writeFile('.hodge/features/TEST-003/decisions.md', 'Decision');
       await workspace.writeFile('.hodge/features/TEST-003/build/context.json', '{}');
       await workspace.writeFile('.hodge/features/TEST-003/harden/context.json', '{}');
       await workspace.writeFile(
         '.hodge/features/TEST-003/ship-record.json',
-        JSON.stringify({ shipped: true })
+        JSON.stringify({ validationPassed: true })
       );
 
       // Run without throwing - should detect shipped status
@@ -90,9 +77,40 @@ describe('StatusCommand - Non-Interactive Smoke Tests', () => {
     });
   });
 
+  smokeTest('should NOT show shipped when validationPassed is false', async () => {
+    await withTestWorkspace('status-not-shipped', async (workspace) => {
+      const command = new StatusCommand();
+
+      // Create feature with failed ship attempt (validationPassed: false)
+      await workspace.writeFile('.hodge/features/TEST-004/explore/context.json', '{}');
+      await workspace.writeFile('.hodge/features/TEST-004/decisions.md', 'Decision');
+      await workspace.writeFile('.hodge/features/TEST-004/build/context.json', '{}');
+      await workspace.writeFile(
+        '.hodge/features/TEST-004/ship-record.json',
+        JSON.stringify({ validationPassed: false })
+      );
+
+      // Run without throwing - should NOT consider feature as shipped
+      await expect(command.execute('TEST-004')).resolves.not.toThrow();
+    });
+  });
+
+  smokeTest('should detect decisions.md (plural) not just decision.md', async () => {
+    await withTestWorkspace('status-decisions-plural', async (workspace) => {
+      const command = new StatusCommand();
+
+      // Create feature with decisions.md (plural)
+      await workspace.writeFile('.hodge/features/TEST-005/explore/context.json', '{}');
+      await workspace.writeFile('.hodge/features/TEST-005/decisions.md', 'Multiple decisions');
+
+      // Run without throwing - should detect decisions.md
+      await expect(command.execute('TEST-005')).resolves.not.toThrow();
+    });
+  });
+
   // Phase 1 (HODGE-346.4): Stats functionality
   smokeTest('should support --stats flag', async () => {
-    await withTestWorkspace('status-stats-flag', async (workspace) => {
+    await withTestWorkspace('status-stats-flag', async () => {
       const command = new StatusCommand();
 
       // Run without throwing
@@ -120,7 +138,7 @@ describe('StatusCommand - Non-Interactive Smoke Tests', () => {
   });
 
   smokeTest('should handle no ship records gracefully', async () => {
-    await withTestWorkspace('status-no-ships', async (workspace) => {
+    await withTestWorkspace('status-no-ships', async () => {
       const command = new StatusCommand();
 
       // No ship records exist - should still work

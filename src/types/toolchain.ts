@@ -104,6 +104,7 @@ export type QualityCheckCategory =
   | 'code_smells'
   | 'duplication'
   | 'architecture'
+  | 'architecture_graphing' // HODGE-362: DOT format graph generation
   | 'security'
   | 'patterns';
 
@@ -121,6 +122,8 @@ export interface ToolRegistryEntry {
   default_command: string | null;
   /** Command to auto-fix issues (optional, HODGE-341.6) */
   fix_command?: string;
+  /** Command to generate architecture graph in DOT format (optional, HODGE-362) */
+  graph_command?: string;
   /** Command to detect tool version */
   version_command?: string;
   /** Quality check categories this tool provides */
@@ -189,6 +192,21 @@ export interface QualityGateConfig {
 }
 
 /**
+ * Codebase analysis configuration (HODGE-362)
+ */
+export interface CodebaseAnalysisConfig {
+  /** Architecture graph generation configuration */
+  architecture_graph?: {
+    /** Tool to use for graph generation */
+    tool: string;
+    /** Whether graph generation is enabled */
+    enabled: boolean;
+    /** Output file path (relative to project root) */
+    output_path?: string;
+  };
+}
+
+/**
  * Toolchain configuration (loaded from .hodge/toolchain.yaml)
  */
 export interface ToolchainConfig {
@@ -203,6 +221,9 @@ export interface ToolchainConfig {
 
   /** Mapping of quality check types to tool names */
   quality_checks: QualityChecksMapping;
+
+  /** Codebase analysis configuration (HODGE-362) */
+  codebase_analysis?: CodebaseAnalysisConfig;
 
   /** Quality gate configuration for each phase (HODGE-341.5) */
   quality_gates?: {

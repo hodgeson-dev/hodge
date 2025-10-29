@@ -1,0 +1,50 @@
+{
+  "timestamp": "2025-10-29T05:36:34.443Z",
+  "stagedFiles": [
+    ".hodge/.session",
+    ".hodge/HODGE.md",
+    ".hodge/context.json",
+    ".hodge/features/HODGE-362/build/build-plan.md",
+    ".hodge/features/HODGE-362/decisions.md",
+    ".hodge/features/HODGE-362/explore/exploration.md",
+    ".hodge/features/HODGE-362/explore/test-intentions.md",
+    ".hodge/features/HODGE-362/ship-record.json",
+    ".hodge/id-counter.json",
+    ".hodge/id-mappings.json",
+    ".hodge/project_management.md",
+    ".hodge/toolchain.yaml",
+    "src/bundled-config/tool-registry.yaml",
+    "src/commands/context.ts",
+    "src/commands/ship.ts",
+    "src/commands/status.smoke.test.ts",
+    "src/commands/status.ts",
+    "src/lib/architecture-graph-service.smoke.test.ts",
+    "src/lib/architecture-graph-service.ts",
+    "src/lib/claude-commands.ts",
+    "src/lib/toolchain-generator.ts",
+    "src/types/toolchain.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 21,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": ".hodge/toolchain.yaml 26ms (unchanged)\nsrc/bundled-config/tool-registry.yaml 41ms (unchanged)\nsrc/commands/context.ts 114ms\nsrc/commands/ship.ts 44ms\nsrc/commands/status.smoke.test.ts 8ms\nsrc/commands/status.ts 34ms (unchanged)\nsrc/lib/architecture-graph-service.smoke.test.ts 8ms (unchanged)\nsrc/lib/architecture-graph-service.ts 8ms\nsrc/lib/claude-commands.ts 12ms (unchanged)\nsrc/lib/toolchain-generator.ts 5ms (unchanged)\nsrc/types/toolchain.ts 7ms (unchanged)\n",
+      "stderr": "",
+      "duration": 1012
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 9,
+      "issuesFixed": 26,
+      "success": true,
+      "stdout": "\n/Users/michaelkelly/Projects/hodge/src/commands/context.ts\n  205:3   warning  Async method 'loadFeatureContext' has too many lines (57). Maximum allowed is 50  max-lines-per-function\n  551:12  warning  Complete the task associated to this \"TODO\" comment                               sonarjs/todo-tag\n  582:33  warning  Complete the task associated to this \"TODO\" comment                               sonarjs/todo-tag\n  583:1   warning  File has too many lines (454). Maximum allowed is 400                             max-lines\n  583:23  warning  Complete the task associated to this \"TODO\" comment                               sonarjs/todo-tag\n  584:34  warning  Complete the task associated to this \"TODO\" comment                               sonarjs/todo-tag\n  585:40  warning  Complete the task associated to this \"TODO\" comment                               sonarjs/todo-tag\n\n/Users/michaelkelly/Projects/hodge/src/commands/ship.ts\n   29:3   warning  Async method 'execute' has too many lines (58). Maximum allowed is 50  max-lines-per-function\n  266:10  warning  Complete the task associated to this \"TODO\" comment                    sonarjs/todo-tag\n  521:12  warning  Unnecessary conditional, value is always falsy                         @typescript-eslint/no-unnecessary-condition\n  560:1   warning  File has too many lines (403). Maximum allowed is 400                  max-lines\n\n/Users/michaelkelly/Projects/hodge/src/commands/status.smoke.test.ts\n  0:0  warning  File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override\n\n/Users/michaelkelly/Projects/hodge/src/commands/status.ts\n  187:3   warning  Async method 'showOverallStatus' has too many lines (71). Maximum allowed is 50                            max-lines-per-function\n  206:52  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  207:52  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  242:55  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  269:53  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  550:8   warning  Complete the task associated to this \"TODO\" comment                                                        sonarjs/todo-tag\n\n/Users/michaelkelly/Projects/hodge/src/lib/architecture-graph-service.smoke.test.ts\n  0:0  warning  File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override\n\n/Users/michaelkelly/Projects/hodge/src/lib/architecture-graph-service.ts\n  50:3  warning  Async method 'generateGraph' has too many lines (83). Maximum allowed is 50  max-lines-per-function\n  97:9  error    Make sure that executing this OS command is safe here                        sonarjs/os-command\n\n/Users/michaelkelly/Projects/hodge/src/lib/toolchain-generator.ts\n  33:3   warning  Async method 'generate' has too many lines (84). Maximum allowed is 50               max-lines-per-function\n  33:9   error    Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed  sonarjs/cognitive-complexity\n  43:36  warning  Complete the task associated to this \"TODO\" comment                                  sonarjs/todo-tag\n  64:14  warning  Unnecessary conditional, value is always falsy                                       @typescript-eslint/no-unnecessary-condition\n\n/Users/michaelkelly/Projects/hodge/src/types/toolchain.ts\n  158:6  warning  Complete the task associated to this \"TODO\" comment  sonarjs/todo-tag\n\n✖ 26 problems (2 errors, 24 warnings)\n\n",
+      "stderr": "",
+      "duration": 4630
+    }
+  ],
+  "totalIssuesFixed": 26,
+  "totalFilesModified": 30,
+  "failures": []
+}

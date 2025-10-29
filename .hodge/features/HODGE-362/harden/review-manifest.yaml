@@ -1,0 +1,195 @@
+version: '1.0'
+feature: HODGE-362
+generated_at: '2025-10-29T05:36:58.106Z'
+recommended_tier: full
+change_analysis:
+  total_files: 22
+  total_lines: 1165
+  breakdown:
+    implementation: 14
+    test: 2
+    documentation: 6
+    config: 0
+changed_files:
+  - path: .hodge/.session
+    lines_changed: 10
+    change_type: implementation
+  - path: .hodge/HODGE.md
+    lines_changed: 25
+    change_type: documentation
+  - path: .hodge/context.json
+    lines_changed: 8
+    change_type: implementation
+  - path: .hodge/features/HODGE-362/build/build-plan.md
+    lines_changed: 46
+    change_type: documentation
+  - path: .hodge/features/HODGE-362/decisions.md
+    lines_changed: 65
+    change_type: documentation
+  - path: .hodge/features/HODGE-362/explore/exploration.md
+    lines_changed: 161
+    change_type: documentation
+  - path: .hodge/features/HODGE-362/explore/test-intentions.md
+    lines_changed: 64
+    change_type: documentation
+  - path: .hodge/features/HODGE-362/ship-record.json
+    lines_changed: 11
+    change_type: implementation
+  - path: .hodge/id-counter.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/id-mappings.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/project_management.md
+    lines_changed: 13
+    change_type: documentation
+  - path: .hodge/toolchain.yaml
+    lines_changed: 8
+    change_type: implementation
+  - path: src/bundled-config/tool-registry.yaml
+    lines_changed: 115
+    change_type: implementation
+  - path: src/commands/context.ts
+    lines_changed: 43
+    change_type: implementation
+  - path: src/commands/ship.ts
+    lines_changed: 61
+    change_type: implementation
+  - path: src/commands/status.smoke.test.ts
+    lines_changed: 56
+    change_type: test
+  - path: src/commands/status.ts
+    lines_changed: 18
+    change_type: implementation
+  - path: src/lib/architecture-graph-service.smoke.test.ts
+    lines_changed: 172
+    change_type: test
+  - path: src/lib/architecture-graph-service.ts
+    lines_changed: 213
+    change_type: implementation
+  - path: src/lib/claude-commands.ts
+    lines_changed: 23
+    change_type: implementation
+  - path: src/lib/toolchain-generator.ts
+    lines_changed: 24
+    change_type: implementation
+  - path: src/types/toolchain.ts
+    lines_changed: 21
+    change_type: implementation
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - test-pattern.md
+      - error-boundary.md
+      - input-validation.md
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - testing/vitest-3.x.yaml
+      - testing/general-test-standards.yaml
+      - languages/typescript-5.x.yaml
+      - languages/general-coding-standards.yaml
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed
+scope:
+  type: feature
+  target: HODGE-362
+  fileCount: 22
+critical_files:
+  algorithm: risk-weighted-v1.0
+  total_files: 22
+  top_n: 10
+  files:
+    - path: src/commands/context.ts
+      rank: 1
+      score: 247
+      risk_factors:
+        - 7 warnings
+        - new file
+    - path: src/lib/toolchain-generator.ts
+      rank: 2
+      score: 237
+      risk_factors:
+        - 1 blocker issue
+        - 3 warnings
+        - new file
+    - path: src/lib/architecture-graph-service.ts
+      rank: 3
+      score: 225
+      risk_factors:
+        - 1 blocker issue
+        - 1 warning
+        - large change (213 lines)
+        - new file
+    - path: src/commands/ship.ts
+      rank: 4
+      score: 181
+      risk_factors:
+        - 4 warnings
+        - new file
+    - path: src/commands/status.ts
+      rank: 5
+      score: 159
+      risk_factors:
+        - 6 warnings
+    - path: src/types/toolchain.ts
+      rank: 6
+      score: 86
+      risk_factors:
+        - 1 warning
+        - new file
+    - path: .hodge/features/HODGE-362/decisions.md
+      rank: 7
+      score: 83
+      risk_factors:
+        - new file
+    - path: .hodge/features/HODGE-362/explore/test-intentions.md
+      rank: 8
+      score: 82
+      risk_factors:
+        - new file
+    - path: .hodge/features/HODGE-362/explore/exploration.md
+      rank: 9
+      score: 75
+      risk_factors:
+        - medium change (161 lines)
+        - new file
+    - path: .hodge/features/HODGE-362/build/build-plan.md
+      rank: 10
+      score: 73
+      risk_factors:
+        - new file

@@ -177,7 +177,35 @@ HODGE-004 (ID Management)
   - Define test intentions
   - Make architectural decisions
 
+
+
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-29
+- **Updated**: 2025-10-29
+- **Description**: I want to add the generation of a DOT format dependency file for the entire codebase that gets loaded as part of the /hodge command. That way, Claude Code always has the code structure available to it. The file should be used by AI in the work it does in the /review, /explore, /decide, and /build commands, for judging the quality of existing code and planning new code. An updated DOT format dependency file should be generated at the end of a successful /ship command. The command for generating the file should be in the toolchain.yaml file, but it is not part of the quality gate tools. For Typescript/JavaScript, jscpd can be used to generate the DOT format dependency file. We should identify and configure the appropriate tool for each of the tech stacks supported in the src/bundled-config/tool-registry.yaml file.
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
 ## Completed Features
+
+### HODGE-362
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-29
+- **Updated**: 2025-10-29
+- **Description**: I want to add the generation of a DOT format dependency file for the entire codebase that gets loaded as part of the /hodge command. That way, Claude Code always has the code structure available to it. The file should be used by AI in the work it does in the /review, /explore, /decide, and /build commands, for judging the quality of existing code and planning new code. An updated DOT format dependency file should be generated at the end of a successful /ship command. The command for generating the file should be in the toolchain.yaml file, but it is not part of the quality gate tools. For Typescript/JavaScript, jscpd can be used to generate the DOT format dependency file. We should identify and configure the appropriate tool for each of the tech stacks supported in the src/bundled-config/tool-registry.yaml file.
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+- **Completed**: 2025-10-29
+
+
 
 ### HODGE-361
 - **Status**: shipped

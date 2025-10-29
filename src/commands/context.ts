@@ -4,6 +4,7 @@ import path from 'path';
 import { HodgeMDGenerator } from '../lib/hodge-md-generator.js';
 import { sessionManager } from '../lib/session-manager.js';
 import { createCommandLogger } from '../lib/logger.js';
+import { ArchitectureGraphService } from '../lib/architecture-graph-service.js';
 
 export interface ContextOptions {
   list?: boolean;
@@ -82,6 +83,9 @@ export class ContextCommand {
 
     // Load and display principles if they exist
     await this.displayPrinciples();
+
+    // HODGE-362: Display architecture graph status
+    await this.displayArchitectureGraph();
 
     // Discover recent saves
     const saves = await this.discoverSaves();
@@ -251,6 +255,9 @@ export class ContextCommand {
       this.logger.info(chalk.yellow(`Feature directory not found: ${feature}`));
       this.logger.info(chalk.gray('Start with: ') + chalk.cyan(`/explore ${feature}`));
     }
+
+    // HODGE-362: Display architecture graph status
+    await this.displayArchitectureGraph();
 
     // Find feature-specific saves
     const saves = await this.discoverSaves();
@@ -604,6 +611,42 @@ export class ContextCommand {
         error: error as Error,
       });
       throw error;
+    }
+  }
+
+  /**
+   * Display architecture graph status and load content for AI
+   * HODGE-362: Non-blocking graph loading for AI codebase awareness
+   */
+  private async displayArchitectureGraph(): Promise<void> {
+    try {
+      const graphService = new ArchitectureGraphService();
+      const graphExists = graphService.graphExists(this.basePath);
+
+      if (graphExists) {
+        const graphContent = await graphService.loadGraph(this.basePath);
+
+        if (graphContent) {
+          // Count nodes/edges for summary
+          const nodeMatches = graphContent.match(/"\w+"/g);
+          const edgeMatches = graphContent.match(/->/g);
+          const nodeCount = nodeMatches ? nodeMatches.length / 2 : 0; // Each node appears twice (declaration + edges)
+          const edgeCount = edgeMatches ? edgeMatches.length : 0;
+
+          this.logger.info('');
+          this.logger.info(chalk.bold('Architecture Graph:'));
+          this.logger.info(chalk.gray(`  ${nodeCount} modules, ${edgeCount} dependencies`));
+          this.logger.info(chalk.dim('  Location: .hodge/architecture-graph.dot'));
+          this.logger.info(chalk.dim('  💡 Graph updated after each successful /ship'));
+        }
+      } else {
+        // Graph doesn't exist yet - normal for new projects
+        this.logger.debug('No architecture graph found (will be generated after first /ship)');
+      }
+    } catch (error) {
+      // Non-blocking: silently log errors
+      const err = error as Error;
+      this.logger.debug('Failed to load architecture graph', { error: err });
     }
   }
 }

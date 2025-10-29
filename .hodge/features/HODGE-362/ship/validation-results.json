@@ -1,0 +1,97 @@
+[
+  {
+    "type": "type_checking",
+    "tool": "typescript",
+    "exitCode": 0,
+    "errorCount": 0,
+    "warningCount": 0,
+    "errors": [],
+    "warnings": [],
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "type": "linting",
+    "tool": "eslint",
+    "exitCode": 0,
+    "errorCount": 0,
+    "warningCount": 0,
+    "errors": [],
+    "warnings": [],
+    "stdout": "/Users/michaelkelly/Projects/hodge/src/commands/context.ts: line 205, col 3, Warning - Async method 'loadFeatureContext' has too many lines (57). Maximum allowed is 50. (max-lines-per-function)\n/Users/michaelkelly/Projects/hodge/src/commands/context.ts: line 551, col 12, Warning - Complete the task associated to this \"TODO\" comment. (sonarjs/todo-tag)\n/Users/michaelkelly/Projects/hodge/src/commands/context.ts: line 582, col 33, Warning - Complete the task associated to this \"TODO\" comment. (sonarjs/todo-tag)\n/Users/michaelkelly/Projects/hodge/src/commands/context.ts: line 583, col 1, Warning - File has too many lines (454). Maximum allowed is 400. (max-lines)\n/Users/michaelkelly/Projects/hodge/src/commands/context.ts: line 583, col 23, Warning - Complete the task associated to this \"TODO\" comment. (sonarjs/todo-tag)\n/Users/michaelkelly/Projects/hodge/src/commands/context.ts: line 584, col 34, Warning - Complete the task associated to this \"TODO\" comment. (sonarjs/todo-tag)\n/Users/michaelkelly/Projects/hodge/src/commands/context.ts: line 585, col 40, Warning - Complete the task associated to this \"TODO\" comment. (sonarjs/todo-tag)\n/Users/michaelkelly/Projects/hodge/src/commands/ship.ts: line 29, col 3, Warning - Async method 'execute' has too many lines (58). Maximum allowed is 50. (max-lines-per-function)\n/Users/michaelkelly/Projects/hodge/src/commands/ship.ts: line 266, col 10, Warning - Complete the task associated to this \"TODO\" comment. (sonarjs/todo-tag)\n/Users/michaelkelly/Projects/hodge/src/commands/status.smoke.test.ts: line 0, col 0, Warning - File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override.\n/Users/michaelkelly/Projects/hodge/src/commands/status.ts: line 187, col 3, Warning - Async method 'showOverallStatus' has too many lines (71). Maximum allowed is 50. (max-lines-per-function)\n/Users/michaelkelly/Projects/hodge/src/commands/status.ts: line 550, col 8, Warning - Complete the task associated to this \"TODO\" comment. (sonarjs/todo-tag)\n/Users/michaelkelly/Projects/hodge/src/lib/architecture-graph-service.smoke.test.ts: line 0, col 0, Warning - File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override.\n/Users/michaelkelly/Projects/hodge/src/lib/architecture-graph-service.ts: line 50, col 3, Warning - Async method 'generateGraph' has too many lines (84). Maximum allowed is 50. (max-lines-per-function)\n/Users/michaelkelly/Projects/hodge/src/lib/toolchain-generator.ts: line 33, col 3, Warning - Async method 'generate' has too many lines (58). Maximum allowed is 50. (max-lines-per-function)\n/Users/michaelkelly/Projects/hodge/src/lib/toolchain-generator.ts: line 43, col 36, Warning - Complete the task associated to this \"TODO\" comment. (sonarjs/todo-tag)\n/Users/michaelkelly/Projects/hodge/src/types/toolchain.ts: line 158, col 6, Warning - Complete the task associated to this \"TODO\" comment. (sonarjs/todo-tag)\n\n17 problems\n",
+    "stderr": ""
+  },
+  {
+    "type": "testing",
+    "tool": "vitest",
+    "exitCode": 0,
+    "errorCount": 0,
+    "warningCount": 0,
+    "errors": [],
+    "warnings": [],
+    "stdout": "\n RUN  v3.2.4 /Users/michaelkelly/Projects/hodge\n\n··············································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································{\"level\":\"warn\",\"time\":\"2025-10-29T05:58:12.856Z\",\"name\":\"pm-adapter\",\"timestamp\":\"2025-10-29T05:58:12.856Z\",\"enableConsole\":false,\"msg\":\"Failed to load PM overrides\"}\n················{\"level\":\"info\",\"time\":\"2025-10-29T05:58:12.883Z\",\"msg\":\"Process terminated\"}\n················································································································································································································\n\n Test Files  132 passed (132)\n      Tests  1358 passed (1358)\n   Start at  22:57:54\n   Duration  21.02s (transform 3.26s, setup 0ms, collect 21.61s, tests 51.12s, environment 25ms, prepare 15.94s)\n\n",
+    "stderr": "(node:75139) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\nfatal: ambiguous argument 'HEAD~1': unknown revision or path not in the working tree.\nUse '--' to separate paths from revisions, like this:\n'git <command> [<revision>...] -- [<file>...]'\nfatal: ambiguous argument 'HEAD~1': unknown revision or path not in the working tree.\nUse '--' to separate paths from revisions, like this:\n'git <command> [<revision>...] -- [<file>...]'\nfatal: ambiguous argument 'HEAD~1': unknown revision or path not in the working tree.\nUse '--' to separate paths from revisions, like this:\n'git <command> [<revision>...] -- [<file>...]'\nfatal: ambiguous argument 'HEAD~1': unknown revision or path not in the working tree.\nUse '--' to separate paths from revisions, like this:\n'git <command> [<revision>...] -- [<file>...]'\nfatal: ambiguous argument 'HEAD~1': unknown revision or path not in the working tree.\nUse '--' to separate paths from revisions, like this:\n'git <command> [<revision>...] -- [<file>...]'\n(node:75503) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:75879) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:76009) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:76016) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:76094) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:76199) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\nfatal: No names found, cannot describe anything.\nfatal: No names found, cannot describe anything.\n(node:76385) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:76381) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:76397) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:76413) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:76487) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:76494) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:76495) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:76534) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n(node:76631) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:76666) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:76725) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:76746) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:76862) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:76926) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:76935) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n"
+  },
+  {
+    "type": "formatting",
+    "tool": "prettier",
+    "exitCode": 0,
+    "errorCount": 0,
+    "warningCount": 0,
+    "errors": [],
+    "warnings": [],
+    "stdout": "Checking formatting...\nAll matched files use Prettier code style!\n",
+    "stderr": ""
+  },
+  {
+    "type": "complexity",
+    "tool": "none",
+    "skipped": true,
+    "reason": "No tools configured for this check type"
+  },
+  {
+    "type": "code_smells",
+    "tool": "none",
+    "skipped": true,
+    "reason": "No tools configured for this check type"
+  },
+  {
+    "type": "duplication",
+    "tool": "jscpd",
+    "exitCode": 0,
+    "errorCount": 0,
+    "warningCount": 3,
+    "errors": [],
+    "warnings": [
+      "Clone found (",
+      "Clone found (",
+      "Clone found ("
+    ],
+    "stdout": "Clone found (typescript):\n - \u001b[1m\u001b[32msrc/lib/architecture-graph-service.smoke.test.ts\u001b[39m\u001b[22m [85:56 - 96:18] (11 lines, 88 tokens)\n   \u001b[1m\u001b[32msrc/lib/architecture-graph-service.smoke.test.ts\u001b[39m\u001b[22m [57:52 - 68:2]\n\nClone found (typescript):\n - \u001b[1m\u001b[32msrc/lib/architecture-graph-service.smoke.test.ts\u001b[39m\u001b[22m [114:7 - 125:10] (11 lines, 77 tokens)\n   \u001b[1m\u001b[32msrc/lib/architecture-graph-service.smoke.test.ts\u001b[39m\u001b[22m [71:2 - 82:12]\n\nClone found (typescript):\n - \u001b[1m\u001b[32msrc/lib/architecture-graph-service.smoke.test.ts\u001b[39m\u001b[22m [149:9 - 161:26] (12 lines, 83 tokens)\n   \u001b[1m\u001b[32msrc/lib/architecture-graph-service.smoke.test.ts\u001b[39m\u001b[22m [113:9 - 125:11]\n\n\u001b[90m┌────────────\u001b[39m\u001b[90m┬────────────────\u001b[39m\u001b[90m┬─────────────\u001b[39m\u001b[90m┬──────────────\u001b[39m\u001b[90m┬──────────────\u001b[39m\u001b[90m┬──────────────────\u001b[39m\u001b[90m┬───────────────────┐\u001b[39m\n\u001b[90m│\u001b[39m\u001b[31m Format     \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Files analyzed \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Total lines \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Total tokens \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Clones found \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Duplicated lines \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Duplicated tokens \u001b[39m\u001b[90m│\u001b[39m\n\u001b[90m├────────────\u001b[39m\u001b[90m┼────────────────\u001b[39m\u001b[90m┼─────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────────\u001b[39m\u001b[90m┼───────────────────┤\u001b[39m\n\u001b[90m│\u001b[39m typescript \u001b[90m│\u001b[39m 8              \u001b[90m│\u001b[39m 2877        \u001b[90m│\u001b[39m 23164        \u001b[90m│\u001b[39m 3            \u001b[90m│\u001b[39m 34 (1.18%)       \u001b[90m│\u001b[39m 248 (1.07%)       \u001b[90m│\u001b[39m\n\u001b[90m├────────────\u001b[39m\u001b[90m┼────────────────\u001b[39m\u001b[90m┼─────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────────\u001b[39m\u001b[90m┼───────────────────┤\u001b[39m\n\u001b[90m│\u001b[39m \u001b[1mTotal:\u001b[22m     \u001b[90m│\u001b[39m 8              \u001b[90m│\u001b[39m 2877        \u001b[90m│\u001b[39m 23164        \u001b[90m│\u001b[39m 3            \u001b[90m│\u001b[39m 34 (1.18%)       \u001b[90m│\u001b[39m 248 (1.07%)       \u001b[90m│\u001b[39m\n\u001b[90m└────────────\u001b[39m\u001b[90m┴────────────────\u001b[39m\u001b[90m┴─────────────\u001b[39m\u001b[90m┴──────────────\u001b[39m\u001b[90m┴──────────────\u001b[39m\u001b[90m┴──────────────────\u001b[39m\u001b[90m┴───────────────────┘\u001b[39m\n\u001b[90mFound 3 clones.\u001b[39m\n\u001b[3m\u001b[90mDetection time:\u001b[39m\u001b[23m: 1.322s\n",
+    "stderr": ""
+  },
+  {
+    "type": "architecture",
+    "tool": "dependency-cruiser",
+    "exitCode": 0,
+    "errorCount": 0,
+    "warningCount": 1,
+    "errors": [],
+    "warnings": [
+      "\n  warn no-orphans: "
+    ],
+    "stdout": "\n  warn no-orphans: src/lib/claude-commands.ts\n\nx 1 dependency violations (0 errors, 1 warnings). 56 modules, 170 dependencies cruised.\n\n",
+    "stderr": ""
+  },
+  {
+    "type": "security",
+    "tool": "semgrep",
+    "exitCode": 0,
+    "errorCount": 0,
+    "warningCount": 0,
+    "errors": [],
+    "warnings": [],
+    "stdout": "",
+    "stderr": ""
+  }
+]
