@@ -95,15 +95,16 @@ commands:
     error_pattern: '^\[warn\]\s+\S+\.\S+'
     warning_pattern: ''
   jscpd:
-    command: npx jscpd ${files} --min-lines 10 --silent --reporters json --ignore "node_modules/**,dist/**,.hodge/**"
+    command: npx jscpd ${files} --min-lines 10 --ignore "node_modules/**,dist/**,.hodge/**,coverage/**,scripts/**,.claude/**"
     provides:
       - duplication
-    # --silent: No progress output
-    # --reporters json: Structured output
-    # --ignore: Exclude node_modules, dist, and .hodge directories
-    # HODGE-359.1: Regex patterns for structured error/warning extraction (JSON output)
-    error_pattern: '"duplicates":\s*\[\s*\{'
-    warning_pattern: ''
+    # Removed --silent: Need "Clone found" lines for regex extraction
+    # Removed --reporters json: Human-readable output is easier to parse with regex
+    # --ignore: Exclude non-source directories
+    # HODGE-359.1: Regex patterns for structured error/warning extraction
+    # Duplications are warnings, not errors (don't block shipping)
+    error_pattern: ''
+    warning_pattern: '^Clone found \('
   dependency-cruiser:
     command: npx depcruise --config .dependency-cruiser.cjs --output-type err ${files} || true
     provides:

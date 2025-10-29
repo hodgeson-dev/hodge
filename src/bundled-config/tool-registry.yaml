@@ -142,15 +142,16 @@ tools:
         npm:
           package: jscpd
           install_command: npm install --save-dev jscpd
-    default_command: npx jscpd ${files} --min-lines 10 --silent --reporters json --ignore "node_modules/**,dist/**,.hodge/**"
+    default_command: npx jscpd ${files} --min-lines 10 --ignore "node_modules/**,dist/**,.hodge/**,coverage/**,scripts/**,.claude/**"
     version_command: jscpd --version
     categories: [duplication]
-    # --silent: No progress output
-    # --reporters json: Structured output for easier parsing
-    # --ignore: Exclude node_modules, dist, and .hodge directories
-    # HODGE-359.1: Regex patterns for structured error/warning extraction (JSON output)
-    error_pattern: '"duplicates":\s*\[\s*\{'
-    warning_pattern: ''
+    # Removed --silent: Need "Clone found" lines for regex extraction
+    # Removed --reporters json: Human-readable output is easier to parse with regex
+    # --ignore: Exclude non-source directories
+    # HODGE-359.1: Regex patterns for structured error/warning extraction
+    # Duplications are warnings, not errors (don't block shipping)
+    error_pattern: ''
+    warning_pattern: '^Clone found \('
 
   dependency-cruiser:
     languages: [typescript, javascript]
