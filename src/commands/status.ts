@@ -79,20 +79,9 @@ export class StatusCommand {
   }
 
   private async checkProductionReady(featureDir: string): Promise<boolean> {
-    const validationFile = path.join(featureDir, 'harden', 'validation-results.json');
-    if (!existsSync(validationFile)) {
-      return false;
-    }
-
-    try {
-      const results = JSON.parse(await fs.readFile(validationFile, 'utf-8')) as Record<
-        string,
-        { passed: boolean }
-      >;
-      return Object.values(results).every((r) => r.passed);
-    } catch {
-      return false;
-    }
+    // HODGE-365: Production ready means ship validation passed
+    // Use ship-record.json as single source of truth for production readiness
+    return this.checkShipped(featureDir);
   }
 
   private async checkShipped(featureDir: string): Promise<boolean> {

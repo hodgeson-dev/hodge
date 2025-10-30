@@ -2624,10 +2624,10 @@ hodge context
 {{/if}}
 
 The \`hodge context\` command outputs a YAML manifest containing:
-- **global_files**: Core project files (standards, decisions, principles, etc.) with availability status
-- **patterns**: Available patterns with extracted titles and overviews (token-efficient awareness)
-- **architecture_graph**: Codebase structure statistics (modules and dependencies)
-- **feature_context** (when feature specified): All files in feature directory
+- **global_files**: Core project files (standards, decisions, principles, etc.) with availability status - MUST READ ALL available files
+- **architecture_graph**: Codebase dependency graph (modules and dependencies) - MUST READ if available for architectural awareness
+- **patterns**: Available patterns with extracted titles and overviews (token-efficient awareness - read only when needed)
+- **feature_context** (when feature specified): All files in feature directory - MUST READ ALL available files
 
 **AI Instructions:**
 
@@ -2635,8 +2635,8 @@ The \`hodge context\` command outputs a YAML manifest containing:
 2. **MANDATORY**: Read ALL files marked as \`status: available\` in the manifest:
    - **MUST READ ALL** global_files with \`status: available\` - NO EXCEPTIONS
    - **MUST READ ALL** feature_context files with \`status: available\` - NO EXCEPTIONS
+   - **MUST READ** architecture_graph if \`status: available\` - provides codebase dependency structure (always load for architectural awareness)
    - **patterns** section provides awareness without reading full files (read specific patterns only when needed)
-   - Architecture graph (.dot file) provides codebase structure when needed
 
 3. Example Read sequence:
 \`\`\`bash
@@ -2644,7 +2644,11 @@ The \`hodge context\` command outputs a YAML manifest containing:
 cat .hodge/HODGE.md
 cat .hodge/standards.md
 cat .hodge/decisions.md
-# (skip .hodge/principles.md if status: not_found)
+cat .hodge/principles.md
+# (skip any file if status: not_found)
+
+# Read architecture graph for codebase structure
+cat .hodge/architecture-graph.dot
 
 # Read feature files if working on a feature
 {{#if feature}}

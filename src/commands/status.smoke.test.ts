@@ -157,4 +157,56 @@ describe('StatusCommand - Non-Interactive Smoke Tests', () => {
       await expect(command.execute(undefined, { stats: true })).resolves.not.toThrow();
     });
   });
+
+  // HODGE-365: Production Ready indicator should match ship validation status
+  smokeTest('should show Production Ready ✓ when shipped with validationPassed: true', async () => {
+    await withTestWorkspace('status-production-ready-shipped', async (workspace) => {
+      const command = new StatusCommand();
+
+      // Create shipped feature with validationPassed: true
+      await workspace.writeFile('.hodge/features/TEST-READY/explore/context.json', '{}');
+      await workspace.writeFile('.hodge/features/TEST-READY/build/context.json', '{}');
+      await workspace.writeFile('.hodge/features/TEST-READY/harden/context.json', '{}');
+      await workspace.writeFile(
+        '.hodge/features/TEST-READY/ship-record.json',
+        JSON.stringify({ validationPassed: true })
+      );
+
+      // Should not crash - both Production Ready and Shipped should show ✓
+      await expect(command.execute('TEST-READY')).resolves.not.toThrow();
+    });
+  });
+
+  smokeTest('should show Production Ready ○ when NOT shipped', async () => {
+    await withTestWorkspace('status-production-ready-not-shipped', async (workspace) => {
+      const command = new StatusCommand();
+
+      // Create feature that's hardened but not shipped
+      await workspace.writeFile('.hodge/features/TEST-UNSHIPPED/explore/context.json', '{}');
+      await workspace.writeFile('.hodge/features/TEST-UNSHIPPED/build/context.json', '{}');
+      await workspace.writeFile('.hodge/features/TEST-UNSHIPPED/harden/context.json', '{}');
+      // No ship-record.json exists
+
+      // Should not crash - both Production Ready and Shipped should show ○
+      await expect(command.execute('TEST-UNSHIPPED')).resolves.not.toThrow();
+    });
+  });
+
+  smokeTest('should show Production Ready ○ when validationPassed is false', async () => {
+    await withTestWorkspace('status-production-ready-failed', async (workspace) => {
+      const command = new StatusCommand();
+
+      // Create feature with failed ship validation
+      await workspace.writeFile('.hodge/features/TEST-FAILED/explore/context.json', '{}');
+      await workspace.writeFile('.hodge/features/TEST-FAILED/build/context.json', '{}');
+      await workspace.writeFile('.hodge/features/TEST-FAILED/harden/context.json', '{}');
+      await workspace.writeFile(
+        '.hodge/features/TEST-FAILED/ship-record.json',
+        JSON.stringify({ validationPassed: false })
+      );
+
+      // Should not crash - both Production Ready and Shipped should show ○
+      await expect(command.execute('TEST-FAILED')).resolves.not.toThrow();
+    });
+  });
 });

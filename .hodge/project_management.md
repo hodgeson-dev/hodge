@@ -216,7 +216,35 @@ HODGE-004 (ID Management)
   - Define test intentions
   - Make architectural decisions
 
+
+
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-30
+- **Updated**: 2025-10-30
+- **Description**: I want to fix the /status AI command to not have "○ Production Ready" when a feature has shipped. Why is this happening? What's the root cause? And how do we fix it?
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
 ## Completed Features
+
+### HODGE-365
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-30
+- **Updated**: 2025-10-30
+- **Description**: I want to fix the /status AI command to not have "○ Production Ready" when a feature has shipped. Why is this happening? What's the root cause? And how do we fix it?
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+- **Completed**: 2025-10-30
+
+
 
 ### HODGE-364
 - **Status**: shipped

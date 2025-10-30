@@ -1,0 +1,39 @@
+{
+  "timestamp": "2025-10-30T06:07:47.849Z",
+  "stagedFiles": [
+    ".hodge/HODGE.md",
+    ".hodge/features/HODGE-365/build/build-plan.md",
+    ".hodge/features/HODGE-365/explore/exploration.md",
+    ".hodge/features/HODGE-365/explore/test-intentions.md",
+    ".hodge/features/HODGE-365/ship-record.json",
+    ".hodge/id-counter.json",
+    ".hodge/id-mappings.json",
+    ".hodge/project_management.md",
+    "src/commands/status.smoke.test.ts",
+    "src/commands/status.ts",
+    "src/lib/claude-commands.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 11,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": "src/commands/status.smoke.test.ts 75ms (unchanged)\nsrc/commands/status.ts 83ms (unchanged)\nsrc/lib/claude-commands.ts 25ms (unchanged)\n",
+      "stderr": "",
+      "duration": 989
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 3,
+      "issuesFixed": 3,
+      "success": true,
+      "stdout": "\n/Users/michaelkelly/Projects/hodge/src/commands/status.smoke.test.ts\n  0:0  warning  File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override\n\n/Users/michaelkelly/Projects/hodge/src/commands/status.ts\n  177:3  warning  Async method 'showOverallStatus' has too many lines (71). Maximum allowed is 50  max-lines-per-function\n  540:8  warning  Complete the task associated to this \"TODO\" comment                              sonarjs/todo-tag\n\n✖ 3 problems (0 errors, 3 warnings)\n\n",
+      "stderr": "",
+      "duration": 4203
+    }
+  ],
+  "totalIssuesFixed": 3,
+  "totalFilesModified": 14,
+  "failures": []
+}
