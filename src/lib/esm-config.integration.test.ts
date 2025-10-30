@@ -25,16 +25,14 @@ describe('ESM Configuration Integration - HODGE-318', () => {
   });
 
   integrationTest('should import ESM modules correctly throughout the codebase', async () => {
+    // HODGE-364: Removed SessionManager import (consolidated into ContextManager)
     // Test that we can dynamically import actual project modules
     const { ContextManager } = await import('../lib/context-manager.js');
-    const { SessionManager } = await import('../lib/session-manager.js');
     const { ConfigManager } = await import('../lib/config-manager.js');
 
     // Verify these are actual constructors/classes
     expect(ContextManager).toBeDefined();
     expect(typeof ContextManager).toBe('function');
-    expect(SessionManager).toBeDefined();
-    expect(typeof SessionManager).toBe('function');
     expect(ConfigManager).toBeDefined();
     expect(typeof ConfigManager).toBe('function');
   });

@@ -33,8 +33,8 @@ describe('[smoke] Test Isolation', () => {
     const beforeTest = execSync('ls -1 .hodge/saves 2>/dev/null || echo ""', { encoding: 'utf8' }).trim();
 
     // Run the specific tests that were fixed for isolation
+    // HODGE-364: Removed session-manager.test.ts (file deleted)
     const testFiles = [
-      'src/lib/session-manager.test.ts',
       'src/lib/__tests__/auto-save.test.ts',
       'src/test/context-aware-commands.test.ts',
       'src/lib/__tests__/context-manager.test.ts'
@@ -62,8 +62,8 @@ describe('[smoke] Test Isolation', () => {
 
   smokeTest('tests should use TempDirectoryFixture for test directories', async () => {
     // Read test files to verify they import TempDirectoryFixture
+    // HODGE-364: Removed session-manager.test.ts (file deleted)
     const testFiles = [
-      'src/lib/session-manager.test.ts',
       'src/test/context-aware-commands.test.ts',
       'src/lib/__tests__/context-manager.test.ts',
     ];
@@ -85,21 +85,5 @@ describe('[smoke] Test Isolation', () => {
     }
   });
 
-  smokeTest('session-manager.test.ts should not write directly to .hodge', async () => {
-    const { readFileSync } = await import('fs');
-    const content = readFileSync('src/lib/session-manager.test.ts', 'utf-8');
-
-    // Check for direct .hodge writes without testDir
-    const lines = content.split('\n');
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      if (
-        line.includes("fs.mkdir('.hodge'") ||
-        line.includes('fs.mkdir(".hodge"') ||
-        (line.includes("await mkdir('.hodge'") && !line.includes('testDir'))
-      ) {
-        throw new Error(`Line ${i + 1} in session-manager.test.ts writes directly to '.hodge'`);
-      }
-    }
-  });
+  // HODGE-364: Removed test for session-manager.test.ts (file deleted as part of SessionManager consolidation)
 });

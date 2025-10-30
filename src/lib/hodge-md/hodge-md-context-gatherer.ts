@@ -5,7 +5,7 @@
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { sessionManager } from '../session-manager.js';
+import { ContextManager } from '../context-manager.js';
 import type { HodgeMDContext } from './types.js';
 
 /**
@@ -29,7 +29,9 @@ export class HodgeMDContextGatherer {
     const recentCommands = await this.getCommandHistory();
     const workingFiles = await this.getWorkingFiles(feature);
     const nextSteps = this.getNextSteps(feature, mode);
-    const session = await sessionManager.load();
+    // HODGE-364: Use ContextManager instead of SessionManager
+    const contextManager = new ContextManager(this.basePath);
+    const context = await contextManager.load();
     const pmIssue = await this.getPMIssue(feature);
 
     return {
@@ -42,7 +44,7 @@ export class HodgeMDContextGatherer {
       workingFiles,
       nextSteps,
       pmIssue,
-      session: session ?? undefined,
+      context: context ?? undefined,
     };
   }
 

@@ -548,3 +548,132 @@ More content here.`
     expect(realPattern).toBeDefined();
   });
 });
+
+/**
+ * Smoke tests for HODGE-364: Session Fallback Removal
+ *
+ * Tests verify:
+ * 1. /hodge with no args loads ONLY global context (no feature context)
+ * 2. /hodge with feature arg loads global + feature context
+ * 3. No session fallback behavior
+ */
+describe('[smoke] ContextCommand - HODGE-364 Session Fallback Removal', () => {
+  /**
+   * Helper to extract YAML from captured output string
+   */
+  const extractYamlFromString = (output: string): string => {
+    const lines = output.split('\n');
+    const startIndex = lines.findIndex((line) => line.trim().startsWith('version:'));
+    if (startIndex === -1) {
+      return '';
+    }
+
+    let endIndex = startIndex;
+    for (let i = startIndex + 1; i < lines.length; i++) {
+      const line = lines[i];
+      if (line.trim() !== '' && !line.match(/^[\s-]*[a-z_]+:/i) && !line.startsWith('  ')) {
+        break;
+      }
+      endIndex = i;
+    }
+
+    return lines.slice(startIndex, endIndex + 1).join('\n');
+  };
+
+  smokeTest('should NOT load feature context when no feature argument provided', async () => {
+    await withTestWorkspace('hodge-364-no-fallback', async (workspace) => {
+      // Create a feature with context
+      await workspace.writeFile('.hodge/features/HODGE-999/explore/exploration.md', '# Test');
+
+      // Create context.json with feature
+      await workspace.writeFile(
+        '.hodge/context.json',
+        JSON.stringify({ feature: 'HODGE-999', mode: 'explore' })
+      );
+
+      // Capture output
+      let capturedOutput = '';
+      const originalLog = console.log;
+      console.log = (msg: string) => {
+        capturedOutput += msg + '\n';
+      };
+
+      try {
+        // Execute without feature argument
+        const command = new ContextCommand(workspace.getPath());
+        await command.execute({});
+
+        // Parse YAML output
+        const yamlOutput = extractYamlFromString(capturedOutput);
+        const manifest = yaml.load(yamlOutput) as ContextManifest;
+
+        // HODGE-364: Should NOT include feature_context when no feature arg
+        expect(manifest.feature_context).toBeUndefined();
+        expect(manifest.global_files).toBeDefined();
+      } finally {
+        console.log = originalLog;
+      }
+    });
+  });
+
+  smokeTest('should load feature context when explicit feature argument provided', async () => {
+    await withTestWorkspace('hodge-364-explicit-feature', async (workspace) => {
+      // Create a feature
+      await workspace.writeFile('.hodge/features/HODGE-999/explore/exploration.md', '# Test');
+
+      // Capture output
+      let capturedOutput = '';
+      const originalLog = console.log;
+      console.log = (msg: string) => {
+        capturedOutput += msg + '\n';
+      };
+
+      try {
+        // Execute WITH feature argument
+        const command = new ContextCommand(workspace.getPath());
+        await command.execute({ feature: 'HODGE-999' });
+
+        // Parse YAML output
+        const yamlOutput = extractYamlFromString(capturedOutput);
+        const manifest = yaml.load(yamlOutput) as ContextManifest;
+
+        // HODGE-364: Should include feature_context when feature arg provided
+        expect(manifest.feature_context).toBeDefined();
+        expect(manifest.feature_context?.feature_id).toBe('HODGE-999');
+        expect(manifest.feature_context?.files.length).toBeGreaterThan(0);
+      } finally {
+        console.log = originalLog;
+      }
+    });
+  });
+
+  smokeTest('should handle missing context.json gracefully', async () => {
+    await withTestWorkspace('hodge-364-no-context', async (workspace) => {
+      // Create .hodge directory but no context.json file
+      await workspace.writeFile('.hodge/.gitkeep', '');
+
+      // Capture output
+      let capturedOutput = '';
+      const originalLog = console.log;
+      console.log = (msg: string) => {
+        capturedOutput += msg + '\n';
+      };
+
+      try {
+        // Execute without feature argument (and no context.json)
+        const command = new ContextCommand(workspace.getPath());
+        await command.execute({});
+
+        // Parse YAML output
+        const yamlOutput = extractYamlFromString(capturedOutput);
+        const manifest = yaml.load(yamlOutput) as ContextManifest;
+
+        // Should load global context only
+        expect(manifest.global_files).toBeDefined();
+        expect(manifest.feature_context).toBeUndefined();
+      } finally {
+        console.log = originalLog;
+      }
+    });
+  });
+});

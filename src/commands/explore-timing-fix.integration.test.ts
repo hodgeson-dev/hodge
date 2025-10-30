@@ -13,7 +13,10 @@ describe('[integration] Explore Command Timing Fix', () => {
   integrationTest('explore command completes successfully', async () => {
     await withTestWorkspace('explore-timing', async (workspace) => {
       // Direct function call - no subprocess
-      const command = new ExploreCommand();
+      // Pass workspace path to ensure proper test isolation
+      const { ExploreService } = await import('../lib/explore-service.js');
+      const exploreService = new ExploreService(workspace.getPath());
+      const command = new ExploreCommand(undefined, exploreService);
       const originalCwd = process.cwd();
 
       try {
@@ -39,7 +42,10 @@ describe('[integration] Explore Command Timing Fix', () => {
   integrationTest('multiple explores complete successfully', async () => {
     await withTestWorkspace('explore-multi-timing', async (workspace) => {
       // Direct function calls - no subprocess
-      const command = new ExploreCommand();
+      // Pass workspace path to ensure proper test isolation
+      const { ExploreService } = await import('../lib/explore-service.js');
+      const exploreService = new ExploreService(workspace.getPath());
+      const command = new ExploreCommand(undefined, exploreService);
       const originalCwd = process.cwd();
 
       try {

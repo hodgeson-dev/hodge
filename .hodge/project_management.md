@@ -203,7 +203,35 @@ HODGE-004 (ID Management)
   - Define test intentions
   - Make architectural decisions
 
+
+
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-29
+- **Updated**: 2025-10-29
+- **Description**: Why did you just load the context for HODGE-363 when the slash command was /hodge (with no feature ID)?
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
 ## Completed Features
+
+### HODGE-364
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-29
+- **Updated**: 2025-10-30
+- **Description**: Why did you just load the context for HODGE-363 when the slash command was /hodge (with no feature ID)?
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+- **Completed**: 2025-10-30
+
+
 
 ### HODGE-363
 - **Status**: shipped

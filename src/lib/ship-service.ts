@@ -26,10 +26,10 @@ export interface ShipRecordData {
 
 /**
  * Metadata backup data structure
+ * HODGE-364: Removed session field (SessionManager consolidated into ContextManager)
  */
 export interface MetadataBackup {
   projectManagement?: string;
-  session?: string;
   context?: string;
 }
 
@@ -181,11 +181,8 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}**Shipped**: ${date}
       backup.projectManagement = await fs.readFile(pmPath, 'utf-8');
     }
 
-    // Backup session file
-    const sessionPath = path.join('.hodge', '.session');
-    if (existsSync(sessionPath)) {
-      backup.session = await fs.readFile(sessionPath, 'utf-8');
-    }
+    // HODGE-364: Removed session file backup (.session no longer used)
+    // Only context.json is backed up now
 
     // Backup context file
     const contextPath = path.join('.hodge', 'context.json');
@@ -208,11 +205,7 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}**Shipped**: ${date}
       await fs.writeFile(pmPath, backup.projectManagement);
     }
 
-    // Restore session file
-    if (backup.session) {
-      const sessionPath = path.join('.hodge', '.session');
-      await fs.writeFile(sessionPath, backup.session);
-    }
+    // HODGE-364: Removed session file restore (.session no longer used)
 
     // Restore context file
     if (backup.context) {

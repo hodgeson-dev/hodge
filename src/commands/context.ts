@@ -3,7 +3,7 @@ import { promises as fs, existsSync } from 'fs';
 import path from 'path';
 import yaml from 'js-yaml';
 import { HodgeMDGenerator } from '../lib/hodge-md-generator.js';
-import { sessionManager } from '../lib/session-manager.js';
+import { ContextManager } from '../lib/context-manager.js';
 import { createCommandLogger } from '../lib/logger.js';
 import { ArchitectureGraphService } from '../lib/architecture-graph-service.js';
 import { PatternMetadataService } from '../lib/pattern-metadata-service.js';
@@ -85,9 +85,9 @@ export class ContextCommand {
   private async generateManifest(featureArg?: string): Promise<void> {
     this.logger.info('Generating context manifest');
 
-    // Determine feature from argument or session
-    const session = await sessionManager.load();
-    const feature = featureArg ?? session?.feature;
+    // HODGE-364: Removed session fallback - only use explicit feature argument
+    // Users expect /hodge with no args to load ONLY global context
+    const feature = featureArg;
 
     // Generate HODGE.md for session state (writes to file for reference)
     await this.hodgeMDGenerator.saveToFile(feature ?? 'general');
@@ -480,11 +480,13 @@ export class ContextCommand {
    */
   private async countTodos(featureArg?: string): Promise<void> {
     try {
+      // HODGE-364: Use ContextManager instead of SessionManager
       // Determine which feature to check
       let feature = featureArg;
       if (!feature) {
-        const session = await sessionManager.load();
-        feature = session?.feature;
+        const contextManager = new ContextManager(this.basePath);
+        const context = await contextManager.load();
+        feature = context?.feature;
       }
 
       if (!feature) {

@@ -2,7 +2,7 @@
  * Type definitions for HODGE.md generation
  */
 
-import type { LightSession } from '../session-manager.js';
+import type { WorkflowContext } from '../context-manager.js';
 
 export interface HodgeMDSection {
   title: string;
@@ -20,5 +20,6 @@ export interface HodgeMDContext {
   workingFiles: string[];
   nextSteps: string[];
   pmIssue?: string;
-  session?: LightSession;
+  // HODGE-364: Replaced LightSession with WorkflowContext
+  context?: WorkflowContext;
 }

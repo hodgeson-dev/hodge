@@ -2632,11 +2632,11 @@ The \`hodge context\` command outputs a YAML manifest containing:
 **AI Instructions:**
 
 1. Parse the YAML manifest output from \`hodge context\`
-2. Read the following files based on manifest:
-   - All **global_files** marked as \`status: available\` (always read these)
+2. **MANDATORY**: Read ALL files marked as \`status: available\` in the manifest:
+   - **MUST READ ALL** global_files with \`status: available\` - NO EXCEPTIONS
+   - **MUST READ ALL** feature_context files with \`status: available\` - NO EXCEPTIONS
    - **patterns** section provides awareness without reading full files (read specific patterns only when needed)
-   - **feature_context** files marked as \`status: available\` (when feature is being worked on)
-   - **architecture_graph** provides codebase overview (reference the .dot file for detailed graph)
+   - Architecture graph (.dot file) provides codebase structure when needed
 
 3. Example Read sequence:
 \`\`\`bash

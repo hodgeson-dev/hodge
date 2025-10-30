@@ -171,7 +171,7 @@ describe('ShipService - HODGE-322 Service Extraction', () => {
     const backup = await service.backupMetadata('test-feature');
 
     expect(backup.projectManagement).toBe('file content');
-    expect(backup.session).toBe('file content');
+    // HODGE-364: Removed session field (no longer backed up)
     expect(backup.context).toBe('file content');
   });
 
@@ -181,27 +181,23 @@ describe('ShipService - HODGE-322 Service Extraction', () => {
     const backup = await service.backupMetadata('test-feature');
 
     expect(backup.projectManagement).toBeUndefined();
-    expect(backup.session).toBeUndefined();
+    // HODGE-364: Removed session field (no longer backed up)
     expect(backup.context).toBeUndefined();
   });
 
   smokeTest('should restore metadata from backup', async () => {
+    // HODGE-364: Removed session field (no longer restored)
     const backup = {
       projectManagement: 'pm content',
-      session: 'session content',
       context: 'context content',
     };
 
     await service.restoreMetadata('test-feature', backup);
 
-    expect(fs.writeFile).toHaveBeenCalledTimes(3);
+    expect(fs.writeFile).toHaveBeenCalledTimes(2);
     expect(fs.writeFile).toHaveBeenCalledWith(
       expect.stringContaining('project_management.md'),
       'pm content'
-    );
-    expect(fs.writeFile).toHaveBeenCalledWith(
-      expect.stringContaining('.session'),
-      'session content'
     );
     expect(fs.writeFile).toHaveBeenCalledWith(
       expect.stringContaining('context.json'),

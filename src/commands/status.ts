@@ -4,7 +4,7 @@ import path from 'path';
 import { existsSync } from 'fs';
 import { execSync } from 'child_process';
 import { glob } from 'glob';
-import { sessionManager } from '../lib/session-manager.js';
+import { ContextManager } from '../lib/context-manager.js';
 import { createCommandLogger } from '../lib/logger.js';
 
 export interface StatusOptions {
@@ -32,12 +32,13 @@ export class StatusCommand {
       await this.showStats();
       return;
     }
-    // Check for existing session first
-    const session = await sessionManager.load();
-    if (session && !feature) {
-      // Non-interactive: just use the session feature if no feature specified
-      feature = session.feature;
-      this.logger.info(chalk.blue(`📂 Showing status for ${session.feature} from session\n`));
+    // HODGE-364: Check for existing context first (replaced SessionManager with ContextManager)
+    const contextManager = new ContextManager();
+    const context = await contextManager.load();
+    if (context?.feature && !feature) {
+      // Non-interactive: just use the context feature if no feature specified
+      feature = context.feature;
+      this.logger.info(chalk.blue(`📂 Showing status for ${context.feature} from context\n`));
     }
 
     if (feature) {
@@ -547,7 +548,7 @@ export class StatusCommand {
     }
 
     // Placeholder: return mock trend for now
-    // TODO: Extract actual coverage from ship records
+    // TODO: [ship] Extract actual coverage from ship records
     return { trend: null, average: 0 };
   }
 }

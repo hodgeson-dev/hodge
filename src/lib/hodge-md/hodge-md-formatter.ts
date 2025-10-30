@@ -61,12 +61,14 @@ export class HodgeMDFormatter {
   }
 
   private createSessionSection(context: HodgeMDContext): HodgeMDSection {
-    if (!context.session) {
+    // HODGE-364: Use WorkflowContext instead of LightSession
+    if (!context.context) {
       return { title: 'Session', content: '', priority: 2 };
     }
 
-    const session = context.session;
-    const age = Date.now() - session.ts;
+    const workflowContext = context.context;
+    const timestamp = workflowContext.timestamp ? new Date(workflowContext.timestamp) : null;
+    const age = timestamp ? Date.now() - timestamp.getTime() : 0;
     const ageMinutes = Math.floor(age / 60000);
     const ageHours = Math.floor(ageMinutes / 60);
 
@@ -78,13 +80,22 @@ export class HodgeMDFormatter {
     const content = [
       '## Current Session',
       '',
-      `**Resumed**: ${ageStr}`,
-      session.summary ? `**Progress**: ${session.summary}` : '',
-      `**Working on**: ${session.feature} (${session.mode} mode)`,
+      timestamp ? `**Resumed**: ${ageStr}` : '',
+      // HODGE-364: summary and nextAction removed (unused fields from old SessionManager)
+      workflowContext.feature
+        ? `**Progress**: Explored ${workflowContext.feature} - template ready for AI approach generation`
+        : '',
+      workflowContext.feature && workflowContext.mode
+        ? `**Working on**: ${workflowContext.feature} (${workflowContext.mode} mode)`
+        : '',
       '',
       '## AI Context Restoration',
-      `You were helping with ${session.feature}. ${session.summary ?? 'Continue from where we left off.'}`,
-      session.nextAction ? `Suggested next: ${session.nextAction}` : '',
+      workflowContext.feature
+        ? `You were helping with ${workflowContext.feature}. Continue from where we left off.`
+        : '',
+      workflowContext.feature && workflowContext.mode
+        ? `Suggested next: Review exploration and decide with 'hodge decide'`
+        : '',
       '',
     ]
       .filter((line) => line !== '')

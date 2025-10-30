@@ -1,0 +1,62 @@
+{
+  "timestamp": "2025-10-29T08:45:41.274Z",
+  "stagedFiles": [
+    ".hodge/.session",
+    ".hodge/HODGE.md",
+    ".hodge/context.json",
+    ".hodge/features/HODGE-364/build/build-plan.md",
+    ".hodge/features/HODGE-364/explore/exploration.md",
+    ".hodge/features/HODGE-364/explore/test-intentions.md",
+    ".hodge/features/HODGE-364/ship-record.json",
+    ".hodge/id-counter.json",
+    ".hodge/id-mappings.json",
+    ".hodge/project_management.md",
+    "src/commands/context.smoke.test.ts",
+    "src/commands/context.ts",
+    "src/commands/status.ts",
+    "src/lib/claude-commands.ts",
+    "src/lib/esm-config.integration.test.ts",
+    "src/lib/explore-service.ts",
+    "src/lib/hodge-md/hodge-md-context-gatherer.ts",
+    "src/lib/hodge-md/hodge-md-formatter.ts",
+    "src/lib/hodge-md/types.ts",
+    "src/lib/session-manager.test.ts",
+    "src/lib/session-manager.ts",
+    "src/lib/ship-service.test.ts",
+    "src/lib/ship-service.ts",
+    "src/test/test-isolation.smoke.test.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 23,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": "src/commands/context.smoke.test.ts 118ms (unchanged)\nsrc/commands/context.ts 61ms (unchanged)\nsrc/commands/status.ts 46ms (unchanged)\nsrc/lib/claude-commands.ts 14ms (unchanged)\nsrc/lib/esm-config.integration.test.ts 8ms (unchanged)\nsrc/lib/explore-service.ts 21ms (unchanged)\nsrc/lib/hodge-md/hodge-md-context-gatherer.ts 25ms (unchanged)\nsrc/lib/hodge-md/hodge-md-formatter.ts 10ms (unchanged)\nsrc/lib/hodge-md/types.ts 3ms (unchanged)\nsrc/lib/ship-service.test.ts 11ms (unchanged)\nsrc/lib/ship-service.ts 22ms (unchanged)\nsrc/test/test-isolation.smoke.test.ts 3ms (unchanged)\n",
+      "stderr": "[error] No files matching the pattern were found: \"src/lib/session-manager.test.ts\".\n[error] No files matching the pattern were found: \"src/lib/session-manager.ts\".\n",
+      "duration": 1074
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 0,
+      "issuesFixed": 0,
+      "success": false,
+      "stdout": "",
+      "stderr": "\nOops! Something went wrong! :(\n\nESLint: 8.57.1\n\nNo files matching the pattern \"src/lib/session-manager.test.ts\" were found.\nPlease check for typing mistakes in the pattern.\n\n",
+      "duration": 4868
+    }
+  ],
+  "totalIssuesFixed": 0,
+  "totalFilesModified": 23,
+  "failures": [
+    {
+      "tool": "eslint",
+      "filesProcessed": 0,
+      "issuesFixed": 0,
+      "success": false,
+      "stdout": "",
+      "stderr": "\nOops! Something went wrong! :(\n\nESLint: 8.57.1\n\nNo files matching the pattern \"src/lib/session-manager.test.ts\" were found.\nPlease check for typing mistakes in the pattern.\n\n",
+      "duration": 4868
+    }
+  ]
+}

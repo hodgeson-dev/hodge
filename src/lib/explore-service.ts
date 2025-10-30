@@ -10,8 +10,7 @@ import { existsSync } from 'fs';
 import { cacheManager } from './cache-manager.js';
 import { FeaturePopulator } from './feature-populator.js';
 import { FeatureSpecLoader } from './feature-spec-loader.js';
-import { sessionManager } from './session-manager.js';
-import { contextManager } from './context-manager.js';
+import { ContextManager } from './context-manager.js';
 import type { FeatureID } from './id-manager.js';
 
 // Type definitions
@@ -80,6 +79,11 @@ export interface ExploreServiceOptions {
  */
 export class ExploreService {
   private cache = cacheManager;
+  private contextManager: ContextManager;
+
+  constructor(basePath?: string) {
+    this.contextManager = new ContextManager(basePath);
+  }
 
   /**
    * Handle from-spec mode (create feature from YAML specification)
@@ -103,9 +107,8 @@ export class ExploreService {
 
     await populator.populateFromDecisions(finalFeatureName, decisions, metadata);
 
-    // Update session context
-    await sessionManager.updateContext(finalFeatureName, 'explore');
-    await sessionManager.suggestNext('Complete exploration and make decisions');
+    // HODGE-364: Update context with ContextManager (removed SessionManager)
+    await this.contextManager.updateForCommand('explore', finalFeatureName, 'explore');
 
     return {
       success: true,
@@ -123,9 +126,8 @@ export class ExploreService {
     const populator = new FeaturePopulator();
     await populator.populateFromDecisions(featureName, decisions);
 
-    // Update session context
-    await sessionManager.updateContext(featureName, 'explore');
-    await sessionManager.suggestNext('Complete exploration and make decisions');
+    // HODGE-364: Update context with ContextManager (removed SessionManager)
+    await this.contextManager.updateForCommand('explore', featureName, 'explore');
 
     return {
       success: true,
@@ -162,7 +164,7 @@ export class ExploreService {
 
     return {
       exists: true,
-      content: content || undefined,
+      content: content ?? undefined,
       shouldContinue: false,
     };
   }
@@ -359,25 +361,20 @@ export class ExploreService {
     await fs.writeFile(path.join(exploreDir, 'test-intentions.md'), testIntentions);
 
     // Write issue ID file if we have one
-    if (pmIssue?.id || featureID?.externalID) {
-      const issueId = pmIssue?.id || featureID?.externalID || '';
+    if (pmIssue?.id ?? featureID?.externalID) {
+      const issueId = pmIssue?.id ?? featureID?.externalID ?? '';
       const featureDir = path.join('.hodge', 'features', featureName);
       await fs.writeFile(path.join(featureDir, 'issue-id.txt'), issueId);
     }
   }
 
   /**
-   * Update session and context managers
+   * Update context manager (HODGE-364: Consolidated from SessionManager + ContextManager)
    */
   async updateSession(featureName: string, _executionTime: number): Promise<void> {
-    await sessionManager.updateContext(featureName, 'explore');
-    await sessionManager.addCommand(`hodge explore ${featureName}`);
-    await sessionManager.setSummary(
-      `Explored ${featureName} - template ready for AI approach generation`
-    );
-    await sessionManager.suggestNext(`Review exploration and decide with 'hodge decide'`);
-
-    await contextManager.updateForCommand('explore', featureName, 'explore');
+    // HODGE-364: Removed SessionManager calls (updateContext, addCommand, setSummary, suggestNext)
+    // These fields were unused - only ContextManager state is consumed by workflow commands
+    await this.contextManager.updateForCommand('explore', featureName, 'explore');
   }
 
   /**
