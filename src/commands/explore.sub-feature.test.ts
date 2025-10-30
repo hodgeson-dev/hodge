@@ -8,6 +8,7 @@ import { smokeTest, integrationTest } from '../test/helpers.js';
 import { withTestWorkspace } from '../test/runners.js';
 import { ExploreCommand } from './explore.js';
 import { IDManager } from '../lib/id-manager.js';
+import { ExploreService } from '../lib/explore-service.js';
 
 describe('ExploreCommand - Sub-Feature Support', () => {
   // ============================================
@@ -16,7 +17,8 @@ describe('ExploreCommand - Sub-Feature Support', () => {
   describe('Smoke Tests', () => {
     smokeTest('should not crash when exploring new HODGE-prefixed feature', async () => {
       await withTestWorkspace('sub-feature-smoke', async (workspace) => {
-        const command = new ExploreCommand();
+        const exploreService = new ExploreService(workspace.getPath());
+        const command = new ExploreCommand(undefined, exploreService);
         const originalCwd = process.cwd();
         try {
           process.chdir(workspace.getPath());
@@ -31,7 +33,8 @@ describe('ExploreCommand - Sub-Feature Support', () => {
 
     smokeTest('should create directory for new HODGE-prefixed feature', async () => {
       await withTestWorkspace('sub-feature-dir', async (workspace) => {
-        const command = new ExploreCommand();
+        const exploreService = new ExploreService(workspace.getPath());
+        const command = new ExploreCommand(undefined, exploreService);
         const originalCwd = process.cwd();
         try {
           process.chdir(workspace.getPath());
@@ -53,7 +56,8 @@ describe('ExploreCommand - Sub-Feature Support', () => {
   describe('Integration Tests', () => {
     integrationTest('should create sub-feature exploration structure', async () => {
       await withTestWorkspace('sub-feature-structure', async (workspace) => {
-        const command = new ExploreCommand();
+        const exploreService = new ExploreService(workspace.getPath());
+        const command = new ExploreCommand(undefined, exploreService);
         const originalCwd = process.cwd();
         try {
           process.chdir(workspace.getPath());
@@ -81,7 +85,8 @@ describe('ExploreCommand - Sub-Feature Support', () => {
     integrationTest('should register new HODGE-prefixed feature in ID mappings', async () => {
       await withTestWorkspace('sub-feature-id-mapping', async (workspace) => {
         const idManager = new IDManager();
-        const command = new ExploreCommand(idManager);
+        const exploreService = new ExploreService(workspace.getPath());
+        const command = new ExploreCommand(idManager, exploreService);
         const originalCwd = process.cwd();
         try {
           process.chdir(workspace.getPath());
@@ -101,7 +106,8 @@ describe('ExploreCommand - Sub-Feature Support', () => {
 
     integrationTest('should handle numeric sub-feature notation', async () => {
       await withTestWorkspace('numeric-sub-feature', async (workspace) => {
-        const command = new ExploreCommand();
+        const exploreService = new ExploreService(workspace.getPath());
+        const command = new ExploreCommand(undefined, exploreService);
         const originalCwd = process.cwd();
         try {
           process.chdir(workspace.getPath());
@@ -125,7 +131,8 @@ describe('ExploreCommand - Sub-Feature Support', () => {
       'should preserve exploration templates for HODGE-prefixed features',
       async () => {
         await withTestWorkspace('sub-feature-template', async (workspace) => {
-          const command = new ExploreCommand();
+          const exploreService = new ExploreService(workspace.getPath());
+          const command = new ExploreCommand(undefined, exploreService);
           const originalCwd = process.cwd();
           try {
             process.chdir(workspace.getPath());

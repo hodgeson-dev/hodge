@@ -45,6 +45,7 @@ logs/
 
 # Hodge runtime files
 .hodge/context.md
+.hodge/context.json
 .hodge/session.json
 .hodge/temp/
 .hodge/review-profiles/
