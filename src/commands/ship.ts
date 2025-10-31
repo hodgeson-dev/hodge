@@ -13,12 +13,7 @@ import type { ToolRegistry } from '../types/toolchain.js';
 
 export interface ShipOptions {
   skipTests?: boolean;
-  message?: string;
-  noCommit?: boolean;
-  noInteractive?: boolean;
-  yes?: boolean;
-  edit?: boolean;
-  dryRun?: boolean;
+  message: string; // Required - commit message must be provided
 }
 
 export class ShipCommand {
@@ -33,7 +28,7 @@ export class ShipCommand {
     this.shipService = new ShipService(this.basePath);
   }
 
-  async execute(feature?: string, options: ShipOptions = {}): Promise<void> {
+  async execute(feature: string | undefined, options: ShipOptions): Promise<void> {
     // Get feature from argument or context
     const resolvedFeature = await contextManager.getFeature(feature);
 
@@ -89,13 +84,8 @@ export class ShipCommand {
 
     if (!qualityResults) return; // Quality gates failed
 
-    // Resolve commit message
-    const commitMessage = await this.resolveAndDisplayCommitMessage(
-      feature,
-      issueId,
-      options.message,
-      options.noInteractive
-    );
+    // Resolve commit message (directly from required --message flag)
+    const commitMessage = this.resolveAndDisplayCommitMessage(options.message);
 
     // Create ship record and artifacts
     const shipDir = await this.createShipRecordAndArtifacts(
@@ -110,15 +100,8 @@ export class ShipCommand {
     // Display ship summary
     this.displayShipSummary(feature, issueId, results, qualityResults.length);
 
-    // Complete post-ship operations
-    await this.completePostShipOperations(
-      feature,
-      commitMessage,
-      pmTool,
-      issueId,
-      options.noCommit ?? false,
-      shipDir
-    );
+    // Complete post-ship operations (always creates commit)
+    await this.completePostShipOperations(feature, commitMessage, pmTool, issueId, shipDir);
   }
 
   /**
@@ -155,28 +138,12 @@ export class ShipCommand {
 
   /**
    * Resolve commit message and display status
-   * HODGE-359.1: Extracted from execute method for Boy Scout Rule compliance
+   * HODGE-369: Simplified to use direct message (no InteractionStateManager)
    */
-  private async resolveAndDisplayCommitMessage(
-    feature: string,
-    issueId: string | null,
-    messageOption?: string,
-    noInteractive?: boolean
-  ): Promise<string> {
-    const { message: commitMessage, wasEdited } = await this.shipService.resolveCommitMessage(
-      feature,
-      issueId,
-      messageOption,
-      noInteractive
-    );
+  private resolveAndDisplayCommitMessage(message: string): string {
+    const commitMessage = this.shipService.resolveCommitMessage(message);
 
-    if (wasEdited) {
-      this.logger.info(chalk.green('   ✓ Using edited commit message from slash command'));
-    } else if (!messageOption) {
-      this.logger.warn(
-        chalk.yellow('⚠️  Using default commit message (no message from slash command)')
-      );
-    }
+    this.logger.info(chalk.green('   ✓ Using commit message from --message flag'));
 
     return commitMessage;
   }
@@ -233,14 +200,13 @@ export class ShipCommand {
 
   /**
    * Complete post-ship operations (pattern learning, PM updates, git commit)
-   * HODGE-359.1: Extracted from execute method for Boy Scout Rule compliance
+   * HODGE-369: Always creates commit (removed --no-commit option)
    */
   private async completePostShipOperations(
     feature: string,
     commitMessage: string,
     pmTool: string | null,
     issueId: string | null,
-    noCommit: boolean,
     shipDir: string
   ): Promise<void> {
     // Success message
@@ -276,12 +242,8 @@ export class ShipCommand {
     // HODGE-220: Backup metadata before updates for rollback on failure
     const metadataBackup = await this.shipService.backupMetadata(feature);
 
-    // Create git commit (unless --no-commit flag is used)
-    if (!noCommit) {
-      await this.createGitCommit(commitMessage, feature, metadataBackup);
-    } else {
-      this.displayManualCommitSteps(commitMessage);
-    }
+    // Create git commit (always - removed --no-commit option)
+    await this.createGitCommit(commitMessage, feature, metadataBackup);
 
     this.logger.info('');
     this.logger.info(chalk.gray('Ship record saved to: ' + shipDir));
@@ -339,18 +301,6 @@ export class ShipCommand {
     this.logger.info('  4. Create release tag if needed');
     this.logger.info('  5. Monitor production metrics');
     this.logger.info('  6. Gather user feedback');
-  }
-
-  /**
-   * Display manual commit steps when --no-commit is used
-   */
-  private displayManualCommitSteps(commitMessage: string): void {
-    this.logger.info(chalk.bold('\nNext Steps:'));
-    this.logger.info('  1. Stage changes: git add .');
-    this.logger.info(`  2. Commit: git commit -m "${commitMessage.split('\n')[0]}"`);
-    this.logger.info('  3. Push to remote: git push');
-    this.logger.info('  4. Create release tag if needed');
-    this.logger.info('  5. Monitor production metrics');
   }
 
   /**

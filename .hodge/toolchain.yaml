@@ -74,13 +74,14 @@ commands:
       - linting
       - complexity
       - code_smells
-    # --format compact: One issue per line (file:line:col: message)
+    # --format compact: One issue per line (file: line X, col Y, Level - message)
     # More concise than default 'stylish' format
     # ESLint with sonarjs plugin provides linting, complexity, and code smell checks
     # --fix: Auto-fix issues (HODGE-341.6)
     # HODGE-359.1: Regex patterns for structured error/warning extraction
-    error_pattern: '^.+:\d+:\d+:\s+error\s+'
-    warning_pattern: '^.+:\d+:\d+:\s+warning\s+'
+    # Pattern captures entire line: file path + location + level + message
+    error_pattern: '^.+:\s+line\s+\d+,\s+col\s+\d+,\s+Error\s+-\s+.+$'
+    warning_pattern: '^.+:\s+line\s+\d+,\s+col\s+\d+,\s+Warning\s+-\s+.+$'
   vitest:
     command: NODE_ENV=test npx vitest run --reporter=dot --silent=passed-only
     provides:

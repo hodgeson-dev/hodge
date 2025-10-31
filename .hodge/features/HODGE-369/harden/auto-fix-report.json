@@ -1,0 +1,55 @@
+{
+  "timestamp": "2025-10-31T10:40:00.293Z",
+  "stagedFiles": [
+    ".claude/commands/ship.md",
+    ".hodge/HODGE.md",
+    ".hodge/features/HODGE-369/build/build-plan.md",
+    ".hodge/features/HODGE-369/explore/exploration.md",
+    ".hodge/features/HODGE-369/explore/test-intentions.md",
+    ".hodge/features/HODGE-369/ship-record.json",
+    ".hodge/id-counter.json",
+    ".hodge/id-mappings.json",
+    ".hodge/project_management.md",
+    "src/bin/hodge.ts",
+    "src/commands/ship-commit-messages.integration.test.ts",
+    "src/commands/ship-commit-messages.smoke.test.ts",
+    "src/commands/ship.integration.test.ts",
+    "src/commands/ship.smoke.test.ts",
+    "src/commands/ship.ts",
+    "src/lib/interaction-state.ts",
+    "src/lib/ship-service.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 17,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": "src/bin/hodge.ts 74ms (unchanged)\nsrc/commands/ship.smoke.test.ts 9ms (unchanged)\nsrc/commands/ship.ts 67ms\nsrc/lib/ship-service.ts 23ms (unchanged)\n",
+      "stderr": "[error] No files matching the pattern were found: \"src/commands/ship-commit-messages.integration.test.ts\".\n[error] No files matching the pattern were found: \"src/commands/ship-commit-messages.smoke.test.ts\".\n[error] No files matching the pattern were found: \"src/commands/ship.integration.test.ts\".\n[error] No files matching the pattern were found: \"src/lib/interaction-state.ts\".\n",
+      "duration": 1191
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 0,
+      "issuesFixed": 0,
+      "success": false,
+      "stdout": "",
+      "stderr": "\nOops! Something went wrong! :(\n\nESLint: 8.57.1\n\nNo files matching the pattern \"src/commands/ship-commit-messages.integration.test.ts\" were found.\nPlease check for typing mistakes in the pattern.\n\n",
+      "duration": 4072
+    }
+  ],
+  "totalIssuesFixed": 0,
+  "totalFilesModified": 17,
+  "failures": [
+    {
+      "tool": "eslint",
+      "filesProcessed": 0,
+      "issuesFixed": 0,
+      "success": false,
+      "stdout": "",
+      "stderr": "\nOops! Something went wrong! :(\n\nESLint: 8.57.1\n\nNo files matching the pattern \"src/commands/ship-commit-messages.integration.test.ts\" were found.\nPlease check for typing mistakes in the pattern.\n\n",
+      "duration": 4072
+    }
+  ]
+}

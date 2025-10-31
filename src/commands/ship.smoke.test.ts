@@ -3,8 +3,8 @@ import { smokeTest } from '../test/helpers.js';
 import { withTestWorkspace } from '../test/runners.js';
 
 describe('Ship Command - Smoke Tests', () => {
-  smokeTest('should not crash when executed without state', async () => {
-    await withTestWorkspace('ship-no-state', async (workspace) => {
+  smokeTest('should require commit message via -m flag', async () => {
+    await withTestWorkspace('ship-requires-message', async (workspace) => {
       // Initialize git repo
       await workspace.run('git init');
       await workspace.run('git config user.email "test@example.com"');
@@ -13,38 +13,13 @@ describe('Ship Command - Smoke Tests', () => {
       await workspace.run('git add .');
       await workspace.run('git commit -m "initial"');
 
-      // Run ship command - should not crash even without pre-approved message
-      await workspace.hodge('ship test-feature --yes --skip-tests');
+      // Run ship command with required message flag
+      await workspace.hodge('ship test-feature -m "ship: test feature" --skip-tests');
     });
   });
 
-  smokeTest('should detect and use pre-approved message from state', async () => {
-    await withTestWorkspace('ship-with-state', async (workspace) => {
-      // Create pre-approved state file
-      const state = {
-        command: 'ship',
-        feature: 'test-feature',
-        status: 'edited',
-        timestamp: new Date().toISOString(),
-        environment: 'Claude Code',
-        data: {
-          edited: 'fix: streamline ship workflow\n\nPre-approved message from slash command',
-          suggested: 'ship: test-feature',
-        },
-        history: [
-          {
-            timestamp: new Date().toISOString(),
-            type: 'edit',
-            data: 'User approved via slash command',
-          },
-        ],
-      };
-
-      await workspace.writeFile(
-        '.hodge/temp/ship-interaction/test-feature/state.json',
-        JSON.stringify(state, null, 2)
-      );
-
+  smokeTest('should accept commit message via -m flag', async () => {
+    await withTestWorkspace('ship-with-message', async (workspace) => {
       // Initialize git repo
       await workspace.run('git init');
       await workspace.run('git config user.email "test@example.com"');
@@ -53,8 +28,8 @@ describe('Ship Command - Smoke Tests', () => {
       await workspace.run('git add .');
       await workspace.run('git commit -m "initial"');
 
-      // Command should use the pre-approved message
-      await workspace.hodge('ship test-feature --yes --skip-tests');
+      // Command should use the provided message
+      await workspace.hodge('ship test-feature -m "fix: streamline ship workflow" --skip-tests');
     });
   });
 
@@ -76,19 +51,13 @@ describe('Ship Command - Smoke Tests', () => {
       await workspace.run('git add .');
       await workspace.run('git commit -m "initial"');
 
-      // Even without state, should not prompt for input
-      await workspace.hodge('ship test-feature --yes --skip-tests');
+      // Non-interactive with required message
+      await workspace.hodge('ship test-feature -m "ship: test feature" --skip-tests');
     });
   });
 
-  smokeTest('should handle corrupted state files gracefully', async () => {
-    await withTestWorkspace('ship-corrupted-state', async (workspace) => {
-      // Create corrupted state file
-      await workspace.writeFile(
-        '.hodge/temp/ship-interaction/test-feature/state.json',
-        'not valid json { corrupted'
-      );
-
+  smokeTest('should not leave temporary interaction state files', async () => {
+    await withTestWorkspace('ship-no-temp-files', async (workspace) => {
       // Initialize git repo
       await workspace.run('git init');
       await workspace.run('git config user.email "test@example.com"');
@@ -97,13 +66,19 @@ describe('Ship Command - Smoke Tests', () => {
       await workspace.run('git add .');
       await workspace.run('git commit -m "initial"');
 
-      // Should not crash with corrupted state
-      await workspace.hodge('ship test-feature --yes --skip-tests');
+      // Ship with message
+      await workspace.hodge('ship test-feature -m "ship: test feature" --skip-tests');
+
+      // Verify no interaction state directory exists
+      const tempDir = await workspace.exists('.hodge/temp/ship-interaction');
+      if (tempDir) {
+        throw new Error('Unexpected: interaction state directory should not exist');
+      }
     });
   });
 
-  smokeTest('should be non-interactive by default (no prompts allowed)', async () => {
-    await withTestWorkspace('ship-no-prompts', async (workspace) => {
+  smokeTest('should always create git commit', async () => {
+    await withTestWorkspace('ship-always-commits', async (workspace) => {
       // Initialize git repo with main branch
       await workspace.run('git init');
       await workspace.run('git config user.email "test@example.com"');
@@ -115,8 +90,8 @@ describe('Ship Command - Smoke Tests', () => {
       await workspace.run('git add .');
       await workspace.run('git commit -m "feature"');
 
-      // Ship should complete without any prompts (since all hodge commands are non-interactive)
-      await workspace.hodge('ship test-feature --yes --skip-tests');
+      // Ship always creates commit (no --no-commit option)
+      await workspace.hodge('ship test-feature -m "ship: test feature" --skip-tests');
     });
   });
 });

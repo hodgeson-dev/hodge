@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync, writeFileSync, mkdirSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { execSync } from 'child_process';
 import { TempDirectoryFixture } from '../test/temp-directory-fixture.js';
@@ -281,8 +281,8 @@ describe('[smoke] ship.md template - --skip-tests parameter support (HODGE-361)'
   it('should pass skip_tests_flag variable to hodge ship commands', () => {
     const shipTemplate = readFileSync(join(__dirname, '../../.claude/commands/ship.md'), 'utf-8');
 
-    // Check both locations where hodge ship is called
-    expect(shipTemplate).toContain('hodge ship "$feature" $skip_tests_flag');
+    // Check hodge ship is called with skip_tests_flag (after -m flag per HODGE-369)
+    expect(shipTemplate).toContain('hodge ship "$feature" -m "$commit_message" $skip_tests_flag');
   });
 
   it('should document --skip-tests usage in troubleshooting section', () => {

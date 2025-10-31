@@ -1,7 +1,7 @@
 # Learned Patterns Summary
 
 ## Statistics
-- Total patterns detected: 3
+- Total patterns detected: 4
 - High confidence patterns: 0
 - Most frequent category: performance
 
@@ -17,8 +17,12 @@
 - **Input Validation** (1x, 20% confidence)
 
 
+### Error-handling
+- **Error Boundary** (1x, 20% confidence)
+
+
 ## Recommendations
 - Consider using Caching Strategy pattern (used 3 times)
 
 ---
-*Generated: 2025-10-31T09:39:59.414Z*
+*Generated: 2025-10-31T11:14:05.222Z*

@@ -453,49 +453,14 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}**Shipped**: ${date}
   }
 
   /**
-   * Get commit message from interaction state or use default
-   * @param feature - Feature name
-   * @param issueId - PM issue ID (optional)
-   * @param providedMessage - Message from options (optional)
-   * @param noInteractive - Skip interaction state check
-   * @returns Commit message and whether it was edited
+   * Resolve commit message
+   * HODGE-369: Simplified to require message via CLI flag (no InteractionStateManager)
+   * @param message - Commit message (required)
+   * @returns Resolved commit message
    */
-  async resolveCommitMessage(
-    feature: string,
-    issueId: string | null,
-    providedMessage?: string,
-    noInteractive?: boolean
-  ): Promise<{ message: string; wasEdited: boolean }> {
-    // Use provided message if available
-    if (providedMessage) {
-      return { message: providedMessage, wasEdited: false };
-    }
-
-    // Check interaction state unless disabled
-    if (!noInteractive) {
-      const { InteractionStateManager } = await import('./interaction-state.js');
-      const interactionManager = new InteractionStateManager<{ edited?: string }>('ship', feature);
-      const existingState = await interactionManager.load();
-
-      if (existingState?.data.edited) {
-        const message = existingState.data.edited;
-        // Clean up interaction files after use
-        await interactionManager.cleanup();
-        return { message, wasEdited: true };
-      }
-    }
-
-    // Fallback to default message
-    const closesLine = issueId ? ` (closes ${issueId})` : '';
-    const closesFooter = issueId ? `\n- Closes ${issueId}` : '';
-    const message =
-      `ship: ${feature}${closesLine}\n\n` +
-      `- Implementation complete\n` +
-      `- Tests passing\n` +
-      `- Documentation updated` +
-      closesFooter;
-
-    return { message, wasEdited: false };
+  resolveCommitMessage(message: string): string {
+    // Message is always provided via required --message flag
+    return message;
   }
 
   /**

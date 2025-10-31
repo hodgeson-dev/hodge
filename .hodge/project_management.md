@@ -320,7 +320,35 @@ HODGE-004 (ID Management)
   - Define test intentions
   - Make architectural decisions
 
+
+
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-31
+- **Updated**: 2025-10-31
+- **Description**: The `hodge ship` command has the following options. Other than "--help", the command should not be used interactively by users. This command is ONLY intended to be used by AI slash commands. Review all AI slash commands in .claude/commands to determin what parameters are actually being used, then remove support for an unused options, remove tests for those options, and remove any resulting orphaned code.
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
 ## Completed Features
+
+### HODGE-369
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-31
+- **Updated**: 2025-10-31
+- **Description**: The `hodge ship` command has the following options. Other than "--help", the command should not be used interactively by users. This command is ONLY intended to be used by AI slash commands. Review all AI slash commands in .claude/commands to determin what parameters are actually being used, then remove support for an unused options, remove tests for those options, and remove any resulting orphaned code.
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+- **Completed**: 2025-10-31
+
+
 
 ### HODGE-366
 - **Status**: shipped

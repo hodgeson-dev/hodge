@@ -4,7 +4,9 @@ import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
+// eslint-disable-next-line @typescript-eslint/naming-convention -- Required for ESM compatibility
 const __filename = fileURLToPath(import.meta.url);
+// eslint-disable-next-line @typescript-eslint/naming-convention -- Required for ESM compatibility
 const __dirname = dirname(__filename);
 
 interface PackageJson {
@@ -158,31 +160,13 @@ const shipCmd = program
   .command('ship [feature]')
   .description('[Internal] Ship a feature (uses current context if not specified)')
   .option('--skip-tests', 'Skip test execution (not recommended)')
-  .option('-m, --message <message>', 'Custom commit message')
-  .option('--no-commit', 'Skip automatic git commit')
-  .option('--no-interactive', 'Disable interactive prompts')
-  .option('-y, --yes', 'Accept all defaults')
-  .option('--dry-run', 'Preview without making changes')
-  .option('--push', 'Push to remote after shipping')
-  .option('--no-push', 'Do not push to remote')
-  .option('--push-branch <branch>', 'Push to specific branch')
-  .option('--force-push', 'Force push (use with caution)')
-  .option('--continue-push', 'Continue push from saved review')
+  .requiredOption('-m, --message <message>', 'Commit message (required)')
   .action(
     async (
       feature: string | undefined,
       options: {
         skipTests?: boolean;
-        message?: string;
-        noCommit?: boolean;
-        noInteractive?: boolean;
-        yes?: boolean;
-        dryRun?: boolean;
-        push?: boolean;
-        noPush?: boolean;
-        pushBranch?: string;
-        forcePush?: boolean;
-        continuePush?: boolean;
+        message: string;
       }
     ) => {
       const { ShipCommand } = await import('../commands/ship.js');
