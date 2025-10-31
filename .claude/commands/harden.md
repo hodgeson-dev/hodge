@@ -233,19 +233,26 @@ Remaining:
   ○ Assess Findings
   ○ Generate Review Report
 
-### Step 4: Load Context Files (MANDATORY)
+### Step 4: Load Context Files (MANDATORY - NO EXCEPTIONS)
 
-**IMPORTANT**: You MUST load the context files listed in review-manifest.yaml before conducting your review. These files define the standards you're reviewing against.
+**CRITICAL**: You MUST load ALL context files listed in review-manifest.yaml before conducting your review. These files define the standards you're reviewing against.
+
+**⚠️ DO NOT SKIP LOADING PROFILES**:
+- Review profiles are compressed YAML format (~1-2KB each)
+- They contain essential best practices for the tech stack
+- Skipping them results in incomplete/incorrect reviews
+- Token budget is 200K - profiles typically use <5K tokens total
+- If you consider skipping due to tokens, CHECK YOUR REMAINING BUDGET FIRST
 
 #### Step 4a: Parse the Manifest
 
 Identify which files to load from the review-manifest.yaml you read in Step 2.
 
-**For ALL tiers**, load:
+**For ALL tiers**, load (NO EXCEPTIONS):
 1. `.hodge/standards.md` (from `project_standards.path`)
 2. `.hodge/principles.md` (from `project_principles.path`)
-3. Each file in `matched_patterns.files[]` (prepend `.hodge/patterns/`)
-4. Each file in `matched_profiles.files[]` (prepend `.hodge/review-profiles/`)
+3. **EVERY file** in `matched_patterns.files[]` (prepend `.hodge/patterns/`)
+4. **EVERY file** in `matched_profiles.files[]` (prepend `.hodge/review-profiles/`)
 
 **For FULL tier ONLY**, also load:
 5. `.hodge/decisions.md` (from `project_decisions.path`)
@@ -280,15 +287,22 @@ Read: .hodge/decisions.md  # (FULL tier only)
 
 **Note**: Extract the file list from YOUR review-manifest.yaml. Don't hardcode these paths - they change per feature.
 
-#### Step 4c: Verification Checklist
+#### Step 4c: Verification Checklist (BLOCKER - Must Complete)
 
-Before proceeding to Step 5, confirm you loaded:
-- [ ] standards.md
-- [ ] principles.md
-- [ ] All files from `matched_patterns.files[]`
-- [ ] All files from `matched_profiles.files[]`
-- [ ] (FULL only) decisions.md
-- [ ] (FULL only) All files from `lessons_learned.files[]`
+**STOP! Before proceeding to Step 5, you MUST confirm you loaded ALL files:**
+
+✅ **Required for ALL tiers**:
+- [ ] standards.md - LOADED
+- [ ] principles.md - LOADED
+- [ ] All files from `matched_patterns.files[]` - COUNT: ___ files LOADED
+- [ ] **All files from `matched_profiles.files[]`** - COUNT: ___ files LOADED ⚠️ NEVER SKIP
+
+✅ **Required for FULL tier only**:
+- [ ] decisions.md - LOADED (or N/A if not FULL tier)
+- [ ] All files from `lessons_learned.files[]` - COUNT: ___ files LOADED (or N/A if not FULL tier)
+
+**If you cannot check ALL boxes above, DO NOT PROCEED to Step 5.**
+**Go back and load the missing files. NO EXCEPTIONS.**
 
 **Precedence Rules** (when conflicts arise):
 1. **standards.md** = HIGHEST - Always takes precedence
@@ -315,13 +329,17 @@ Remaining:
 
 ### Step 5: Conduct AI Code Review
 
+**⚠️ PREREQUISITE CHECK**: Did you complete Step 4c verification checklist?
+- If NO, return to Step 4 immediately
+- If YES, proceed with review
+
 **Review Strategy**: Use the context files you loaded in Step 4 to assess the code.
 
-**How to apply context during review**:
+**How to apply context during review** (in order of precedence):
 1. **Check standards.md first** - Does code violate any project standards?
 2. **Apply principles.md** - Does code align with project philosophy?
 3. **Reference patterns/** - Does code follow established patterns?
-4. **Consider profiles/** - Does code follow language/framework best practices?
+4. **Apply profiles/** - Does code follow language/framework best practices? ⚠️ YOU LOADED THESE IN STEP 4
 5. **Learn from lessons/** (FULL tier) - Have we made this mistake before?
 
 **For HODGE-360 Risk-Based Review**:
@@ -347,16 +365,22 @@ Remaining:
 
 Before moving to Step 6, confirm you actually USED the context files:
 
-**Self-Check Questions**:
-- Did I reference specific standards from standards.md in my findings?
-- Did I check for Test Isolation violations (mandatory standard)?
-- Did I apply progressive enforcement rules based on current phase?
-- Did I consider precedence when conflicts arose?
-- Can I cite which standard/profile each issue violates?
+**Self-Check Questions** (ALL must be YES):
+- [ ] Did I reference specific standards from standards.md in my findings?
+- [ ] Did I check for Test Isolation violations (mandatory standard)?
+- [ ] Did I apply progressive enforcement rules based on current phase?
+- [ ] **Did I apply review profiles to check language/framework best practices?** ⚠️ CRITICAL
+- [ ] Did I consider precedence when conflicts arose?
+- [ ] Can I cite which standard/profile each issue violates in my review report?
 
-**If you can't answer YES to these questions, return to Step 4 and re-load context.**
+**If you answered NO to ANY question above:**
+1. Return to Step 4 and re-load the context files you missed
+2. Re-conduct your review with ALL context applied
+3. DO NOT proceed to Step 6
 
-The purpose of loading context is to APPLY it, not just read it.
+**The purpose of loading context is to APPLY it, not just read it.**
+
+**Specific Profile Check**: Look at your review report draft - does it reference any of the profiles you loaded? If not, you didn't actually apply them. Go back and review against profile rules.
 
 ────────────────────────────────────────────────────────────
 📍 Step 6 of 7: Assess Review Findings

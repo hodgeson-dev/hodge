@@ -3918,49 +3918,18 @@ c) Cancel - Stop the ship process
 ### Based on User Choice:
 
 **If (a) Approve:**
-Save the message to the interaction state and proceed with shipping.
+Run ship with the approved message passed directly via the \`-m\` flag.
 
-Use the Write tool to save the approved message to both ui.md AND state.json (Write tool creates parent directories automatically):
-
-**Write to:** \`.hodge/temp/ship-interaction/{{feature}}/ui.md\`
-\`\`\`markdown
-# Ship Commit - {{feature}}
-
-## Approved Commit Message
-
-\`\`\`
-[The approved commit message]
-\`\`\`
-\`\`\`
-
-**Write to:** \`.hodge/temp/ship-interaction/{{feature}}/state.json\`
-\`\`\`json
-{
-  "command": "ship",
-  "feature": "{{feature}}",
-  "status": "edited",
-  "timestamp": "{{current_iso_timestamp}}",
-  "environment": "Claude Code",
-  "data": {
-    "edited": "[The approved commit message]",
-    "suggested": "[Original suggested message if available]"
-  },
-  "history": [
-    {
-      "timestamp": "{{current_iso_timestamp}}",
-      "type": "edit",
-      "data": "User approved message via slash command"
-    }
-  ]
-}
-\`\`\`
-
-**Important**: Replace \`{{feature}}\` and \`{{current_iso_timestamp}}\` with actual values, and insert the actual approved commit message in the appropriate locations.
-
-Finally, run ship with the message (it will detect and use the edited state):
+Store the commit message in a shell variable (escape quotes properly):
 \`\`\`bash
-hodge ship "$feature" $skip_tests_flag
+# HODGE-369: Pass message directly via -m flag (no interaction state files)
+commit_message="[The approved commit message - properly escaped]"
+
+# Run ship with message
+hodge ship "$feature" -m "$commit_message" $skip_tests_flag
 \`\`\`
+
+**Important**: When setting \`commit_message\`, ensure proper escaping of quotes and special characters. Multi-line messages should preserve newlines using \`$'...'\` syntax if needed.
 
 **If (r) Regenerate:**
 Return to Step 2 and create a different version of the commit message, varying:
@@ -3975,47 +3944,17 @@ Please provide your edited commit message:
 (Paste the complete message below)
 \`\`\`
 
-Then use the Write tool to save their edited version to state files (Write tool creates parent directories automatically):
+Then run ship with the user's edited message passed directly via the \`-m\` flag:
 
-**Write to:** \`.hodge/temp/ship-interaction/{{feature}}/ui.md\`
-\`\`\`markdown
-# Ship Commit - {{feature}}
-
-## Edited Commit Message
-
-\`\`\`
-[User's edited commit message]
-\`\`\`
-\`\`\`
-
-**Write to:** \`.hodge/temp/ship-interaction/{{feature}}/state.json\`
-\`\`\`json
-{
-  "command": "ship",
-  "feature": "{{feature}}",
-  "status": "edited",
-  "timestamp": "{{current_iso_timestamp}}",
-  "environment": "Claude Code",
-  "data": {
-    "edited": "[User's edited commit message]",
-    "suggested": "[Original suggested message]"
-  },
-  "history": [
-    {
-      "timestamp": "{{current_iso_timestamp}}",
-      "type": "edit",
-      "data": "User provided custom message via slash command"
-    }
-  ]
-}
-\`\`\`
-
-**Important**: Replace \`{{feature}}\` and \`{{current_iso_timestamp}}\` with actual values, and insert the user's actual edited commit message.
-
-Finally, run ship with the edited message:
 \`\`\`bash
-hodge ship "$feature" $skip_tests_flag
+# HODGE-369: Pass user's edited message directly via -m flag
+commit_message="[User's edited commit message - properly escaped]"
+
+# Run ship with edited message
+hodge ship "$feature" -m "$commit_message" $skip_tests_flag
 \`\`\`
+
+**Important**: When setting \`commit_message\`, ensure proper escaping of quotes and special characters. Multi-line messages should preserve newlines using \`$'...'\` syntax if needed.
 
 **If (c) Cancel:**
 \`\`\`bash

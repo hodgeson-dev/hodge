@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import fs from 'fs/promises';
 import path from 'path';
-import { contextManager } from '../lib/context-manager.js';
+import { ContextManager } from '../lib/context-manager.js';
 import { PMHooks } from '../lib/pm/pm-hooks.js';
 import { ShipService } from '../lib/ship-service.js';
 import type { LearningResult } from '../lib/pattern-learner.js';
@@ -20,17 +20,19 @@ export class ShipCommand {
   private logger = createCommandLogger('ship', { enableConsole: true });
   private pmHooks: PMHooks;
   private shipService: ShipService;
+  private contextManager: ContextManager;
   private readonly basePath: string;
 
   constructor(basePath?: string) {
     this.basePath = basePath ?? process.cwd();
+    this.contextManager = new ContextManager(this.basePath);
     this.pmHooks = new PMHooks(this.basePath);
     this.shipService = new ShipService(this.basePath);
   }
 
   async execute(feature: string | undefined, options: ShipOptions): Promise<void> {
     // Get feature from argument or context
-    const resolvedFeature = await contextManager.getFeature(feature);
+    const resolvedFeature = await this.contextManager.getFeature(feature);
 
     if (!resolvedFeature) {
       throw new Error(
@@ -42,7 +44,7 @@ export class ShipCommand {
     feature = resolvedFeature;
 
     // Update context for this command
-    await contextManager.updateForCommand('ship', feature, 'ship');
+    await this.contextManager.updateForCommand('ship', feature, 'ship');
 
     this.logger.info(chalk.green('🚀 Entering Ship Mode'));
     this.logger.info(chalk.gray(`Feature: ${feature}\n`));

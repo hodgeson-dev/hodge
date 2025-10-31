@@ -26,7 +26,7 @@ export class ContextManager {
   private readonly contextPath: string;
 
   constructor(basePath?: string) {
-    this.basePath = basePath || process.cwd();
+    this.basePath = basePath ?? process.cwd();
     this.contextPath = join(this.basePath, '.hodge', 'context.json');
   }
 
@@ -60,7 +60,7 @@ export class ContextManager {
       }
 
       // Load existing context and merge
-      const existing = (await this.load()) || {};
+      const existing = (await this.load()) ?? {};
       const updated: WorkflowContext = {
         ...existing,
         ...context,
@@ -100,7 +100,7 @@ export class ContextManager {
 
     // Try to load from context
     const context = await this.load();
-    return context?.feature || null;
+    return context?.feature ?? null;
   }
 
   /**
@@ -126,6 +126,3 @@ export class ContextManager {
     await this.save(updates);
   }
 }
-
-// Singleton instance for the application
-export const contextManager = new ContextManager();

@@ -7,7 +7,7 @@ import chalk from 'chalk';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { existsSync } from 'fs';
-import { contextManager } from '../lib/context-manager.js';
+import { ContextManager } from '../lib/context-manager.js';
 import { PMHooks } from '../lib/pm/pm-hooks.js';
 import { createCommandLogger } from '../lib/logger.js';
 import { ReviewManifestGenerator } from '../lib/review-manifest-generator.js';
@@ -37,16 +37,22 @@ export interface HardenOptions {
  * HardenCommand orchestrates feature hardening workflow
  */
 export class HardenCommand {
-  private pmHooks = new PMHooks();
+  private pmHooks: PMHooks;
   private logger = createCommandLogger('harden', { enableConsole: true });
-  private shipService = new ShipService();
+  private shipService: ShipService;
+  private contextManager: ContextManager;
   private reviewEngineService: ReviewEngineService;
   private validator: HardenValidator;
   private reportGenerator: QualityReportGenerator;
   private reviewHandler: HardenReview;
   private autoFixHandler: HardenAutoFix;
 
-  constructor() {
+  constructor(basePath: string = process.cwd()) {
+    // Initialize context-aware services
+    this.contextManager = new ContextManager(basePath);
+    this.pmHooks = new PMHooks(basePath);
+    this.shipService = new ShipService(basePath);
+
     // Initialize services
     const manifestGenerator = new ReviewManifestGenerator();
     const toolchainService = new ToolchainService();
@@ -76,7 +82,7 @@ export class HardenCommand {
     const startTime = Date.now();
 
     // Get feature from argument or context
-    const resolvedFeature = await contextManager.getFeature(feature);
+    const resolvedFeature = await this.contextManager.getFeature(feature);
 
     if (!resolvedFeature) {
       throw new Error(
@@ -88,7 +94,7 @@ export class HardenCommand {
     feature = resolvedFeature;
 
     // Update context for this command
-    await contextManager.updateForCommand('harden', feature, 'harden');
+    await this.contextManager.updateForCommand('harden', feature, 'harden');
 
     // Validate inputs
     if (!feature || typeof feature !== 'string') {

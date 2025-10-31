@@ -423,6 +423,41 @@ it('test', async () => {
 
 **Rationale**: Eliminates timing bugs that caused persistent test flakiness (HODGE-341.5). Pattern includes UUID naming, retry logic, and operation verification.
 
+#### Command and Service Instantiation in Tests (HODGE-370)
+**Enforcement: ALL PHASES (mandatory)**
+**⚠️ CRITICAL**: ALL Command and Service instantiations in tests MUST use TempDirectoryFixture.
+
+**Required Pattern**:
+```typescript
+// ✅ CORRECT: Even for method-existence tests
+smokeTest('PMHooks should have createPMIssue method', async () => {
+  const fixture = new TempDirectoryFixture();
+  const testDir = await fixture.setup();
+
+  const pmHooks = new PMHooks(testDir);
+  expect(pmHooks.createPMIssue).toBeDefined();
+
+  await fixture.cleanup();
+});
+```
+
+**Forbidden Pattern**:
+```typescript
+// ❌ FORBIDDEN: Using process.cwd() even for non-file operations
+smokeTest('PMHooks should have createPMIssue method', () => {
+  const pmHooks = new PMHooks(process.cwd());
+  expect(pmHooks.createPMIssue).toBeDefined();
+});
+```
+
+**Why This Matters**:
+- **Future-proof**: If tests are modified later to add file operations, they're already isolated
+- **Consistent**: Same pattern everywhere, no exceptions to remember
+- **Safer**: Eliminates ANY possibility of project contamination
+- **Prevents anti-pattern**: Avoids "this test is simple, we don't need isolation" thinking
+
+**Rationale**: HODGE-370 discovered that even simple method-existence tests should use temp directories for consistency and future-proofing. This prevents the gradual erosion of test isolation standards.
+
 ### Subprocess Spawning Ban (HODGE-317.1 + HODGE-319.1)
 **Enforcement: ALL PHASES (mandatory)**
 **⚠️ CRITICAL**: Tests must NEVER spawn subprocesses using `execSync()`, `spawn()`, or `exec()`.

@@ -1,0 +1,51 @@
+{
+  "timestamp": "2025-10-31T12:38:46.840Z",
+  "stagedFiles": [
+    ".eslintrc.json",
+    ".hodge/HODGE.md",
+    ".hodge/features/HODGE-367/explore/exploration.md",
+    ".hodge/features/HODGE-368/explore/exploration.md",
+    ".hodge/features/HODGE-368/explore/test-intentions.md",
+    ".hodge/features/HODGE-368/issue-id.txt",
+    ".hodge/features/HODGE-370/build/build-plan.md",
+    ".hodge/features/HODGE-370/explore/exploration.md",
+    ".hodge/features/HODGE-370/explore/test-intentions.md",
+    ".hodge/features/HODGE-370/ship-record.json",
+    ".hodge/features/HODGE-555.5/explore/exploration.md",
+    ".hodge/features/HODGE-555.5/explore/test-intentions.md",
+    ".hodge/id-counter.json",
+    ".hodge/id-mappings.json",
+    ".hodge/project_management.md",
+    ".hodge/standards.md",
+    "src/commands/build.ts",
+    "src/commands/harden.ts",
+    "src/commands/ship.ts",
+    "src/lib/claude-commands.ts",
+    "src/lib/context-manager.smoke.test.ts",
+    "src/lib/context-manager.ts",
+    "test/pm-integration.smoke.test.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 22,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": "src/commands/build.ts 90ms (unchanged)\nsrc/commands/harden.ts 46ms (unchanged)\nsrc/commands/ship.ts 39ms (unchanged)\nsrc/lib/claude-commands.ts 12ms (unchanged)\nsrc/lib/context-manager.smoke.test.ts 5ms (unchanged)\nsrc/lib/context-manager.ts 5ms (unchanged)\ntest/pm-integration.smoke.test.ts 11ms (unchanged)\n",
+      "stderr": "[error] No files matching the pattern were found: \".hodge/features/HODGE-367/explore/exploration.md\".\n[error] No files matching the pattern were found: \".hodge/features/HODGE-368/explore/exploration.md\".\n[error] No files matching the pattern were found: \".hodge/features/HODGE-368/explore/test-intentions.md\".\n[error] No files matching the pattern were found: \".hodge/features/HODGE-555.5/explore/exploration.md\".\n[error] No files matching the pattern were found: \".hodge/features/HODGE-555.5/explore/test-intentions.md\".\n",
+      "duration": 1085
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 7,
+      "issuesFixed": 42,
+      "success": true,
+      "stdout": "\n/Users/michaelkelly/Projects/hodge/src/commands/build.ts\n   43:3   warning  Async method 'execute' has too many lines (142). Maximum allowed is 50                                     max-lines-per-function\n  175:76  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  187:11  warning  Unnecessary conditional, value is always truthy                                                            @typescript-eslint/no-unnecessary-condition\n  358:3   warning  Async method 'validatePrerequisites' has too many lines (51). Maximum allowed is 50                        max-lines-per-function\n\n/Users/michaelkelly/Projects/hodge/src/commands/ship.ts\n  241:10  warning  Complete the task associated to this \"TODO\" comment  sonarjs/todo-tag\n\n/Users/michaelkelly/Projects/hodge/src/lib/context-manager.smoke.test.ts\n  18:3   error    Unsafe call of an `any` typed value                  @typescript-eslint/no-unsafe-call\n  18:3   error    Unsafe call of an `any` typed value                  @typescript-eslint/no-unsafe-call\n  18:26  warning  Unsafe member access .toBeDefined on an `any` value  @typescript-eslint/no-unsafe-member-access\n  28:3   error    Unsafe call of an `any` typed value                  @typescript-eslint/no-unsafe-call\n  28:3   error    Unsafe call of an `any` typed value                  @typescript-eslint/no-unsafe-call\n  28:24  warning  Unsafe member access .toBeDefined on an `any` value  @typescript-eslint/no-unsafe-member-access\n  29:3   error    Unsafe call of an `any` typed value                  @typescript-eslint/no-unsafe-call\n  29:3   error    Unsafe call of an `any` typed value                  @typescript-eslint/no-unsafe-call\n  29:39  warning  Unsafe member access .toBe on an `any` value         @typescript-eslint/no-unsafe-member-access\n  39:3   error    Unsafe call of an `any` typed value                  @typescript-eslint/no-unsafe-call\n  39:3   error    Unsafe call of an `any` typed value                  @typescript-eslint/no-unsafe-call\n  39:25  warning  Unsafe member access .toBeDefined on an `any` value  @typescript-eslint/no-unsafe-member-access\n  40:3   error    Unsafe call of an `any` typed value                  @typescript-eslint/no-unsafe-call\n  40:3   error    Unsafe call of an `any` typed value                  @typescript-eslint/no-unsafe-call\n  40:40  warning  Unsafe member access .toBe on an `any` value         @typescript-eslint/no-unsafe-member-access\n  50:3   error    Unsafe call of an `any` typed value                  @typescript-eslint/no-unsafe-call\n  50:3   error    Unsafe call of an `any` typed value                  @typescript-eslint/no-unsafe-call\n  50:23  warning  Unsafe member access .toBeDefined on an `any` value  @typescript-eslint/no-unsafe-member-access\n  51:3   error    Unsafe call of an `any` typed value                  @typescript-eslint/no-unsafe-call\n  51:3   error    Unsafe call of an `any` typed value                  @typescript-eslint/no-unsafe-call\n  51:38  warning  Unsafe member access .toBe on an `any` value         @typescript-eslint/no-unsafe-member-access\n  67:3   error    Unsafe call of an `any` typed value                  @typescript-eslint/no-unsafe-call\n  67:3   error    Unsafe call of an `any` typed value                  @typescript-eslint/no-unsafe-call\n  67:23  warning  Unsafe member access .toBeDefined on an `any` value  @typescript-eslint/no-unsafe-member-access\n  68:3   error    Unsafe call of an `any` typed value                  @typescript-eslint/no-unsafe-call\n  68:3   error    Unsafe call of an `any` typed value                  @typescript-eslint/no-unsafe-call\n  68:23  warning  Unsafe member access .toContain on an `any` value    @typescript-eslint/no-unsafe-member-access\n  90:3   error    Unsafe call of an `any` typed value                  @typescript-eslint/no-unsafe-call\n  90:3   error    Unsafe call of an `any` typed value                  @typescript-eslint/no-unsafe-call\n  90:28  warning  Unsafe member access .toBe on an `any` value         @typescript-eslint/no-unsafe-member-access\n  91:3   error    Unsafe call of an `any` typed value                  @typescript-eslint/no-unsafe-call\n  91:3   error    Unsafe call of an `any` typed value                  @typescript-eslint/no-unsafe-call\n  91:28  warning  Unsafe member access .toBe on an `any` value         @typescript-eslint/no-unsafe-member-access\n\n/Users/michaelkelly/Projects/hodge/src/lib/context-manager.ts\n   29:30  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n   63:44  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  103:29  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n\n/Users/michaelkelly/Projects/hodge/test/pm-integration.smoke.test.ts\n  0:0  error  Parsing error: ESLint was configured to run on `<tsconfigRootDir>/test/pm-integration.smoke.test.ts` using `parserOptions.project`: /users/michaelkelly/projects/hodge/tsconfig.json\nHowever, that TSConfig does not include this file. Either:\n- Change ESLint's list of included files to not include this file\n- Change that TSConfig to include this file\n- Create a new TSConfig that includes this file and include it in your parserOptions.project\nSee the typescript-eslint docs for more info: https://typescript-eslint.io/linting/troubleshooting#i-get-errors-telling-me-eslint-was-configured-to-run--however-that-tsconfig-does-not--none-of-those-tsconfigs-include-this-file\n\n✖ 42 problems (23 errors, 19 warnings)\n\n",
+      "stderr": "",
+      "duration": 4095
+    }
+  ],
+  "totalIssuesFixed": 42,
+  "totalFilesModified": 29,
+  "failures": []
+}

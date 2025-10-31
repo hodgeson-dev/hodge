@@ -16,29 +16,49 @@ import { TempDirectoryFixture } from '../src/test/temp-directory-fixture';
 import fs from 'fs/promises';
 import path from 'path';
 
-smokeTest('PMHooks should have createPMIssue method', () => {
-  const pmHooks = new PMHooks();
+smokeTest('PMHooks should have createPMIssue method', async () => {
+  const fixture = new TempDirectoryFixture();
+  const testDir = await fixture.setup();
+
+  const pmHooks = new PMHooks(testDir);
   expect(pmHooks.createPMIssue).toBeDefined();
   expect(typeof pmHooks.createPMIssue).toBe('function');
+
+  await fixture.cleanup();
 });
 
-smokeTest('PMHooks should have processQueue method', () => {
-  const pmHooks = new PMHooks();
+smokeTest('PMHooks should have processQueue method', async () => {
+  const fixture = new TempDirectoryFixture();
+  const testDir = await fixture.setup();
+
+  const pmHooks = new PMHooks(testDir);
   expect(pmHooks.processQueue).toBeDefined();
   expect(typeof pmHooks.processQueue).toBe('function');
+
+  await fixture.cleanup();
 });
 
-smokeTest('DecideCommand should be properly instantiated', () => {
-  const decideCommand = new DecideCommand();
+smokeTest('DecideCommand should be properly instantiated', async () => {
+  const fixture = new TempDirectoryFixture();
+  const testDir = await fixture.setup();
+
+  const decideCommand = new DecideCommand(testDir);
   expect(decideCommand).toBeDefined();
   expect(typeof decideCommand.execute).toBe('function');
+
+  await fixture.cleanup();
 });
 
 smokeTest('PlanCommand should handle epic breakdown', async () => {
   const { PlanCommand } = await import('../src/commands/plan');
-  const planCommand = new PlanCommand();
+  const fixture = new TempDirectoryFixture();
+  const testDir = await fixture.setup();
+
+  const planCommand = new PlanCommand(testDir);
   expect(planCommand).toBeDefined();
   expect(typeof planCommand.execute).toBe('function');
+
+  await fixture.cleanup();
 });
 
 smokeTest('IDManager should support parent/child relationships', async () => {
@@ -84,7 +104,10 @@ smokeTest('IDManager should create sub-issue IDs in HODGE-XXX.Y format', async (
 });
 
 smokeTest('PMHooks createPMIssue should handle epic with sub-issues', async () => {
-  const pmHooks = new PMHooks();
+  const fixture = new TempDirectoryFixture();
+  const testDir = await fixture.setup();
+
+  const pmHooks = new PMHooks(testDir);
 
   // Mock environment to have no PM tool (to avoid real API calls)
   const originalPmTool = process.env.HODGE_PM_TOOL;
@@ -109,6 +132,8 @@ smokeTest('PMHooks createPMIssue should handle epic with sub-issues', async () =
   if (originalPmTool) {
     process.env.HODGE_PM_TOOL = originalPmTool;
   }
+
+  await fixture.cleanup();
 });
 
 smokeTest(

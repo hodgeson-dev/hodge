@@ -1,0 +1,179 @@
+version: '1.0'
+feature: HODGE-370
+generated_at: '2025-10-31T13:19:46.452Z'
+recommended_tier: full
+change_analysis:
+  total_files: 18
+  total_lines: 1140
+  breakdown:
+    implementation: 8
+    test: 2
+    documentation: 6
+    config: 2
+changed_files:
+  - path: .eslintrc.json
+    lines_changed: 12
+    change_type: implementation
+  - path: .hodge/HODGE.md
+    lines_changed: 28
+    change_type: documentation
+  - path: .hodge/features/HODGE-370/build/build-plan.md
+    lines_changed: 46
+    change_type: documentation
+  - path: .hodge/features/HODGE-370/explore/exploration.md
+    lines_changed: 279
+    change_type: documentation
+  - path: .hodge/features/HODGE-370/explore/test-intentions.md
+    lines_changed: 27
+    change_type: documentation
+  - path: .hodge/features/HODGE-370/ship-record.json
+    lines_changed: 11
+    change_type: implementation
+  - path: .hodge/id-counter.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/id-mappings.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/project_management.md
+    lines_changed: 13
+    change_type: documentation
+  - path: .hodge/standards.md
+    lines_changed: 35
+    change_type: documentation
+  - path: src/commands/build.ts
+    lines_changed: 417
+    change_type: implementation
+  - path: src/commands/harden.ts
+    lines_changed: 18
+    change_type: implementation
+  - path: src/commands/ship.ts
+    lines_changed: 8
+    change_type: implementation
+  - path: src/lib/claude-commands.ts
+    lines_changed: 91
+    change_type: implementation
+  - path: src/lib/context-manager.smoke.test.ts
+    lines_changed: 95
+    change_type: test
+  - path: src/lib/context-manager.ts
+    lines_changed: 9
+    change_type: implementation
+  - path: test/pm-integration.smoke.test.ts
+    lines_changed: 41
+    change_type: test
+  - path: tsconfig.json
+    lines_changed: 2
+    change_type: config
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - test-pattern.md
+      - error-boundary.md
+      - input-validation.md
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - testing/vitest-3.x.yaml
+      - testing/general-test-standards.yaml
+      - languages/typescript-5.x.yaml
+      - languages/general-coding-standards.yaml
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed
+scope:
+  type: feature
+  target: HODGE-370
+  fileCount: 18
+critical_files:
+  algorithm: risk-weighted-v1.0
+  total_files: 18
+  top_n: 10
+  files:
+    - path: test/pm-integration.smoke.test.ts
+      rank: 1
+      score: 6996
+      risk_factors:
+        - 1 blocker issue
+        - 277 warnings
+        - test file (lower priority)
+    - path: src/lib/context-manager.smoke.test.ts
+      rank: 2
+      score: 873
+      risk_factors:
+        - 33 warnings
+        - new file
+        - test file (lower priority)
+    - path: .hodge/features/HODGE-370/explore/exploration.md
+      rank: 3
+      score: 100
+      risk_factors:
+        - large change (279 lines)
+        - new file
+    - path: .hodge/features/HODGE-370/build/build-plan.md
+      rank: 4
+      score: 73
+      risk_factors:
+        - new file
+    - path: src/lib/claude-commands.ts
+      rank: 5
+      score: 71
+      risk_factors:
+        - 1 warning
+    - path: .hodge/standards.md
+      rank: 6
+      score: 68
+      risk_factors:
+        - new file
+    - path: .hodge/features/HODGE-370/explore/test-intentions.md
+      rank: 7
+      score: 64
+      risk_factors:
+        - new file
+    - path: .hodge/project_management.md
+      rank: 8
+      score: 57
+      risk_factors:
+        - new file
+    - path: .hodge/features/HODGE-370/ship-record.json
+      rank: 9
+      score: 56
+      risk_factors:
+        - new file
+    - path: .hodge/id-mappings.json
+      rank: 10
+      score: 52
+      risk_factors:
+        - new file

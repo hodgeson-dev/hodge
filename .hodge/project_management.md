@@ -333,7 +333,35 @@ HODGE-004 (ID Management)
   - Define test intentions
   - Make architectural decisions
 
+
+
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-31
+- **Updated**: 2025-10-31
+- **Description**: Complete remaining test isolation fixes from HODGE-366
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
 ## Completed Features
+
+### HODGE-370
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-31
+- **Updated**: 2025-10-31
+- **Description**: Complete remaining test isolation fixes from HODGE-366
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+- **Completed**: 2025-10-31
+
+
 
 ### HODGE-369
 - **Status**: shipped

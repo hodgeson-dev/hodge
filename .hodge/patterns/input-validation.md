@@ -1,20 +1,18 @@
 # Input Validation
 
 **Category**: security
-**Frequency**: Used 4 times
-**Confidence**: 80%
+**Frequency**: Used 3 times
+**Confidence**: 60%
 
 ## Description
 Input validation before processing
 
 ## Examples
 
-### src/commands/context.ts
+### src/commands/build.ts
 ```typescript
-if (!feature) {
-        this.logger.error(chalk.red('No feature specified and no active session found'));
-        this.logger.info('Usage: hodge context --todos [--feature HODGE-XXX]');
-        throw 
+if (!resolvedFeature) {
+      throw new Error
 ```
 
 
@@ -38,5 +36,5 @@ if (!resolvedFeature) {
 - 
 
 ---
-*First seen: 2025-10-29T01:19:59.140Z*
-*Last used: 2025-10-29T01:19:59.150Z*
+*First seen: 2025-10-31T13:45:21.501Z*
+*Last used: 2025-10-31T13:45:21.503Z*
