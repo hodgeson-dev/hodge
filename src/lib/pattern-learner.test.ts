@@ -95,8 +95,10 @@ describe('PatternLearner', () => {
       const validationPattern = result.patterns.find((p) => p.name === 'Input Validation');
       expect(validationPattern).toBeDefined();
 
-      // Should save patterns
-      expect(mockMkdir).toHaveBeenCalledWith('.hodge/patterns', { recursive: true });
+      // Should save patterns (now uses absolute paths with basePath)
+      expect(mockMkdir).toHaveBeenCalledWith(expect.stringContaining('.hodge/patterns'), {
+        recursive: true,
+      });
       expect(mockWriteFile).toHaveBeenCalled();
     });
 

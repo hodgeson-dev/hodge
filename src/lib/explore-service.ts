@@ -80,9 +80,11 @@ export interface ExploreServiceOptions {
 export class ExploreService {
   private cache = cacheManager;
   private contextManager: ContextManager;
+  private readonly basePath: string;
 
   constructor(basePath?: string) {
-    this.contextManager = new ContextManager(basePath);
+    this.basePath = basePath ?? process.cwd();
+    this.contextManager = new ContextManager(this.basePath);
   }
 
   /**
@@ -286,7 +288,7 @@ export class ExploreService {
     return this.cache.getOrLoad(
       `similar:${feature}`,
       async () => {
-        const featuresDir = path.join('.hodge', 'features');
+        const featuresDir = path.join(this.basePath, '.hodge', 'features');
         if (!existsSync(featuresDir)) {
           return [];
         }
@@ -363,7 +365,7 @@ export class ExploreService {
     // Write issue ID file if we have one
     if (pmIssue?.id ?? featureID?.externalID) {
       const issueId = pmIssue?.id ?? featureID?.externalID ?? '';
-      const featureDir = path.join('.hodge', 'features', featureName);
+      const featureDir = path.join(this.basePath, '.hodge', 'features', featureName);
       await fs.writeFile(path.join(featureDir, 'issue-id.txt'), issueId);
     }
   }

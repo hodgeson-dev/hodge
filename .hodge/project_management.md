@@ -229,7 +229,113 @@ HODGE-004 (ID Management)
   - Define test intentions
   - Make architectural decisions
 
+
+
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-30
+- **Updated**: 2025-10-30
+- **Description**: The context.json contains "feature": "HODGE-001". I believe this comes from a lack of test isolation in: * /Users/michaelkelly/Projects/hodge/src/commands/explore.new-style.test.ts * /Users/michaelkelly/Projects/hodge/src/lib/id-manager.test.ts * /Users/michaelkelly/Projects/hodge/test/pm-integration.smoke.test.ts  Investigate test isolation in these tests, fix any issues there, and search for other tests using the same flawed testing strategy.
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-333.2
+- **Status**: exploring
+- **Priority**: TBD
+- **Created**: 2025-10-31
+- **Updated**: 2025-10-31
+- **Description**: HODGE-333.2
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-367
+- **Status**: exploring
+- **Priority**: TBD
+- **Created**: 2025-10-31
+- **Updated**: 2025-10-31
+- **Description**: parent-feature
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-333.1
+- **Status**: exploring
+- **Priority**: TBD
+- **Created**: 2025-10-31
+- **Updated**: 2025-10-31
+- **Description**: HODGE-333.1
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-333.3
+- **Status**: exploring
+- **Priority**: TBD
+- **Created**: 2025-10-31
+- **Updated**: 2025-10-31
+- **Description**: HODGE-333.3
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-555.5
+- **Status**: exploring
+- **Priority**: TBD
+- **Created**: 2025-10-31
+- **Updated**: 2025-10-31
+- **Description**: HODGE-555.5
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-368
+- **Status**: exploring
+- **Priority**: TBD
+- **Created**: 2025-10-31
+- **Updated**: 2025-10-31
+- **Description**: HOD-123
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
 ## Completed Features
+
+### HODGE-366
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-30
+- **Updated**: 2025-10-31
+- **Description**: The context.json contains "feature": "HODGE-001". I believe this comes from a lack of test isolation in: * /Users/michaelkelly/Projects/hodge/src/commands/explore.new-style.test.ts * /Users/michaelkelly/Projects/hodge/src/lib/id-manager.test.ts * /Users/michaelkelly/Projects/hodge/test/pm-integration.smoke.test.ts  Investigate test isolation in these tests, fix any issues there, and search for other tests using the same flawed testing strategy.
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+- **Completed**: 2025-10-31
+
+
 
 ### HODGE-365
 - **Status**: shipped

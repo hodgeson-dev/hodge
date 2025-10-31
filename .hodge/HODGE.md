@@ -3,15 +3,15 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: general
-**Mode**: explore
-**Last Updated**: 2025-10-30T03:44:12.231Z
+**Feature**: HODGE-366
+**Mode**: harden
+**Last Updated**: 2025-10-31T09:35:49.167Z
 ## Current Session
-**Resumed**: 1 hours ago
-**Progress**: Explored HODGE-364 - template ready for AI approach generation
-**Working on**: HODGE-364 (ship mode)
+**Resumed**: 2 minutes ago
+**Progress**: Explored test-feature - template ready for AI approach generation
+**Working on**: test-feature (ship mode)
 ## AI Context Restoration
-You were helping with HODGE-364. Continue from where we left off.
+You were helping with test-feature. Continue from where we left off.
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
@@ -258,11 +258,17 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - Full test coverage required
 - Performance benchmarks met
 
+## Working Files
+
+- `.hodge/features/HODGE-366/explore/exploration.md`
+- `.hodge/features/HODGE-366/explore/test-intentions.md`
+- `.hodge/features/HODGE-366/build/build-plan.md`
+
 ## Next Steps
 
-1. Review exploration approaches
-2. Make decision with `hodge decide`
-3. Start building with `hodge build general`
+1. Fix all linting issues
+2. Ensure 100% test coverage
+3. Ship with `hodge ship HODGE-366`
 
 
 ---

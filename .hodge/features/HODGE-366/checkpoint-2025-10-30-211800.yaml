@@ -1,0 +1,56 @@
+timestamp: 2025-10-31T04:17:56Z
+phase: build
+featureId: HODGE-366
+summary: 'Constructor injection pattern implemented, but scope expanded - more services need basePath'
+
+progress:
+  - 'Created test-isolation.smoke.test.ts - proves contamination problem (3/3 passing)'
+  - 'Modified ExploreCommand to accept basePath parameter (3rd param for backward compatibility)'
+  - 'Propagated basePath to 4 services: IDManager, ExploreService, PMHooks, SubFeatureContextService'
+  - 'Partially fixed explore.new-style.test.ts (removed process.chdir calls)'
+  - 'Established constructor injection pattern for test isolation'
+
+decisions:
+  - 'Use minimal surgical approach vs comprehensive 30+ file rewrite'
+  - 'Place basePath as 3rd constructor parameter to maintain backward compatibility'
+  - 'Services cascade basePath through their dependencies'
+  - 'Discovered scope is larger than initial exploration estimated'
+
+blockers:
+  - 'Tests still contaminate project directory - more services need basePath'
+  - 'PatternLearner uses hardcoded relative path .hodge/patterns'
+  - 'CacheManager (cacheManager, standardsCache) likely uses process.cwd()'
+  - 'Python script to fix test files broke syntax (try/finally removal too aggressive)'
+  - '2 of 3 smoke tests in explore.new-style.test.ts still failing'
+
+nextSteps:
+  - 'Audit ALL services instantiated in ExploreCommand for process.cwd() usage'
+  - 'Add basePath to PatternLearner constructor'
+  - 'Check if CacheManager needs basePath parameter'
+  - 'Manually fix explore.new-style.test.ts (avoid automated sed/python approaches)'
+  - 'Complete remaining 5 test files: id-manager.test.ts, pm-integration.smoke.test.ts, explore.sub-feature.test.ts, explore-timing-fix.integration.test.ts, ship.integration.test.ts'
+  - 'Add ESLint rule: no process.chdir() in test files'
+  - 'Update standards.md with basePath parameter pattern documentation'
+
+context:
+  filesModified:
+    - 'src/test/test-isolation.smoke.test.ts'
+    - 'src/commands/explore.ts'
+    - 'src/commands/explore.new-style.test.ts'
+  testResults:
+    isolationTest: '3/3 passing'
+    exploreTests: '1/3 passing, 2 failing due to contamination'
+  servicesFixed: ['IDManager', 'ExploreService', 'PMHooks', 'SubFeatureContextService']
+  servicesNeedingFix: ['PatternLearner', 'CacheManager (potentially)', 'Others TBD']
+  testFilesRemaining: 6
+  conversationHighlights: |
+    Deep dive revealed the dependency chain is more complex than exploration estimated.
+    The "several layers deep" problem manifests as utility services (caches, pattern learners)
+    that aren't directly passed to commands but get instantiated with process.cwd() defaults.
+
+    Original exploration plan was sound (constructor injection) but underestimated the number
+    of services in the chain. This is a good lesson about progressive discovery - sometimes
+    you don't know the full scope until you start implementing.
+
+    Recommended approach: Complete the service cascade systematically rather than trying
+    shortcuts like sed/python scripts which proved fragile.

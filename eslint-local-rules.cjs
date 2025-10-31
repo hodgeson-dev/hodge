@@ -4,12 +4,56 @@
  * These rules are project-specific and NOT published to npm.
  * They enforce patterns discovered through production issues.
  *
- * Context: HODGE-341.5 - Fixed persistent timeout issues caused by Date.now()
+ * Context:
+ * - HODGE-341.5 - Fixed persistent timeout issues caused by Date.now()
+ * - HODGE-366 - Fixed test isolation violations from process.chdir()
  */
 
 'use strict';
 
 module.exports = {
+  'no-process-chdir-in-tests': {
+    meta: {
+      type: 'problem',
+      docs: {
+        description: 'Disallow process.chdir() in test files to ensure test isolation',
+        category: 'Best Practices',
+        recommended: true,
+      },
+      messages: {
+        noProcessChdir:
+          'Avoid process.chdir() in tests. Use basePath parameter in command constructors instead to ensure proper test isolation and prevent race conditions in parallel execution.',
+      },
+      schema: [],
+    },
+
+    create(context) {
+      // Only apply to test files
+      const filename = context.getFilename();
+      const isTestFile = /\.(test|spec)\.ts$/.test(filename) || filename.includes('/test/');
+
+      if (!isTestFile) {
+        return {};
+      }
+
+      return {
+        // Detect: process.chdir()
+        CallExpression(node) {
+          if (
+            node.callee.type === 'MemberExpression' &&
+            node.callee.object.name === 'process' &&
+            node.callee.property.name === 'chdir'
+          ) {
+            context.report({
+              node,
+              messageId: 'noProcessChdir',
+            });
+          }
+        },
+      };
+    },
+  },
+
   'no-date-now-in-tests': {
     meta: {
       type: 'problem',

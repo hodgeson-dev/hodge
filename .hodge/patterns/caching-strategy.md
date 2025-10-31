@@ -1,34 +1,35 @@
 # Caching Strategy
 
 **Category**: performance
-**Frequency**: Used 6 times
-**Confidence**: 100%
+**Frequency**: Used 3 times
+**Confidence**: 60%
 
 ## Description
 Caching for performance optimization
 
 ## Examples
 
-### src/commands/explore.ts
+### src/lib/explore-service.ts
 ```typescript
 memoize
 ```
 
 
-### src/lib/auto-save.ts
+### src/lib/pattern-learner.ts
 ```typescript
 new Map();
-  private FULL_SAVE_INTERVAL = 30 * 60 * 1000; // Full save every 30 minutes
+  private standards: Map<string, CodingStandard> = new Map();
+  private readonly basePath: string;
+  private readonly patternsDir: string;
 
-  constructor(basePath: string = '.') {
-    this.basePath = basePath;
-    this.contextPath = path.join(basePath
+  constructor(basePath?: string) {
+    this.baseP
 ```
 
 
-### src/lib/cache-manager.ts
+### src/lib/pattern-learner.ts
 ```typescript
-cache.get(
+memoize
 ```
 
 
@@ -38,5 +39,5 @@ cache.get(
 - 
 
 ---
-*First seen: 2025-10-05T06:33:49.962Z*
-*Last used: 2025-10-05T06:33:49.978Z*
+*First seen: 2025-10-31T09:39:59.412Z*
+*Last used: 2025-10-31T09:39:59.413Z*

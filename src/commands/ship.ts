@@ -23,8 +23,15 @@ export interface ShipOptions {
 
 export class ShipCommand {
   private logger = createCommandLogger('ship', { enableConsole: true });
-  private pmHooks = new PMHooks();
-  private shipService = new ShipService();
+  private pmHooks: PMHooks;
+  private shipService: ShipService;
+  private readonly basePath: string;
+
+  constructor(basePath?: string) {
+    this.basePath = basePath ?? process.cwd();
+    this.pmHooks = new PMHooks(this.basePath);
+    this.shipService = new ShipService(this.basePath);
+  }
 
   async execute(feature?: string, options: ShipOptions = {}): Promise<void> {
     // Get feature from argument or context
@@ -515,7 +522,7 @@ export class ShipCommand {
       this.logger.info(chalk.cyan.bold('\n📊 Generating architecture graph...'));
 
       // Load toolchain config
-      const toolchainService = new ToolchainService(process.cwd());
+      const toolchainService = new ToolchainService(this.basePath);
       const toolchainConfig = await toolchainService.loadConfig();
 
       // Load tool registry
@@ -529,7 +536,7 @@ export class ShipCommand {
       // Generate graph
       const graphService = new ArchitectureGraphService();
       const result = await graphService.generateGraph({
-        projectRoot: process.cwd(),
+        projectRoot: this.basePath,
         toolchainConfig,
         toolRegistry,
         quiet: false,

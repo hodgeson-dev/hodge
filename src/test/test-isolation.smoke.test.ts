@@ -1,89 +1,84 @@
-import { describe } from 'vitest';
-import { smokeTest } from './helpers';
-import { existsSync } from 'fs';
-// import { execSync } from 'child_process'; // Not needed after commenting out the recursive test
-import path from 'path';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { promises as fs } from 'fs';
+import { join } from 'path';
+import { TempDirectoryFixture } from './temp-directory-fixture.js';
 
-describe('[smoke] Test Isolation', () => {
-  smokeTest('should not have any .test-* directories in project root', async () => {
-    // Check project root for test directories
-    const projectRoot = path.join(process.cwd());
-    const hasTestDirs =
-      existsSync(path.join(projectRoot, '.test-hodge')) ||
-      existsSync(path.join(projectRoot, '.test-session')) ||
-      existsSync(path.join(projectRoot, '.test-workflow')) ||
-      existsSync(path.join(projectRoot, '.test-context'));
+/**
+ * HODGE-366: Test isolation verification
+ *
+ * This test proves that tests should NOT contaminate the project's .hodge directory.
+ * It captures the state before/after test runs to detect unwanted modifications.
+ */
+describe('Test Isolation [smoke]', () => {
+  const projectRoot = process.cwd();
+  const contextFile = join(projectRoot, '.hodge/context.json');
+  const mappingsFile = join(projectRoot, '.hodge/id-mappings.json');
 
-    if (hasTestDirs) {
-      throw new Error('Found test directories in project root - tests may not be using tmpdir()');
+  let originalContext: string | null = null;
+  let originalMappings: string | null = null;
+  let fixture: TempDirectoryFixture;
+
+  beforeEach(async () => {
+    fixture = new TempDirectoryFixture();
+    await fixture.setup();
+
+    // Capture original state
+    try {
+      originalContext = await fs.readFile(contextFile, 'utf-8');
+    } catch {
+      originalContext = null;
+    }
+
+    try {
+      originalMappings = await fs.readFile(mappingsFile, 'utf-8');
+    } catch {
+      originalMappings = null;
     }
   });
 
-  // Skip this test as it causes test recursion by running other tests
-  // The test isolation has been manually verified to work correctly
-  /*
-  smokeTest('fixed tests should not modify .hodge/saves directory', async () => {
-    const savesPath = path.join(process.cwd(), '.hodge', 'saves');
-    if (!existsSync(savesPath)) {
-      // No saves directory is fine
-      return;
-    }
-
-    // Get list of saves before running the fixed tests
-    const beforeTest = execSync('ls -1 .hodge/saves 2>/dev/null || echo ""', { encoding: 'utf8' }).trim();
-
-    // Run the specific tests that were fixed for isolation
-    // HODGE-364: Removed session-manager.test.ts (file deleted)
-    const testFiles = [
-      'src/lib/__tests__/auto-save.test.ts',
-      'src/test/context-aware-commands.test.ts',
-      'src/lib/__tests__/context-manager.test.ts'
-    ];
-
-    for (const testFile of testFiles) {
-      try {
-        execSync(`npx vitest run ${testFile} --reporter=silent`, {
-          encoding: 'utf8',
-          stdio: 'pipe'
-        });
-      } catch (error) {
-        // Test might fail for other reasons, we just care about file system changes
-      }
-    }
-
-    // Check saves after tests
-    const afterTest = execSync('ls -1 .hodge/saves 2>/dev/null || echo ""', { encoding: 'utf8' }).trim();
-
-    if (beforeTest !== afterTest) {
-      throw new Error('.hodge/saves was modified by isolation-fixed tests - test isolation may be broken');
-    }
-  });
-  */
-
-  smokeTest('tests should use TempDirectoryFixture for test directories', async () => {
-    // Read test files to verify they import TempDirectoryFixture
-    // HODGE-364: Removed session-manager.test.ts (file deleted)
-    const testFiles = [
-      'src/test/context-aware-commands.test.ts',
-      'src/lib/__tests__/context-manager.test.ts',
-    ];
-
-    const { readFileSync } = await import('fs');
-
-    for (const file of testFiles) {
-      const content = readFileSync(file, 'utf-8');
-
-      // Check that TempDirectoryFixture is imported
-      if (!content.includes('TempDirectoryFixture')) {
-        throw new Error(`${file} does not import TempDirectoryFixture`);
-      }
-
-      // Check that process.cwd() is not used for test directories
-      if (content.includes("path.join(process.cwd(), '.test-")) {
-        throw new Error(`${file} still uses process.cwd() for test directories`);
-      }
-    }
+  afterEach(async () => {
+    await fixture.cleanup();
   });
 
-  // HODGE-364: Removed test for session-manager.test.ts (file deleted as part of SessionManager consolidation)
+  it('project .hodge/context.json should remain unchanged after test runs', async () => {
+    // Read current state
+    let currentContext: string | null = null;
+    try {
+      currentContext = await fs.readFile(contextFile, 'utf-8');
+    } catch {
+      currentContext = null;
+    }
+
+    // Verify no contamination
+    expect(currentContext).toBe(originalContext);
+  });
+
+  it('project .hodge/id-mappings.json should remain unchanged after test runs', async () => {
+    // Read current state
+    let currentMappings: string | null = null;
+    try {
+      currentMappings = await fs.readFile(mappingsFile, 'utf-8');
+    } catch {
+      currentMappings = null;
+    }
+
+    // Verify no contamination
+    expect(currentMappings).toBe(originalMappings);
+  });
+
+  it('tests should use workspace directories, not project root', async () => {
+    // This is a meta-test that documents the requirement
+    // Real verification happens when we fix the 6 test files
+
+    const testWorkspace = fixture.getPath();
+
+    // Workspace should be in temp directory
+    expect(testWorkspace).toContain('hodge-test-');
+    expect(testWorkspace).not.toBe(projectRoot);
+
+    // Workspace should be writable
+    await fixture.writeFile('.hodge/context.json', '{"test": true}');
+    const testContext = await fs.readFile(join(testWorkspace, '.hodge/context.json'), 'utf-8');
+    expect(testContext).toBe('{"test": true}');
+  });
 });

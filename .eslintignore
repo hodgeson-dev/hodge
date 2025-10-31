@@ -1,6 +1,5 @@
-# Ignore test files for now - they need separate cleanup
-**/*.test.ts
-**/*.test.js
+# Test files are now linted with custom rules (HODGE-366)
+# Removed: **/*.test.ts and **/*.test.js
 
 # Ignore build output
 dist/

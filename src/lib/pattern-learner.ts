@@ -112,7 +112,14 @@ export class PatternLearner {
 
   private patterns: Map<string, CodePattern> = new Map();
   private standards: Map<string, CodingStandard> = new Map();
-  private readonly patternsDir = '.hodge/patterns';
+  private readonly basePath: string;
+  private readonly patternsDir: string;
+
+  constructor(basePath?: string) {
+    this.basePath = basePath ?? process.cwd();
+    this.patternsDir = path.join(this.basePath, '.hodge/patterns');
+  }
+
   private readonly patternRules: PatternRule[] = [
     {
       name: 'Singleton Pattern',

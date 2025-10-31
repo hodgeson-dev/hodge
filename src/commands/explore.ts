@@ -33,16 +33,23 @@ export interface ExploreOptions {
 export class ExploreCommand {
   private cache = cacheManager;
   private standardsCache = standardsCache;
-  private patternLearner = new PatternLearner();
+  private patternLearner: PatternLearner;
   private idManager: IDManager;
-  private pmHooks = new PMHooks();
+  private pmHooks: PMHooks;
   private logger = createCommandLogger('explore', { enableConsole: true });
-  private subFeatureContext = new SubFeatureContextService();
+  private subFeatureContext: SubFeatureContextService;
   private exploreService: ExploreService;
+  private readonly workingDir: string;
 
-  constructor(idManager?: IDManager, exploreService?: ExploreService) {
-    this.idManager = idManager || new IDManager();
-    this.exploreService = exploreService || new ExploreService();
+  constructor(idManager?: IDManager, exploreService?: ExploreService, basePath?: string) {
+    this.workingDir = basePath ?? process.cwd();
+    const hodgeDir = path.join(this.workingDir, '.hodge');
+
+    this.patternLearner = new PatternLearner(this.workingDir);
+    this.idManager = idManager ?? new IDManager(hodgeDir);
+    this.exploreService = exploreService ?? new ExploreService(this.workingDir);
+    this.pmHooks = new PMHooks(this.workingDir);
+    this.subFeatureContext = new SubFeatureContextService(this.workingDir);
   }
 
   async execute(feature: string, options: ExploreOptions = {}): Promise<void> {
@@ -185,7 +192,7 @@ export class ExploreCommand {
     this.displayAIContext(featureName);
     this.loadSubFeatureContext(featureName);
 
-    const exploreDir = path.join('.hodge', 'features', featureName, 'explore');
+    const exploreDir = path.join(this.workingDir, '.hodge', 'features', featureName, 'explore');
 
     // Check existing exploration
     const existingCheck = await this.exploreService.checkExistingExploration(
@@ -316,9 +323,9 @@ export class ExploreCommand {
 
     return {
       hasStandards: !!standards,
-      patternCount: patterns.size ?? 0,
-      patterns: patterns ? Array.from(patterns.keys()) : [],
-      config: (config as Record<string, unknown>) ?? null,
+      patternCount: patterns.size,
+      patterns: Array.from(patterns.keys()),
+      config: config as Record<string, unknown> | null,
     };
   }
 

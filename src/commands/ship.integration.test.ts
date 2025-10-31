@@ -72,14 +72,9 @@ describe('Ship Command - Integration Tests', () => {
 
       // Run ship command directly (no subprocess)
       // HODGE-320: Direct function call instead of subprocess spawning
-      const command = new ShipCommand();
-      const originalCwd = process.cwd();
-      try {
-        process.chdir(workspace.getPath());
-        await command.execute('test-feature', { yes: true, skipTests: true });
-      } finally {
-        process.chdir(originalCwd);
-      }
+      // HODGE-366: Use basePath for test isolation
+      const command = new ShipCommand(workspace.getPath());
+      await command.execute('test-feature', { yes: true, skipTests: true });
 
       // Verify the commit was made with the pre-approved message
       const lastCommitResult = await workspace.run('git log -1 --pretty=format:%B');
@@ -114,14 +109,9 @@ describe('Ship Command - Integration Tests', () => {
 
       // Run ship without state file (direct call - no subprocess)
       // HODGE-320: Direct function call instead of subprocess spawning
-      const command = new ShipCommand();
-      const originalCwd = process.cwd();
-      try {
-        process.chdir(workspace.getPath());
-        await command.execute('test-feature', { yes: true, skipTests: true });
-      } finally {
-        process.chdir(originalCwd);
-      }
+      // HODGE-366: Use basePath for test isolation
+      const command = new ShipCommand(workspace.getPath());
+      await command.execute('test-feature', { yes: true, skipTests: true });
 
       // Verify commit was made with default message
       const lastCommitResult = await workspace.run('git log -1 --pretty=format:%B');
@@ -153,14 +143,8 @@ describe('Ship Command - Integration Tests', () => {
 
       // Should not crash, should use default message (direct call - no subprocess)
       // HODGE-320: Direct function call instead of subprocess spawning
-      const command = new ShipCommand();
-      const originalCwd = process.cwd();
-      try {
-        process.chdir(workspace.getPath());
+      const command = new ShipCommand(workspace.getPath());
         await command.execute('test-feature', { yes: true, skipTests: true });
-      } finally {
-        process.chdir(originalCwd);
-      }
 
       const lastCommitResult = await workspace.run('git log -1 --pretty=format:%B');
       expect(lastCommitResult.output).toContain('test-feature');
@@ -184,14 +168,8 @@ describe('Ship Command - Integration Tests', () => {
 
       // Run ship (direct call - no subprocess)
       // HODGE-320: Direct function call instead of subprocess spawning
-      const command = new ShipCommand();
-      const originalCwd = process.cwd();
-      try {
-        process.chdir(workspace.getPath());
+      const command = new ShipCommand(workspace.getPath());
         await command.execute('test-feature', { yes: true, skipTests: true });
-      } finally {
-        process.chdir(originalCwd);
-      }
 
       // Verify ship record was created
       const shipRecordExists = await workspace.exists(
@@ -235,14 +213,8 @@ describe('Ship Command - Integration Tests', () => {
 
       // Should complete without prompting, skipping push (direct call - no subprocess)
       // HODGE-320: Direct function call instead of subprocess spawning
-      const command = new ShipCommand();
-      const originalCwd = process.cwd();
-      try {
-        process.chdir(workspace.getPath());
+      const command = new ShipCommand(workspace.getPath());
         await command.execute('test-feature', { yes: true, skipTests: true });
-      } finally {
-        process.chdir(originalCwd);
-      }
 
       // Verify commit was made locally
       const lastCommitResult = await workspace.run('git log -1 --pretty=format:%B');
