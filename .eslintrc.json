@@ -116,11 +116,13 @@
       "rules": {
         "@typescript-eslint/no-explicit-any": "warn",
         "@typescript-eslint/explicit-function-return-type": "off",
-        "@typescript-eslint/no-unsafe-assignment": "warn",
-        "@typescript-eslint/no-unsafe-argument": "warn",
-        "@typescript-eslint/no-unsafe-member-access": "warn",
-        "@typescript-eslint/no-unsafe-call": "warn",
-        "@typescript-eslint/no-unsafe-return": "warn",
+        // Disable unsafe type rules for test files - vitest's expect() API intentionally returns 'any'
+        // These are false positives that don't provide value in test contexts (HODGE-370)
+        "@typescript-eslint/no-unsafe-assignment": "off",
+        "@typescript-eslint/no-unsafe-argument": "off",
+        "@typescript-eslint/no-unsafe-member-access": "off",
+        "@typescript-eslint/no-unsafe-call": "off",
+        "@typescript-eslint/no-unsafe-return": "off",
         "@typescript-eslint/require-await": "warn",
         // Relax file/function length limits for test files
         "max-lines": "off",
