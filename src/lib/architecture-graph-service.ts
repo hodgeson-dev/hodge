@@ -11,16 +11,13 @@ import fs from 'fs/promises';
 import { existsSync } from 'fs';
 import path from 'path';
 import { createCommandLogger } from './logger.js';
-import type { ToolchainConfig, ToolRegistryEntry } from '../types/toolchain.js';
-import type { ToolRegistry } from '../types/toolchain.js';
+import type { ToolchainConfig } from '../types/toolchain.js';
 
 export interface ArchitectureGraphOptions {
   /** Project root directory */
   projectRoot: string;
   /** Toolchain configuration */
   toolchainConfig: ToolchainConfig;
-  /** Tool registry for finding graph commands */
-  toolRegistry: ToolRegistry;
   /** Suppress warning messages */
   quiet?: boolean;
 }
@@ -48,32 +45,18 @@ export class ArchitectureGraphService {
    * Non-blocking: logs warnings on failure but doesn't throw
    */
   async generateGraph(options: ArchitectureGraphOptions): Promise<GraphGenerationResult> {
-    const { projectRoot, toolchainConfig, toolRegistry, quiet = false } = options;
+    const { projectRoot, toolchainConfig, quiet = false } = options;
 
     try {
-      // Check if codebase analysis is configured
-      const analysisConfig = toolchainConfig.codebase_analysis;
-      if (analysisConfig?.architecture_graph?.enabled === false) {
-        this.logger.info('Architecture graph generation disabled in toolchain config');
-        return { success: false, error: 'Graph generation disabled' };
+      // Validate tool configuration
+      const validation = this.validateToolConfig(toolchainConfig, quiet);
+      if (!validation.valid) {
+        return { success: false, error: validation.error };
       }
-
-      // Find tool with graph_command support for this language
-      const tool = this.findGraphTool(toolchainConfig.language, toolRegistry);
-      if (!tool) {
-        this.logger.warn(
-          `No architecture graphing tool found for language: ${toolchainConfig.language}`
-        );
-        if (!quiet) {
-          console.warn(
-            `⚠️  No architecture graphing tool available for ${toolchainConfig.language}`
-          );
-        }
-        return { success: false, error: 'No graph tool available' };
-      }
+      const { toolName, graphCommand, outputPath: configuredPath } = validation;
 
       // Determine output path
-      const outputPath = analysisConfig?.architecture_graph?.output_path ?? this.defaultOutputPath;
+      const outputPath = configuredPath ?? this.defaultOutputPath;
       const absoluteOutputPath = path.join(projectRoot, outputPath);
 
       // Ensure output directory exists
@@ -83,15 +66,12 @@ export class ArchitectureGraphService {
       }
 
       // Execute graph generation command
-      this.logger.info(`Generating architecture graph using ${tool.name}`, {
-        tool: tool.name,
+      this.logger.info(`Generating architecture graph using ${toolName}`, {
+        tool: toolName,
         outputPath,
       });
 
-      const command = tool.entry.graph_command!.replace(
-        '.hodge/architecture-graph.dot',
-        absoluteOutputPath
-      );
+      const command = graphCommand.replace('.hodge/architecture-graph.dot', absoluteOutputPath);
 
       // Validate command for security (tool-registry.yaml is trusted, but validate as defense-in-depth)
       this.validateCommand(command);
@@ -108,7 +88,7 @@ export class ArchitectureGraphService {
         if (existsSync(absoluteOutputPath)) {
           this.logger.info('Architecture graph generated successfully', {
             path: outputPath,
-            tool: tool.name,
+            tool: toolName,
           });
           if (!quiet) {
             console.log(`✓ Architecture graph: ${outputPath}`);
@@ -116,7 +96,7 @@ export class ArchitectureGraphService {
           return {
             success: true,
             graphPath: outputPath,
-            tool: tool.name,
+            tool: toolName,
           };
         } else {
           throw new Error('Graph file not created');
@@ -124,7 +104,7 @@ export class ArchitectureGraphService {
       } catch (execError) {
         const error = execError as Error;
         this.logger.warn('Graph generation command failed', {
-          tool: tool.name,
+          tool: toolName,
           error: error.message,
         });
         if (!quiet) {
@@ -132,7 +112,7 @@ export class ArchitectureGraphService {
         }
         return {
           success: false,
-          tool: tool.name,
+          tool: toolName,
           error: error.message,
         };
       }
@@ -147,6 +127,52 @@ export class ArchitectureGraphService {
         error: err.message,
       };
     }
+  }
+
+  /**
+   * Validate tool configuration for graph generation
+   * Returns validation result with tool details or error
+   */
+  private validateToolConfig(
+    toolchainConfig: ToolchainConfig,
+    quiet: boolean
+  ):
+    | { valid: true; toolName: string; graphCommand: string; outputPath?: string }
+    | { valid: false; error: string } {
+    const analysisConfig = toolchainConfig.codebase_analysis;
+
+    // Check if graph generation is disabled
+    if (analysisConfig?.architecture_graph?.enabled === false) {
+      this.logger.info('Architecture graph generation disabled in toolchain config');
+      return { valid: false, error: 'Graph generation disabled' };
+    }
+
+    // Check if tool is configured
+    const toolName = analysisConfig?.architecture_graph?.tool;
+    if (!toolName) {
+      this.logger.warn('No architecture graph tool specified in toolchain config');
+      if (!quiet) {
+        console.warn(`⚠️  No architecture graph tool configured`);
+      }
+      return { valid: false, error: 'No graph tool configured' };
+    }
+
+    // Check if tool has graph_command
+    const toolConfig = toolchainConfig.commands[toolName];
+    if (!toolConfig.graph_command) {
+      this.logger.warn(`Tool ${toolName} does not have graph_command configured in toolchain.yaml`);
+      if (!quiet) {
+        console.warn(`⚠️  Tool ${toolName} missing graph_command in .hodge/toolchain.yaml`);
+      }
+      return { valid: false, error: 'No graph command configured' };
+    }
+
+    return {
+      valid: true,
+      toolName,
+      graphCommand: toolConfig.graph_command,
+      outputPath: analysisConfig.architecture_graph?.output_path,
+    };
   }
 
   /**
@@ -179,35 +205,6 @@ export class ArchitectureGraphService {
   }
 
   /**
-   * Find a tool that supports graph generation for the given language
-   */
-  private findGraphTool(
-    language: string,
-    toolRegistry: ToolRegistry
-  ): { name: string; entry: ToolRegistryEntry } | undefined {
-    for (const [toolName, toolEntry] of Object.entries(toolRegistry.tools)) {
-      // Check if tool supports this language
-      if (!toolEntry.languages.includes(language)) {
-        continue;
-      }
-
-      // Check if tool has graph_command
-      if (!toolEntry.graph_command) {
-        continue;
-      }
-
-      // Check if tool includes architecture_graphing category
-      if (!toolEntry.categories.includes('architecture_graphing')) {
-        continue;
-      }
-
-      return { name: toolName, entry: toolEntry };
-    }
-
-    return undefined;
-  }
-
-  /**
    * Check if architecture graph exists
    */
   graphExists(projectRoot: string, outputPath?: string): boolean {
@@ -217,17 +214,25 @@ export class ArchitectureGraphService {
 
   /**
    * Validate command for basic security checks
-   * Prevents shell injection even though tool-registry.yaml is a trusted source
+   * Prevents shell injection even though toolchain.yaml is a trusted source
    */
   private validateCommand(command: string): void {
-    // Check for dangerous shell characters that could indicate injection
-    // Allow '>' for output redirection, but reject other shell metacharacters
-    const dangerousChars = [';', '&', '|', '`', '$', '(', ')', '<'];
+    // Check for dangerous shell patterns that could indicate injection
+    // Allow safe constructs: '>' (redirection), '||' (boolean OR), '&&' (boolean AND)
+    // Reject: ';' (chaining), single '|' (pipes), '`' (backticks), '$(' (substitution), '<' (input)
+    const dangerousPatterns = [
+      { pattern: /;/, description: 'command chaining (;)' },
+      { pattern: /&(?!&)/, description: 'background execution (&)' },
+      { pattern: /\|(?!\|)/, description: 'pipe (|)' },
+      { pattern: /`/, description: 'command substitution (`)' },
+      { pattern: /\$\(/, description: 'command substitution ($())' },
+      { pattern: /</, description: 'input redirection (<)' },
+    ];
 
-    for (const char of dangerousChars) {
-      if (command.includes(char)) {
+    for (const { pattern, description } of dangerousPatterns) {
+      if (pattern.test(command)) {
         throw new Error(
-          `Command contains potentially unsafe character '${char}': ${command.substring(0, 50)}...`
+          `Command contains potentially unsafe ${description}: ${command.substring(0, 50)}...`
         );
       }
     }

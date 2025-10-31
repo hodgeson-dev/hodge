@@ -1,7 +1,7 @@
 # Learned Patterns Summary
 
 ## Statistics
-- Total patterns detected: 3
+- Total patterns detected: 4
 - High confidence patterns: 0
 - Most frequent category: performance
 
@@ -14,11 +14,15 @@
 
 
 ### Security
-- **Input Validation** (1x, 20% confidence)
+- **Input Validation** (2x, 40% confidence)
+
+
+### Error-handling
+- **Error Boundary** (1x, 20% confidence)
 
 
 ## Recommendations
 
 
 ---
-*Generated: 2025-10-31T15:25:32.918Z*
+*Generated: 2025-10-31T16:47:05.869Z*

@@ -3,10 +3,10 @@
  * HODGE-362: Basic sanity checks for graph generation and loading
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, expect, beforeEach, afterEach } from 'vitest';
 import { ArchitectureGraphService } from './architecture-graph-service.js';
 import { TempDirectoryFixture } from '../test/temp-directory-fixture.js';
-import type { ToolchainConfig, ToolRegistry } from '../types/toolchain.js';
+import type { ToolchainConfig } from '../types/toolchain.js';
 import { smokeTest } from '../test/helpers.js';
 
 describe('ArchitectureGraphService - Smoke Tests', () => {
@@ -67,14 +67,9 @@ describe('ArchitectureGraphService - Smoke Tests', () => {
       },
     };
 
-    const toolRegistry: ToolRegistry = {
-      tools: {},
-    };
-
     const result = await service.generateGraph({
       projectRoot: fixture.getPath(),
       toolchainConfig,
-      toolRegistry,
       quiet: true,
     });
 
@@ -101,23 +96,9 @@ describe('ArchitectureGraphService - Smoke Tests', () => {
       },
     };
 
-    const toolRegistry: ToolRegistry = {
-      tools: {
-        'dependency-cruiser': {
-          languages: ['typescript'],
-          detection: [],
-          installation: { external: false },
-          default_command: 'depcruise',
-          graph_command: 'depcruise --output-type dot . > .hodge/architecture-graph.dot',
-          categories: ['architecture', 'architecture_graphing'],
-        },
-      },
-    };
-
     const result = await service.generateGraph({
       projectRoot: fixture.getPath(),
       toolchainConfig,
-      toolRegistry,
       quiet: true,
     });
 
@@ -125,11 +106,11 @@ describe('ArchitectureGraphService - Smoke Tests', () => {
     expect(result.error).toContain('disabled');
   });
 
-  smokeTest('should return error when no architecture graphing tool available', async () => {
+  smokeTest('should return error when no architecture graphing tool configured', async () => {
     const toolchainConfig: ToolchainConfig = {
       version: '1.0',
-      language: 'python', // Language with no tool in registry
-      commands: {},
+      language: 'python',
+      commands: {}, // No architecture graph tool configured
       quality_checks: {
         type_checking: [],
         linting: [],
@@ -138,27 +119,14 @@ describe('ArchitectureGraphService - Smoke Tests', () => {
       },
     };
 
-    const toolRegistry: ToolRegistry = {
-      tools: {
-        mypy: {
-          languages: ['python'],
-          detection: [],
-          installation: { external: true },
-          default_command: 'mypy',
-          categories: ['type_checking'], // No architecture_graphing
-        },
-      },
-    };
-
     const result = await service.generateGraph({
       projectRoot: fixture.getPath(),
       toolchainConfig,
-      toolRegistry,
       quiet: true,
     });
 
     expect(result.success).toBe(false);
-    expect(result.error).toContain('No graph tool available');
+    expect(result.error).toContain('No graph tool configured');
   });
 
   smokeTest('should load custom output path when specified', async () => {

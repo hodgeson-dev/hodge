@@ -118,9 +118,11 @@ commands:
     warning_pattern: '^Clone found \('
   dependency-cruiser:
     command: npx depcruise --config .dependency-cruiser.cjs --output-type err ${files} || true
+    graph_command: npx depcruise --config .dependency-cruiser.cjs --output-type dot --collapse 2 . > .hodge/architecture-graph.dot || true
     provides:
       - architecture
     # --output-type err: Only show violations
+    # graph_command: Generate DOT format dependency graph for AI codebase awareness (HODGE-362)
     # || true: Exit 0 even with warnings (exit code 7), AI interprets stdout
     # HODGE-359.1: Regex patterns for structured error/warning extraction
     error_pattern: '^\s*error\s+.+:\s+'

@@ -8,8 +8,6 @@ import type { LearningResult } from '../lib/pattern-learner.js';
 import { createCommandLogger } from '../lib/logger.js';
 import { ArchitectureGraphService } from '../lib/architecture-graph-service.js';
 import { ToolchainService } from '../lib/toolchain-service.js';
-import yaml from 'js-yaml';
-import type { ToolRegistry } from '../types/toolchain.js';
 
 export interface ShipOptions {
   skipTests?: boolean;
@@ -477,20 +475,11 @@ export class ShipCommand {
       const toolchainService = new ToolchainService(this.basePath);
       const toolchainConfig = await toolchainService.loadConfig();
 
-      // Load tool registry
-      const registryPath = path.join(
-        path.dirname(new URL(import.meta.url).pathname),
-        '../bundled-config/tool-registry.yaml'
-      );
-      const registryContent = await fs.readFile(registryPath, 'utf-8');
-      const toolRegistry = yaml.load(registryContent) as ToolRegistry;
-
       // Generate graph
       const graphService = new ArchitectureGraphService();
       const result = await graphService.generateGraph({
         projectRoot: this.basePath,
         toolchainConfig,
-        toolRegistry,
         quiet: false,
       });
 

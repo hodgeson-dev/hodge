@@ -177,6 +177,9 @@ export interface ToolCommand {
 
   /** Regex pattern for extracting warnings (HODGE-359.1) */
   warning_pattern?: string;
+
+  /** Graph generation command for architecture tools (HODGE-362) */
+  graph_command?: string;
 }
 
 /**
