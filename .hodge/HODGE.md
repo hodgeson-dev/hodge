@@ -3,15 +3,15 @@
 This file provides AI assistants with context about the current Hodge workflow state.
 
 ## Current Status
-**Feature**: TEST-EXPLICIT
-**Mode**: explore
-**Last Updated**: 2025-10-31T16:46:54.726Z
+**Feature**: HODGE-372
+**Mode**: shipped
+**Last Updated**: 2025-10-31T18:52:51.205Z
 ## Current Session
-**Resumed**: 0 minutes ago
-**Progress**: Explored HODGE-371 - template ready for AI approach generation
-**Working on**: HODGE-371 (ship mode)
+**Resumed**: 4 minutes ago
+**Progress**: Explored HODGE-372 - template ready for AI approach generation
+**Working on**: HODGE-372 (harden mode)
 ## AI Context Restoration
-You were helping with HODGE-371. Continue from where we left off.
+You were helping with HODGE-372. Continue from where we left off.
 Suggested next: Review exploration and decide with 'hodge decide'
 ## Recent Decisions
 
@@ -262,11 +262,15 @@ Suggested next: Review exploration and decide with 'hodge decide'
 - Full test coverage required
 - Performance benchmarks met
 
+## Working Files
+
+- `.hodge/features/HODGE-372/explore/exploration.md`
+- `.hodge/features/HODGE-372/explore/test-intentions.md`
+- `.hodge/features/HODGE-372/build/build-plan.md`
+
 ## Next Steps
 
-1. Review exploration approaches
-2. Make decision with `hodge decide`
-3. Start building with `hodge build TEST-EXPLICIT`
+1. Feature completed. Start new work with `hodge explore <feature>`
 
 
 ---

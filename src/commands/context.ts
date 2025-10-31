@@ -2,7 +2,6 @@ import chalk from 'chalk';
 import { promises as fs } from 'fs';
 import path from 'path';
 import yaml from 'js-yaml';
-import { HodgeMDGenerator } from '../lib/hodge-md-generator.js';
 import { createCommandLogger } from '../lib/logger.js';
 import { ArchitectureGraphService } from '../lib/architecture-graph-service.js';
 import { PatternMetadataService } from '../lib/pattern-metadata-service.js';
@@ -33,13 +32,11 @@ export interface ContextOptions {
  * 5. Update both /hodge and /load commands consistently
  */
 export class ContextCommand {
-  private hodgeMDGenerator: HodgeMDGenerator;
   private basePath: string;
   private logger = createCommandLogger('context', { enableConsole: true });
 
   constructor(basePath?: string) {
     this.basePath = basePath ?? process.cwd();
-    this.hodgeMDGenerator = new HodgeMDGenerator(this.basePath);
   }
 
   async execute(options: ContextOptions = {}): Promise<void> {
@@ -73,9 +70,8 @@ export class ContextCommand {
     // Users expect /hodge with no args to load ONLY global context
     const feature = featureArg;
 
-    // Generate HODGE.md for session state (writes to file for reference)
-    await this.hodgeMDGenerator.saveToFile(feature ?? 'general');
-    this.logger.info('Generated feature-specific HODGE.md');
+    // HODGE-372: HODGE.md generation removed - use context.json for session state
+    // Git history preserves the HodgeMDGenerator implementation if needed
 
     // Build manifest
     const manifest: ContextManifest = {
@@ -106,13 +102,13 @@ export class ContextCommand {
    * Build global files list with availability status
    */
   private async buildGlobalFiles(): Promise<GlobalFile[]> {
+    // HODGE-372: Removed HODGE.md from global files (no longer generated)
     const globalFilePaths = [
-      { path: '.hodge/HODGE.md', note: 'Session state and current feature' },
       { path: '.hodge/standards.md', note: 'Enforceable project standards' },
       { path: '.hodge/decisions.md', note: 'Architectural decisions' },
       { path: '.hodge/principles.md' },
       { path: '.hodge/architecture-graph.dot' },
-      { path: '.hodge/context.json' },
+      { path: '.hodge/context.json', note: 'Session state and current feature' },
     ];
 
     const globalFiles: GlobalFile[] = [];

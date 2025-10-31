@@ -49,6 +49,9 @@ logs/
 .hodge/session.json
 .hodge/temp/
 .hodge/review-profiles/
+# HODGE-372: Ignore legacy HODGE.md files (no longer generated)
+.hodge/HODGE.md
+.hodge/features/*/HODGE.md
 
 # Analysis reports
 report/

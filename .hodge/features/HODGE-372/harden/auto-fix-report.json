@@ -1,0 +1,59 @@
+{
+  "timestamp": "2025-10-31T18:35:44.174Z",
+  "stagedFiles": [
+    ".claude/commands/checkpoint.md",
+    ".gitignore",
+    ".hodge/.test-marker-1759251161117",
+    ".hodge/HODGE.md",
+    ".hodge/features/HODGE-372/build/build-plan.md",
+    ".hodge/features/HODGE-372/decisions.md",
+    ".hodge/features/HODGE-372/explore/exploration.md",
+    ".hodge/features/HODGE-372/explore/test-intentions.md",
+    ".hodge/features/HODGE-372/ship-record.json",
+    ".hodge/id-counter.json",
+    ".hodge/id-mappings.json",
+    ".hodge/project_management.md",
+    "src/commands/context.smoke.test.ts",
+    "src/commands/context.ts",
+    "src/commands/hodge-372.smoke.test.ts",
+    "src/lib/hodge-md-generator.test.ts",
+    "src/lib/hodge-md-generator.ts",
+    "src/lib/hodge-md/hodge-md-context-gatherer.ts",
+    "src/lib/hodge-md/hodge-md-file-writer.ts",
+    "src/lib/hodge-md/hodge-md-formatter.ts",
+    "src/lib/hodge-md/types.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 19,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": "src/commands/context.smoke.test.ts 276ms (unchanged)\nsrc/commands/context.ts 31ms (unchanged)\nsrc/commands/hodge-372.smoke.test.ts 26ms\n",
+      "stderr": "[error] No files matching the pattern were found: \"src/lib/hodge-md-generator.test.ts\".\n[error] No files matching the pattern were found: \"src/lib/hodge-md-generator.ts\".\n[error] No files matching the pattern were found: \"src/lib/hodge-md/hodge-md-context-gatherer.ts\".\n[error] No files matching the pattern were found: \"src/lib/hodge-md/hodge-md-file-writer.ts\".\n[error] No files matching the pattern were found: \"src/lib/hodge-md/hodge-md-formatter.ts\".\n[error] No files matching the pattern were found: \"src/lib/hodge-md/types.ts\".\n",
+      "duration": 1072
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 0,
+      "issuesFixed": 0,
+      "success": false,
+      "stdout": "",
+      "stderr": "\nOops! Something went wrong! :(\n\nESLint: 8.57.1\n\nNo files matching the pattern \"src/lib/hodge-md-generator.test.ts\" were found.\nPlease check for typing mistakes in the pattern.\n\n",
+      "duration": 4156
+    }
+  ],
+  "totalIssuesFixed": 0,
+  "totalFilesModified": 19,
+  "failures": [
+    {
+      "tool": "eslint",
+      "filesProcessed": 0,
+      "issuesFixed": 0,
+      "success": false,
+      "stdout": "",
+      "stderr": "\nOops! Something went wrong! :(\n\nESLint: 8.57.1\n\nNo files matching the pattern \"src/lib/hodge-md-generator.test.ts\" were found.\nPlease check for typing mistakes in the pattern.\n\n",
+      "duration": 4156
+    }
+  ]
+}

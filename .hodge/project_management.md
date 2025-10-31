@@ -359,7 +359,35 @@ HODGE-004 (ID Management)
   - Define test intentions
   - Make architectural decisions
 
+
+
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-31
+- **Updated**: 2025-10-31
+- **Description**: at the root of .hodge, there are a number of files for tracking state, standards, configurations, decisions, principles, etc. They include the files listed below. Examine the files to see what they contain. Also, scan the CLI code to discover when, why, and how they get updated and read. Then assess whether there is redundancy that could lead to confusion, maintenance issues, and errors. In particular, look at the contents of the HODGE.me file. Initially, all state, standards, etc. were in that single file. Do we still have a need for it?
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
 ## Completed Features
+
+### HODGE-372
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-31
+- **Updated**: 2025-10-31
+- **Description**: at the root of .hodge, there are a number of files for tracking state, standards, configurations, decisions, principles, etc. They include the files listed below. Examine the files to see what they contain. Also, scan the CLI code to discover when, why, and how they get updated and read. Then assess whether there is redundancy that could lead to confusion, maintenance issues, and errors. In particular, look at the contents of the HODGE.me file. Initially, all state, standards, etc. were in that single file. Do we still have a need for it?
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+- **Completed**: 2025-10-31
+
+
 
 ### HODGE-371
 - **Status**: shipped

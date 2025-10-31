@@ -181,15 +181,11 @@ describe('ContextCommand - HODGE-313 Session-Based Mode Detection', () => {
         // Create minimal standards.md
         await fs.writeFile(path.join(hodgeDir, 'standards.md'), '# Standards\n\n## Test\n- Rule 1');
 
-        // Execute context command - should use session feature for mode detection
+        // Execute context command - should not crash
         const command = new ContextCommand(tmpDir);
         await expect(command.execute({})).resolves.not.toThrow();
 
-        // Verify HODGE.md was generated with session feature (may show real project feature if saves not isolated)
-        const hodgeMdContent = await fs.readFile(path.join(hodgeDir, 'HODGE.md'), 'utf-8');
-        // Just verify it contains a feature and mode, don't hardcode specific feature
-        expect(hodgeMdContent).toMatch(/\*\*Feature\*\*:/);
-        expect(hodgeMdContent).toMatch(/\*\*Mode\*\*:/);
+        // HODGE-372: HODGE.md generation removed, verify command completes successfully
       } finally {
         // Cleanup
         await fs.rm(tmpDir, { recursive: true, force: true });
@@ -217,12 +213,7 @@ describe('ContextCommand - HODGE-313 Session-Based Mode Detection', () => {
       const command = new ContextCommand(tmpDir);
       await expect(command.execute({})).resolves.not.toThrow();
 
-      // Verify HODGE.md was generated (feature depends on global session state)
-      const hodgeMdExists = await fs
-        .access(path.join(hodgeDir, 'HODGE.md'))
-        .then(() => true)
-        .catch(() => false);
-      expect(hodgeMdExists).toBe(true);
+      // HODGE-372: HODGE.md generation removed, verify command completes successfully
     } finally {
       // Cleanup
       await fs.rm(tmpDir, { recursive: true, force: true });
@@ -248,12 +239,7 @@ describe('ContextCommand - HODGE-313 Session-Based Mode Detection', () => {
       const command = new ContextCommand(tmpDir);
       await expect(command.execute({})).resolves.not.toThrow();
 
-      // Verify HODGE.md was generated successfully
-      const hodgeMdExists = await fs
-        .access(path.join(hodgeDir, 'HODGE.md'))
-        .then(() => true)
-        .catch(() => false);
-      expect(hodgeMdExists).toBe(true);
+      // HODGE-372: HODGE.md generation removed, verify command completes successfully
     } finally {
       // Cleanup
       await fs.rm(tmpDir, { recursive: true, force: true });
@@ -403,8 +389,7 @@ describe('ContextCommand - HODGE-363 YAML Manifest Generation', () => {
   };
 
   smokeTest('should generate valid YAML manifest', async () => {
-    // Setup minimal .hodge structure
-    await fixture.writeFile('.hodge/HODGE.md', '# HODGE.md\ntest content');
+    // HODGE-372: Setup minimal .hodge structure (no HODGE.md)
     await fixture.writeFile('.hodge/standards.md', '# Standards');
     await fixture.writeFile('.hodge/decisions.md', '# Decisions');
 
@@ -423,25 +408,32 @@ describe('ContextCommand - HODGE-363 YAML Manifest Generation', () => {
   });
 
   smokeTest('should include global files with availability status', async () => {
-    await fixture.writeFile('.hodge/HODGE.md', 'test');
+    // HODGE-372: No longer includes HODGE.md in global files
     await fixture.writeFile('.hodge/standards.md', 'test');
+    await fixture.writeFile('.hodge/context.json', '{"feature": "TEST", "mode": "explore"}');
 
     await command.execute({});
 
     const yamlOutput = extractYaml(capturedOutput);
     const manifest = yaml.load(yamlOutput) as ContextManifest;
 
-    const hodgeMd = manifest.global_files.find((f) => f.path === '.hodge/HODGE.md');
-    expect(hodgeMd).toBeDefined();
-    expect(hodgeMd?.status).toBe('available');
+    // context.json should be available
+    const contextJson = manifest.global_files.find((f) => f.path === '.hodge/context.json');
+    expect(contextJson).toBeDefined();
+    expect(contextJson?.status).toBe('available');
 
+    // principles.md should be marked as not_found
     const principles = manifest.global_files.find((f) => f.path === '.hodge/principles.md');
     expect(principles).toBeDefined();
     expect(principles?.status).toBe('not_found');
+
+    // HODGE.md should NOT be in global_files list
+    const hodgeMd = manifest.global_files.find((f) => f.path === '.hodge/HODGE.md');
+    expect(hodgeMd).toBeUndefined();
   });
 
   smokeTest('should extract pattern metadata', async () => {
-    await fixture.writeFile('.hodge/HODGE.md', 'test');
+    // HODGE-372: No need to create HODGE.md
     await fixture.writeFile(
       '.hodge/patterns/test-pattern.md',
       `# Testing Patterns
@@ -468,7 +460,7 @@ More content here.`
   });
 
   smokeTest('should include architecture graph when available', async () => {
-    await fixture.writeFile('.hodge/HODGE.md', 'test');
+    // HODGE-372: No need to create HODGE.md
     await fixture.writeFile(
       '.hodge/architecture-graph.dot',
       `digraph {
@@ -489,7 +481,7 @@ More content here.`
   });
 
   smokeTest('should include feature context when feature specified', async () => {
-    await fixture.writeFile('.hodge/HODGE.md', 'test');
+    // HODGE-372: No need to create HODGE.md
     await fixture.writeFile(
       '.hodge/features/TEST-001/explore/exploration.md',
       '# Exploration\nTest exploration'
@@ -516,7 +508,7 @@ More content here.`
   });
 
   smokeTest('should handle missing patterns directory gracefully', async () => {
-    await fixture.writeFile('.hodge/HODGE.md', 'test');
+    // HODGE-372: No need to create HODGE.md
     // Don't create .hodge/patterns directory
 
     await command.execute({});
@@ -529,7 +521,7 @@ More content here.`
   });
 
   smokeTest('should exclude README.md from patterns', async () => {
-    await fixture.writeFile('.hodge/HODGE.md', 'test');
+    // HODGE-372: No need to create HODGE.md
     await fixture.writeFile('.hodge/patterns/README.md', '# README\n\n## Overview\nIgnore this');
     await fixture.writeFile(
       '.hodge/patterns/real-pattern.md',
@@ -569,9 +561,10 @@ describe('[smoke] ContextCommand - HODGE-364 Session Fallback Removal', () => {
     }
 
     let endIndex = startIndex;
+    const pattern = /^[\s-]*[a-z_]+:/i;
     for (let i = startIndex + 1; i < lines.length; i++) {
       const line = lines[i];
-      if (line.trim() !== '' && !line.match(/^[\s-]*[a-z_]+:/i) && !line.startsWith('  ')) {
+      if (line.trim() !== '' && !pattern.exec(line) && !line.startsWith('  ')) {
         break;
       }
       endIndex = i;
