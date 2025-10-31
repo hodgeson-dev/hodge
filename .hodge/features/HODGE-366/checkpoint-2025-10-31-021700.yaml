@@ -1,56 +1,56 @@
 timestamp: 2025-10-31T02:17:00Z
 phase: harden
 featureId: HODGE-366
-summary: "ESLint rule added, ExploreCommand fixed, ShipCommand partially fixed but blocked by contextManager singleton"
+summary: 'ESLint rule added, ExploreCommand fixed, ShipCommand partially fixed but blocked by contextManager singleton'
 
 progress:
-  - "Added ESLint rule to block process.chdir() in test files"
-  - "Fixed all ExploreCommand test isolation violations (8 test files)"
-  - "Removed test files from .eslintignore"
-  - "Added basePath parameter to ShipCommand constructor"
-  - "Fixed ship.ts to use this.basePath instead of process.cwd()"
+  - 'Added ESLint rule to block process.chdir() in test files'
+  - 'Fixed all ExploreCommand test isolation violations (8 test files)'
+  - 'Removed test files from .eslintignore'
+  - 'Added basePath parameter to ShipCommand constructor'
+  - 'Fixed ship.ts to use this.basePath instead of process.cwd()'
 
 decisions:
-  - "Use local ESLint rule (no-process-chdir-in-tests) to enforce test isolation"
-  - "Apply test isolation fix progressively across commands"
-  - "ExploreCommand complete, ShipCommand blocked by architectural issue"
+  - 'Use local ESLint rule (no-process-chdir-in-tests) to enforce test isolation'
+  - 'Apply test isolation fix progressively across commands'
+  - 'ExploreCommand complete, ShipCommand blocked by architectural issue'
 
 blockers:
-  - "ShipCommand uses contextManager singleton which initializes with process.cwd() at module load"
-  - "Fixing ShipCommand properly requires making ContextManager non-singleton (beyond HODGE-366 scope)"
-  - "5 ship.integration.test.ts tests failing - need different approach"
+  - 'ShipCommand uses contextManager singleton which initializes with process.cwd() at module load'
+  - 'Fixing ShipCommand properly requires making ContextManager non-singleton (beyond HODGE-366 scope)'
+  - '5 ship.integration.test.ts tests failing - need different approach'
 
 nextSteps:
-  - "DECISION POINT: Strip unused ship options/tests OR add ESLint exception for ship tests"
-  - "Option A: Remove unused ship functionality + tests, fix remaining core tests"
-  - "Option B: Add ESLint exception for ship.integration.test.ts with TODO(HODGE-367)"
-  - "Complete harden validation for ExploreCommand scope"
-  - "Ship HODGE-366 with ExploreCommand complete, ShipCommand as follow-up"
+  - 'DECISION POINT: Strip unused ship options/tests OR add ESLint exception for ship tests'
+  - 'Option A: Remove unused ship functionality + tests, fix remaining core tests'
+  - 'Option B: Add ESLint exception for ship.integration.test.ts with TODO(HODGE-367)'
+  - 'Complete harden validation for ExploreCommand scope'
+  - 'Ship HODGE-366 with ExploreCommand complete, ShipCommand as follow-up'
 
 context:
   filesModified:
-    - "eslint-local-rules.cjs - Added no-process-chdir-in-tests rule"
-    - ".eslintrc.json - Enabled rule, removed test file ignore"
-    - ".eslintignore - Removed **/*.test.ts exclusion"
-    - "src/commands/explore.ts - Fixed nullish coalescing"
-    - "src/lib/explore-service.ts - Fixed nullish coalescing"
-    - "src/lib/pattern-learner.ts - Fixed nullish coalescing"
-    - "src/commands/explore.sub-feature.test.ts - Removed process.chdir, added basePath"
-    - "src/commands/explore.new-style.test.ts - Removed process.chdir, added basePath"
-    - "src/commands/explore-timing-fix.integration.test.ts - Fixed test isolation"
-    - "src/lib/pattern-learner.test.ts - Updated assertions for absolute paths"
-    - "src/commands/ship.ts - Added basePath constructor parameter (INCOMPLETE)"
-    - "src/commands/ship.integration.test.ts - Removed process.chdir (tests failing)"
+    - 'eslint-local-rules.cjs - Added no-process-chdir-in-tests rule'
+    - '.eslintrc.json - Enabled rule, removed test file ignore'
+    - '.eslintignore - Removed **/*.test.ts exclusion'
+    - 'src/commands/explore.ts - Fixed nullish coalescing'
+    - 'src/lib/explore-service.ts - Fixed nullish coalescing'
+    - 'src/lib/pattern-learner.ts - Fixed nullish coalescing'
+    - 'src/commands/explore.sub-feature.test.ts - Removed process.chdir, added basePath'
+    - 'src/commands/explore.new-style.test.ts - Removed process.chdir, added basePath'
+    - 'src/commands/explore-timing-fix.integration.test.ts - Fixed test isolation'
+    - 'src/lib/pattern-learner.test.ts - Updated assertions for absolute paths'
+    - 'src/commands/ship.ts - Added basePath constructor parameter (INCOMPLETE)'
+    - 'src/commands/ship.integration.test.ts - Removed process.chdir (tests failing)'
 
   testResults:
-    exploreCommandTests: "35/35 passing"
-    shipCommandTests: "0/5 passing (blocked by contextManager)"
-    totalTests: "1368 total (1363 passing)"
+    exploreCommandTests: '35/35 passing'
+    shipCommandTests: '0/5 passing (blocked by contextManager)'
+    totalTests: '1368 total (1363 passing)'
 
   eslintRule:
-    name: "local-rules/no-process-chdir-in-tests"
-    status: "active and detecting violations"
-    exceptions: "none currently (need to decide)"
+    name: 'local-rules/no-process-chdir-in-tests'
+    status: 'active and detecting violations'
+    exceptions: 'none currently (need to decide)'
 
   architecturalIssue: |
     contextManager is a singleton imported at module level with process.cwd().

@@ -4,12 +4,7 @@
  */
 
 import { describe, expect } from 'vitest';
-import {
-  smokeTest,
-  integrationTest,
-  unitTest,
-  acceptanceTest,
-} from '../test/helpers.js';
+import { smokeTest, integrationTest, unitTest, acceptanceTest } from '../test/helpers.js';
 import { withTestWorkspace } from '../test/runners.js';
 import { ExploreCommand } from './explore.js';
 
