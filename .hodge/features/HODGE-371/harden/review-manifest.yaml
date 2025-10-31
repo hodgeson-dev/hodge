@@ -1,0 +1,177 @@
+version: '1.0'
+feature: HODGE-371
+generated_at: '2025-10-31T14:52:50.357Z'
+recommended_tier: full
+change_analysis:
+  total_files: 18
+  total_lines: 1134
+  breakdown:
+    implementation: 12
+    test: 1
+    documentation: 5
+    config: 0
+changed_files:
+  - path: .hodge/HODGE.md
+    lines_changed: 24
+    change_type: documentation
+  - path: .hodge/features/HODGE-371/build/build-plan.md
+    lines_changed: 67
+    change_type: documentation
+  - path: .hodge/features/HODGE-371/explore/exploration.md
+    lines_changed: 181
+    change_type: documentation
+  - path: .hodge/features/HODGE-371/explore/test-intentions.md
+    lines_changed: 27
+    change_type: documentation
+  - path: .hodge/features/HODGE-371/harden/auto-fix-report.json
+    lines_changed: 55
+    change_type: implementation
+  - path: .hodge/features/HODGE-371/harden/review-manifest.yaml
+    lines_changed: 165
+    change_type: implementation
+  - path: .hodge/features/HODGE-371/harden/validation-results.json
+    lines_changed: 106
+    change_type: implementation
+  - path: .hodge/features/HODGE-371/ship-record.json
+    lines_changed: 11
+    change_type: implementation
+  - path: .hodge/id-counter.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/id-mappings.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/project_management.md
+    lines_changed: 13
+    change_type: documentation
+  - path: src/bin/hodge-371-cleanup.smoke.test.ts
+    lines_changed: 68
+    change_type: test
+  - path: src/bin/hodge.ts
+    lines_changed: 59
+    change_type: implementation
+  - path: src/commands/context.ts
+    lines_changed: 171
+    change_type: implementation
+  - path: src/commands/explore.ts
+    lines_changed: 43
+    change_type: implementation
+  - path: src/commands/harden.ts
+    lines_changed: 10
+    change_type: implementation
+  - path: src/lib/claude-commands.ts
+    lines_changed: 70
+    change_type: implementation
+  - path: src/lib/explore-service.ts
+    lines_changed: 56
+    change_type: implementation
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - test-pattern.md
+      - error-boundary.md
+      - input-validation.md
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - testing/vitest-3.x.yaml
+      - testing/general-test-standards.yaml
+      - languages/typescript-5.x.yaml
+      - languages/general-coding-standards.yaml
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed
+scope:
+  type: feature
+  target: HODGE-371
+  fileCount: 18
+critical_files:
+  algorithm: risk-weighted-v1.0
+  total_files: 18
+  top_n: 10
+  files:
+    - path: src/lib/explore-service.ts
+      rank: 1
+      score: 103
+      risk_factors:
+        - 3 warnings
+    - path: src/commands/explore.ts
+      rank: 2
+      score: 97
+      risk_factors:
+        - 3 warnings
+    - path: .hodge/features/HODGE-371/build/build-plan.md
+      rank: 3
+      score: 84
+      risk_factors:
+        - new file
+    - path: .hodge/features/HODGE-371/harden/auto-fix-report.json
+      rank: 4
+      score: 78
+      risk_factors:
+        - new file
+    - path: .hodge/features/HODGE-371/explore/exploration.md
+      rank: 5
+      score: 75
+      risk_factors:
+        - medium change (181 lines)
+        - new file
+    - path: .hodge/features/HODGE-371/harden/review-manifest.yaml
+      rank: 6
+      score: 75
+      risk_factors:
+        - medium change (165 lines)
+        - new file
+    - path: .hodge/features/HODGE-371/harden/validation-results.json
+      rank: 7
+      score: 75
+      risk_factors:
+        - medium change (106 lines)
+        - new file
+    - path: .hodge/features/HODGE-371/explore/test-intentions.md
+      rank: 8
+      score: 64
+      risk_factors:
+        - new file
+    - path: .hodge/project_management.md
+      rank: 9
+      score: 57
+      risk_factors:
+        - new file
+    - path: .hodge/features/HODGE-371/ship-record.json
+      rank: 10
+      score: 56
+      risk_factors:
+        - new file

@@ -1,13 +1,11 @@
 import chalk from 'chalk';
-import { promises as fs, existsSync } from 'fs';
+import { promises as fs } from 'fs';
 import path from 'path';
 import yaml from 'js-yaml';
 import { HodgeMDGenerator } from '../lib/hodge-md-generator.js';
-import { ContextManager } from '../lib/context-manager.js';
 import { createCommandLogger } from '../lib/logger.js';
 import { ArchitectureGraphService } from '../lib/architecture-graph-service.js';
 import { PatternMetadataService } from '../lib/pattern-metadata-service.js';
-import { SaveDiscoveryService } from '../lib/save-discovery-service.js';
 import type {
   ContextManifest,
   GlobalFile,
@@ -17,11 +15,8 @@ import type {
 } from '../types/context-manifest.js';
 
 export interface ContextOptions {
-  list?: boolean;
-  recent?: boolean;
   feature?: string;
   verbose?: boolean;
-  todos?: boolean;
 }
 
 // SavedContext type moved to SaveDiscoveryService (HODGE-363 refactoring)
@@ -39,29 +34,18 @@ export interface ContextOptions {
  */
 export class ContextCommand {
   private hodgeMDGenerator: HodgeMDGenerator;
-  private saveDiscoveryService: SaveDiscoveryService;
   private basePath: string;
   private logger = createCommandLogger('context', { enableConsole: true });
 
   constructor(basePath?: string) {
     this.basePath = basePath ?? process.cwd();
     this.hodgeMDGenerator = new HodgeMDGenerator(this.basePath);
-    this.saveDiscoveryService = new SaveDiscoveryService(this.basePath);
   }
 
   async execute(options: ContextOptions = {}): Promise<void> {
     try {
-      // HODGE-363: Special modes use legacy console output
-      if (options.todos) {
-        await this.countTodos(options.feature);
-      } else if (options.list) {
-        await this.listSaves();
-      } else if (options.recent) {
-        await this.loadRecentSave();
-      } else {
-        // HODGE-363: Default mode generates YAML manifest for AI consumption
-        await this.generateManifest(options.feature);
-      }
+      // HODGE-363: Generate YAML manifest for AI consumption
+      await this.generateManifest(options.feature);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       this.logger.error(chalk.red(`Context command failed: ${errorMessage}`), {
@@ -256,85 +240,7 @@ export class ContextCommand {
   // Previously loaded context with hardcoded console output for human-readable display
   // Now outputs structured YAML manifest for AI consumption via /hodge slash command
 
-  /**
-   * List all available saves
-   */
-  private async listSaves(): Promise<void> {
-    this.logger.info(chalk.cyan('📋 Available Saved Sessions'));
-    this.logger.info('');
-
-    const saves = await this.saveDiscoveryService.discoverSaves();
-
-    if (saves.length === 0) {
-      this.logger.info(chalk.gray('No saved sessions found.'));
-      return;
-    }
-
-    saves.forEach((save, index) => {
-      this.logger.info(chalk.bold(`${index + 1}. ${save.name}`));
-      this.logger.info(chalk.gray(`   Path: ${save.path}`));
-      this.logger.info(
-        chalk.gray(
-          `   Saved: ${save.timestamp} (${this.saveDiscoveryService.formatTimeAgo(save.timestamp)})`
-        )
-      );
-
-      if (save.feature) {
-        this.logger.info(chalk.gray(`   Feature: ${save.feature}`));
-      }
-
-      if (save.mode) {
-        this.logger.info(chalk.gray(`   Mode: ${save.mode}`));
-      }
-
-      if (save.summary) {
-        this.logger.info(chalk.gray(`   Summary: ${save.summary}`));
-      }
-
-      this.logger.info('');
-    });
-
-    this.logger.info(chalk.gray(`Total: ${saves.length} saved sessions`));
-  }
-
-  /**
-   * Load the most recent save
-   */
-  private async loadRecentSave(): Promise<void> {
-    this.logger.info(chalk.cyan('🔄 Loading Most Recent Save'));
-    this.logger.info('');
-
-    const saves = await this.saveDiscoveryService.discoverSaves();
-
-    if (saves.length === 0) {
-      this.logger.info(chalk.yellow('No saved sessions found.'));
-      return;
-    }
-
-    const mostRecent = saves[0];
-    this.logger.info(chalk.green(`✓ Loading: ${mostRecent.name}`));
-    this.logger.info('');
-
-    // Display the snapshot
-    const snapshotPath = path.join(mostRecent.path, 'snapshot.md');
-    try {
-      const snapshot = await fs.readFile(snapshotPath, 'utf-8');
-      this.logger.info(snapshot);
-    } catch {
-      // Snapshot file missing or unreadable - not critical
-      this.logger.info(chalk.yellow('Could not load snapshot.md'));
-    }
-
-    this.logger.info('');
-    this.logger.info(chalk.bold('Session restored!'));
-
-    if (mostRecent.feature) {
-      const mode = mostRecent.mode || 'explore';
-      this.logger.info(
-        chalk.gray(`Continue with: `) + chalk.cyan(`/${mode} ${mostRecent.feature}`)
-      );
-    }
-  }
+  // HODGE-371: listSaves() and loadRecentSave() removed - options not used in slash commands
 
   // HODGE-363: loadFeatureContext() removed - replaced by generateManifest() YAML approach
   // Previously loaded feature context with console output for human-readable display
@@ -475,74 +381,7 @@ export class ContextCommand {
     }
   }
 
-  /**
-   * Count TODO comments in exploration.md
-   */
-  private async countTodos(featureArg?: string): Promise<void> {
-    try {
-      // HODGE-364: Use ContextManager instead of SessionManager
-      // Determine which feature to check
-      let feature = featureArg;
-      if (!feature) {
-        const contextManager = new ContextManager(this.basePath);
-        const context = await contextManager.load();
-        feature = context?.feature;
-      }
-
-      if (!feature) {
-        this.logger.error(chalk.red('No feature specified and no active session found'));
-        this.logger.info('Usage: hodge context --todos [--feature HODGE-XXX]');
-        throw new Error('No feature specified and no active session found');
-      }
-
-      // Check if exploration.md exists
-      const explorationPath = path.join('.hodge', 'features', feature, 'explore', 'exploration.md');
-
-      if (!existsSync(explorationPath)) {
-        this.logger.info(chalk.yellow(`No exploration.md found for ${feature}`));
-        this.logger.info(chalk.gray(`Expected at: ${explorationPath}`));
-        return;
-      }
-
-      // Read exploration.md
-      const content = await fs.readFile(explorationPath, 'utf-8');
-
-      // Count TODOs using various patterns
-      const todoPatterns = [
-        /\/\/\s*TODO:/gi, // // TODO:
-        /TODO:/gi, // TODO: (standalone)
-        /\[ \]\s*TODO/gi, // [ ] TODO (checklist)
-        /-\s*\[ \]\s*TODO/gi, // - [ ] TODO (markdown checklist)
-      ];
-
-      let totalCount = 0;
-
-      for (const pattern of todoPatterns) {
-        const found = content.match(pattern);
-        if (found) {
-          totalCount += found.length;
-        }
-      }
-
-      // Display results
-      this.logger.info(chalk.blue('📝 TODO Count\n'));
-      this.logger.info(chalk.bold(`TODOs Found: ${chalk.yellow(totalCount.toString())}`));
-      this.logger.info(`Feature: ${chalk.cyan(feature)}`);
-      this.logger.info(`Location: ${chalk.gray(explorationPath)}`);
-
-      if (totalCount > 0) {
-        this.logger.info(
-          chalk.gray(`\n  ℹ  Use 'grep -n "TODO:" ${explorationPath}' to see specific items`)
-        );
-      }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      this.logger.error(chalk.red(`Failed to count TODOs: ${errorMessage}`), {
-        error: error as Error,
-      });
-      throw error;
-    }
-  }
+  // HODGE-371: countTodos() removed - --todos option not used in slash commands
 
   // HODGE-363: displayArchitectureGraph() removed - graph info now in YAML manifest
   // Architecture graph statistics (module count, dependency count) included in architecture_graph section

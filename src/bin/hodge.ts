@@ -43,20 +43,11 @@ program
 const exploreCmd = program
   .command('explore <feature>')
   .description('[Internal] Start exploring a new feature')
-  .option('-f, --force', 'Force re-exploration even if one exists')
-  .option('--from-spec <path>', 'Create feature from YAML specification file')
-  .option('--pre-populate', 'Pre-populate feature from decisions (legacy)')
-  .option('--decisions <decisions...>', 'Link specific decisions to the feature (legacy)')
-  .action(
-    async (
-      feature: string,
-      options: { force?: boolean; fromSpec?: string; prePopulate?: boolean; decisions?: string[] }
-    ) => {
-      const { ExploreCommand } = await import('../commands/explore.js');
-      const exploreCommand = new ExploreCommand();
-      await exploreCommand.execute(feature, options);
-    }
-  );
+  .action(async (feature: string, options: Record<string, never>) => {
+    const { ExploreCommand } = await import('../commands/explore.js');
+    const exploreCommand = new ExploreCommand();
+    await exploreCommand.execute(feature, options);
+  });
 
 const buildCmd = program
   .command('build [feature]')
@@ -72,13 +63,12 @@ const hardenCmd = program
   .command('harden [feature]')
   .description('[Internal] Harden a feature for production (uses current context if not specified)')
   .option('--skip-tests', 'Skip test execution')
-  .option('--auto-fix', 'Attempt to auto-fix linting issues')
   .option('--fix', 'Run auto-fix on staged files (HODGE-341.6)')
   .option('--review', 'Return review context for AI code review (does not run validations)')
   .action(
     async (
       feature: string | undefined,
-      options: { skipTests?: boolean; autoFix?: boolean; fix?: boolean; review?: boolean }
+      options: { skipTests?: boolean; fix?: boolean; review?: boolean }
     ) => {
       const { HardenCommand } = await import('../commands/harden.js');
       const hardenCommand = new HardenCommand();
@@ -123,17 +113,12 @@ const lessonsCmd = program
 const contextCmd = program
   .command('context')
   .description('[Internal] Load project context and manage sessions')
-  .option('--list', 'List all saved sessions')
-  .option('--recent', 'Load most recent saved session')
   .option('--feature <feature>', 'Load context for specific feature')
-  .option('--todos', 'Count TODO comments in exploration.md')
-  .action(
-    async (options: { list?: boolean; recent?: boolean; feature?: string; todos?: boolean }) => {
-      const { ContextCommand } = await import('../commands/context.js');
-      const contextCommand = new ContextCommand();
-      await contextCommand.execute(options);
-    }
-  );
+  .action(async (options: { feature?: string }) => {
+    const { ContextCommand } = await import('../commands/context.js');
+    const contextCommand = new ContextCommand();
+    await contextCommand.execute(options);
+  });
 
 const decideCmd = program
   .command('decide <decision>')
@@ -174,26 +159,6 @@ const shipCmd = program
       await shipCommand.execute(feature, options);
     }
   );
-
-const todosCmd = program
-  .command('todos')
-  .description('[Internal] List TODO comments')
-  .option('-p, --pattern <pattern>', 'Glob pattern for files to search')
-  .option('--json', 'Output as JSON')
-  .action(async (options: { pattern?: string; json?: boolean }) => {
-    const { TodosCommand } = await import('../commands/todos.js');
-    const todosCommand = new TodosCommand();
-    todosCommand.execute(options);
-  });
-
-const linkCmd = program
-  .command('link <localID> <externalID>')
-  .description('[Internal] Link feature IDs')
-  .action(async (localID: string, externalID: string) => {
-    const { LinkCommand } = await import('../commands/link.js');
-    const linkCommand = new LinkCommand();
-    await linkCommand.execute(localID, externalID);
-  });
 
 // Public command for viewing logs - always visible
 program
@@ -237,8 +202,6 @@ if (!showInternal) {
     contextCmd,
     decideCmd,
     shipCmd,
-    todosCmd,
-    linkCmd,
   ];
 
   internalCommands.forEach((cmd) => {

@@ -8,8 +8,6 @@ import fs from 'fs/promises';
 import path from 'path';
 import { existsSync } from 'fs';
 import { cacheManager } from './cache-manager.js';
-import { FeaturePopulator } from './feature-populator.js';
-import { FeatureSpecLoader } from './feature-spec-loader.js';
 import { ContextManager } from './context-manager.js';
 import type { FeatureID } from './id-manager.js';
 
@@ -67,11 +65,7 @@ interface PackageJson {
 }
 
 export interface ExploreServiceOptions {
-  force?: boolean;
   verbose?: boolean;
-  fromSpec?: string;
-  prePopulate?: boolean;
-  decisions?: string[];
 }
 
 /**
@@ -87,55 +81,7 @@ export class ExploreService {
     this.contextManager = new ContextManager(this.basePath);
   }
 
-  /**
-   * Handle from-spec mode (create feature from YAML specification)
-   */
-  async handleFromSpec(
-    featureName: string,
-    specPath: string
-  ): Promise<{ success: boolean; message: string }> {
-    const specLoader = new FeatureSpecLoader();
-    const spec = await specLoader.loadSpec(specPath);
-
-    // Override feature name from spec if provided
-    let finalFeatureName = featureName;
-    if (spec.feature.name && spec.feature.name !== featureName) {
-      finalFeatureName = spec.feature.name;
-    }
-
-    const populator = new FeaturePopulator();
-    const decisions = specLoader.extractDecisions(spec);
-    const metadata = specLoader.toPopulatorMetadata(spec);
-
-    await populator.populateFromDecisions(finalFeatureName, decisions, metadata);
-
-    // HODGE-364: Update context with ContextManager (removed SessionManager)
-    await this.contextManager.updateForCommand('explore', finalFeatureName, 'explore');
-
-    return {
-      success: true,
-      message: `Feature created from specification: ${finalFeatureName}`,
-    };
-  }
-
-  /**
-   * Handle pre-populate mode (legacy approach with decisions)
-   */
-  async handlePrePopulate(
-    featureName: string,
-    decisions: string[] = []
-  ): Promise<{ success: boolean; message: string }> {
-    const populator = new FeaturePopulator();
-    await populator.populateFromDecisions(featureName, decisions);
-
-    // HODGE-364: Update context with ContextManager (removed SessionManager)
-    await this.contextManager.updateForCommand('explore', featureName, 'explore');
-
-    return {
-      success: true,
-      message: `Feature pre-populated: ${featureName}`,
-    };
-  }
+  // HODGE-371: handleFromSpec() and handlePrePopulate() removed - options not used in slash commands
 
   /**
    * Check for existing exploration with caching
@@ -220,46 +166,9 @@ export class ExploreService {
     return this.cache.getOrLoad(
       `intent:${feature}`,
       () => {
-        const intents: Record<string, FeatureIntent> = {
-          auth: {
-            type: 'authentication',
-            keywords: ['login', 'logout', 'session', 'token', 'jwt', 'oauth'],
-            suggestedPatterns: ['singleton-auth', 'middleware', 'token-manager'],
-            relatedCommands: ['login', 'logout', 'verify', 'refresh'],
-          },
-          api: {
-            type: 'api-endpoint',
-            keywords: ['REST', 'GraphQL', 'endpoint', 'route', 'controller'],
-            suggestedPatterns: ['controller', 'router', 'validation', 'error-handler'],
-            relatedCommands: ['get', 'post', 'put', 'delete', 'patch'],
-          },
-          cache: {
-            type: 'caching',
-            keywords: ['cache', 'memoize', 'store', 'ttl', 'invalidate'],
-            suggestedPatterns: ['singleton-cache', 'cache-manager', 'lazy-loading'],
-            relatedCommands: ['get', 'set', 'invalidate', 'clear'],
-          },
-          perf: {
-            type: 'performance',
-            keywords: ['optimize', 'performance', 'speed', 'benchmark'],
-            suggestedPatterns: ['lazy-loading', 'caching', 'memoization'],
-            relatedCommands: ['profile', 'benchmark', 'optimize'],
-          },
-          db: {
-            type: 'database',
-            keywords: ['database', 'query', 'migration', 'model', 'schema'],
-            suggestedPatterns: ['repository', 'active-record', 'data-mapper'],
-            relatedCommands: ['migrate', 'seed', 'query'],
-          },
-          ui: {
-            type: 'ui',
-            keywords: ['component', 'view', 'page', 'layout', 'style'],
-            suggestedPatterns: ['component', 'container-presenter', 'atomic-design'],
-            relatedCommands: ['render', 'update', 'mount'],
-          },
-        };
-
+        const intents = this.getFeatureIntentDefinitions();
         const featureLower = feature.toLowerCase();
+
         for (const [key, intent] of Object.entries(intents)) {
           if (
             featureLower.includes(key) ||
@@ -279,6 +188,50 @@ export class ExploreService {
       },
       { ttl: 300000 }
     );
+  }
+
+  /**
+   * Get feature intent definitions
+   */
+  private getFeatureIntentDefinitions(): Record<string, FeatureIntent> {
+    return {
+      auth: {
+        type: 'authentication',
+        keywords: ['login', 'logout', 'session', 'token', 'jwt', 'oauth'],
+        suggestedPatterns: ['singleton-auth', 'middleware', 'token-manager'],
+        relatedCommands: ['login', 'logout', 'verify', 'refresh'],
+      },
+      api: {
+        type: 'api-endpoint',
+        keywords: ['REST', 'GraphQL', 'endpoint', 'route', 'controller'],
+        suggestedPatterns: ['controller', 'router', 'validation', 'error-handler'],
+        relatedCommands: ['get', 'post', 'put', 'delete', 'patch'],
+      },
+      cache: {
+        type: 'caching',
+        keywords: ['cache', 'memoize', 'store', 'ttl', 'invalidate'],
+        suggestedPatterns: ['singleton-cache', 'cache-manager', 'lazy-loading'],
+        relatedCommands: ['get', 'set', 'invalidate', 'clear'],
+      },
+      perf: {
+        type: 'performance',
+        keywords: ['optimize', 'performance', 'speed', 'benchmark'],
+        suggestedPatterns: ['lazy-loading', 'caching', 'memoization'],
+        relatedCommands: ['profile', 'benchmark', 'optimize'],
+      },
+      db: {
+        type: 'database',
+        keywords: ['database', 'query', 'migration', 'model', 'schema'],
+        suggestedPatterns: ['repository', 'active-record', 'data-mapper'],
+        relatedCommands: ['migrate', 'seed', 'query'],
+      },
+      ui: {
+        type: 'ui',
+        keywords: ['component', 'view', 'page', 'layout', 'style'],
+        suggestedPatterns: ['component', 'container-presenter', 'atomic-design'],
+        relatedCommands: ['render', 'update', 'mount'],
+      },
+    };
   }
 
   /**
@@ -393,47 +346,74 @@ export class ExploreService {
   ): string {
     const sections: string[] = [];
 
-    // Header
+    // Build all sections
+    this.addHeaderSection(sections, feature, userDescription);
+    this.addPMIntegrationSection(sections, pmIssue);
+    this.addContextSection(sections, _projectContext);
+    this.addAnalysisSections(sections, intent, similarFeatures, existingPatterns);
+    this.addPlaceholderSections(sections, feature);
+
+    return sections.join('\n');
+  }
+
+  /**
+   * Add header and description sections
+   */
+  private addHeaderSection(sections: string[], feature: string, userDescription?: string): void {
     sections.push(`# Exploration: ${feature}\n`);
     sections.push(`**Created**: ${new Date().toISOString().split('T')[0]}`);
     sections.push(`**Status**: Exploring\n`);
 
-    // User description if provided
     if (userDescription) {
       sections.push(`## Problem Statement\n`);
       sections.push(`${userDescription}\n`);
     }
+  }
 
-    // PM Integration
+  /**
+   * Add PM integration section
+   */
+  private addPMIntegrationSection(sections: string[], pmIssue: PMIssue | null): void {
     if (pmIssue) {
       sections.push(`## PM Integration\n`);
       sections.push(`- **Issue**: [${pmIssue.id}](${pmIssue.url})`);
       sections.push(`- **Title**: ${pmIssue.title}\n`);
     }
+  }
 
-    // Context
+  /**
+   * Add context section
+   */
+  private addContextSection(sections: string[], projectContext: ProjectContext): void {
     sections.push(`## Context\n`);
-    sections.push(`**Project Type**: ${_projectContext.projectType}`);
-    if (_projectContext.technologies.length > 0) {
-      sections.push(`**Technologies**: ${_projectContext.technologies.join(', ')}`);
+    sections.push(`**Project Type**: ${projectContext.projectType}`);
+    if (projectContext.technologies.length > 0) {
+      sections.push(`**Technologies**: ${projectContext.technologies.join(', ')}`);
     }
     sections.push('');
+  }
 
-    // Intent analysis
+  /**
+   * Add analysis sections (intent, similar features, patterns)
+   */
+  private addAnalysisSections(
+    sections: string[],
+    intent: FeatureIntent,
+    similarFeatures: string[],
+    existingPatterns: Array<{ name: string; description: string; confidence: number }>
+  ): void {
     if (intent.type !== 'general') {
       sections.push(`## Feature Analysis\n`);
       sections.push(`**Detected Intent**: ${intent.type}`);
       sections.push(`**Suggested Patterns**: ${intent.suggestedPatterns.join(', ')}\n`);
     }
 
-    // Similar features
     if (similarFeatures.length > 0) {
       sections.push(`## Related Features\n`);
       similarFeatures.forEach((f) => sections.push(`- ${f}`));
       sections.push('');
     }
 
-    // Existing patterns
     if (existingPatterns.length > 0) {
       sections.push(`## Learned Patterns\n`);
       existingPatterns
@@ -445,8 +425,12 @@ export class ExploreService {
         });
       sections.push('');
     }
+  }
 
-    // Placeholder sections
+  /**
+   * Add placeholder sections for AI to fill
+   */
+  private addPlaceholderSections(sections: string[], feature: string): void {
     sections.push(`## Implementation Approaches\n`);
     sections.push(`<!-- AI will generate 2-3 approaches here -->\n`);
     sections.push(`_Add your approach analysis here_\n`);
@@ -459,8 +443,6 @@ export class ExploreService {
     sections.push(`1. Review exploration`);
     sections.push(`2. Make decisions with \`hodge decide\``);
     sections.push(`3. Start building with \`hodge build ${feature}\``);
-
-    return sections.join('\n');
   }
 
   /**

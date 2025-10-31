@@ -1,0 +1,103 @@
+{
+  "feature": "HODGE-371",
+  "timestamp": "2025-10-31T15:25:32.837Z",
+  "issueId": null,
+  "pmTool": "linear",
+  "validationPassed": true,
+  "qualityResults": [
+    {
+      "type": "type_checking",
+      "tool": "typescript",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "errors": [],
+      "warnings": [],
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "type": "linting",
+      "tool": "eslint",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "errors": [],
+      "warnings": [],
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "type": "testing",
+      "tool": "vitest",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "errors": [],
+      "warnings": [],
+      "stdout": "\n RUN  v3.2.4 /Users/michaelkelly/Projects/hodge\n\n············································································································································································································································································································································································································································································································································································································································································································································{\"level\":\"warn\",\"time\":\"2025-10-31T15:25:29.349Z\",\"name\":\"pm-adapter\",\"timestamp\":\"2025-10-31T15:25:29.349Z\",\"enableConsole\":false,\"msg\":\"Failed to load PM overrides\"}\n················{\"level\":\"info\",\"time\":\"2025-10-31T15:25:29.359Z\",\"msg\":\"Process terminated\"}\n·················································································································································································································································································································································································································································································································································································································································\n\n Test Files  130 passed (130)\n      Tests  1357 passed (1357)\n   Start at  08:25:17\n   Duration  14.79s (transform 2.87s, setup 0ms, collect 15.40s, tests 36.05s, environment 16ms, prepare 10.43s)\n\n",
+      "stderr": "(node:31044) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:31436) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:31408) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:31525) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:31690) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:31807) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\nfatal: No names found, cannot describe anything.\nfatal: No names found, cannot describe anything.\n(node:32172) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:32189) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:32213) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:32216) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:32275) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:32280) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n(node:32420) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:32539) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:32596) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:32600) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:32634) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:32658) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:32664) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:32697) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:32737) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:32757) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n"
+    },
+    {
+      "type": "formatting",
+      "tool": "prettier",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "errors": [],
+      "warnings": [],
+      "stdout": "Checking formatting...\nAll matched files use Prettier code style!\n",
+      "stderr": ""
+    },
+    {
+      "type": "complexity",
+      "tool": "none",
+      "skipped": true,
+      "reason": "No tools configured for this check type"
+    },
+    {
+      "type": "code_smells",
+      "tool": "none",
+      "skipped": true,
+      "reason": "No tools configured for this check type"
+    },
+    {
+      "type": "duplication",
+      "tool": "jscpd",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "errors": [],
+      "warnings": [],
+      "stdout": "\u001b[90m┌────────────\u001b[39m\u001b[90m┬────────────────\u001b[39m\u001b[90m┬─────────────\u001b[39m\u001b[90m┬──────────────\u001b[39m\u001b[90m┬──────────────\u001b[39m\u001b[90m┬──────────────────\u001b[39m\u001b[90m┬───────────────────┐\u001b[39m\n\u001b[90m│\u001b[39m\u001b[31m Format     \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Files analyzed \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Total lines \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Total tokens \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Clones found \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Duplicated lines \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Duplicated tokens \u001b[39m\u001b[90m│\u001b[39m\n\u001b[90m├────────────\u001b[39m\u001b[90m┼────────────────\u001b[39m\u001b[90m┼─────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────────\u001b[39m\u001b[90m┼───────────────────┤\u001b[39m\n\u001b[90m│\u001b[39m typescript \u001b[90m│\u001b[39m 7              \u001b[90m│\u001b[39m 2145        \u001b[90m│\u001b[39m 18217        \u001b[90m│\u001b[39m 0            \u001b[90m│\u001b[39m 0 (0%)           \u001b[90m│\u001b[39m 0 (0%)            \u001b[90m│\u001b[39m\n\u001b[90m├────────────\u001b[39m\u001b[90m┼────────────────\u001b[39m\u001b[90m┼─────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────────\u001b[39m\u001b[90m┼───────────────────┤\u001b[39m\n\u001b[90m│\u001b[39m \u001b[1mTotal:\u001b[22m     \u001b[90m│\u001b[39m 7              \u001b[90m│\u001b[39m 2145        \u001b[90m│\u001b[39m 18217        \u001b[90m│\u001b[39m 0            \u001b[90m│\u001b[39m 0 (0%)           \u001b[90m│\u001b[39m 0 (0%)            \u001b[90m│\u001b[39m\n\u001b[90m└────────────\u001b[39m\u001b[90m┴────────────────\u001b[39m\u001b[90m┴─────────────\u001b[39m\u001b[90m┴──────────────\u001b[39m\u001b[90m┴──────────────\u001b[39m\u001b[90m┴──────────────────\u001b[39m\u001b[90m┴───────────────────┘\u001b[39m\n\u001b[90mFound 0 clones.\u001b[39m\n\u001b[3m\u001b[90mDetection time:\u001b[39m\u001b[23m: 568.396ms\n",
+      "stderr": ""
+    },
+    {
+      "type": "architecture",
+      "tool": "dependency-cruiser",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 3,
+      "errors": [],
+      "warnings": [
+        "\n  warn no-circular: ",
+        "  warn no-circular: ",
+        "  warn no-circular: "
+      ],
+      "stdout": "\n  warn no-circular: src/lib/detection.ts → \n      src/lib/project-name-detector.ts →\n      src/lib/detection.ts\n  warn no-circular: src/commands/init.ts → \n      src/commands/init/init-interaction.ts →\n      src/commands/init.ts\n  warn no-circular: src/commands/harden.ts → \n      src/commands/harden/harden-validator.ts →\n      src/commands/harden.ts\n\nx 3 dependency violations (0 errors, 3 warnings). 113 modules, 456 dependencies cruised.\n\n",
+      "stderr": ""
+    },
+    {
+      "type": "security",
+      "tool": "semgrep",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "errors": [],
+      "warnings": [],
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "commitMessage": "refactor(cli): remove unused commands and options\n\n## What Changed\n- Removed 2 complete commands: `todos` and `link`\n- Deleted 3 files: src/commands/todos.ts (34 lines), src/commands/link.ts (40 lines), src/lib/todo-checker.ts (173 lines)\n- Removed 9 unused CLI options across internal commands:\n  - explore: --force, --from-spec, --pre-populate, --decisions\n  - harden: --auto-fix\n  - context: --list, --recent, --todos\n- Removed orphaned methods from ExploreService: handleFromSpec(), handlePrePopulate()\n- Removed orphaned ContextCommand methods: listSaves(), loadRecentSave(), countTodos()\n- Added comprehensive smoke tests in hodge-371-cleanup.smoke.test.ts (68 lines, 7 tests)\n- Updated src/bin/hodge.ts: removed 59 lines of command/option definitions\n- Updated src/commands/context.ts: removed 171 lines of unused functionality\n- Refactored src/commands/explore.ts: simplified option handling (109 lines modified)\n- Modified 26 files: 1,469 insertions, 677 deletions (net +792 lines including feature docs)\n\n## Why This Change\nFollowing the pattern established in HODGE-369 (ship command cleanup), this comprehensive audit removes commands and options that are never called by slash commands in `.claude/commands/`. This reduces CLI complexity, improves maintainability, and ensures the CLI surface area matches actual usage patterns.\n\nThe cleanup was driven by:\n- Commands `todos` and `link` were never integrated into any slash command workflows\n- Options like `--from-spec`, `--pre-populate`, `--decisions` were explicitly marked as \"(legacy)\" in code\n- Other options like `--force`, `--auto-fix`, `--list`, `--recent`, `--todos` had zero usage in slash commands\n- Grep analysis of `.claude/commands/` confirmed non-usage of all removed features\n\n## Impact\n- **Reduced Complexity**: Eliminated 247 lines of unused command/implementation code (todos.ts + link.ts + todo-checker.ts)\n- **Cleaner CLI**: 9 fewer options across 3 commands, simpler command signatures\n- **Better Maintainability**: Removed orphaned methods and legacy code paths\n- **No Breaking Changes**: Only removed features never called by slash commands\n- **Maintained Quality**: All 1,357 tests passing, zero TypeScript errors, zero ESLint errors\n- **Comprehensive Testing**: 7 new smoke tests verify proper cleanup\n- **Combined Impact**: With HODGE-369, removed 1,981 total lines of unused code from codebase\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}

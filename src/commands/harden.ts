@@ -27,7 +27,6 @@ import type { RawToolResult } from '../types/toolchain.js';
 
 export interface HardenOptions {
   skipTests?: boolean;
-  autoFix?: boolean;
   fix?: boolean; // HODGE-341.6: Run auto-fix on staged files only
   sequential?: boolean; // Run validations sequentially for debugging
   review?: boolean; // Return review context instead of running validations
@@ -244,7 +243,7 @@ export class HardenCommand {
     feature: string,
     results: RawToolResult[],
     hardenDir: string,
-    options: HardenOptions
+    _options: HardenOptions
   ): void {
     const allPassed = getAllPassed(results);
 
@@ -270,13 +269,6 @@ export class HardenCommand {
       );
       this.logger.info('  2. Fix identified issues');
       this.logger.info('  3. Run ' + chalk.cyan(`\`hodge harden ${feature}\``) + ' again');
-
-      if (options.autoFix) {
-        this.logger.info(
-          '\n' +
-            chalk.yellow('💡 Tip: Some issues may have been auto-fixed. Review and commit changes.')
-        );
-      }
     }
 
     this.logger.info(

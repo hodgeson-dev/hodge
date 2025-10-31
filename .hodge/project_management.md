@@ -346,7 +346,35 @@ HODGE-004 (ID Management)
   - Define test intentions
   - Make architectural decisions
 
+
+
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-31
+- **Updated**: 2025-10-31
+- **Description**: CLI options cleanup - remove unused command options
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
 ## Completed Features
+
+### HODGE-371
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-31
+- **Updated**: 2025-10-31
+- **Description**: CLI options cleanup - remove unused command options
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+- **Completed**: 2025-10-31
+
+
 
 ### HODGE-370
 - **Status**: shipped

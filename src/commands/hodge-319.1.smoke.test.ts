@@ -14,12 +14,14 @@ import * as path from 'path';
 
 describe('HODGE-319.1 - Phase 1 Quick Wins', () => {
   smokeTest('should fix /build decision file path (bug fix)', async () => {
-    // Verify build.ts checks correct decision file path
+    // Verify build.ts uses correct decision file path
     const buildPath = path.join(process.cwd(), 'src', 'commands', 'build.ts');
     const content = await fs.readFile(buildPath, 'utf-8');
 
-    // Should check featureDir/decisions.md (correct path)
-    expect(content).toContain("path.join(featureDir, 'decisions.md')");
+    // Should use correct path: '.hodge/features/${feature}/decisions.md'
+    // Path can be constructed directly or via featureDir variable
+    expect(content).toMatch(/path\.join\([^)]*'decisions\.md'\)/);
+    expect(content).toContain("'.hodge', 'features', feature, 'decisions.md'");
 
     // Should NOT check exploreDir/decision.md (old incorrect path)
     expect(content).not.toContain("path.join(exploreDir, 'decision.md')");
@@ -140,7 +142,7 @@ describe('HODGE-319.1 - Phase 1 Quick Wins', () => {
     ]);
 
     // Scope item 1: Fix build.ts:81 path check ✅
-    expect(buildContent).toContain("path.join(featureDir, 'decisions.md')");
+    expect(buildContent).toContain("'.hodge', 'features', feature, 'decisions.md'");
 
     // Scope item 2: Remove HODGE.md creation from all commands ✅
     expect(exploreContent).not.toContain('generateFeatureHodgeMD');

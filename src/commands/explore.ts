@@ -18,12 +18,8 @@ import { SubFeatureContextService } from '../lib/sub-feature-context-service.js'
 import { ExploreService } from '../lib/explore-service.js';
 
 export interface ExploreOptions {
-  force?: boolean;
   verbose?: boolean;
   skipIdManagement?: boolean; // For testing
-  prePopulate?: boolean; // Pre-populate from decisions (legacy)
-  decisions?: string[]; // Specific decisions to link (legacy)
-  fromSpec?: string; // Path to YAML spec file (new approach)
 }
 
 /**
@@ -59,7 +55,7 @@ export class ExploreCommand {
     const inputType = this.detectInputType(feature);
     const userDescription = inputType === 'topic' ? feature : undefined;
 
-    if (options.verbose || process.env.DEBUG) {
+    if ((options.verbose ?? false) || !!process.env.DEBUG) {
       this.logger.info(chalk.gray(`Input detection: "${feature}" → ${inputType}`));
     }
 
@@ -72,17 +68,6 @@ export class ExploreCommand {
 
     // Handle ID management and get resolved feature name
     const { featureID, featureName } = await this.handleIDManagement(feature, options);
-
-    // Handle special modes (from-spec, pre-populate)
-    if (options.fromSpec) {
-      await this.handleFromSpecMode(featureName, options.fromSpec);
-      return;
-    }
-
-    if (options.prePopulate) {
-      await this.handlePrePopulateMode(featureName, options.decisions);
-      return;
-    }
 
     // Standard exploration flow
     await this.performExploration(featureName, featureID, userDescription, options, startTime);
@@ -156,27 +141,6 @@ export class ExploreCommand {
   }
 
   /**
-   * Handle from-spec mode
-   */
-  private async handleFromSpecMode(featureName: string, specPath: string): Promise<void> {
-    this.logger.info(chalk.cyan('🔍 Creating feature from specification'));
-    await this.exploreService.handleFromSpec(featureName, specPath);
-    this.logger.info(chalk.green('\n✓ Feature created from specification'));
-    this.logger.info(chalk.gray(`  Spec file retained: ${specPath}`));
-    this.logger.info(chalk.gray(`  Review: .hodge/features/${featureName}/explore/exploration.md`));
-  }
-
-  /**
-   * Handle pre-populate mode
-   */
-  private async handlePrePopulateMode(featureName: string, decisions?: string[]): Promise<void> {
-    this.logger.info(chalk.cyan('🔍 Pre-populating feature from decisions'));
-    await this.exploreService.handlePrePopulate(featureName, decisions);
-    this.logger.info(chalk.green('\n✓ Feature pre-populated and ready for exploration'));
-    this.logger.info(chalk.gray(`  Review: .hodge/features/${featureName}/explore/exploration.md`));
-  }
-
-  /**
    * Perform standard exploration workflow
    */
   private async performExploration(
@@ -195,17 +159,38 @@ export class ExploreCommand {
     const exploreDir = path.join(this.workingDir, '.hodge', 'features', featureName, 'explore');
 
     // Check existing exploration
-    const existingCheck = await this.exploreService.checkExistingExploration(
-      exploreDir,
-      options.force
-    );
+    const existingCheck = await this.exploreService.checkExistingExploration(exploreDir, false);
 
     if (existingCheck.exists && !existingCheck.shouldContinue) {
       this.displayExistingExploration(exploreDir, existingCheck.content);
       return;
     }
 
-    // Gather context in parallel
+    // Gather context and generate exploration
+    const context = await this.gatherExplorationContext(featureName, featureID);
+    const smartTemplate = await this.generateAndCreateExploration(
+      featureName,
+      featureID,
+      userDescription,
+      exploreDir,
+      context
+    );
+
+    this.displayExplorationGuidance(featureName, smartTemplate, context.similarFeatures);
+
+    // Update session
+    await this.exploreService.updateSession(featureName, Date.now() - startTime);
+
+    // Performance report
+    if (!!process.env.DEBUG || (options.verbose ?? false)) {
+      this.displayPerformanceStats(Date.now() - startTime);
+    }
+  }
+
+  /**
+   * Gather all context needed for exploration
+   */
+  private async gatherExplorationContext(featureName: string, featureID: FeatureID | null) {
     const [, featureIntent, similarFeatures, pmIssue, existingPatterns] = await Promise.all([
       this.loadProjectContext(),
       this.exploreService.analyzeFeatureIntent(featureName),
@@ -214,18 +199,30 @@ export class ExploreCommand {
       this.patternLearner.loadExistingPatterns(),
     ]);
 
-    // Generate template and create files
+    return { featureIntent, similarFeatures, pmIssue, existingPatterns };
+  }
+
+  /**
+   * Generate template and create exploration structure
+   */
+  private async generateAndCreateExploration(
+    featureName: string,
+    featureID: FeatureID | null,
+    userDescription: string | undefined,
+    exploreDir: string,
+    context: Awaited<ReturnType<typeof this.gatherExplorationContext>>
+  ) {
     const smartTemplate = this.exploreService.generateSmartTemplate(
       featureName,
-      featureIntent,
-      similarFeatures,
-      existingPatterns.map((p) => ({
+      context.featureIntent,
+      context.similarFeatures,
+      context.existingPatterns.map((p) => ({
         name: p.name,
         description: p.description,
         confidence: p.frequency / 100,
       })),
-      { projectType: 'unknown', technologies: [], patterns: [] }, // Simplified for now
-      pmIssue,
+      { projectType: 'unknown', technologies: [], patterns: [] },
+      context.pmIssue,
       userDescription
     );
 
@@ -233,20 +230,12 @@ export class ExploreCommand {
       featureName,
       exploreDir,
       smartTemplate,
-      featureIntent,
-      pmIssue,
+      context.featureIntent,
+      context.pmIssue,
       featureID
     );
 
-    this.displayExplorationGuidance(featureName, smartTemplate, similarFeatures);
-
-    // Update session
-    await this.exploreService.updateSession(featureName, Date.now() - startTime);
-
-    // Performance report
-    if (process.env.DEBUG || options.verbose) {
-      this.displayPerformanceStats(Date.now() - startTime);
-    }
+    return smartTemplate;
   }
 
   /**
@@ -295,7 +284,7 @@ export class ExploreCommand {
    */
   private displayExistingExploration(exploreDir: string, content?: string): void {
     this.logger.info(chalk.yellow('⚠️  Exploration already exists for this feature.'));
-    this.logger.info(chalk.gray(`   Use --force to overwrite or review existing exploration at:`));
+    this.logger.info(chalk.gray(`   Review existing exploration at:`));
     this.logger.info(chalk.gray(`   ${exploreDir}\n`));
 
     if (content) {

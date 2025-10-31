@@ -109,7 +109,9 @@ tools:
     # --reporter=dot: Dots for passing tests, 'x' for failures
     # --silent=passed-only: Only show console output from failing tests
     # HODGE-359.1: Regex patterns for structured error/warning extraction
-    error_pattern: '^\s*×\s+.+\s+>\s+.+'
+    # Matches: "FAIL  src/file.test.ts > suite > test name"
+    # Also matches: "AssertionError: expected..." and "Error: ..."
+    error_pattern: '^\s*(FAIL\s+\S+|×\s+.+\s+>\s+.+|(Assertion)?Error:)'
     warning_pattern: ''
 
   # ==================== Advanced TypeScript/JavaScript Tools (HODGE-341.2) ====================
