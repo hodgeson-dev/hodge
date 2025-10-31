@@ -268,6 +268,18 @@ export class ShipCommand {
 
     if (commitResult.success) {
       this.logger.info(chalk.green('   ✓ Commit created successfully'));
+
+      // Update ship-record.json with commit SHA
+      if (commitResult.commitSHA) {
+        await this.shipService.updateShipRecord(feature, {
+          shipCommit: commitResult.commitSHA,
+        });
+        this.logger.debug('Recorded shipCommit SHA', {
+          feature,
+          commitSHA: commitResult.commitSHA,
+        });
+      }
+
       this.displaySuccessNextSteps();
     } else {
       this.displayCommitFailureSteps(commitResult.error?.message);

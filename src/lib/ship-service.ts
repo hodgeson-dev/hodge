@@ -353,13 +353,13 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}**Shipped**: ${date}
    * @param commitMessage - Commit message to use
    * @param feature - Feature name for rollback
    * @param metadataBackup - Backup data for rollback
-   * @returns Whether commit was successful
+   * @returns Whether commit was successful and the commit SHA
    */
   async createShipCommit(
     commitMessage: string,
     feature: string,
     metadataBackup: MetadataBackup
-  ): Promise<{ success: boolean; error?: Error }> {
+  ): Promise<{ success: boolean; commitSHA?: string; error?: Error }> {
     try {
       const { exec } = await import('child_process');
       const { promisify } = await import('util');
@@ -373,7 +373,11 @@ ${issueId ? `**PM Issue**: ${issueId}\n` : ''}**Shipped**: ${date}
         `git commit -m "${commitMessage.replace(/"/g, '\\"').replace(/\n/g, '\\n')}"`
       );
 
-      return { success: true };
+      // Get the commit SHA
+      const { stdout } = await execAsync('git rev-parse HEAD');
+      const commitSHA = stdout.trim();
+
+      return { success: true, commitSHA };
     } catch (error) {
       // Rollback metadata changes on commit failure
       await this.restoreMetadata(feature, metadataBackup);

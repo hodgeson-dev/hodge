@@ -96,8 +96,11 @@ export class StatusCommand {
 
     try {
       const record = JSON.parse(await fs.readFile(shipRecordFile, 'utf-8')) as ShipRecordData;
-      // Feature is shipped only if it has a shipCommit (created by /ship command)
-      return record.shipCommit !== undefined && record.shipCommit !== '';
+      // Feature is shipped if it has a commitMessage (always present after /ship)
+      // or shipCommit SHA (present in newer ships)
+      const hasCommitMessage = Boolean(record.commitMessage);
+      const hasShipCommit = Boolean(record.shipCommit);
+      return hasCommitMessage || hasShipCommit;
     } catch {
       return false;
     }
@@ -158,7 +161,11 @@ export class StatusCommand {
   ): void {
     this.logger.info(chalk.bold('Next Step:'));
 
-    if (!state.hasExploration) {
+    // Check shipped first - most complete state
+    if (state.isShipped) {
+      this.logger.info(chalk.green('  ✓ Feature completed. Start new work with:'));
+      this.logger.info(chalk.cyan(`  hodge explore <feature>`));
+    } else if (!state.hasExploration) {
       this.logger.info(chalk.cyan(`  hodge explore ${feature}`));
     } else if (!state.hasDecision) {
       this.logger.info(chalk.yellow('  Review exploration and make a decision'));
@@ -170,9 +177,6 @@ export class StatusCommand {
     } else if (!state.isProductionReady) {
       this.logger.info(chalk.yellow('  Fix validation issues and run:'));
       this.logger.info(chalk.cyan(`  hodge harden ${feature}`));
-    } else if (state.isShipped) {
-      this.logger.info(chalk.green('  ✓ Feature completed. Start new work with:'));
-      this.logger.info(chalk.cyan(`  hodge explore <feature>`));
     } else {
       this.logger.info(chalk.green('  ✓ Feature is ready to ship!'));
       this.logger.info(chalk.cyan(`  hodge ship ${feature}`));
