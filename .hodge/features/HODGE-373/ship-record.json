@@ -1,0 +1,108 @@
+{
+  "feature": "HODGE-373",
+  "timestamp": "2025-10-31T22:40:32.848Z",
+  "issueId": null,
+  "pmTool": "linear",
+  "validationPassed": true,
+  "qualityResults": [
+    {
+      "type": "type_checking",
+      "tool": "typescript",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "errors": [],
+      "warnings": [],
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "type": "linting",
+      "tool": "eslint",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 4,
+      "errors": [],
+      "warnings": [
+        "/Users/michaelkelly/Projects/hodge/src/commands/status.ts: line 182, col 3, Warning - Async method 'showOverallStatus' has too many lines (71). Maximum allowed is 50. (max-lines-per-function)",
+        "/Users/michaelkelly/Projects/hodge/src/commands/status.ts: line 549, col 8, Warning - Complete the task associated to this \"TODO\" comment. (sonarjs/todo-tag)",
+        "/Users/michaelkelly/Projects/hodge/src/commands/visual-patterns.smoke.test.ts: line 2, col 4, Warning - Complete the task associated to this \"TODO\" comment. (sonarjs/todo-tag)",
+        "/Users/michaelkelly/Projects/hodge/src/commands/visual-rendering.smoke.test.ts: line 2, col 4, Warning - Complete the task associated to this \"TODO\" comment. (sonarjs/todo-tag)"
+      ],
+      "stdout": "/Users/michaelkelly/Projects/hodge/src/commands/status.ts: line 182, col 3, Warning - Async method 'showOverallStatus' has too many lines (71). Maximum allowed is 50. (max-lines-per-function)\n/Users/michaelkelly/Projects/hodge/src/commands/status.ts: line 549, col 8, Warning - Complete the task associated to this \"TODO\" comment. (sonarjs/todo-tag)\n/Users/michaelkelly/Projects/hodge/src/commands/visual-patterns.smoke.test.ts: line 2, col 4, Warning - Complete the task associated to this \"TODO\" comment. (sonarjs/todo-tag)\n/Users/michaelkelly/Projects/hodge/src/commands/visual-rendering.smoke.test.ts: line 2, col 4, Warning - Complete the task associated to this \"TODO\" comment. (sonarjs/todo-tag)\n\n4 problems\n",
+      "stderr": ""
+    },
+    {
+      "type": "testing",
+      "tool": "vitest",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "errors": [],
+      "warnings": [],
+      "stdout": "\n RUN  v3.2.4 /Users/michaelkelly/Projects/hodge\n\n············································································································································································································································································································································································································································································································································································································································································································································································································································································································································{\"level\":\"warn\",\"time\":\"2025-10-31T22:40:30.196Z\",\"name\":\"pm-adapter\",\"timestamp\":\"2025-10-31T22:40:30.195Z\",\"enableConsole\":false,\"msg\":\"Failed to load PM overrides\"}\n················{\"level\":\"info\",\"time\":\"2025-10-31T22:40:30.212Z\",\"msg\":\"Process terminated\"}\n···············································································································································································································································································································································································································································\n\n Test Files  131 passed (131)\n      Tests  1355 passed (1355)\n   Start at  15:40:15\n   Duration  16.69s (transform 2.28s, setup 0ms, collect 16.50s, tests 39.32s, environment 22ms, prepare 11.98s)\n\n",
+      "stderr": "(node:13410) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:13702) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:13704) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:13767) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:14040) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:14036) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\nfatal: No names found, cannot describe anything.\nfatal: No names found, cannot describe anything.\n(node:14471) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:14490) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:14530) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:14552) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:14556) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n(node:14599) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n⚠ No development tools detected\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n(node:14602) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:14606) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:14673) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:14795) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:14861) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:14949) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:14956) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:15010) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:15013) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:15030) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n"
+    },
+    {
+      "type": "formatting",
+      "tool": "prettier",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "errors": [],
+      "warnings": [],
+      "stdout": "Checking formatting...\nAll matched files use Prettier code style!\n",
+      "stderr": ""
+    },
+    {
+      "type": "complexity",
+      "tool": "none",
+      "skipped": true,
+      "reason": "No tools configured for this check type"
+    },
+    {
+      "type": "code_smells",
+      "tool": "none",
+      "skipped": true,
+      "reason": "No tools configured for this check type"
+    },
+    {
+      "type": "duplication",
+      "tool": "jscpd",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 1,
+      "errors": [],
+      "warnings": [
+        "Clone found ("
+      ],
+      "stdout": "Clone found (typescript):\n - \u001b[1m\u001b[32msrc/commands/visual-rendering.smoke.test.ts\u001b[39m\u001b[22m [89:7 - 105:51] (16 lines, 210 tokens)\n   \u001b[1m\u001b[32msrc/commands/visual-rendering.smoke.test.ts\u001b[39m\u001b[22m [25:7 - 41:37]\n\n\u001b[90m┌────────────\u001b[39m\u001b[90m┬────────────────\u001b[39m\u001b[90m┬─────────────\u001b[39m\u001b[90m┬──────────────\u001b[39m\u001b[90m┬──────────────\u001b[39m\u001b[90m┬──────────────────\u001b[39m\u001b[90m┬───────────────────┐\u001b[39m\n\u001b[90m│\u001b[39m\u001b[31m Format     \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Files analyzed \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Total lines \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Total tokens \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Clones found \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Duplicated lines \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Duplicated tokens \u001b[39m\u001b[90m│\u001b[39m\n\u001b[90m├────────────\u001b[39m\u001b[90m┼────────────────\u001b[39m\u001b[90m┼─────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────────\u001b[39m\u001b[90m┼───────────────────┤\u001b[39m\n\u001b[90m│\u001b[39m typescript \u001b[90m│\u001b[39m 5              \u001b[90m│\u001b[39m 1554        \u001b[90m│\u001b[39m 14148        \u001b[90m│\u001b[39m 1            \u001b[90m│\u001b[39m 16 (1.03%)       \u001b[90m│\u001b[39m 210 (1.48%)       \u001b[90m│\u001b[39m\n\u001b[90m├────────────\u001b[39m\u001b[90m┼────────────────\u001b[39m\u001b[90m┼─────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────────\u001b[39m\u001b[90m┼───────────────────┤\u001b[39m\n\u001b[90m│\u001b[39m \u001b[1mTotal:\u001b[22m     \u001b[90m│\u001b[39m 5              \u001b[90m│\u001b[39m 1554        \u001b[90m│\u001b[39m 14148        \u001b[90m│\u001b[39m 1            \u001b[90m│\u001b[39m 16 (1.03%)       \u001b[90m│\u001b[39m 210 (1.48%)       \u001b[90m│\u001b[39m\n\u001b[90m└────────────\u001b[39m\u001b[90m┴────────────────\u001b[39m\u001b[90m┴─────────────\u001b[39m\u001b[90m┴──────────────\u001b[39m\u001b[90m┴──────────────\u001b[39m\u001b[90m┴──────────────────\u001b[39m\u001b[90m┴───────────────────┘\u001b[39m\n\u001b[90mFound 1 clones.\u001b[39m\n\u001b[3m\u001b[90mDetection time:\u001b[39m\u001b[23m: 852.666ms\n",
+      "stderr": ""
+    },
+    {
+      "type": "architecture",
+      "tool": "dependency-cruiser",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 1,
+      "errors": [],
+      "warnings": [
+        "\n  warn no-orphans: "
+      ],
+      "stdout": "\n  warn no-orphans: src/lib/claude-commands.ts\n\nx 1 dependency violations (0 errors, 1 warnings). 30 modules, 63 dependencies cruised.\n\n",
+      "stderr": ""
+    },
+    {
+      "type": "security",
+      "tool": "semgrep",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "errors": [],
+      "warnings": [],
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "commitMessage": "fix(status): correctly distinguish production-ready from shipped state\n\n## What Changed\n- Fixed `checkShipped()` in status.ts to check for `shipCommit` field instead of `validationPassed`\n- Fixed `checkProductionReady()` to properly check `validationPassed` instead of calling `checkShipped()`\n- Updated type imports to use `ShipRecordData` from ship-service.ts\n- Added null checks for Partial<ShipRecordData> fields in stats calculations\n- Removed obsolete `shipChecks` field reference (replaced by `qualityResults` in HODGE-356)\n- Modified 7 files: 341 insertions, 47 deletions\n\n## Why This Change\nThe `hodge status` command was incorrectly reporting features as \"Shipped\" when they had only completed the harden phase. The bug was in line 95 of status.ts, which checked `validationPassed` (set by `/harden`) instead of `shipCommit` (set by `/ship`). This caused confusion about feature state and made it appear that features were shipped before commits were actually created.\n\n## Impact\n- **Status Accuracy**: `hodge status` now correctly distinguishes between:\n  - ✓ Production Ready (harden completed, `validationPassed === true`)\n  - ○ Shipped (commit created, `shipCommit` field exists)\n- **Developer Experience**: No more confusion about whether a feature has actually been committed\n- **Workflow Integrity**: Maintains clear separation between harden validation and actual shipping\n- **Type Safety**: Improved TypeScript type checking with proper `ShipRecordData` usage\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}

@@ -3,9 +3,19 @@ description: Create commit, run final checks, and ship feature
 argument-hint: <feature-id> [--skip-tests]
 ---
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST begin your response with this EXACT formatted box.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
-│ 🚀 Ship: Interactive Commit & Ship                     │
+│ 🚀 Ship: Interactive Commit & Ship                      │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Ship:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 ## Response Parsing (AI Instructions)
 

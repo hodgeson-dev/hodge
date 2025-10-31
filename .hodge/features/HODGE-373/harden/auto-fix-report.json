@@ -1,0 +1,55 @@
+{
+  "timestamp": "2025-10-31T21:59:31.988Z",
+  "stagedFiles": [
+    ".claude/commands/build.md",
+    ".claude/commands/checkpoint.md",
+    ".claude/commands/codify.md",
+    ".claude/commands/decide.md",
+    ".claude/commands/explore.md",
+    ".claude/commands/harden.md",
+    ".claude/commands/hodge.md",
+    ".claude/commands/plan.md",
+    ".claude/commands/review.md",
+    ".claude/commands/ship.md",
+    ".claude/commands/status.md",
+    ".hodge/HODGE.md",
+    ".hodge/features/HODGE-373/build/build-plan.md",
+    ".hodge/features/HODGE-373/checkpoint-2025-10-31-203146.yaml",
+    ".hodge/features/HODGE-373/checkpoint-2025-10-31-204633.yaml",
+    ".hodge/features/HODGE-373/explore/exploration.md",
+    ".hodge/features/HODGE-373/explore/test-intentions.md",
+    ".hodge/features/HODGE-373/ship-record.json",
+    ".hodge/features/HODGE-374/explore/exploration.md",
+    ".hodge/features/HODGE-374/explore/test-intentions.md",
+    ".hodge/features/HODGE-375/explore/exploration.md",
+    ".hodge/features/HODGE-375/explore/test-intentions.md",
+    ".hodge/id-counter.json",
+    ".hodge/id-mappings.json",
+    ".hodge/patterns/ai-template-compliance-pattern.md",
+    ".hodge/project_management.md",
+    "src/commands/template-compliance.smoke.test.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 27,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": ".hodge/features/HODGE-373/checkpoint-2025-10-31-203146.yaml 20ms\n.hodge/features/HODGE-373/checkpoint-2025-10-31-204633.yaml 3ms\nsrc/commands/template-compliance.smoke.test.ts 59ms (unchanged)\n",
+      "stderr": "",
+      "duration": 812
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 1,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": "",
+      "stderr": "",
+      "duration": 3859
+    }
+  ],
+  "totalIssuesFixed": 0,
+  "totalFilesModified": 28,
+  "failures": []
+}

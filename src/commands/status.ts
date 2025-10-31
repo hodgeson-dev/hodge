@@ -6,20 +6,14 @@ import { execSync } from 'child_process';
 import { glob } from 'glob';
 import { ContextManager } from '../lib/context-manager.js';
 import { createCommandLogger } from '../lib/logger.js';
+import type { ShipRecordData } from '../lib/ship-service.js';
 
 export interface StatusOptions {
   stats?: boolean;
 }
 
-interface ShipRecord {
-  feature: string;
-  timestamp: string;
-  validationPassed?: boolean;
-  shipChecks?: {
-    tests?: boolean;
-    coverage?: boolean;
-  };
-}
+// Simplified type for stats calculations
+type ShipRecord = Partial<ShipRecordData>;
 
 export class StatusCommand {
   private logger = createCommandLogger('status', { enableConsole: true });
@@ -79,9 +73,19 @@ export class StatusCommand {
   }
 
   private async checkProductionReady(featureDir: string): Promise<boolean> {
-    // HODGE-365: Production ready means ship validation passed
+    // HODGE-365: Production ready means ship validation passed (harden completed)
     // Use ship-record.json as single source of truth for production readiness
-    return this.checkShipped(featureDir);
+    const shipRecordFile = path.join(featureDir, 'ship-record.json');
+    if (!existsSync(shipRecordFile)) {
+      return false;
+    }
+
+    try {
+      const record = JSON.parse(await fs.readFile(shipRecordFile, 'utf-8')) as ShipRecordData;
+      return record.validationPassed === true;
+    } catch {
+      return false;
+    }
   }
 
   private async checkShipped(featureDir: string): Promise<boolean> {
@@ -91,8 +95,9 @@ export class StatusCommand {
     }
 
     try {
-      const record = JSON.parse(await fs.readFile(shipRecordFile, 'utf-8')) as ShipRecord;
-      return record.validationPassed === true;
+      const record = JSON.parse(await fs.readFile(shipRecordFile, 'utf-8')) as ShipRecordData;
+      // Feature is shipped only if it has a shipCommit (created by /ship command)
+      return record.shipCommit !== undefined && record.shipCommit !== '';
     } catch {
       return false;
     }
@@ -385,7 +390,6 @@ export class StatusCommand {
               feature: record.feature,
               timestamp: record.timestamp,
               validationPassed: record.validationPassed,
-              shipChecks: record.shipChecks,
             });
           }
         } catch (error) {
@@ -450,20 +454,24 @@ export class StatusCommand {
 
     // Add ship records (primary source, more detailed)
     for (const record of shipRecords) {
-      merged.set(record.feature, record);
+      if (record.feature) {
+        merged.set(record.feature, record);
+      }
     }
 
     // Add git ships if not already present
     for (const record of gitShips) {
-      if (!merged.has(record.feature)) {
+      if (record.feature && !merged.has(record.feature)) {
         merged.set(record.feature, record);
       }
     }
 
     // Sort by timestamp (most recent first)
-    return Array.from(merged.values()).sort(
-      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-    );
+    return Array.from(merged.values()).sort((a, b) => {
+      const aTime = a.timestamp ? new Date(a.timestamp).getTime() : 0;
+      const bTime = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+      return bTime - aTime;
+    });
   }
 
   /**
@@ -471,7 +479,7 @@ export class StatusCommand {
    */
   private countSince(ships: ShipRecord[], days: number, now: Date): number {
     const cutoff = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
-    return ships.filter((ship) => new Date(ship.timestamp) >= cutoff).length;
+    return ships.filter((ship) => ship.timestamp && new Date(ship.timestamp) >= cutoff).length;
   }
 
   /**
@@ -490,6 +498,7 @@ export class StatusCommand {
 
       // Check if any ships in this week
       const hasShipThisWeek = ships.some((ship) => {
+        if (!ship.timestamp) return false;
         const shipDate = new Date(ship.timestamp);
         return shipDate >= currentWeekStart && shipDate < weekEnd;
       });

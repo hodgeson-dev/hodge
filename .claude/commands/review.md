@@ -3,9 +3,19 @@ description: Run quality checks and analyze code changes
 argument-hint: [--file <path>] [--directory <path>] [--last <N>]
 ---
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST begin your response with this EXACT formatted box.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
 │ 🔍 Review: Advisory Code Review                        │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Review:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 ## Response Parsing (AI Instructions)
 

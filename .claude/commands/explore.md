@@ -3,9 +3,19 @@ description: Explore a feature idea and create test intentions
 argument-hint: <feature-id>
 ---
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST begin your response with this EXACT formatted box.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
-│ 🔍 Explore: Feature Discovery                          │
+│ 🔍 Explore: Feature Discovery                           │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Explore:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 ## IMPORTANT: Template Compliance
 When presenting exploration results, you MUST follow this template EXACTLY:
@@ -108,9 +118,19 @@ cat .hodge/decisions.md | tail -50   # Recent decisions
 
 ### Phase 2: Conversational Discovery (REQUIRED)
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST output this EXACT formatted box below.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
-│ 🔍 Explore: Conversational Discovery                   │
+│ 🔍 Explore: Conversational Discovery                    │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Explore:" prefix for context awareness
+- ✅ Section name is "Conversational Discovery" exactly as shown
 
 **IMPORTANT**: Engage in natural dialogue to deeply understand the feature before documenting anything.
 

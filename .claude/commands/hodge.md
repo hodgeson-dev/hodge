@@ -3,9 +3,19 @@ description: Load context for a feature or view workflow status
 argument-hint: [feature-id]
 ---
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST begin your response with this EXACT formatted box.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
-│ 🎯 Hodge: Session & Context Manager                    │
+│ 🎯 Hodge: Session & Context Manager                     │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Hodge:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 ## Purpose
 Initialize or resume your Hodge development session with appropriate context.
@@ -213,9 +223,19 @@ The `/hodge` command coordinates with the Hodge CLI to:
 - Load feature-specific files from `.hodge/features/`
 - Ensure principles and standards are available
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST end your response with this EXACT formatted box.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
-│ 🎯 Hodge: Context Loading Complete                     │
+│ 🎯 Hodge: Context Loading Complete                      │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Hodge:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 **This command has finished loading context. No actions have been taken.**
 

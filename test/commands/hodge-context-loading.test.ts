@@ -56,7 +56,7 @@ describe('hodge command context loading', () => {
     // Should NOT use hardcoded primary bash commands (only examples)
     // The template should call hodge context, not directly cat files as primary flow
     const hodgeContextIndex = content.indexOf('hodge context');
-    const firstCatIndex = content.indexOf('cat .hodge/HODGE.md');
+    const firstCatIndex = content.indexOf('cat .hodge/standards.md'); // HODGE-372: HODGE.md removed
 
     // hodge context command should appear before any cat examples
     expect(hodgeContextIndex).toBeGreaterThan(-1);
@@ -79,8 +79,10 @@ describe('hodge command context loading', () => {
     expect(content).toContain('feature_context');
 
     // Should provide example read sequence with cat commands
-    expect(content).toContain('cat .hodge/HODGE.md');
+    // HODGE-372: HODGE.md removed, check for standards.md and other core files instead
     expect(content).toContain('cat .hodge/standards.md');
+    expect(content).toContain('cat .hodge/decisions.md');
+    expect(content).toContain('cat .hodge/principles.md');
   });
 
   smokeTest('should describe manifest format and context-aware suggestions', async () => {

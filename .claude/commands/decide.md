@@ -3,9 +3,19 @@ description: Make and record architectural decisions for a feature
 argument-hint: <feature-id>
 ---
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST begin your response with this EXACT formatted box.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
 │ 📋 Decide: Decision Management                          │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Decide:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 ## Response Parsing (AI Instructions)
 
@@ -71,9 +81,19 @@ When `/decide` is invoked, follow this process:
 
 3. **Present each decision with Principle Alignment**:
 
+   ⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+   You MUST output this EXACT formatted box for each decision.
+   Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
    ┌─────────────────────────────────────────────────────────┐
    │ 📋 Decide: Decision {{number}} of {{total}}             │
    └─────────────────────────────────────────────────────────┘
+
+   **Template compliance checklist:**
+   - ✅ Box uses Unicode box-drawing characters (not markdown)
+   - ✅ Includes "Decide:" prefix for context awareness
+   - ✅ Section name includes decision number
 
    **Topic**: {{decision_topic}}
 

@@ -3,9 +3,19 @@ description: Add integration tests and validate production readiness
 argument-hint: <feature-id>
 ---
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST begin your response with this EXACT formatted box.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
-│ 🔧 Harden: Production Readiness                        │
+│ 🔧 Harden: Production Readiness                         │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Harden:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 ## Response Parsing (AI Instructions)
 

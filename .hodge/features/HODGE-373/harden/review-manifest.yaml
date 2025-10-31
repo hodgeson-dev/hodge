@@ -1,0 +1,204 @@
+version: '1.0'
+feature: HODGE-373
+generated_at: '2025-10-31T21:59:58.272Z'
+recommended_tier: full
+change_analysis:
+  total_files: 27
+  total_lines: 1126
+  breakdown:
+    implementation: 5
+    test: 1
+    documentation: 21
+    config: 0
+changed_files:
+  - path: .claude/commands/build.md
+    lines_changed: 12
+    change_type: documentation
+  - path: .claude/commands/checkpoint.md
+    lines_changed: 12
+    change_type: documentation
+  - path: .claude/commands/codify.md
+    lines_changed: 24
+    change_type: documentation
+  - path: .claude/commands/decide.md
+    lines_changed: 20
+    change_type: documentation
+  - path: .claude/commands/explore.md
+    lines_changed: 24
+    change_type: documentation
+  - path: .claude/commands/harden.md
+    lines_changed: 12
+    change_type: documentation
+  - path: .claude/commands/hodge.md
+    lines_changed: 24
+    change_type: documentation
+  - path: .claude/commands/plan.md
+    lines_changed: 24
+    change_type: documentation
+  - path: .claude/commands/review.md
+    lines_changed: 10
+    change_type: documentation
+  - path: .claude/commands/ship.md
+    lines_changed: 12
+    change_type: documentation
+  - path: .claude/commands/status.md
+    lines_changed: 12
+    change_type: documentation
+  - path: .hodge/HODGE.md
+    lines_changed: 20
+    change_type: documentation
+  - path: .hodge/features/HODGE-373/build/build-plan.md
+    lines_changed: 66
+    change_type: documentation
+  - path: .hodge/features/HODGE-373/checkpoint-2025-10-31-203146.yaml
+    lines_changed: 52
+    change_type: implementation
+  - path: .hodge/features/HODGE-373/checkpoint-2025-10-31-204633.yaml
+    lines_changed: 43
+    change_type: implementation
+  - path: .hodge/features/HODGE-373/explore/exploration.md
+    lines_changed: 216
+    change_type: documentation
+  - path: .hodge/features/HODGE-373/explore/test-intentions.md
+    lines_changed: 27
+    change_type: documentation
+  - path: .hodge/features/HODGE-373/ship-record.json
+    lines_changed: 11
+    change_type: implementation
+  - path: .hodge/features/HODGE-374/explore/exploration.md
+    lines_changed: 45
+    change_type: documentation
+  - path: .hodge/features/HODGE-374/explore/test-intentions.md
+    lines_changed: 27
+    change_type: documentation
+  - path: .hodge/features/HODGE-375/explore/exploration.md
+    lines_changed: 45
+    change_type: documentation
+  - path: .hodge/features/HODGE-375/explore/test-intentions.md
+    lines_changed: 27
+    change_type: documentation
+  - path: .hodge/id-counter.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/id-mappings.json
+    lines_changed: 12
+    change_type: implementation
+  - path: .hodge/patterns/ai-template-compliance-pattern.md
+    lines_changed: 211
+    change_type: documentation
+  - path: .hodge/project_management.md
+    lines_changed: 39
+    change_type: documentation
+  - path: src/commands/template-compliance.smoke.test.ts
+    lines_changed: 95
+    change_type: test
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - test-pattern.md
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - ux-patterns/claude-code-slash-commands.yaml
+      - testing/vitest-3.x.yaml
+      - testing/general-test-standards.yaml
+      - languages/typescript-5.x.yaml
+      - languages/general-coding-standards.yaml
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed
+scope:
+  type: feature
+  target: HODGE-373
+  fileCount: 27
+critical_files:
+  algorithm: risk-weighted-v1.0
+  total_files: 27
+  top_n: 10
+  files:
+    - path: .hodge/features/HODGE-373/explore/exploration.md
+      rank: 1
+      score: 100
+      risk_factors:
+        - large change (216 lines)
+        - new file
+    - path: .hodge/patterns/ai-template-compliance-pattern.md
+      rank: 2
+      score: 100
+      risk_factors:
+        - large change (211 lines)
+        - new file
+    - path: .claude/commands/decide.md
+      rank: 3
+      score: 85
+      risk_factors:
+        - 1 warning
+        - new file
+    - path: .hodge/features/HODGE-373/build/build-plan.md
+      rank: 4
+      score: 83
+      risk_factors:
+        - new file
+    - path: .claude/commands/review.md
+      rank: 5
+      score: 80
+      risk_factors:
+        - 1 warning
+        - new file
+    - path: .hodge/features/HODGE-373/checkpoint-2025-10-31-203146.yaml
+      rank: 6
+      score: 76
+      risk_factors:
+        - new file
+    - path: .hodge/features/HODGE-374/explore/exploration.md
+      rank: 7
+      score: 73
+      risk_factors:
+        - new file
+    - path: .hodge/features/HODGE-375/explore/exploration.md
+      rank: 8
+      score: 73
+      risk_factors:
+        - new file
+    - path: .hodge/features/HODGE-373/checkpoint-2025-10-31-204633.yaml
+      rank: 9
+      score: 72
+      risk_factors:
+        - new file
+    - path: .hodge/project_management.md
+      rank: 10
+      score: 70
+      risk_factors:
+        - new file

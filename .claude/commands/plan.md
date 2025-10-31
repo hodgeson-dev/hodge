@@ -3,9 +3,19 @@ description: Generate project management issues from exploration
 argument-hint: <feature-id>
 ---
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST begin your response with this EXACT formatted box.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
-│ 📊 Plan: Work Organization & PM Integration            │
+│ 📊 Plan: Work Organization & PM Integration             │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Plan:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 ## Response Parsing (AI Instructions)
 
@@ -429,9 +439,19 @@ c) Proceed anyway (explain why this breakdown is correct)
 
 ### Step 3: Present to User
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST output this EXACT formatted box at this step.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
-│ 📊 Plan: Review & Approval                             │
+│ 📊 Plan: Review & Approval                              │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Plan:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 Display the proposed plan and ask:
 

@@ -372,7 +372,61 @@ HODGE-004 (ID Management)
   - Define test intentions
   - Make architectural decisions
 
+
+
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-31
+- **Updated**: 2025-10-31
+- **Description**: AI template UX compliance - strategic use of MUST/MANDATORY markers
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-374
+- **Status**: exploring
+- **Priority**: TBD
+- **Created**: 2025-10-31
+- **Updated**: 2025-10-31
+- **Description**: This is just a test
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
+
+### HODGE-375
+- **Status**: exploring
+- **Priority**: TBD
+- **Created**: 2025-10-31
+- **Updated**: 2025-10-31
+- **Description**: Just another test
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
 ## Completed Features
+
+### HODGE-373
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-10-31
+- **Updated**: 2025-10-31
+- **Description**: AI template UX compliance - strategic use of MUST/MANDATORY markers
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+- **Completed**: 2025-10-31
+
+
 
 ### HODGE-372
 - **Status**: shipped

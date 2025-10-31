@@ -3,9 +3,19 @@ description: Check status of a feature across all phases
 argument-hint: <feature-id>
 ---
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST begin your response with this EXACT formatted box.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
-│ 📊 Status: Feature Overview and Context Management     │
+│ 📊 Status: Feature Overview and Context Management      │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Status:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 ## Command Execution
 

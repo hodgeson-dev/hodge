@@ -3,9 +3,19 @@ description: Save conversation state and update phase documents
 argument-hint: none
 ---
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST begin your response with this EXACT formatted box.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
-│ 💾 Checkpoint: Save Progress & Context                 │
+│ 💾 Checkpoint: Save Progress & Context                  │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Checkpoint:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 ## Purpose
 

@@ -19,9 +19,19 @@ description: Start building a feature with smoke tests
 argument-hint: <feature-id>
 ---
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST begin your response with this EXACT formatted box.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
-│ 🔨 Build: Implementation Mode                          │
+│ 🔨 Build: Implementation Mode                           │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Build:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 ## Response Parsing (AI Instructions)
 
@@ -441,9 +451,19 @@ description: Save conversation state and update phase documents
 argument-hint: none
 ---
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST begin your response with this EXACT formatted box.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
-│ 💾 Checkpoint: Save Progress & Context                 │
+│ 💾 Checkpoint: Save Progress & Context                  │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Checkpoint:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 ## Purpose
 
@@ -867,9 +887,19 @@ description: Add a rule, standard, principle, decision, pattern, or profile
 argument-hint: "<rule or practice>"
 ---
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST begin your response with this EXACT formatted box.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
-│ 📝 Codify: Add Rules to Project                        │
+│ 📝 Codify: Add Rules to Project                         │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Codify:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 ## Response Parsing (AI Instructions)
 
@@ -977,9 +1007,19 @@ find .hodge/review-profiles/ -name "*.yaml" | head -10
 
 ### Step 3: Present Recommendation
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST output this EXACT formatted box at this step.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
-│ 📝 Codify: Recommendation                              │
+│ 📝 Codify: Recommendation                               │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Codify:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 Show your analysis:
 
@@ -1309,9 +1349,19 @@ description: Make and record architectural decisions for a feature
 argument-hint: <feature-id>
 ---
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST begin your response with this EXACT formatted box.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
 │ 📋 Decide: Decision Management                          │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Decide:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 ## Response Parsing (AI Instructions)
 
@@ -1377,9 +1427,19 @@ When \`/decide\` is invoked, follow this process:
 
 3. **Present each decision with Principle Alignment**:
 
+   ⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+   You MUST output this EXACT formatted box for each decision.
+   Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
    ┌─────────────────────────────────────────────────────────┐
    │ 📋 Decide: Decision {{number}} of {{total}}             │
    └─────────────────────────────────────────────────────────┘
+
+   **Template compliance checklist:**
+   - ✅ Box uses Unicode box-drawing characters (not markdown)
+   - ✅ Includes "Decide:" prefix for context awareness
+   - ✅ Section name includes decision number
 
    **Topic**: {{decision_topic}}
 
@@ -1495,9 +1555,19 @@ description: Explore a feature idea and create test intentions
 argument-hint: <feature-id>
 ---
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST begin your response with this EXACT formatted box.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
-│ 🔍 Explore: Feature Discovery                          │
+│ 🔍 Explore: Feature Discovery                           │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Explore:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 ## IMPORTANT: Template Compliance
 When presenting exploration results, you MUST follow this template EXACTLY:
@@ -1600,9 +1670,19 @@ cat .hodge/decisions.md | tail -50   # Recent decisions
 
 ### Phase 2: Conversational Discovery (REQUIRED)
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST output this EXACT formatted box below.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
-│ 🔍 Explore: Conversational Discovery                   │
+│ 🔍 Explore: Conversational Discovery                    │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Explore:" prefix for context awareness
+- ✅ Section name is "Conversational Discovery" exactly as shown
 
 **IMPORTANT**: Engage in natural dialogue to deeply understand the feature before documenting anything.
 
@@ -1855,9 +1935,19 @@ description: Add integration tests and validate production readiness
 argument-hint: <feature-id>
 ---
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST begin your response with this EXACT formatted box.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
-│ 🔧 Harden: Production Readiness                        │
+│ 🔧 Harden: Production Readiness                         │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Harden:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 ## Response Parsing (AI Instructions)
 
@@ -2606,9 +2696,19 @@ description: Load context for a feature or view workflow status
 argument-hint: [feature-id]
 ---
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST begin your response with this EXACT formatted box.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
-│ 🎯 Hodge: Session & Context Manager                    │
+│ 🎯 Hodge: Session & Context Manager                     │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Hodge:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 ## Purpose
 Initialize or resume your Hodge development session with appropriate context.
@@ -2816,9 +2916,19 @@ The \`/hodge\` command coordinates with the Hodge CLI to:
 - Load feature-specific files from \`.hodge/features/\`
 - Ensure principles and standards are available
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST end your response with this EXACT formatted box.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
-│ 🎯 Hodge: Context Loading Complete                     │
+│ 🎯 Hodge: Context Loading Complete                      │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Hodge:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 **This command has finished loading context. No actions have been taken.**
 
@@ -2831,9 +2941,19 @@ description: Generate project management issues from exploration
 argument-hint: <feature-id>
 ---
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST begin your response with this EXACT formatted box.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
-│ 📊 Plan: Work Organization & PM Integration            │
+│ 📊 Plan: Work Organization & PM Integration             │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Plan:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 ## Response Parsing (AI Instructions)
 
@@ -3257,9 +3377,19 @@ c) Proceed anyway (explain why this breakdown is correct)
 
 ### Step 3: Present to User
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST output this EXACT formatted box at this step.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
-│ 📊 Plan: Review & Approval                             │
+│ 📊 Plan: Review & Approval                              │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Plan:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 Display the proposed plan and ask:
 
@@ -3410,9 +3540,19 @@ description: Run quality checks and analyze code changes
 argument-hint: [--file <path>] [--directory <path>] [--last <N>]
 ---
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST begin your response with this EXACT formatted box.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
 │ 🔍 Review: Advisory Code Review                        │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Review:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 ## Response Parsing (AI Instructions)
 
@@ -3785,9 +3925,19 @@ description: Create commit, run final checks, and ship feature
 argument-hint: <feature-id> [--skip-tests]
 ---
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST begin your response with this EXACT formatted box.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
-│ 🚀 Ship: Interactive Commit & Ship                     │
+│ 🚀 Ship: Interactive Commit & Ship                      │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Ship:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 ## Response Parsing (AI Instructions)
 
@@ -4412,9 +4562,19 @@ description: Check status of a feature across all phases
 argument-hint: <feature-id>
 ---
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST begin your response with this EXACT formatted box.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
-│ 📊 Status: Feature Overview and Context Management     │
+│ 📊 Status: Feature Overview and Context Management      │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Status:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 ## Command Execution
 

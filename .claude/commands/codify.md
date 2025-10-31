@@ -3,9 +3,19 @@ description: Add a rule, standard, principle, decision, pattern, or profile
 argument-hint: "<rule or practice>"
 ---
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST begin your response with this EXACT formatted box.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
-│ 📝 Codify: Add Rules to Project                        │
+│ 📝 Codify: Add Rules to Project                         │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Codify:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 ## Response Parsing (AI Instructions)
 
@@ -113,9 +123,19 @@ find .hodge/review-profiles/ -name "*.yaml" | head -10
 
 ### Step 3: Present Recommendation
 
+⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
+
+You MUST output this EXACT formatted box at this step.
+Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
+
 ┌─────────────────────────────────────────────────────────┐
-│ 📝 Codify: Recommendation                              │
+│ 📝 Codify: Recommendation                               │
 └─────────────────────────────────────────────────────────┘
+
+**Template compliance checklist:**
+- ✅ Box uses Unicode box-drawing characters (not markdown)
+- ✅ Includes "Codify:" prefix for context awareness
+- ✅ Section name matches exactly as shown
 
 Show your analysis:
 

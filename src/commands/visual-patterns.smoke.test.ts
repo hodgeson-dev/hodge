@@ -1,5 +1,7 @@
+/* eslint-disable sonarjs/slow-regex, sonarjs/no-nested-functions, sonarjs/duplicates-in-character-class, sonarjs/no-misleading-character-class, no-misleading-character-class, @typescript-eslint/prefer-nullish-coalescing */
+// TODO(HODGE-346.2 technical debt): Refactor test structure to eliminate regex backtracking, reduce nesting depth, fix emoji regex patterns
 import { describe, it, expect } from 'vitest';
-import { readFileSync, readdirSync } from 'fs';
+import { readFileSync } from 'fs';
 import { join } from 'path';
 
 /**
@@ -31,7 +33,7 @@ const BOX_PATTERN = /│\s*[^\n]+\s*│/;
 describe('[smoke] Visual Pattern Compliance (HODGE-346.2)', () => {
   describe('Test Intention 1: All 10 commands start with box header', () => {
     COMMAND_FILES.forEach((file) => {
-      it(`${file} should start with box header (after YAML frontmatter)`, () => {
+      it(`${file} should start with box header (after YAML frontmatter and compliance pattern)`, () => {
         const content = readFileSync(join(COMMANDS_DIR, file), 'utf-8');
         const lines = content.split('\n');
 
@@ -47,7 +49,16 @@ describe('[smoke] Visual Pattern Compliance (HODGE-346.2)', () => {
           }
         }
 
-        // First line (after frontmatter) should be box top
+        // HODGE-373: Skip compliance pattern if present
+        // Pattern structure: warning line, blank, instruction lines, blank, box, blank, checklist
+        if (lines[startIndex]?.includes('⚠️') && lines[startIndex]?.includes('CRITICAL')) {
+          // Find the box after the compliance pattern
+          while (startIndex < lines.length && lines[startIndex] !== BOX_TOP) {
+            startIndex++;
+          }
+        }
+
+        // First box line should be box top
         expect(lines[startIndex]).toBe(BOX_TOP);
 
         // Second line should be box content with emoji and command name

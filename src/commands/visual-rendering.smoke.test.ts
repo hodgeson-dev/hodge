@@ -1,3 +1,5 @@
+/* eslint-disable sonarjs/prefer-regexp-exec, sonarjs/slow-regex, sonarjs/duplicates-in-character-class, sonarjs/no-misleading-character-class, no-misleading-character-class, @typescript-eslint/prefer-nullish-coalescing, @typescript-eslint/naming-convention */
+// TODO(HODGE-346.2 technical debt): Refactor to use RegExp.exec(), fix emoji regex patterns, reduce nesting
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
 import { join } from 'path';
@@ -15,7 +17,7 @@ const COMMANDS_DIR = join(__dirname, '..', '..', '.claude', 'commands');
 
 describe('[smoke] Visual Rendering Verification (HODGE-346.2 Layer 3)', () => {
   describe('Mock Command Execution: /status', () => {
-    it('should render box header correctly (after YAML frontmatter)', () => {
+    it('should render box header correctly (after YAML frontmatter and compliance pattern)', () => {
       const template = readFileSync(join(COMMANDS_DIR, 'status.md'), 'utf-8');
       const lines = template.split('\n');
 
@@ -29,7 +31,14 @@ describe('[smoke] Visual Rendering Verification (HODGE-346.2 Layer 3)', () => {
         }
       }
 
-      // Simulate rendering first 10 lines after frontmatter
+      // HODGE-373: Skip compliance pattern if present
+      if (lines[startIndex]?.includes('⚠️') && lines[startIndex]?.includes('CRITICAL')) {
+        // Find the box after the compliance pattern
+        const boxIndex = lines.findIndex((line, i) => i >= startIndex && line.startsWith('┌'));
+        if (boxIndex !== -1) startIndex = boxIndex;
+      }
+
+      // Simulate rendering from box start
       const rendering = lines.slice(startIndex, startIndex + 10).join('\n');
 
       // Box should be visible
@@ -37,7 +46,7 @@ describe('[smoke] Visual Rendering Verification (HODGE-346.2 Layer 3)', () => {
       expect(rendering).toContain('│ 📊 Status:');
       expect(rendering).toContain('└───');
 
-      // Box should be on first lines (after frontmatter)
+      // Box should be at current position
       expect(lines[startIndex]).toMatch(/^┌/);
       expect(lines[startIndex + 2]).toMatch(/^└/);
     });
@@ -72,7 +81,7 @@ describe('[smoke] Visual Rendering Verification (HODGE-346.2 Layer 3)', () => {
   });
 
   describe('Mock Command Execution: /build', () => {
-    it('should render box header at start (after YAML frontmatter)', () => {
+    it('should render box header at start (after YAML frontmatter and compliance pattern)', () => {
       const template = readFileSync(join(COMMANDS_DIR, 'build.md'), 'utf-8');
       const lines = template.split('\n');
 
@@ -86,7 +95,14 @@ describe('[smoke] Visual Rendering Verification (HODGE-346.2 Layer 3)', () => {
         }
       }
 
-      // First three lines after frontmatter should be box
+      // HODGE-373: Skip compliance pattern if present
+      if (lines[startIndex]?.includes('⚠️') && lines[startIndex]?.includes('CRITICAL')) {
+        // Find the box after the compliance pattern
+        const boxIndex = lines.findIndex((line, i) => i >= startIndex && line.startsWith('┌'));
+        if (boxIndex !== -1) startIndex = boxIndex;
+      }
+
+      // First three lines at box position should be box
       expect(lines[startIndex]).toContain('┌───');
       expect(lines[startIndex + 1]).toContain('│ 🔨 Build:');
       expect(lines[startIndex + 2]).toContain('└───');
