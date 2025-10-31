@@ -470,8 +470,8 @@ Create a conversation checkpoint for resuming work after context compaction. Thi
 
 ### 1. Verify Feature Context
 \`\`\`bash
-# Check current feature from session
-cat .hodge/HODGE.md | grep "Feature:" | head -1
+# HODGE-372: Read feature from context.json (session state)
+cat .hodge/context.json | grep -o '"feature": *"[^"]*"' | cut -d'"' -f4
 \`\`\`
 
 **If no active feature found**, show error:
@@ -494,8 +494,8 @@ Then stop - do not proceed with checkpoint creation.
 
 ### 2. Determine Current Phase
 \`\`\`bash
-# Check current mode/phase
-cat .hodge/HODGE.md | grep "Mode:" | head -1
+# HODGE-372: Read mode from context.json (session state)
+cat .hodge/context.json | grep -o '"mode": *"[^"]*"' | cut -d'"' -f4
 \`\`\`
 
 Extract phase from output (explore/decide/build/harden/ship). This will be used in checkpoint metadata.
@@ -2665,10 +2665,10 @@ The \`hodge context\` command outputs a YAML manifest containing:
 3. Example Read sequence:
 \`\`\`bash
 # Read available global files
-cat .hodge/HODGE.md
 cat .hodge/standards.md
 cat .hodge/decisions.md
 cat .hodge/principles.md
+cat .hodge/context.json
 # (skip any file if status: not_found)
 
 # Read architecture graph for codebase structure

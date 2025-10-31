@@ -62,10 +62,10 @@ The `hodge context` command outputs a YAML manifest containing:
 3. Example Read sequence:
 ```bash
 # Read available global files
-cat .hodge/HODGE.md
 cat .hodge/standards.md
 cat .hodge/decisions.md
 cat .hodge/principles.md
+cat .hodge/context.json
 # (skip any file if status: not_found)
 
 # Read architecture graph for codebase structure
