@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { smokeTest } from './helpers.js';
+import { smokeTest } from '../../src/test/helpers.js';
 import {
   hasUncommittedChanges,
   getCurrentBranch,

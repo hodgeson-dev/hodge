@@ -1,6 +1,6 @@
 import { describe, expect } from 'vitest';
 import { readFileSync } from 'fs';
-import { smokeTest } from './helpers';
+import { smokeTest } from '../src/test/helpers.js';
 
 describe('HODGE-328: ESM validate-standards script', () => {
   smokeTest('should use ESM import syntax (not CommonJS require)', () => {

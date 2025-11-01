@@ -1,6 +1,6 @@
 import { describe, expect } from 'vitest';
 import { readFileSync } from 'fs';
-import { integrationTest } from './helpers';
+import { integrationTest } from '../src/test/helpers.js';
 
 describe('HODGE-328: ESM validate-standards CI integration', () => {
   integrationTest('should use ESM syntax compatible with package.json type=module', () => {

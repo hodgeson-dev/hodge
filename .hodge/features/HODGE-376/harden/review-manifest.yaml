@@ -1,0 +1,207 @@
+version: '1.0'
+feature: HODGE-376
+generated_at: '2025-11-01T03:06:44.228Z'
+recommended_tier: full
+change_analysis:
+  total_files: 24
+  total_lines: 2064
+  breakdown:
+    implementation: 7
+    test: 12
+    documentation: 5
+    config: 0
+changed_files:
+  - path: .claude/commands/hodge.md
+    lines_changed: 14
+    change_type: documentation
+  - path: .hodge/features/HODGE-376/build/build-plan.md
+    lines_changed: 46
+    change_type: documentation
+  - path: .hodge/features/HODGE-376/explore/exploration.md
+    lines_changed: 250
+    change_type: documentation
+  - path: .hodge/features/HODGE-376/explore/test-intentions.md
+    lines_changed: 27
+    change_type: documentation
+  - path: .hodge/features/HODGE-376/harden/auto-fix-report.json
+    lines_changed: 70
+    change_type: implementation
+  - path: .hodge/features/HODGE-376/harden/review-manifest.yaml
+    lines_changed: 208
+    change_type: implementation
+  - path: .hodge/features/HODGE-376/harden/validation-results.json
+    lines_changed: 168
+    change_type: implementation
+  - path: .hodge/features/HODGE-376/ship-record.json
+    lines_changed: 11
+    change_type: implementation
+  - path: .hodge/id-counter.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/id-mappings.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/project_management.md
+    lines_changed: 13
+    change_type: documentation
+  - path: src/commands/build.smoke.test.ts
+    lines_changed: 93
+    change_type: test
+  - path: src/commands/explore.detect-input-type.test.ts
+    lines_changed: 98
+    change_type: test
+  - path: src/commands/harden.smoke.test.ts
+    lines_changed: 14
+    change_type: test
+  - path: src/commands/ship.smoke.test.ts
+    lines_changed: 64
+    change_type: test
+  - path: src/commands/visual-rendering.smoke.test.ts
+    lines_changed: 5
+    change_type: test
+  - path: src/lib/claude-commands.ts
+    lines_changed: 3
+    change_type: implementation
+  - path: src/lib/harden-service.smoke.test.ts
+    lines_changed: 100
+    change_type: test
+  - path: src/lib/ship-service.smoke.test.ts
+    lines_changed: 80
+    change_type: test
+  - path: src/test/eslint-configuration.smoke.test.ts
+    lines_changed: 122
+    change_type: test
+  - path: src/test/github-workflows.smoke.test.ts
+    lines_changed: 82
+    change_type: test
+  - path: src/test/package-configuration.smoke.test.ts
+    lines_changed: 160
+    change_type: test
+  - path: src/test/project-structure.smoke.test.ts
+    lines_changed: 99
+    change_type: test
+  - path: src/test/slash-command-templates.smoke.test.ts
+    lines_changed: 329
+    change_type: test
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - test-pattern.md
+      - error-boundary.md
+      - input-validation.md
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - ux-patterns/claude-code-slash-commands.yaml
+      - testing/vitest-3.x.yaml
+      - testing/general-test-standards.yaml
+      - languages/typescript-5.x.yaml
+      - languages/general-coding-standards.yaml
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed
+scope:
+  type: feature
+  target: HODGE-376
+  fileCount: 24
+critical_files:
+  algorithm: risk-weighted-v1.0
+  total_files: 24
+  top_n: 10
+  files:
+    - path: src/commands/explore.detect-input-type.test.ts
+      rank: 1
+      score: 799
+      risk_factors:
+        - 30 warnings
+        - new file
+        - test file (lower priority)
+    - path: src/test/github-workflows.smoke.test.ts
+      rank: 2
+      score: 366
+      risk_factors:
+        - 13 warnings
+        - new file
+        - test file (lower priority)
+    - path: src/commands/harden.smoke.test.ts
+      rank: 3
+      score: 307
+      risk_factors:
+        - 14 warnings
+        - test file (lower priority)
+    - path: .hodge/features/HODGE-376/explore/exploration.md
+      rank: 4
+      score: 100
+      risk_factors:
+        - large change (250 lines)
+        - new file
+    - path: .hodge/features/HODGE-376/harden/review-manifest.yaml
+      rank: 5
+      score: 100
+      risk_factors:
+        - large change (208 lines)
+        - new file
+    - path: src/test/eslint-configuration.smoke.test.ts
+      rank: 6
+      score: 100
+      risk_factors:
+        - 3 warnings
+        - medium change (122 lines)
+        - new file
+        - test file (lower priority)
+    - path: .hodge/features/HODGE-376/harden/auto-fix-report.json
+      rank: 7
+      score: 85
+      risk_factors:
+        - new file
+    - path: src/lib/claude-commands.ts
+      rank: 8
+      score: 77
+      risk_factors:
+        - 1 warning
+        - new file
+    - path: .hodge/features/HODGE-376/harden/validation-results.json
+      rank: 9
+      score: 75
+      risk_factors:
+        - medium change (168 lines)
+        - new file
+    - path: src/lib/harden-service.smoke.test.ts
+      rank: 10
+      score: 75
+      risk_factors:
+        - 1 warning
+        - new file
+        - test file (lower priority)

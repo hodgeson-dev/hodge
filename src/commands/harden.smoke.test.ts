@@ -78,7 +78,6 @@ describe('HardenCommand - Review Mode Smoke Tests', () => {
     const gitDiffOutput = '10\t5\tsrc/foo.test.ts\n20\t10\tsrc/bar.spec.ts\n';
     process.env.TEST_GIT_DIFF_OUTPUT = gitDiffOutput;
 
-    const command = new HardenCommand();
     // Note: This test validates the service logic, not the full CLI execution
     // Full CLI testing would require mocking child_process.exec
     expect(hardenDir).toBeDefined();
@@ -307,5 +306,18 @@ describe('HardenCommand - ReviewEngineService Integration (HODGE-344.5)', () => 
     expect(converted[0].type).toBe('linting');
     expect(converted[0].tool).toBe('eslint');
     expect(converted[0].stdout).toBe('No issues found');
+  });
+
+  smokeTest('should not generate HODGE.md', async () => {
+    // Verify harden.ts does not generate HODGE.md
+    const hardenPath = join(process.cwd(), 'src', 'commands', 'harden.ts');
+    const fs = await import('fs/promises');
+    const content = await fs.readFile(hardenPath, 'utf-8');
+
+    // Should NOT call generateFeatureHodgeMD
+    expect(content).not.toContain('generateFeatureHodgeMD');
+
+    // Should NOT import FeaturePopulator at all (unused)
+    expect(content).not.toContain('FeaturePopulator');
   });
 });

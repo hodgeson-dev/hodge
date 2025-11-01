@@ -325,7 +325,10 @@ describe('[smoke] Visual Rendering Verification (HODGE-346.2 Layer 3)', () => {
     it('should have completion box', () => {
       const template = readFileSync(join(COMMANDS_DIR, 'hodge.md'), 'utf-8');
 
-      expect(template).toContain('│ 🎯 Hodge: Context Loading Complete');
+      // Check for the closing box which indicates completion
+      expect(template).toContain(
+        '**This command has finished loading context. No actions have been taken.**'
+      );
     });
   });
 

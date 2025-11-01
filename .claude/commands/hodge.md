@@ -223,20 +223,6 @@ The `/hodge` command coordinates with the Hodge CLI to:
 - Load feature-specific files from `.hodge/features/`
 - Ensure principles and standards are available
 
-⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
-
-You MUST end your response with this EXACT formatted box.
-Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
-
-┌─────────────────────────────────────────────────────────┐
-│ 🎯 Hodge: Context Loading Complete                      │
-└─────────────────────────────────────────────────────────┘
-
-**Template compliance checklist:**
-- ✅ Box uses Unicode box-drawing characters (not markdown)
-- ✅ Includes "Hodge:" prefix for context awareness
-- ✅ Section name matches exactly as shown
-
 **This command has finished loading context. No actions have been taken.**
 
 💬 Your response:

@@ -24,9 +24,7 @@ describe('HODGE-329: TruffleHog CI configuration', () => {
     const securitySteps = workflow.jobs.security.steps;
 
     // Find the TruffleHog step
-    const truffleHogStep = securitySteps.find(
-      (step: any) => step.uses && step.uses.includes('trufflehog')
-    );
+    const truffleHogStep = securitySteps.find((step: any) => step.uses?.includes('trufflehog'));
 
     expect(truffleHogStep).toBeDefined();
     expect(truffleHogStep.with).toBeDefined();
@@ -41,9 +39,7 @@ describe('HODGE-329: TruffleHog CI configuration', () => {
     const workflow = yaml.load(workflowContent) as any;
 
     const securitySteps = workflow.jobs.security.steps;
-    const truffleHogStep = securitySteps.find(
-      (step: any) => step.uses && step.uses.includes('trufflehog')
-    );
+    const truffleHogStep = securitySteps.find((step: any) => step.uses?.includes('trufflehog'));
 
     // Should have path parameter
     expect(truffleHogStep.with.path).toBe('./');
@@ -57,9 +53,7 @@ describe('HODGE-329: TruffleHog CI configuration', () => {
     const workflow = yaml.load(workflowContent) as any;
 
     const securitySteps = workflow.jobs.security.steps;
-    const truffleHogStep = securitySteps.find(
-      (step: any) => step.uses && step.uses.includes('trufflehog')
-    );
+    const truffleHogStep = securitySteps.find((step: any) => step.uses?.includes('trufflehog'));
 
     // Should use @main for latest security updates
     expect(truffleHogStep.uses).toBe('trufflesecurity/trufflehog@main');
@@ -72,9 +66,7 @@ describe('HODGE-329: TruffleHog CI configuration', () => {
     const securitySteps = workflow.jobs.security.steps;
 
     // Should have checkout step before TruffleHog
-    const checkoutStep = securitySteps.find(
-      (step: any) => step.uses && step.uses.includes('checkout')
-    );
+    const checkoutStep = securitySteps.find((step: any) => step.uses?.includes('checkout'));
 
     expect(checkoutStep).toBeDefined();
     expect(checkoutStep.name).toBe('Checkout code');

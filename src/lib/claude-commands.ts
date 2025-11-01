@@ -2696,6 +2696,9 @@ description: Load context for a feature or view workflow status
 argument-hint: [feature-id]
 ---
 
+Use the SlashCommand tool to execute:
+  /clear
+
 ⚠️ **CRITICAL - EXACT OUTPUT REQUIRED** ⚠️
 
 You MUST begin your response with this EXACT formatted box.

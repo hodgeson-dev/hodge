@@ -17,7 +17,14 @@ import { join } from 'path';
  */
 function stripJsonComments(jsonString: string): string {
   // Remove single-line comments (// ...)
-  return jsonString.replace(/\/\/.*$/gm, '');
+  // Split by lines to avoid catastrophic backtracking
+  return jsonString
+    .split('\n')
+    .map((line) => {
+      const commentIndex = line.indexOf('//');
+      return commentIndex >= 0 ? line.substring(0, commentIndex) : line;
+    })
+    .join('\n');
 }
 
 describe('HODGE-357.6: Template File Exemptions', () => {

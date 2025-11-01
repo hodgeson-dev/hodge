@@ -3,7 +3,7 @@
  * Smoke tests to validate package configuration and structure
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, expect } from 'vitest';
 import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import { smokeTest } from './helpers.js';

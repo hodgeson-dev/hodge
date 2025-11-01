@@ -411,7 +411,35 @@ HODGE-004 (ID Management)
   - Define test intentions
   - Make architectural decisions
 
+
+
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-11-01
+- **Updated**: 2025-11-01
+- **Description**: Refactor feature-named test files to follow functionality-based naming standard
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
 ## Completed Features
+
+### HODGE-376
+- **Status**: shipped
+- **Priority**: TBD
+- **Created**: 2025-11-01
+- **Updated**: 2025-11-01
+- **Description**: Refactor feature-named test files to follow functionality-based naming standard
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+- **Completed**: 2025-11-01
+
+
 
 ### HODGE-373
 - **Status**: shipped

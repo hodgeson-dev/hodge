@@ -1,0 +1,70 @@
+{
+  "timestamp": "2025-11-01T02:58:25.928Z",
+  "stagedFiles": [
+    ".claude/commands/hodge.md",
+    ".hodge/features/HODGE-376/build/build-plan.md",
+    ".hodge/features/HODGE-376/explore/exploration.md",
+    ".hodge/features/HODGE-376/explore/test-intentions.md",
+    ".hodge/features/HODGE-376/ship-record.json",
+    ".hodge/id-counter.json",
+    ".hodge/id-mappings.json",
+    ".hodge/project_management.md",
+    "scripts/lib/release-utils.test.ts",
+    "scripts/validate-standards.integration.test.ts",
+    "scripts/validate-standards.smoke.test.ts",
+    "src/bin/hodge-371-cleanup.smoke.test.ts",
+    "src/commands/build.smoke.test.ts",
+    "src/commands/explore.detect-input-type.test.ts",
+    "src/commands/harden.smoke.test.ts",
+    "src/commands/hodge-319.1.smoke.test.ts",
+    "src/commands/hodge-319.4.smoke.test.ts",
+    "src/commands/hodge-324.smoke.test.ts",
+    "src/commands/hodge-325.smoke.test.ts",
+    "src/commands/hodge-326.smoke.test.ts",
+    "src/commands/ship.smoke.test.ts",
+    "src/lib/claude-commands.ts",
+    "src/lib/harden-service.smoke.test.ts",
+    "src/lib/hodge-319.3.smoke.test.ts",
+    "src/lib/ship-service.smoke.test.ts",
+    "src/test/eslint-configuration.smoke.test.ts",
+    "src/test/github-workflows.smoke.test.ts",
+    "src/test/hodge-356.smoke.test.ts",
+    "src/test/package-configuration.smoke.test.ts",
+    "src/test/project-structure.smoke.test.ts",
+    "src/test/slash-command-templates.smoke.test.ts",
+    "vitest.config.test.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 32,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": "scripts/lib/release-utils.test.ts 86ms (unchanged)\nscripts/validate-standards.integration.test.ts 6ms (unchanged)\nscripts/validate-standards.smoke.test.ts 5ms (unchanged)\nsrc/commands/build.smoke.test.ts 8ms\nsrc/commands/explore.detect-input-type.test.ts 19ms (unchanged)\nsrc/commands/harden.smoke.test.ts 30ms (unchanged)\nsrc/commands/ship.smoke.test.ts 11ms (unchanged)\nsrc/lib/claude-commands.ts 19ms\nsrc/lib/harden-service.smoke.test.ts 6ms (unchanged)\nsrc/lib/ship-service.smoke.test.ts 4ms (unchanged)\nsrc/test/eslint-configuration.smoke.test.ts 8ms (unchanged)\nsrc/test/github-workflows.smoke.test.ts 5ms (unchanged)\nsrc/test/package-configuration.smoke.test.ts 8ms (unchanged)\nsrc/test/project-structure.smoke.test.ts 7ms (unchanged)\nsrc/test/slash-command-templates.smoke.test.ts 15ms\nvitest.config.test.ts 3ms (unchanged)\n",
+      "stderr": "[error] No files matching the pattern were found: \"src/bin/hodge-371-cleanup.smoke.test.ts\".\n[error] No files matching the pattern were found: \"src/commands/hodge-319.1.smoke.test.ts\".\n[error] No files matching the pattern were found: \"src/commands/hodge-319.4.smoke.test.ts\".\n[error] No files matching the pattern were found: \"src/commands/hodge-324.smoke.test.ts\".\n[error] No files matching the pattern were found: \"src/commands/hodge-325.smoke.test.ts\".\n[error] No files matching the pattern were found: \"src/commands/hodge-326.smoke.test.ts\".\n[error] No files matching the pattern were found: \"src/lib/hodge-319.3.smoke.test.ts\".\n[error] No files matching the pattern were found: \"src/test/hodge-356.smoke.test.ts\".\n",
+      "duration": 996
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 0,
+      "issuesFixed": 0,
+      "success": false,
+      "stdout": "",
+      "stderr": "\nOops! Something went wrong! :(\n\nESLint: 8.57.1\n\nNo files matching the pattern \"src/bin/hodge-371-cleanup.smoke.test.ts\" were found.\nPlease check for typing mistakes in the pattern.\n\n",
+      "duration": 1531
+    }
+  ],
+  "totalIssuesFixed": 0,
+  "totalFilesModified": 32,
+  "failures": [
+    {
+      "tool": "eslint",
+      "filesProcessed": 0,
+      "issuesFixed": 0,
+      "success": false,
+      "stdout": "",
+      "stderr": "\nOops! Something went wrong! :(\n\nESLint: 8.57.1\n\nNo files matching the pattern \"src/bin/hodge-371-cleanup.smoke.test.ts\" were found.\nPlease check for typing mistakes in the pattern.\n\n",
+      "duration": 1531
+    }
+  ]
+}
