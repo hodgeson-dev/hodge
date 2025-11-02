@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, expect, beforeEach, afterEach } from 'vitest';
 import { integrationTest } from '../test/helpers.js';
 import fs from 'fs-extra';
 import path from 'path';

@@ -3,7 +3,7 @@ import { smokeTest } from '../test/helpers.js';
 import { mkdtempSync, rmSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
-import { writeFileSync, mkdirSync } from 'fs';
+import { mkdirSync, writeFileSync } from 'fs';
 import * as yaml from 'js-yaml';
 import { HardenCommand } from './harden.js';
 import type { RawToolResult } from '../types/toolchain.js';

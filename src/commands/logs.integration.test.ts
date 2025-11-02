@@ -5,17 +5,16 @@
 
 import { integrationTest } from '../test/helpers.js';
 import { LogsCommand } from './logs.js';
+import { TempDirectoryFixture } from '../test/temp-directory-fixture.js';
 import fs from 'fs-extra';
 import path from 'path';
-import os from 'os';
 
 integrationTest('should read and format real log file with pretty output', async () => {
-  const testLogDir = path.join(os.tmpdir(), `hodge-logs-test-${process.pid}`);
+  const fixture = new TempDirectoryFixture();
+  const testLogDir = await fixture.setup();
   const testLogFile = path.join(testLogDir, 'hodge.log');
 
   try {
-    await fs.ensureDir(testLogDir);
-
     // Create a test log file with sample entries
     const logEntries = [
       JSON.stringify({
@@ -50,17 +49,16 @@ integrationTest('should read and format real log file with pretty output', async
     // Execute should not throw
     await expect(cmd.execute({ pretty: true })).resolves.not.toThrow();
   } finally {
-    await fs.remove(testLogDir);
+    await fixture.cleanup();
   }
 });
 
 integrationTest('should filter logs by level', async () => {
-  const testLogDir = path.join(os.tmpdir(), `hodge-logs-test-${process.pid}-level`);
+  const fixture = new TempDirectoryFixture();
+  const testLogDir = await fixture.setup();
   const testLogFile = path.join(testLogDir, 'hodge.log');
 
   try {
-    await fs.ensureDir(testLogDir);
-
     const logEntries = [
       JSON.stringify({ time: Date.now(), level: 'info', msg: 'Info message' }),
       JSON.stringify({ time: Date.now(), level: 'error', msg: 'Error message' }),
@@ -73,17 +71,16 @@ integrationTest('should filter logs by level', async () => {
 
     await expect(cmd.execute({ level: 'error', pretty: true })).resolves.not.toThrow();
   } finally {
-    await fs.remove(testLogDir);
+    await fixture.cleanup();
   }
 });
 
 integrationTest('should filter logs by command', async () => {
-  const testLogDir = path.join(os.tmpdir(), `hodge-logs-test-${process.pid}-command`);
+  const fixture = new TempDirectoryFixture();
+  const testLogDir = await fixture.setup();
   const testLogFile = path.join(testLogDir, 'hodge.log');
 
   try {
-    await fs.ensureDir(testLogDir);
-
     const logEntries = [
       JSON.stringify({ time: Date.now(), level: 'info', msg: 'Explore msg', command: 'explore' }),
       JSON.stringify({ time: Date.now(), level: 'info', msg: 'Build msg', command: 'build' }),
@@ -101,17 +98,16 @@ integrationTest('should filter logs by command', async () => {
 
     await expect(cmd.execute({ command: 'build', pretty: true })).resolves.not.toThrow();
   } finally {
-    await fs.remove(testLogDir);
+    await fixture.cleanup();
   }
 });
 
 integrationTest('should apply tail limit correctly', async () => {
-  const testLogDir = path.join(os.tmpdir(), `hodge-logs-test-${process.pid}-tail`);
+  const fixture = new TempDirectoryFixture();
+  const testLogDir = await fixture.setup();
   const testLogFile = path.join(testLogDir, 'hodge.log');
 
   try {
-    await fs.ensureDir(testLogDir);
-
     const logEntries = Array.from({ length: 100 }, (_, i) =>
       JSON.stringify({ time: Date.now(), level: 'info', msg: `Message ${i}` })
     );
@@ -122,16 +118,16 @@ integrationTest('should apply tail limit correctly', async () => {
 
     await expect(cmd.execute({ tail: 10, pretty: true })).resolves.not.toThrow();
   } finally {
-    await fs.remove(testLogDir);
+    await fixture.cleanup();
   }
 });
 
 integrationTest('should clear log files', async () => {
-  const testLogDir = path.join(os.tmpdir(), `hodge-logs-test-${process.pid}-clear`);
+  const fixture = new TempDirectoryFixture();
+  const testLogDir = await fixture.setup();
   const testLogFile = path.join(testLogDir, 'hodge.log');
 
   try {
-    await fs.ensureDir(testLogDir);
     await fs.writeFile(testLogFile, 'test log content');
 
     const cmd = new LogsCommand(testLogFile);
@@ -141,23 +137,22 @@ integrationTest('should clear log files', async () => {
     // Log file should be deleted
     expect(await fs.pathExists(testLogFile)).toBe(false);
   } finally {
-    await fs.remove(testLogDir);
+    await fixture.cleanup();
   }
 });
 
 integrationTest('should handle non-existent log file gracefully', async () => {
-  const cmd = new LogsCommand('/tmp/nonexistent-hodge-log-file.log');
+  const cmd = new LogsCommand('/nonexistent/test-hodge-log-file.log');
 
   await expect(cmd.execute({ pretty: true })).resolves.not.toThrow();
 });
 
 integrationTest('should handle malformed JSON in log file', async () => {
-  const testLogDir = path.join(os.tmpdir(), `hodge-logs-test-${process.pid}-malformed`);
+  const fixture = new TempDirectoryFixture();
+  const testLogDir = await fixture.setup();
   const testLogFile = path.join(testLogDir, 'hodge.log');
 
   try {
-    await fs.ensureDir(testLogDir);
-
     const logEntries = [
       JSON.stringify({ time: Date.now(), level: 'info', msg: 'Valid entry' }),
       'This is not valid JSON',
@@ -170,17 +165,16 @@ integrationTest('should handle malformed JSON in log file', async () => {
 
     await expect(cmd.execute({ pretty: true })).resolves.not.toThrow();
   } finally {
-    await fs.remove(testLogDir);
+    await fixture.cleanup();
   }
 });
 
 integrationTest('should preserve raw JSON in non-pretty mode', async () => {
-  const testLogDir = path.join(os.tmpdir(), `hodge-logs-test-${process.pid}-raw`);
+  const fixture = new TempDirectoryFixture();
+  const testLogDir = await fixture.setup();
   const testLogFile = path.join(testLogDir, 'hodge.log');
 
   try {
-    await fs.ensureDir(testLogDir);
-
     const logEntry = JSON.stringify({
       time: Date.now(),
       level: 'info',
@@ -195,6 +189,6 @@ integrationTest('should preserve raw JSON in non-pretty mode', async () => {
 
     await expect(cmd.execute({ pretty: false })).resolves.not.toThrow();
   } finally {
-    await fs.remove(testLogDir);
+    await fixture.cleanup();
   }
 });

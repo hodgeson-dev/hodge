@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { describe, expect, vi, beforeEach, afterEach } from 'vitest';
 import { smokeTest } from '../test/helpers.js';
 import { ShipService } from './ship-service.js';
 import { existsSync } from 'fs';
 import fs from 'fs/promises';
-import { exec } from 'child_process';
 
 // Mock modules
 vi.mock('fs', async () => {

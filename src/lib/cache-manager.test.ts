@@ -261,7 +261,6 @@ describe('CacheManager', () => {
 
 describe('FeatureStateCache', () => {
   let featureCache: FeatureStateCache;
-  let mockExistsSync: any;
   let mockReadFile: any;
   let mockAccess: any;
 
@@ -269,7 +268,7 @@ describe('FeatureStateCache', () => {
     (CacheManager as any).instance = undefined;
     featureCache = new FeatureStateCache();
 
-    mockExistsSync = vi.mocked(fs.existsSync);
+    // mockExistsSync assignment removed - was unused
     mockReadFile = vi.mocked(fs.promises.readFile);
     mockAccess = vi.mocked(fs.promises.access);
   });

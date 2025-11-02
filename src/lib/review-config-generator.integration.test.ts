@@ -4,11 +4,10 @@
  * Tests end-to-end markdown generation with real file system operations
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, expect, beforeEach, afterEach } from 'vitest';
 import { ReviewConfigGenerator } from './review-config-generator.js';
 import { integrationTest } from '../test/helpers.js';
 import type { DetectionResult } from './auto-detection-service.js';
-import type { ProfileEntry } from './profile-discovery-service.js';
 import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';

@@ -1,14 +1,16 @@
 /**
  * Smoke tests for Linear adapter
  */
+/* eslint-disable @typescript-eslint/unbound-method */
 
-import { describe, it, expect } from 'vitest';
+import { describe, expect } from 'vitest';
 import { LinearAdapter } from './linear-adapter.js';
 import { smokeTest } from '../../test/helpers.js';
 
 describe('Linear Adapter Smoke Tests', () => {
   smokeTest('should fail gracefully without API key', async () => {
     expect(() => {
+      // eslint-disable-next-line sonarjs/constructor-for-side-effects -- Testing constructor throws
       new LinearAdapter({
         config: {
           tool: 'linear',
@@ -19,6 +21,7 @@ describe('Linear Adapter Smoke Tests', () => {
 
   smokeTest('should fail gracefully without team ID', async () => {
     expect(() => {
+      // eslint-disable-next-line sonarjs/constructor-for-side-effects -- Testing constructor throws
       new LinearAdapter({
         config: {
           tool: 'linear',
@@ -59,6 +62,7 @@ describe('Linear Adapter Smoke Tests', () => {
 
   smokeTest('should validate API key format', async () => {
     expect(() => {
+      // eslint-disable-next-line sonarjs/constructor-for-side-effects -- Testing constructor throws
       new LinearAdapter({
         config: {
           tool: 'linear',

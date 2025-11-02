@@ -1,8 +1,9 @@
 /**
  * Smoke tests for unified LocalPMAdapter architecture
  */
+/* eslint-disable @typescript-eslint/unbound-method */
 
-import { describe, it, expect } from 'vitest';
+import { describe, expect } from 'vitest';
 import { LocalPMAdapter } from './local-pm-adapter.js';
 import { BasePMAdapter } from './base-adapter.js';
 import { smokeTest } from '../../test/helpers.js';

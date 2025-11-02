@@ -2,14 +2,11 @@
  * Smoke tests for ReviewEngineService
  * HODGE-344.3: Contract verification with mocked dependencies
  */
+/* eslint-disable @typescript-eslint/unbound-method */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, expect, vi, beforeEach } from 'vitest';
 import { smokeTest } from '../test/helpers.js';
 import { ReviewEngineService } from './review-engine-service.js';
-import { ReviewManifestGenerator } from './review-manifest-generator.js';
-import { ToolchainService } from './toolchain-service.js';
-import { CriticalFileSelector } from './critical-file-selector.js';
-import { ToolRegistryLoader } from './tool-registry-loader.js';
 import type { ReviewOptions } from '../types/review-engine.js';
 
 // Mock dependencies

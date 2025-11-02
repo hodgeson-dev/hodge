@@ -3,7 +3,7 @@
  * Part of HODGE-341.5: Multi-Language Toolchain Support
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, expect, beforeEach, afterEach } from 'vitest';
 import { smokeTest } from '../test/helpers.js';
 import { PackageManagerDetector } from './package-manager-detector.js';
 import { TempDirectoryFixture } from '../test/temp-directory-fixture.js';

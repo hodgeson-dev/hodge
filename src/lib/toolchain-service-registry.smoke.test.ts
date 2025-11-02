@@ -78,7 +78,8 @@ describe('ToolchainService - Registry-Based Detection (HODGE-341.2)', () => {
       // Version might be undefined if tool not executable, but should be string if present
       if (typescript.version) {
         expect(typeof typescript.version).toBe('string');
-        expect(typescript.version).toMatch(/\d+\.\d+\.\d+/);
+        // Limit digits to prevent backtracking (version numbers rarely exceed 3 digits per segment)
+        expect(typescript.version).toMatch(/\d{1,3}\.\d{1,3}\.\d{1,3}/);
       }
     }
   });

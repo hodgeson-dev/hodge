@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, expect, beforeEach, afterEach } from 'vitest';
 import { existsSync } from 'fs';
 import { promises as fs } from 'fs';
 import path from 'path';

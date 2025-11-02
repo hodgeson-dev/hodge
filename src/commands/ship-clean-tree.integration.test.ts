@@ -3,8 +3,9 @@
  *
  * Simplified integration tests that verify the behavior without full workspace setup
  */
+/* eslint-disable @typescript-eslint/unbound-method */
 
-import { describe, it, expect } from 'vitest';
+import { describe, expect } from 'vitest';
 import { integrationTest } from '../test/helpers.js';
 import * as fs from 'fs/promises';
 import * as path from 'path';

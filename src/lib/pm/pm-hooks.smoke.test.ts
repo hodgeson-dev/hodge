@@ -2,7 +2,7 @@
  * Smoke tests for PM hooks integration
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, expect } from 'vitest';
 import { PMHooks } from './pm-hooks.js';
 import { smokeTest } from '../../test/helpers.js';
 import { withTestWorkspace } from '../../test/runners.js';
@@ -12,7 +12,8 @@ import { promises as fs } from 'fs';
 describe('PM Hooks Smoke Tests', () => {
   smokeTest('should create PMHooks instance without crashing', async () => {
     await withTestWorkspace('pm-hooks-instance', async (workspace) => {
-      await expect(async () => {
+      expect(() => {
+        // eslint-disable-next-line sonarjs/constructor-for-side-effects -- Testing constructor doesn't throw
         new PMHooks(workspace.getPath());
       }).not.toThrow();
     });

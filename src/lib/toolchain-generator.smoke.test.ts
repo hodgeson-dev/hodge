@@ -3,7 +3,7 @@
  * Part of HODGE-341.2: Two-Layer Configuration Architecture
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, expect } from 'vitest';
 import { ToolchainGenerator } from './toolchain-generator.js';
 import { smokeTest } from '../test/helpers.js';
 import os from 'os';

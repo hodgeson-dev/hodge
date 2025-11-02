@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, expect, beforeEach, afterEach } from 'vitest';
 import { PlanCommand } from './plan.js';
 import path from 'path';
 import fs from 'fs/promises';

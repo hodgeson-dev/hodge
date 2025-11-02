@@ -1,0 +1,316 @@
+version: '1.0'
+feature: HODGE-378.2
+generated_at: '2025-11-02T21:11:45.364Z'
+recommended_tier: full
+change_analysis:
+  total_files: 63
+  total_lines: 1168
+  breakdown:
+    implementation: 7
+    test: 53
+    documentation: 3
+    config: 0
+changed_files:
+  - path: .hodge/features/HODGE-378.2/build/build-plan.md
+    lines_changed: 46
+    change_type: documentation
+  - path: .hodge/features/HODGE-378.2/explore/exploration.md
+    lines_changed: 179
+    change_type: documentation
+  - path: .hodge/features/HODGE-378.2/harden/auto-fix-report.json
+    lines_changed: 87
+    change_type: implementation
+  - path: .hodge/features/HODGE-378.2/harden/review-manifest.yaml
+    lines_changed: 317
+    change_type: implementation
+  - path: .hodge/features/HODGE-378.2/harden/validation-results.json
+    lines_changed: 182
+    change_type: implementation
+  - path: .hodge/features/HODGE-378.2/ship-record.json
+    lines_changed: 11
+    change_type: implementation
+  - path: .hodge/id-mappings.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/project_management.md
+    lines_changed: 13
+    change_type: documentation
+  - path: scripts/sync-claude-commands.test.ts
+    lines_changed: 4
+    change_type: test
+  - path: src/commands/build.ts
+    lines_changed: 2
+    change_type: implementation
+  - path: src/commands/choice-formatting.smoke.test.ts
+    lines_changed: 25
+    change_type: test
+  - path: src/commands/harden.characterization.test.ts
+    lines_changed: 4
+    change_type: test
+  - path: src/commands/harden.smoke.test.ts
+    lines_changed: 2
+    change_type: test
+  - path: src/commands/harden.ts
+    lines_changed: 4
+    change_type: implementation
+  - path: src/commands/init.test.ts
+    lines_changed: 12
+    change_type: test
+  - path: src/commands/logs.integration.test.ts
+    lines_changed: 52
+    change_type: test
+  - path: src/commands/logs.smoke.test.ts
+    lines_changed: 12
+    change_type: test
+  - path: src/commands/plan.smoke.test.ts
+    lines_changed: 7
+    change_type: test
+  - path: src/commands/plan.test.ts
+    lines_changed: 2
+    change_type: test
+  - path: src/commands/review.smoke.test.ts
+    lines_changed: 7
+    change_type: test
+  - path: src/commands/ship-clean-tree.integration.test.ts
+    lines_changed: 3
+    change_type: test
+  - path: src/lib/__tests__/context-manager.test.ts
+    lines_changed: 1
+    change_type: test
+  - path: src/lib/__tests__/feature-spec-loader.test.ts
+    lines_changed: 1
+    change_type: test
+  - path: src/lib/auto-detection-service.integration.test.ts
+    lines_changed: 2
+    change_type: test
+  - path: src/lib/cache-manager.test.ts
+    lines_changed: 3
+    change_type: test
+  - path: src/lib/config-manager.integration.test.ts
+    lines_changed: 4
+    change_type: test
+  - path: src/lib/critical-file-selector.smoke.test.ts
+    lines_changed: 2
+    change_type: test
+  - path: src/lib/detection.test.ts
+    lines_changed: 56
+    change_type: test
+  - path: src/lib/diagnostics-service.smoke.test.ts
+    lines_changed: 2
+    change_type: test
+  - path: src/lib/esm-config.integration.test.ts
+    lines_changed: 2
+    change_type: test
+  - path: src/lib/esm-config.smoke.test.ts
+    lines_changed: 4
+    change_type: test
+  - path: src/lib/framework-detector.smoke.test.ts
+    lines_changed: 2
+    change_type: test
+  - path: src/lib/git-file-scoping.smoke.test.ts
+    lines_changed: 2
+    change_type: test
+  - path: src/lib/harden-service.test.ts
+    lines_changed: 3
+    change_type: test
+  - path: src/lib/id-manager.test.ts
+    lines_changed: 2
+    change_type: test
+  - path: src/lib/language-detector.smoke.test.ts
+    lines_changed: 2
+    change_type: test
+  - path: src/lib/logger.integration.test.ts
+    lines_changed: 2
+    change_type: test
+  - path: src/lib/logger.smoke.test.ts
+    lines_changed: 4
+    change_type: test
+  - path: src/lib/monorepo-detector.smoke.test.ts
+    lines_changed: 2
+    change_type: test
+  - path: src/lib/package-manager-detector.smoke.test.ts
+    lines_changed: 2
+    change_type: test
+  - path: src/lib/pattern-learner.test.ts
+    lines_changed: 4
+    change_type: test
+  - path: src/lib/pm/github-adapter.smoke.test.ts
+    lines_changed: 4
+    change_type: test
+  - path: src/lib/pm/integration.test.ts
+    lines_changed: 2
+    change_type: test
+  - path: src/lib/pm/linear-adapter.smoke.test.ts
+    lines_changed: 6
+    change_type: test
+  - path: src/lib/pm/local-pm-adapter-unified.smoke.test.ts
+    lines_changed: 3
+    change_type: test
+  - path: src/lib/pm/local-pm-adapter.test.ts
+    lines_changed: 4
+    change_type: test
+  - path: src/lib/pm/pm-hooks.smoke.test.ts
+    lines_changed: 5
+    change_type: test
+  - path: src/lib/profile-composition-service.smoke.test.ts
+    lines_changed: 2
+    change_type: test
+  - path: src/lib/profile-discovery-service.integration.test.ts
+    lines_changed: 2
+    change_type: test
+  - path: src/lib/profile-discovery-service.smoke.test.ts
+    lines_changed: 2
+    change_type: test
+  - path: src/lib/profile-library.smoke.test.ts
+    lines_changed: 2
+    change_type: test
+  - path: src/lib/review-config-generator.integration.test.ts
+    lines_changed: 3
+    change_type: test
+  - path: src/lib/review-engine-service.smoke.test.ts
+    lines_changed: 7
+    change_type: test
+  - path: src/lib/ship-service.test.ts
+    lines_changed: 2
+    change_type: test
+  - path: src/lib/standards-validator.test.ts
+    lines_changed: 11
+    change_type: test
+  - path: src/lib/tool-registry-loader.smoke.test.ts
+    lines_changed: 2
+    change_type: test
+  - path: src/lib/toolchain-generator.smoke.test.ts
+    lines_changed: 2
+    change_type: test
+  - path: src/lib/toolchain-service-registry.smoke.test.ts
+    lines_changed: 3
+    change_type: test
+  - path: src/lib/toolchain-service.smoke.test.ts
+    lines_changed: 2
+    change_type: test
+  - path: src/lib/ux-profile-validation.smoke.test.ts
+    lines_changed: 16
+    change_type: test
+  - path: src/test/file-consolidation.smoke.test.ts
+    lines_changed: 2
+    change_type: test
+  - path: src/test/test-isolation.integration.test.ts
+    lines_changed: 5
+    change_type: test
+  - path: test/pm-integration.integration.test.ts
+    lines_changed: 4
+    change_type: test
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - test-pattern.md
+      - error-boundary.md
+      - input-validation.md
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - testing/vitest-3.x.yaml
+      - testing/general-test-standards.yaml
+      - languages/typescript-5.x.yaml
+      - languages/general-coding-standards.yaml
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed
+scope:
+  type: feature
+  target: HODGE-378.2
+  fileCount: 63
+critical_files:
+  algorithm: risk-weighted-v1.0
+  total_files: 63
+  top_n: 10
+  files:
+    - path: src/lib/critical-file-selector.smoke.test.ts
+      rank: 1
+      score: 451
+      risk_factors:
+        - 5 blocker issues
+        - test file (lower priority)
+    - path: src/commands/harden.smoke.test.ts
+      rank: 2
+      score: 301
+      risk_factors:
+        - 14 warnings
+        - test file (lower priority)
+    - path: src/lib/pm/linear-adapter.smoke.test.ts
+      rank: 3
+      score: 103
+      risk_factors:
+        - 6 warnings
+        - test file (lower priority)
+    - path: .hodge/features/HODGE-378.2/harden/review-manifest.yaml
+      rank: 4
+      score: 100
+      risk_factors:
+        - large change (317 lines)
+        - new file
+    - path: .hodge/features/HODGE-378.2/harden/auto-fix-report.json
+      rank: 5
+      score: 94
+      risk_factors:
+        - new file
+    - path: src/commands/choice-formatting.smoke.test.ts
+      rank: 6
+      score: 88
+      risk_factors:
+        - 5 warnings
+        - test file (lower priority)
+    - path: .hodge/features/HODGE-378.2/explore/exploration.md
+      rank: 7
+      score: 75
+      risk_factors:
+        - medium change (179 lines)
+        - new file
+    - path: .hodge/features/HODGE-378.2/harden/validation-results.json
+      rank: 8
+      score: 75
+      risk_factors:
+        - medium change (182 lines)
+        - new file
+    - path: .hodge/features/HODGE-378.2/build/build-plan.md
+      rank: 9
+      score: 73
+      risk_factors:
+        - new file
+    - path: .hodge/project_management.md
+      rank: 10
+      score: 57
+      risk_factors:
+        - new file

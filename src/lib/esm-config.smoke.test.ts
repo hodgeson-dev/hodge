@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect } from 'vitest';
 import { smokeTest } from '../test/helpers.js';
 import fs from 'fs-extra';
 import path from 'path';
@@ -33,7 +33,7 @@ describe('ESM Configuration - HODGE-318', () => {
     expect(workflowContent).toContain('22.x');
 
     // Should NOT include 18.x in the matrix
-    const matrixMatch = workflowContent.match(/node-version:\s*\[([\s\S]*?)\]/);
+    const matrixMatch = /node-version:\s*\[([\s\S]*?)\]/.exec(workflowContent);
     expect(matrixMatch).toBeTruthy();
     const matrixContent = matrixMatch![1];
     expect(matrixContent).not.toContain('18.x');

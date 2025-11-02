@@ -4,7 +4,7 @@
  * Tests end-to-end behavior with real file system operations
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, expect, beforeEach, afterEach } from 'vitest';
 import { ProfileDiscoveryService } from './profile-discovery-service.js';
 import { integrationTest } from '../test/helpers.js';
 import fs from 'fs-extra';

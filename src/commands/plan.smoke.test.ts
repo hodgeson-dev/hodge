@@ -1,5 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { PlanCommand } from './plan.js';
+import { describe, expect, beforeEach, afterEach } from 'vitest';
 import { PlanDecisionAnalyzer } from './plan/plan-decision-analyzer.js';
 import { smokeTest } from '../test/helpers.js';
 import fs from 'fs/promises';
@@ -8,13 +7,11 @@ import os from 'os';
 
 describe('PlanCommand - Description Extraction (Smoke Tests)', () => {
   let testDir: string;
-  let planCommand: PlanCommand;
   let decisionAnalyzer: PlanDecisionAnalyzer;
 
   beforeEach(async () => {
     // Create isolated temp directory
     testDir = await fs.mkdtemp(path.join(os.tmpdir(), 'hodge-plan-test-'));
-    planCommand = new PlanCommand(testDir);
     decisionAnalyzer = new PlanDecisionAnalyzer(testDir);
 
     // Create .hodge structure
@@ -126,12 +123,10 @@ TBD
 
 describe('PlanCommand - Cascading Decision Loading (Smoke Tests)', () => {
   let testDir: string;
-  let planCommand: PlanCommand;
   let decisionAnalyzer: PlanDecisionAnalyzer;
 
   beforeEach(async () => {
     testDir = await fs.mkdtemp(path.join(os.tmpdir(), 'hodge-plan-cascade-'));
-    planCommand = new PlanCommand(testDir);
     decisionAnalyzer = new PlanDecisionAnalyzer(testDir);
   });
 

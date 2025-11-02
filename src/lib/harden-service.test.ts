@@ -1,4 +1,5 @@
-import { describe, it, expect } from 'vitest';
+/* eslint-disable @typescript-eslint/unbound-method */
+import { describe, expect } from 'vitest';
 import { smokeTest } from '../test/helpers.js';
 import { HardenService } from './harden-service.js';
 

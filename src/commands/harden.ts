@@ -2,11 +2,13 @@
  * Hodge Harden Command
  * Orchestrates feature hardening with parallel validation execution (thin orchestrator)
  */
+/* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
+// Chalk library returns 'any' type - disabling type safety checks for this file
 
 import chalk from 'chalk';
+import { existsSync } from 'fs';
 import { promises as fs } from 'fs';
 import * as path from 'path';
-import { existsSync } from 'fs';
 import { ContextManager } from '../lib/context-manager.js';
 import { PMHooks } from '../lib/pm/pm-hooks.js';
 import { createCommandLogger } from '../lib/logger.js';

@@ -3,7 +3,7 @@
  * HODGE-341.1: Build System Detection and Toolchain Infrastructure
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, expect } from 'vitest';
 import { DiagnosticsService } from './diagnostics-service.js';
 import type { RawToolResult } from '../types/toolchain.js';
 import { smokeTest } from '../test/helpers.js';

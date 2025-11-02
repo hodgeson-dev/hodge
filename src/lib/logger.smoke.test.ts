@@ -3,14 +3,14 @@
  * Quick sanity checks to ensure logging works without crashing
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, expect, beforeEach, afterEach, vi } from 'vitest';
 import { smokeTest } from '../test/helpers';
 import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
 
 // Import logger components
-import { logger, createCommandLogger, LogRotator, type CommandLoggerOptions } from './logger';
+import { logger, createCommandLogger, LogRotator } from './logger';
 
 describe('[smoke] Logger', () => {
   const testLogDir = path.join(os.tmpdir(), 'hodge-logger-test', Date.now().toString());

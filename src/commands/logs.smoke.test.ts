@@ -7,7 +7,7 @@ import { smokeTest } from '../test/helpers.js';
 import { LogsCommand } from './logs.js';
 
 smokeTest('LogsCommand constructor should not throw with custom path', () => {
-  expect(() => new LogsCommand('/tmp/fake-log-path.log')).not.toThrow();
+  expect(() => new LogsCommand('/nonexistent/test-log-path.log')).not.toThrow();
 });
 
 smokeTest('LogsCommand constructor should not throw with default path', () => {
@@ -15,13 +15,13 @@ smokeTest('LogsCommand constructor should not throw with default path', () => {
 });
 
 smokeTest('formatLogLine should handle malformed JSON gracefully', () => {
-  const cmd = new LogsCommand('/tmp/fake.log');
+  const cmd = new LogsCommand('/nonexistent/test.log');
   const result = (cmd as any).formatLogLine('invalid json', {}, true);
   expect(result).toBeTruthy(); // Should return the line as-is, not crash
 });
 
 smokeTest('formatLogLine should filter logger internals in pretty mode', () => {
-  const cmd = new LogsCommand('/tmp/fake.log');
+  const cmd = new LogsCommand('/nonexistent/test.log');
   const logLine = JSON.stringify({
     time: Date.now(),
     level: 'info',
@@ -42,7 +42,7 @@ smokeTest('formatLogLine should filter logger internals in pretty mode', () => {
 });
 
 smokeTest('formatLogLine should capitalize and bracket command names', () => {
-  const cmd = new LogsCommand('/tmp/fake.log');
+  const cmd = new LogsCommand('/nonexistent/test.log');
   const logLine = JSON.stringify({
     time: Date.now(),
     level: 'info',
@@ -57,7 +57,7 @@ smokeTest('formatLogLine should capitalize and bracket command names', () => {
 });
 
 smokeTest('formatLogLine should show user data line-by-line', () => {
-  const cmd = new LogsCommand('/tmp/fake.log');
+  const cmd = new LogsCommand('/nonexistent/test.log');
   const logLine = JSON.stringify({
     time: Date.now(),
     level: 'error',
@@ -75,7 +75,7 @@ smokeTest('formatLogLine should show user data line-by-line', () => {
 });
 
 smokeTest('formatLogLine should preserve raw JSON in non-pretty mode', () => {
-  const cmd = new LogsCommand('/tmp/fake.log');
+  const cmd = new LogsCommand('/nonexistent/test.log');
   const logLine = JSON.stringify({
     time: Date.now(),
     level: 'info',

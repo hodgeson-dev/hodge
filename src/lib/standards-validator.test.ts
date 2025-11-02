@@ -59,9 +59,18 @@ describe('StandardsValidator', () => {
 
 // TODO: Import these helper functions from the actual implementation
 function validateStandards(mode: string): ValidationResult {
+  let recommendedLevel: 'enforce' | 'recommend' | 'suggest';
+  if (mode === 'harden') {
+    recommendedLevel = 'enforce';
+  } else if (mode === 'build') {
+    recommendedLevel = 'recommend';
+  } else {
+    recommendedLevel = 'suggest';
+  }
+
   return {
     essentialEnforced: true,
-    recommendedLevel: mode === 'harden' ? 'enforce' : mode === 'build' ? 'recommend' : 'suggest',
+    recommendedLevel,
   };
 }
 

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, expect, beforeEach, afterEach } from 'vitest';
 import { LocalPMAdapter } from './local-pm-adapter';
 import { PMHooks } from './pm-hooks';
 import { promises as fs } from 'fs';

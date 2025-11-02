@@ -8,6 +8,10 @@
  * Test Focus:
  * - Method signatures and contracts
  * - Service dependencies exist and are callable
+ */
+/* eslint-disable @typescript-eslint/unbound-method */
+/**
+ * Continued characterization tests
  * - Report generation structure
  *
  * These tests use "vibe testing" - they test behavior, not implementation.

@@ -1,7 +1,7 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect } from 'vitest';
 import { promises as fs } from 'fs';
 import { join } from 'path';
-import { parse } from 'yaml';
+import * as YAML from 'js-yaml';
 import { smokeTest } from '../test/helpers.js';
 
 /**
@@ -31,7 +31,7 @@ describe('UX Review Profile Validation', () => {
 
   smokeTest('profile YAML is valid and parseable', async () => {
     const content = await fs.readFile(profilePath, 'utf-8');
-    const parsed = parse(content);
+    const parsed = YAML.load(content);
 
     expect(parsed).toBeDefined();
     expect(parsed).toHaveProperty('meta');
@@ -40,7 +40,7 @@ describe('UX Review Profile Validation', () => {
 
   smokeTest('profile has required meta fields', async () => {
     const content = await fs.readFile(profilePath, 'utf-8');
-    const parsed = parse(content);
+    const parsed = YAML.load(content);
 
     expect(parsed.meta).toHaveProperty('version');
     expect(parsed.meta).toHaveProperty('category');
@@ -50,7 +50,7 @@ describe('UX Review Profile Validation', () => {
 
   smokeTest('profile contains mandatory UX rules', async () => {
     const content = await fs.readFile(profilePath, 'utf-8');
-    const parsed = parse(content);
+    const parsed = YAML.load(content);
 
     const mandatoryRuleIds = [
       'interaction-start-box',
@@ -72,7 +72,7 @@ describe('UX Review Profile Validation', () => {
 
   smokeTest('all rules have required fields', async () => {
     const content = await fs.readFile(profilePath, 'utf-8');
-    const parsed = parse(content);
+    const parsed = YAML.load(content);
 
     parsed.rules.forEach((rule: Record<string, unknown>) => {
       expect(rule).toHaveProperty('id');
@@ -91,7 +91,7 @@ describe('UX Review Profile Validation', () => {
 
   smokeTest('mandatory rules use BLOCKER or WARNING severity', async () => {
     const content = await fs.readFile(profilePath, 'utf-8');
-    const parsed = parse(content);
+    const parsed = YAML.load(content);
 
     const mandatoryRules = parsed.rules.filter(
       (rule: { enforcement: string }) => rule.enforcement === 'MANDATORY'
@@ -126,7 +126,7 @@ describe('UX Review Profile Validation', () => {
 
   smokeTest('profile rules include examples for complex patterns', async () => {
     const content = await fs.readFile(profilePath, 'utf-8');
-    const parsed = parse(content);
+    const parsed = YAML.load(content);
 
     const complexRules = [
       'interaction-start-box',

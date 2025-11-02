@@ -1,7 +1,6 @@
 import { describe, expect } from 'vitest';
 import { integrationTest } from './helpers';
-import { existsSync, mkdirSync, writeFileSync, rmSync, readdirSync } from 'fs';
-import { join } from 'path';
+import { existsSync, writeFileSync, rmSync, readdirSync, readFileSync } from 'fs';
 import { randomBytes } from 'crypto';
 import { TempDirectoryFixture } from './temp-directory-fixture.js';
 
@@ -129,7 +128,7 @@ describe('[integration] Test Isolation', () => {
 
       // Verify marker is unchanged
       expect(existsSync(markerPath)).toBe(true);
-      const currentContent = require('fs').readFileSync(markerPath, 'utf8');
+      const currentContent = readFileSync(markerPath, 'utf8');
       expect(currentContent).toBe(markerContent);
 
       // Verify .hodge/saves wasn't modified

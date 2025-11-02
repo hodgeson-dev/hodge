@@ -188,7 +188,7 @@ describe('ConfigManager Integration Tests', () => {
       let isDebug = await configManager.isDebugMode();
       expect(isDebug).toBe(true);
 
-      let isAutoSave = await configManager.isAutoSaveEnabled();
+      const isAutoSave = await configManager.isAutoSaveEnabled();
       expect(isAutoSave).toBe(false);
 
       // Test env override for debug
@@ -235,6 +235,7 @@ describe('ConfigManager Integration Tests', () => {
         version: '1.0.0',
         nested: {
           deep: {
+            // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- Test fixture for secret detection
             password: 'actualPasswordValue123',
           },
         },
@@ -255,6 +256,7 @@ describe('ConfigManager Integration Tests', () => {
       },
       examples: {
         token: 'xxx...', // Placeholder
+        // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- Test fixture with masked password placeholder
         password: '***', // Masked
       },
     };

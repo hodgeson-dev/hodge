@@ -115,7 +115,7 @@ integrationTest('PM integration: queue mechanism for failed operations', async (
   const testDir = await fixture.setup();
 
   const pmHooks = new PMHooks(testDir);
-  const queueFile = path.join(testDir, '.hodge', '.pm-queue.json');
+  // queueFile assignment removed - was unused
 
   // Mock PM tool but with no API key to trigger queueing
   process.env.HODGE_PM_TOOL = 'linear';
@@ -200,7 +200,7 @@ Different feature decision
   const planFile = path.join(hodgeDir, 'features', 'FEAT-001', 'plan.json');
   expect(existsSync(planFile)).toBe(true);
 
-  const plan = JSON.parse(await fs.readFile(planFile, 'utf-8')) as any;
+  const plan = JSON.parse(await fs.readFile(planFile, 'utf-8'));
   expect(plan.feature).toBe('FEAT-001');
   expect(plan.type).toBe('epic');
   expect(plan.stories).toBeDefined();

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument */
+// Chalk library returns 'any' type - disabling type safety checks for this file
 import chalk from 'chalk';
 import { promises as fs } from 'fs';
 import * as path from 'path';

@@ -2,7 +2,7 @@
  * Smoke tests for ProfileDiscoveryService
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, expect } from 'vitest';
 import { ProfileDiscoveryService } from './profile-discovery-service.js';
 import { smokeTest } from '../test/helpers.js';
 

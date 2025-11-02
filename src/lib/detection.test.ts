@@ -4,7 +4,6 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import fs from 'fs-extra';
-import path from 'path';
 import { execSync } from 'child_process';
 import { ProjectDetector, DetectionError, ValidationError } from './detection';
 
@@ -75,9 +74,7 @@ describe('ProjectDetector', () => {
 
     it('should detect complete project information', async () => {
       // Mock package.json exists with name
-      mockFs.pathExists.mockImplementation(async (path) => {
-        return path.toString().includes('package.json');
-      });
+      mockFs.pathExists.mockResolvedValue(true);
       mockFs.readJson.mockResolvedValue({
         name: 'test-project',
         dependencies: { vitest: '^1.0.0' },
@@ -93,12 +90,13 @@ describe('ProjectDetector', () => {
       });
 
       // Mock Hodge config doesn't exist
-      mockFs.pathExists.mockImplementation(async (path) => {
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      mockFs.pathExists.mockImplementation((path) => {
         const pathStr = path.toString();
-        if (pathStr.includes('package.json')) return true;
-        if (pathStr.includes('.hodge')) return false;
-        if (pathStr.includes('yarn.lock')) return true;
-        return false;
+        if (pathStr.includes('package.json')) return Promise.resolve(true);
+        if (pathStr.includes('.hodge')) return Promise.resolve(false);
+        if (pathStr.includes('yarn.lock')) return Promise.resolve(true);
+        return Promise.resolve(false);
       });
 
       const result = await detector.detectProject();
@@ -195,8 +193,9 @@ describe('ProjectDetector', () => {
     });
 
     it('should detect Node.js project from package.json', async () => {
-      mockFs.pathExists.mockImplementation(async (path) => {
-        return path.toString().includes('package.json');
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      mockFs.pathExists.mockImplementation((path) => {
+        return Promise.resolve(path.toString().includes('package.json'));
       });
 
       const result = await detector.detectProject();
@@ -204,8 +203,9 @@ describe('ProjectDetector', () => {
     });
 
     it('should detect Node.js project from node_modules', async () => {
-      mockFs.pathExists.mockImplementation(async (path) => {
-        return path.toString().includes('node_modules');
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      mockFs.pathExists.mockImplementation((path) => {
+        return Promise.resolve(path.toString().includes('node_modules'));
       });
 
       const result = await detector.detectProject();
@@ -213,8 +213,9 @@ describe('ProjectDetector', () => {
     });
 
     it('should detect Python project from requirements.txt', async () => {
-      mockFs.pathExists.mockImplementation(async (path) => {
-        return path.toString().includes('requirements.txt');
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      mockFs.pathExists.mockImplementation((path) => {
+        return Promise.resolve(path.toString().includes('requirements.txt'));
       });
 
       const result = await detector.detectProject();
@@ -222,8 +223,9 @@ describe('ProjectDetector', () => {
     });
 
     it('should detect Python project from pyproject.toml', async () => {
-      mockFs.pathExists.mockImplementation(async (path) => {
-        return path.toString().includes('pyproject.toml');
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      mockFs.pathExists.mockImplementation((path) => {
+        return Promise.resolve(path.toString().includes('pyproject.toml'));
       });
 
       const result = await detector.detectProject();
@@ -299,8 +301,9 @@ describe('ProjectDetector', () => {
     });
 
     it('should detect pnpm from lock file', async () => {
-      mockFs.pathExists.mockImplementation(async (path) => {
-        return path.toString().includes('pnpm-lock.yaml');
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      mockFs.pathExists.mockImplementation((path) => {
+        return Promise.resolve(path.toString().includes('pnpm-lock.yaml'));
       });
 
       const result = await detector.detectProject();
@@ -308,8 +311,9 @@ describe('ProjectDetector', () => {
     });
 
     it('should detect yarn from lock file', async () => {
-      mockFs.pathExists.mockImplementation(async (path) => {
-        return path.toString().includes('yarn.lock');
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      mockFs.pathExists.mockImplementation((path) => {
+        return Promise.resolve(path.toString().includes('yarn.lock'));
       });
 
       const result = await detector.detectProject();
@@ -317,8 +321,9 @@ describe('ProjectDetector', () => {
     });
 
     it('should detect npm from lock file', async () => {
-      mockFs.pathExists.mockImplementation(async (path) => {
-        return path.toString().includes('package-lock.json');
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      mockFs.pathExists.mockImplementation((path) => {
+        return Promise.resolve(path.toString().includes('package-lock.json'));
       });
 
       const result = await detector.detectProject();
@@ -329,8 +334,9 @@ describe('ProjectDetector', () => {
   describe('test framework detection', () => {
     beforeEach(() => {
       detector = new ProjectDetector(mockRootPath);
-      mockFs.pathExists.mockImplementation(async (path) => {
-        return path.toString().includes('package.json');
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      mockFs.pathExists.mockImplementation((path) => {
+        return Promise.resolve(path.toString().includes('package.json'));
       });
     });
 

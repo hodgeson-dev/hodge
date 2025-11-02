@@ -5,7 +5,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
-import chalk from 'chalk';
 import { InitCommand } from './init';
 import { ValidationError } from '../lib/detection';
 
@@ -75,6 +74,7 @@ describe('InitCommand Integration Tests', () => {
 
     it('should initialize Node.js project successfully', async () => {
       // Setup Node.js project detection
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       mockFs.pathExists.mockImplementation((path) => {
         const pathStr = path.toString();
         if (pathStr.includes('package.json')) return Promise.resolve(true);
@@ -114,6 +114,7 @@ describe('InitCommand Integration Tests', () => {
     });
 
     it('should initialize Python project successfully', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       mockFs.pathExists.mockImplementation((path) => {
         const pathStr = path.toString();
         if (pathStr.includes('requirements.txt')) return Promise.resolve(true);
@@ -166,14 +167,13 @@ describe('InitCommand Integration Tests', () => {
 
     describe('error handling', () => {
       it('should handle validation errors properly', async () => {
+        // eslint-disable-next-line sonarjs/no-nested-functions -- Test pattern requires nested functions
         expect(() => new InitCommand('')).toThrow();
 
+        // eslint-disable-next-line sonarjs/no-nested-functions -- Test pattern requires nested functions
         expect(() => {
-          try {
-            new InitCommand('');
-          } catch (error) {
-            throw error;
-          }
+          // eslint-disable-next-line sonarjs/constructor-for-side-effects -- Testing constructor throws
+          new InitCommand('');
         }).toThrow(ValidationError);
       });
       // Display, PM tool, and validation test suites removed - implementation tests deleted

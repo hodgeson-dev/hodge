@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect } from 'vitest';
 import { smokeTest } from '../test/helpers.js';
 import { ImportAnalyzer } from './import-analyzer.js';
 import { SeverityExtractor } from './severity-extractor.js';

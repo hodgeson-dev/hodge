@@ -4,7 +4,7 @@
  * Quick sanity checks that the service can compose review context
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, expect, beforeEach, afterEach } from 'vitest';
 import { ProfileCompositionService } from './profile-composition-service.js';
 import { smokeTest } from '../test/helpers.js';
 import * as fs from 'fs-extra';

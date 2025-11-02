@@ -4,13 +4,14 @@
  * Tests core command structure, method signatures, and basic contract validation.
  * Full integration testing happens in harden phase.
  */
+/* eslint-disable @typescript-eslint/unbound-method */
+/**
+ */
 
 import { describe, expect, beforeEach, afterEach } from 'vitest';
 import { smokeTest } from '../test/helpers.js';
 import { TempDirectoryFixture } from '../test/temp-directory-fixture.js';
 import { ReviewCommand } from './review.js';
-import { writeFileSync, mkdirSync } from 'fs';
-import { join } from 'path';
 import type { ReviewCommandOptions } from './review.js';
 
 describe('ReviewCommand - Smoke Tests (HODGE-344.4)', () => {
@@ -23,7 +24,7 @@ describe('ReviewCommand - Smoke Tests (HODGE-344.4)', () => {
   });
 
   afterEach(() => {
-    fixture.cleanup();
+    void fixture.cleanup();
   });
 
   smokeTest('should instantiate without errors', () => {

@@ -8,7 +8,7 @@
  * - Log file creation and content
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, expect, beforeEach, afterEach } from 'vitest';
 import { integrationTest } from '../test/helpers.js';
 import { createCommandLogger } from './logger.js';
 import fs from 'fs';

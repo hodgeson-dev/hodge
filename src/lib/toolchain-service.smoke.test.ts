@@ -8,7 +8,7 @@
  * - Real tool detection behavior is validated in integration tests
  */
 
-import { describe, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, expect, beforeEach, afterEach } from 'vitest';
 import { ToolchainService } from './toolchain-service.js';
 import { smokeTest } from '../test/helpers.js';
 import { TempDirectoryFixture } from '../test/temp-directory-fixture.js';

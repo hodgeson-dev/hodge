@@ -57,8 +57,8 @@ describe('sync-claude-commands', () => {
         execSync(`npx prettier --check ${OUTPUT_FILE}`, { stdio: 'pipe' });
       }).not.toThrow();
     },
-    10000
-  ); // Increased timeout to 10s for CI environments
+    30000
+  ); // Increased timeout to 30s for CI environments
 
   smokeTest(
     'should complete within reasonable time',

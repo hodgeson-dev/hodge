@@ -1,14 +1,16 @@
 /**
  * Smoke tests for GitHub adapter
  */
+/* eslint-disable @typescript-eslint/unbound-method */
 
-import { describe, it, expect } from 'vitest';
+import { describe, expect } from 'vitest';
 import { GitHubAdapter } from './github-adapter.js';
 import { smokeTest } from '../../test/helpers.js';
 
 describe('GitHub Adapter Smoke Tests', () => {
   smokeTest('should fail gracefully without token', async () => {
     expect(() => {
+      // eslint-disable-next-line sonarjs/constructor-for-side-effects -- Testing constructor throws
       new GitHubAdapter({
         config: {
           tool: 'github',

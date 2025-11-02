@@ -4,7 +4,7 @@
  * Tests end-to-end detection logic with real file system operations
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, expect, beforeEach, afterEach } from 'vitest';
 import { AutoDetectionService } from './auto-detection-service.js';
 import { integrationTest } from '../test/helpers.js';
 import type { ProfileEntry } from './profile-discovery-service.js';

@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { PatternLearner, CodePattern, LearningResult } from './pattern-learner';
+import { PatternLearner } from './pattern-learner';
 import * as fs from 'fs';
 import * as childProcess from 'child_process';
 
@@ -26,7 +26,7 @@ describe('PatternLearner', () => {
 
   describe('analyzeShippedCode', () => {
     it('should analyze files and extract patterns', async () => {
-      const mockExistsSync = vi.mocked(fs.existsSync);
+      // mockExistsSync declaration removed - was unused
       const mockReadFile = vi.mocked(fs.promises.readFile);
       const mockWriteFile = vi.mocked(fs.promises.writeFile);
       const mockMkdir = vi.mocked(fs.promises.mkdir);

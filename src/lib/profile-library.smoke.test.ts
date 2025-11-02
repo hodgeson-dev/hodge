@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { expect } from 'vitest';
 import { smokeTest } from '../test/helpers';
 import * as fs from 'fs';
 import * as path from 'path';

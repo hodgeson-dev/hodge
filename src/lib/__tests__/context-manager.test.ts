@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { ContextManager } from '../context-manager';
 import { mkdir } from 'fs/promises';
-import { existsSync } from 'fs';
 import path from 'path';
 import { TempDirectoryFixture } from '../../test/temp-directory-fixture.js';
 

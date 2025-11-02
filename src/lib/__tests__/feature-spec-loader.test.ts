@@ -13,6 +13,7 @@ describe('[unit] FeatureSpecLoader', () => {
     loader = new FeatureSpecLoader();
     // Create a unique temp directory for each test
     const tempBase = os.tmpdir();
+    // eslint-disable-next-line sonarjs/pseudo-random -- Test isolation requires unique directory names
     const randomId = Math.random().toString(36).substring(7);
     testDir = path.join(tempBase, `hodge-test-${randomId}`);
     await fs.mkdir(testDir, { recursive: true });

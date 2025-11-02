@@ -30,11 +30,13 @@ describe('[smoke] HODGE-346.3: Choice Formatting Standards', () => {
 
       it(`${filename}: should use a) format (not (a) or **a)**) for choices`, () => {
         // Should have choices in a) b) c) format (may have leading whitespace)
-        const hasCorrectFormat = /^\s*[a-z]\) /m.test(content);
+        // Using {0,10} instead of * to prevent backtracking
+        const hasCorrectFormat = /^[ \t]{0,10}[a-z]\) /m.test(content);
         expect(hasCorrectFormat).toBe(true);
 
         // Should NOT have (a) format in choice lists (start of line or after whitespace)
-        const hasWrongFormat1 = /^\s*\([a-z]\) /m.test(content);
+        // Using {0,10} instead of * to prevent backtracking
+        const hasWrongFormat1 = /^[ \t]{0,10}\([a-z]\) /m.test(content);
         expect(hasWrongFormat1).toBe(false);
 
         // Should NOT have **a)** format (bold)
@@ -51,7 +53,8 @@ describe('[smoke] HODGE-346.3: Choice Formatting Standards', () => {
         }
 
         // Look for star emoji in choice lines (may have leading whitespace)
-        const hasStarEmoji = /^\s*[a-z]\) ⭐/m.test(content);
+        // Using {0,10} instead of * to prevent backtracking
+        const hasStarEmoji = /^[ \t]{0,10}[a-z]\) ⭐/m.test(content);
         expect(hasStarEmoji).toBe(true);
       });
 
@@ -62,7 +65,8 @@ describe('[smoke] HODGE-346.3: Choice Formatting Standards', () => {
         }
 
         // Star emoji should be followed by text that includes "(Recommended)"
-        const hasRecommendedText = /⭐.*\(Recommended\)/s.test(content);
+        // Using [^]+ instead of .* to prevent catastrophic backtracking, with reasonable limit
+        const hasRecommendedText = /⭐[^]{0,200}\(Recommended\)/s.test(content);
         expect(hasRecommendedText).toBe(true);
       });
 
@@ -72,7 +76,7 @@ describe('[smoke] HODGE-346.3: Choice Formatting Standards', () => {
         expect(hasTip).toBe(true);
 
         // Tip should use "and" not "but"
-        const tipText = content.match(/💡 Tip:.*$/m)?.[0] || '';
+        const tipText = /💡 Tip:.*$/m.exec(content)?.[0] || '';
         expect(tipText).toContain('and');
         expect(tipText).not.toContain('but');
       });
@@ -83,7 +87,7 @@ describe('[smoke] HODGE-346.3: Choice Formatting Standards', () => {
         expect(hasParsingSection).toBe(true);
 
         // Should document all key patterns
-        const parsingContent = content.match(/## Response Parsing[\s\S]*?(?=\n##)/)?.[0];
+        const parsingContent = /## Response Parsing[\s\S]*?(?=\n##)/.exec(content)?.[0];
         expect(parsingContent).toBeDefined();
 
         if (parsingContent) {
@@ -99,10 +103,10 @@ describe('[smoke] HODGE-346.3: Choice Formatting Standards', () => {
         // Look for the standard prompt pattern
         // Codify has special format: "or type 'approve'"
         if (filename === 'codify.md') {
-          const hasPrompt = /👉 Your choice \[[a-z\/]+\] or type "approve":/i.test(content);
+          const hasPrompt = /👉 Your choice \[[a-z/]+\] or type "approve":/i.test(content);
           expect(hasPrompt).toBe(true);
         } else {
-          const hasStandardPrompt = /👉 Your choice \[[a-z\/]+\]:/i.test(content);
+          const hasStandardPrompt = /👉 Your choice \[[a-z/]+\]:/i.test(content);
           expect(hasStandardPrompt).toBe(true);
         }
       });
@@ -114,7 +118,7 @@ describe('[smoke] HODGE-346.3: Choice Formatting Standards', () => {
       const tips = COMMANDS_WITH_CHOICES.map((filename) => {
         const filepath = join(COMMANDS_DIR, filename);
         const content = readFileSync(filepath, 'utf-8');
-        return content.match(/💡 Tip:.*$/m)?.[0] || '';
+        return /💡 Tip:.*$/m.exec(content)?.[0] || '';
       });
 
       // All tips should start the same way
@@ -127,7 +131,7 @@ describe('[smoke] HODGE-346.3: Choice Formatting Standards', () => {
       const guidanceSections = COMMANDS_WITH_CHOICES.map((filename) => {
         const filepath = join(COMMANDS_DIR, filename);
         const content = readFileSync(filepath, 'utf-8');
-        return content.match(/## Response Parsing.*?(?=\n##)/s)?.[0] || '';
+        return /## Response Parsing.*?(?=\n##)/s.exec(content)?.[0] || '';
       });
 
       // All guidance sections should have the same structure
@@ -152,6 +156,7 @@ describe('[smoke] HODGE-346.3: Choice Formatting Standards', () => {
 
         if (recommendationCount <= 1) {
           // Should NOT have "r" shortcut in any prompt
+          // eslint-disable-next-line sonarjs/no-nested-functions -- Test pattern with forEach
           prompts.forEach((prompt) => {
             expect(prompt).not.toMatch(/\bor r for/i);
           });

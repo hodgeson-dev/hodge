@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, expect, beforeEach, afterEach } from 'vitest';
 import { LocalPMAdapter } from './local-pm-adapter';
 import { promises as fs } from 'fs';
 import * as path from 'path';
@@ -102,7 +102,7 @@ describe('LocalPMAdapter', () => {
   smokeTest('should preserve project plan structure', async () => {
     await adapter.init();
 
-    const originalContent = await fs.readFile(pmPath, 'utf-8');
+    // originalContent assignment removed - was unused
 
     // Add and update features
     await adapter.addFeature('TEST-003', 'Test feature');
