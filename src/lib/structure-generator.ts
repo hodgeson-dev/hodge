@@ -7,6 +7,7 @@ import { createCommandLogger } from './logger.js';
 
 import fs from 'fs-extra';
 import path from 'path';
+import { PM_SCRIPTS_README } from './pm-readme-template.js';
 import { ProjectInfo } from './detection.js';
 import {
   getLinearScripts,
@@ -177,9 +178,7 @@ export class StructureGenerator {
    * @throws {StructureGenerationError} If generation fails
    */
   async generateStructure(projectInfo: ProjectInfo): Promise<void> {
-    if (!projectInfo) {
-      throw new StructureGenerationError('Project information is required');
-    }
+    // TypeScript ensures projectInfo is defined via type system
 
     const hodgePath = this.safePath('.hodge');
     if (!hodgePath) {
@@ -284,7 +283,7 @@ ${content.slice(1)}`; // Remove opening brace since we added it with comment
       const userConfig = {
         version: '1.0.0',
         pm: {
-          tool: projectInfo.pmTool || 'local',
+          tool: projectInfo.pmTool ?? 'local',
           // Status mapping is always visible so users know they can customize it
           statusMap: {
             explore: 'To Do',
@@ -549,72 +548,7 @@ this.logger.info('Custom PM integration - customize this script for your needs')
     await this.writeScripts(scripts, scriptsPath);
 
     // Generate README for the PM scripts
-    const readmeContent = `# Project Management Scripts
-
-This directory contains comprehensive scripts for integrating Hodge with your project management tool.
-
-## Available Scripts
-
-### Common Scripts
-- \`pm-status.js\` - Check PM integration status
-- \`install-dependencies.js\` - Install required npm packages
-
-### Tool-Specific Scripts
-Based on your selected PM tool, you'll have scripts for:
-- Creating issues/tasks/cards
-- Updating issue status
-- Fetching issue details
-- Creating projects/epics/milestones
-- And more...
-
-## Usage
-
-First, check your PM tool configuration:
-\`\`\`bash
-node .hodge/pm-scripts/pm-status.js
-\`\`\`
-
-If needed, install dependencies:
-\`\`\`bash
-node .hodge/pm-scripts/install-dependencies.js
-\`\`\`
-
-Then use the scripts for your PM tool:
-\`\`\`bash
-# Create an issue
-node .hodge/pm-scripts/create-issue.js "Issue Title" "Description"
-
-# Update issue status
-node .hodge/pm-scripts/update-issue.js <issue-id> <status>
-
-# Fetch issue details
-node .hodge/pm-scripts/fetch-issue.js <issue-id>
-\`\`\`
-
-## Environment Variables
-
-Set the appropriate variables for your PM tool:
-
-- **Linear**: \`LINEAR_API_KEY\`, \`LINEAR_TEAM_ID\`
-- **GitHub**: \`GITHUB_TOKEN\`
-- **Jira**: \`JIRA_API_TOKEN\`, \`JIRA_EMAIL\`, \`JIRA_DOMAIN\`
-- **Trello**: \`TRELLO_API_KEY\`, \`TRELLO_TOKEN\`
-- **Asana**: \`ASANA_TOKEN\`
-
-## Getting API Keys
-
-- **Linear**: https://linear.app/settings/api
-- **GitHub**: https://github.com/settings/tokens
-- **Jira**: https://id.atlassian.com/manage-profile/security/api-tokens
-- **Trello**: https://trello.com/app-key
-- **Asana**: https://app.asana.com/0/developer-console
-
-## Customization
-
-These scripts are designed to work out of the box, but you can customize them based on your specific workflow and PM tool configuration.
-`;
-
-    await fs.writeFile(path.join(scriptsPath, 'README.md'), readmeContent, 'utf8');
+    await fs.writeFile(path.join(scriptsPath, 'README.md'), PM_SCRIPTS_README, 'utf-8');
   }
 
   /**
@@ -622,22 +556,57 @@ These scripts are designed to work out of the box, but you can customize them ba
    * @throws {StructureGenerationError} If gitignore update fails
    */
   /**
-   * Creates .hodge/.gitignore with context.json entry (HODGE-377.1)
-   * This keeps context.json (session state) out of git regardless of mode
+   * Creates .hodge/.gitignore with auto-generated context files (HODGE-377.1, HODGE-377.3)
+   * Keeps session state and auto-generated AI context out of version control
    * @param hodgePath - The .hodge directory path
    */
   private async createHodgeGitignore(hodgePath: string): Promise<void> {
     try {
       const hodgeGitignorePath = path.join(hodgePath, '.gitignore');
-      const gitignoreContent =
-        '# Hodge session state - keep out of version control\ncontext.json\n';
 
-      await fs.writeFile(hodgeGitignorePath, gitignoreContent, 'utf8');
-      this.logger.debug('Created .hodge/.gitignore with context.json');
+      // HODGE-377.3: Gitignore all auto-generated context files
+      const gitignoreContent = `# Hodge auto-generated context files - regenerate with 'hodge regen'
+# These files are developer-local and should not be shared in version control
+
+# Session state (HODGE-377.1)
+context.json
+
+# Architecture graph - regenerated from codebase (HODGE-377.3)
+architecture-graph.dot
+
+# Ship records - historical artifacts, not team state (HODGE-377.3)
+features/**/ship-record.json
+`;
+
+      // Check if .gitignore already exists
+      const exists = await fs.pathExists(hodgeGitignorePath);
+
+      if (exists) {
+        // Append new patterns if they don't already exist
+        const existingContent = await fs.readFile(hodgeGitignorePath, 'utf8');
+        const patternsToAdd: string[] = [];
+
+        if (!existingContent.includes('architecture-graph.dot')) {
+          patternsToAdd.push('architecture-graph.dot');
+        }
+        if (!existingContent.includes('features/**/ship-record.json')) {
+          patternsToAdd.push('features/**/ship-record.json');
+        }
+
+        if (patternsToAdd.length > 0) {
+          const appendContent = `\n# HODGE-377.3: Auto-generated context files\n${patternsToAdd.join('\n')}\n`;
+          await fs.appendFile(hodgeGitignorePath, appendContent, 'utf8');
+          this.logger.debug('Appended new patterns to .hodge/.gitignore');
+        }
+      } else {
+        // Create new .gitignore with all patterns
+        await fs.writeFile(hodgeGitignorePath, gitignoreContent, 'utf8');
+        this.logger.debug('Created .hodge/.gitignore with all auto-generated file patterns');
+      }
     } catch (error) {
       // Don't fail init if .hodge/.gitignore creation fails
       this.logger.warn(
-        `Warning: Failed to create .hodge/.gitignore: ${error instanceof Error ? error.message : 'Unknown error'}`
+        `Warning: Failed to create/update .hodge/.gitignore: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
     }
   }

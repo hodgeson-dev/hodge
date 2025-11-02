@@ -1,0 +1,178 @@
+version: '1.0'
+feature: HODGE-377.3
+generated_at: '2025-11-02T16:34:19.400Z'
+recommended_tier: full
+change_analysis:
+  total_files: 18
+  total_lines: 1207
+  breakdown:
+    implementation: 10
+    test: 3
+    documentation: 4
+    config: 1
+changed_files:
+  - path: .eslintrc.json
+    lines_changed: 2
+    change_type: implementation
+  - path: .hodge/architecture-graph.dot
+    lines_changed: 22
+    change_type: implementation
+  - path: .hodge/features/HODGE-377.2/ship-record.json
+    lines_changed: 3
+    change_type: implementation
+  - path: .hodge/features/HODGE-377.3/build/build-plan.md
+    lines_changed: 64
+    change_type: documentation
+  - path: .hodge/features/HODGE-377.3/explore/exploration.md
+    lines_changed: 361
+    change_type: documentation
+  - path: .hodge/features/HODGE-377.3/explore/test-intentions.md
+    lines_changed: 27
+    change_type: documentation
+  - path: .hodge/features/HODGE-377.3/ship-record.json
+    lines_changed: 11
+    change_type: implementation
+  - path: .hodge/id-mappings.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/project_management.md
+    lines_changed: 13
+    change_type: documentation
+  - path: src/bin/hodge.ts
+    lines_changed: 10
+    change_type: implementation
+  - path: src/commands/init.ts
+    lines_changed: 42
+    change_type: implementation
+  - path: src/commands/regen.smoke.test.ts
+    lines_changed: 98
+    change_type: test
+  - path: src/commands/regen.ts
+    lines_changed: 73
+    change_type: implementation
+  - path: src/lib/architecture-graph-service.ts
+    lines_changed: 143
+    change_type: implementation
+  - path: src/lib/claude-commands.ts
+    lines_changed: 63
+    change_type: implementation
+  - path: src/lib/gitignore-patterns.smoke.test.ts
+    lines_changed: 117
+    change_type: test
+  - path: src/lib/structure-generator.test.ts
+    lines_changed: 31
+    change_type: test
+  - path: src/lib/structure-generator.ts
+    lines_changed: 123
+    change_type: implementation
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - test-pattern.md
+      - error-boundary.md
+      - input-validation.md
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - testing/vitest-3.x.yaml
+      - testing/general-test-standards.yaml
+      - languages/typescript-5.x.yaml
+      - languages/general-coding-standards.yaml
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed
+scope:
+  type: feature
+  target: HODGE-377.3
+  fileCount: 18
+critical_files:
+  algorithm: risk-weighted-v1.0
+  total_files: 18
+  top_n: 10
+  files:
+    - path: src/lib/architecture-graph-service.ts
+      rank: 1
+      score: 150
+      risk_factors:
+        - 1 blocker issue
+        - 1 warning
+        - medium change (143 lines)
+    - path: .hodge/features/HODGE-377.3/explore/exploration.md
+      rank: 2
+      score: 100
+      risk_factors:
+        - large change (361 lines)
+        - new file
+    - path: src/commands/regen.ts
+      rank: 3
+      score: 87
+      risk_factors:
+        - new file
+    - path: .hodge/features/HODGE-377.3/build/build-plan.md
+      rank: 4
+      score: 82
+      risk_factors:
+        - new file
+    - path: .hodge/features/HODGE-377.3/explore/test-intentions.md
+      rank: 5
+      score: 64
+      risk_factors:
+        - new file
+    - path: .hodge/project_management.md
+      rank: 6
+      score: 57
+      risk_factors:
+        - new file
+    - path: .hodge/features/HODGE-377.3/ship-record.json
+      rank: 7
+      score: 56
+      risk_factors:
+        - new file
+    - path: src/bin/hodge.ts
+      rank: 8
+      score: 55
+      risk_factors:
+        - new file
+    - path: .hodge/id-mappings.json
+      rank: 9
+      score: 52
+      risk_factors:
+        - new file
+    - path: src/commands/regen.smoke.test.ts
+      rank: 10
+      score: 49
+      risk_factors:
+        - new file
+        - test file (lower priority)

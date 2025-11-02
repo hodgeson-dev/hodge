@@ -10,6 +10,8 @@ import { StructureGenerator, StructureGenerationError } from '../lib/structure-g
 import { createCommandLogger } from '../lib/logger.js';
 import { InitDetection } from './init/init-detection.js';
 import { InitInteraction, ExtendedProjectInfo } from './init/init-interaction.js';
+import { ArchitectureGraphService } from '../lib/architecture-graph-service.js';
+import { ToolchainService } from '../lib/toolchain-service.js';
 
 /**
  * Options for the init command
@@ -121,6 +123,9 @@ export class InitCommand {
     // Detect and configure toolchain
     await this.detection.detectAndConfigureToolchain(projectInfo);
 
+    // HODGE-377.3: Generate initial architecture graph
+    await this.generateInitialArchitectureGraph(projectInfo);
+
     // Run auto-detection for review profiles
     await this.detection.runAutoDetection(projectInfo);
 
@@ -165,7 +170,7 @@ export class InitCommand {
    * Validates the provided initialization options
    */
   private validateOptions(options: InitOptions): void {
-    if (!options || typeof options !== 'object') {
+    if (typeof options !== 'object') {
       throw new ValidationError('Options must be an object', 'options');
     }
 
@@ -206,5 +211,40 @@ export class InitCommand {
     this.logger.error(`Initialization failed: ${errorMessage}`, {
       error: error as Error,
     });
+  }
+
+  /**
+   * Generate initial architecture graph (HODGE-377.3)
+   * Called after toolchain configuration to provide AI with codebase structure
+   */
+  private async generateInitialArchitectureGraph(projectInfo: ProjectInfo): Promise<void> {
+    try {
+      const spinner = ora('Generating architecture graph...').start();
+      this.logger.debug('Starting initial architecture graph generation');
+
+      const toolchainService = new ToolchainService(projectInfo.rootPath);
+      const toolchainConfig = await toolchainService.loadConfig();
+
+      const graphService = new ArchitectureGraphService();
+      const result = await graphService.generateGraph({
+        projectRoot: projectInfo.rootPath,
+        toolchainConfig,
+        quiet: true, // Suppress console output, we have spinner
+      });
+
+      if (result.success) {
+        spinner.succeed('Architecture graph generated');
+        this.logger.debug('Initial architecture graph generated successfully');
+      } else {
+        // Non-blocking failure - graph generation is not critical for init
+        spinner.warn('Architecture graph generation skipped');
+        this.logger.debug(`Graph generation skipped: ${result.error}`);
+      }
+    } catch (error) {
+      // Non-blocking failure - log but don't throw
+      this.logger.warn('Failed to generate initial architecture graph', {
+        error: error as Error,
+      });
+    }
   }
 }

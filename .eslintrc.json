@@ -114,7 +114,7 @@
     {
       "files": ["**/*.test.ts", "**/test/**/*.ts", "**/explore/**/*.ts", "**/.hodge/features/*/explore/**/*.ts"],
       "rules": {
-        "@typescript-eslint/no-explicit-any": "warn",
+        "@typescript-eslint/no-explicit-any": "off", // Legitimate for Vitest mock typing
         "@typescript-eslint/explicit-function-return-type": "off",
         // Disable unsafe type rules for test files - vitest's expect() API intentionally returns 'any'
         // These are false positives that don't provide value in test contexts (HODGE-370)

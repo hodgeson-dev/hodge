@@ -66,56 +66,14 @@ export class ArchitectureGraphService {
       }
 
       // Execute graph generation command
-      this.logger.info(`Generating architecture graph using ${toolName}`, {
-        tool: toolName,
+      return this.executeGraphCommand({
+        toolName,
+        graphCommand,
+        absoluteOutputPath,
         outputPath,
+        projectRoot,
+        quiet,
       });
-
-      const command = graphCommand.replace('.hodge/architecture-graph.dot', absoluteOutputPath);
-
-      // Validate command for security (tool-registry.yaml is trusted, but validate as defense-in-depth)
-      this.validateCommand(command);
-
-      try {
-        // eslint-disable-next-line sonarjs/os-command -- Command from trusted bundled tool-registry.yaml, validated above
-        execSync(command, {
-          cwd: projectRoot,
-          encoding: 'utf-8',
-          stdio: 'pipe', // Capture output
-        });
-
-        // Verify graph file was created
-        if (existsSync(absoluteOutputPath)) {
-          this.logger.info('Architecture graph generated successfully', {
-            path: outputPath,
-            tool: toolName,
-          });
-          if (!quiet) {
-            console.log(`✓ Architecture graph: ${outputPath}`);
-          }
-          return {
-            success: true,
-            graphPath: outputPath,
-            tool: toolName,
-          };
-        } else {
-          throw new Error('Graph file not created');
-        }
-      } catch (execError) {
-        const error = execError as Error;
-        this.logger.warn('Graph generation command failed', {
-          tool: toolName,
-          error: error.message,
-        });
-        if (!quiet) {
-          console.warn(`⚠️  Failed to generate architecture graph: ${error.message}`);
-        }
-        return {
-          success: false,
-          tool: toolName,
-          error: error.message,
-        };
-      }
     } catch (error) {
       const err = error as Error;
       this.logger.error('Architecture graph generation failed', { error: err });
@@ -127,6 +85,90 @@ export class ArchitectureGraphService {
         error: err.message,
       };
     }
+  }
+
+  /**
+   * Execute the graph generation command and handle result
+   */
+  private executeGraphCommand(options: {
+    toolName: string;
+    graphCommand: string;
+    absoluteOutputPath: string;
+    outputPath: string;
+    projectRoot: string;
+    quiet: boolean;
+  }): Promise<GraphGenerationResult> {
+    const { toolName, graphCommand, absoluteOutputPath, outputPath, projectRoot, quiet } = options;
+
+    this.logger.info(`Generating architecture graph using ${toolName}`, {
+      tool: toolName,
+      outputPath,
+    });
+
+    const command = graphCommand.replace('.hodge/architecture-graph.dot', absoluteOutputPath);
+
+    // Validate command for security (tool-registry.yaml is trusted, but validate as defense-in-depth)
+    this.validateCommand(command);
+
+    try {
+      // eslint-disable-next-line sonarjs/os-command -- Command from trusted bundled tool-registry.yaml, validated above
+      execSync(command, {
+        cwd: projectRoot,
+        encoding: 'utf-8',
+        stdio: 'pipe', // Capture output
+      });
+
+      return Promise.resolve(
+        this.verifyGraphCreation(absoluteOutputPath, outputPath, toolName, quiet)
+      );
+    } catch (execError) {
+      return Promise.resolve(this.handleGraphError(execError as Error, toolName, quiet));
+    }
+  }
+
+  /**
+   * Verify that the graph file was created successfully
+   */
+  private verifyGraphCreation(
+    absoluteOutputPath: string,
+    outputPath: string,
+    toolName: string,
+    quiet: boolean
+  ): GraphGenerationResult {
+    if (existsSync(absoluteOutputPath)) {
+      this.logger.info('Architecture graph generated successfully', {
+        path: outputPath,
+        tool: toolName,
+      });
+      if (!quiet) {
+        console.log(`✓ Architecture graph: ${outputPath}`);
+      }
+      return {
+        success: true,
+        graphPath: outputPath,
+        tool: toolName,
+      };
+    } else {
+      throw new Error('Graph file not created');
+    }
+  }
+
+  /**
+   * Handle errors during graph generation
+   */
+  private handleGraphError(error: Error, toolName: string, quiet: boolean): GraphGenerationResult {
+    this.logger.warn('Graph generation command failed', {
+      tool: toolName,
+      error: error.message,
+    });
+    if (!quiet) {
+      console.warn(`⚠️  Failed to generate architecture graph: ${error.message}`);
+    }
+    return {
+      success: false,
+      tool: toolName,
+      error: error.message,
+    };
   }
 
   /**
@@ -223,7 +265,8 @@ export class ArchitectureGraphService {
     const dangerousPatterns = [
       { pattern: /;/, description: 'command chaining (;)' },
       { pattern: /&(?!&)/, description: 'background execution (&)' },
-      { pattern: /\|(?!\|)/, description: 'pipe (|)' },
+      // HODGE-377.3: Fixed pipe detection - must not be preceded OR followed by another pipe
+      { pattern: /(?<!\|)\|(?!\|)/, description: 'pipe (|)' },
       { pattern: /`/, description: 'command substitution (`)' },
       { pattern: /\$\(/, description: 'command substitution ($())' },
       { pattern: /</, description: 'input redirection (<)' },

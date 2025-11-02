@@ -110,6 +110,8 @@ strict digraph "dependency-cruiser output"{
     "scripts/lib/" -> "node_modules/@octokit" [penwidth="1.0"]
     "scripts/lib/" -> "child_process" [style="dashed" penwidth="1.0"]
     "scripts/lib/" -> "fs" [style="dashed" penwidth="1.0"]
+    "scripts/lib/" -> "src/test/"
+    "scripts/lib/" -> "node_modules/vitest" [penwidth="1.0"]
     subgraph "cluster_scripts" {label="scripts" "scripts/list-linear-teams.js" [label=<list-linear-teams.js> tooltip="list-linear-teams.js" URL="scripts/list-linear-teams.js" ] }
     "scripts/list-linear-teams.js" -> "node_modules/@linear" [penwidth="1.0"]
     "scripts/list-linear-teams.js" -> "node_modules/dotenv" [penwidth="1.0"]
@@ -173,9 +175,17 @@ strict digraph "dependency-cruiser output"{
     "scripts/update-pm-scripts.js" -> "node_modules/fs-extra" [penwidth="1.0"]
     "scripts/update-pm-scripts.js" -> "path" [style="dashed" penwidth="1.0"]
     "scripts/update-pm-scripts.js" -> "url" [style="dashed" penwidth="1.0"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/validate-standards.integration.test.ts" [label=<validate-standards.integration.test.ts> tooltip="validate-standards.integration.test.ts" URL="scripts/validate-standards.integration.test.ts" fillcolor="#ddfeff"] }
+    "scripts/validate-standards.integration.test.ts" -> "src/test/"
+    "scripts/validate-standards.integration.test.ts" -> "fs" [style="dashed" penwidth="1.0"]
+    "scripts/validate-standards.integration.test.ts" -> "node_modules/vitest" [penwidth="1.0"]
     subgraph "cluster_scripts" {label="scripts" "scripts/validate-standards.js" [label=<validate-standards.js> tooltip="validate-standards.js" URL="scripts/validate-standards.js" ] }
     "scripts/validate-standards.js" -> "child_process" [style="dashed" penwidth="1.0"]
     "scripts/validate-standards.js" -> "fs" [style="dashed" penwidth="1.0"]
+    subgraph "cluster_scripts" {label="scripts" "scripts/validate-standards.smoke.test.ts" [label=<validate-standards.smoke.test.ts> tooltip="validate-standards.smoke.test.ts" URL="scripts/validate-standards.smoke.test.ts" fillcolor="#ddfeff"] }
+    "scripts/validate-standards.smoke.test.ts" -> "src/test/"
+    "scripts/validate-standards.smoke.test.ts" -> "fs" [style="dashed" penwidth="1.0"]
+    "scripts/validate-standards.smoke.test.ts" -> "node_modules/vitest" [penwidth="1.0"]
     subgraph "cluster_src" {label="src" "src/bin/" [label=<bin> tooltip="bin" URL="src/bin/" shape="box3d"] }
     "src/bin/" -> "src/commands/" [style="dashed"]
     "src/bin/" -> "node_modules/commander" [penwidth="1.0"]
@@ -187,9 +197,9 @@ strict digraph "dependency-cruiser output"{
     "src/commands/" -> "node_modules/chalk" [penwidth="1.0"]
     "src/commands/" -> "fs" [style="dashed" penwidth="1.0"]
     "src/commands/" -> "path" [style="dashed" penwidth="1.0"]
-    "src/commands/" -> "fs/promises" [style="dashed" penwidth="1.0"]
     "src/commands/" -> "src/types/" [arrowhead="onormal" penwidth="1.0"]
     "src/commands/" -> "node_modules/js-yaml" [penwidth="1.0"]
+    "src/commands/" -> "fs/promises" [style="dashed" penwidth="1.0"]
     "src/commands/" -> "node_modules/ora" [penwidth="1.0"]
     "src/commands/" -> "node_modules/fs-extra" [penwidth="1.0"]
     "src/commands/" -> "node_modules/inquirer" [penwidth="1.0"]
@@ -200,7 +210,6 @@ strict digraph "dependency-cruiser output"{
     "src/commands/" -> "src/test/"
     "src/commands/" -> "node_modules/vitest" [penwidth="1.0"]
     "src/commands/" -> "os" [style="dashed" penwidth="1.0"]
-    "src/commands/" -> "util" [style="dashed" penwidth="1.0"]
     subgraph "cluster_src" {label="src" "src/lib/" [label=<lib> tooltip="no-orphans" URL="src/lib/" fontcolor="orange" color="orange" shape="box3d"] }
     "src/lib/" -> "node_modules/fs-extra" [penwidth="1.0"]
     "src/lib/" -> "os" [style="dashed" penwidth="1.0"]
@@ -226,22 +235,19 @@ strict digraph "dependency-cruiser output"{
     "src/lib/" -> "node_modules/vitest" [penwidth="1.0"]
     "src/lib/" -> "src/commands/"
     "src/lib/" -> "node_modules/yaml" [xlabel="no-non-package-json" tooltip="no-non-package-json" penwidth="1.0" fontcolor="red" color="red"]
-    "src/lib/" -> "node_modules/inquirer" [penwidth="1.0"]
     subgraph "cluster_src" {label="src" "src/test/" [label=<test> tooltip="test" URL="src/test/" shape="box3d"] }
     "src/test/" -> "node_modules/vitest" [penwidth="1.0"]
+    "src/test/" -> "child_process" [style="dashed" penwidth="1.0"]
     "src/test/" -> "crypto" [style="dashed" penwidth="1.0"]
-    "src/test/" -> "fs" [style="dashed" penwidth="1.0"]
+    "src/test/" -> "node_modules/fs-extra" [penwidth="1.0"]
     "src/test/" -> "os" [style="dashed" penwidth="1.0"]
     "src/test/" -> "path" [style="dashed" penwidth="1.0"]
-    "src/test/" -> "child_process" [style="dashed" penwidth="1.0"]
-    "src/test/" -> "node_modules/fs-extra" [penwidth="1.0"]
     "src/test/" -> "util" [style="dashed" penwidth="1.0"]
+    "src/test/" -> "fs" [style="dashed" penwidth="1.0"]
     "src/test/" -> "src/commands/"
     "src/test/" -> "src/lib/"
     "src/test/" -> "fs/promises" [style="dashed" penwidth="1.0"]
     "src/test/" -> "node_modules/js-yaml" [penwidth="1.0"]
-    "src/test/" -> "scripts/lib/"
-    "src/test/" -> "src/types/"
     subgraph "cluster_src" {label="src" "src/types/" [label=<types> tooltip="types" URL="src/types/" shape="box3d"] }
     "src/types/" -> "src/lib/" [arrowhead="onormal" penwidth="1.0"]
     subgraph "cluster_test" {label="test" "test/commands/" [label=<commands> tooltip="commands" URL="test/commands/" shape="box3d"] }

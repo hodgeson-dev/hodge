@@ -202,6 +202,16 @@ program
     }
   );
 
+// Public command for regenerating context files - always visible
+program
+  .command('regen')
+  .description('Regenerate auto-generated context files (architecture graph)')
+  .action(async () => {
+    const { RegenCommand } = await import('../commands/regen.js');
+    const regenCommand = new RegenCommand();
+    await regenCommand.execute();
+  });
+
 // Check if --show-internal is in the args BEFORE we parse
 const showInternal = process.argv.includes('--show-internal');
 

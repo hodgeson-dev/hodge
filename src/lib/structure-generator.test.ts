@@ -168,10 +168,9 @@ describe('StructureGenerator', () => {
     });
 
     it('should update .gitignore when git is present', async () => {
-      mockFs.pathExists.mockImplementation(async (path) => {
-        if (path.toString().includes('.gitignore')) return true;
-        return false;
-      });
+      mockFs.pathExists.mockImplementation(
+        (path) => Promise.resolve(path.toString().includes('.gitignore')) as any
+      );
       mockFs.readFile.mockResolvedValue('existing content');
 
       await generator.generateStructure(mockProjectInfo);
@@ -291,10 +290,7 @@ describe('StructureGenerator', () => {
     });
 
     it('should create new .gitignore if none exists', async () => {
-      mockFs.pathExists.mockImplementation(async (path) => {
-        if (path.toString().includes('.gitignore')) return false;
-        return false; // No existing .hodge
-      });
+      mockFs.pathExists.mockImplementation(() => Promise.resolve(false) as any); // No .gitignore or .hodge
 
       await generator.generateStructure(mockProjectInfo);
 
@@ -306,10 +302,9 @@ describe('StructureGenerator', () => {
     });
 
     it('should append to existing .gitignore', async () => {
-      mockFs.pathExists.mockImplementation(async (path) => {
-        if (path.toString().includes('.gitignore')) return true;
-        return false; // No existing .hodge
-      });
+      mockFs.pathExists.mockImplementation(
+        (path) => Promise.resolve(path.toString().includes('.gitignore')) as any
+      );
       mockFs.readFile.mockResolvedValue('existing content');
 
       await generator.generateStructure(mockProjectInfo);
@@ -321,11 +316,13 @@ describe('StructureGenerator', () => {
     });
 
     it('should not duplicate .gitignore entries', async () => {
-      mockFs.pathExists.mockImplementation(async (path) => {
-        if (path.toString().includes('.gitignore')) return true;
-        return false; // No existing .hodge
-      });
-      mockFs.readFile.mockResolvedValue('existing\n.hodge/local/\ncontent');
+      mockFs.pathExists.mockImplementation(
+        (path) => Promise.resolve(path.toString().includes('.gitignore')) as any
+      );
+      // HODGE-377.3: Mock file content that includes all patterns (old + new)
+      mockFs.readFile.mockResolvedValue(
+        'existing\n.hodge/local/\narchitecture-graph.dot\nfeatures/**/ship-record.json\ncontent'
+      );
 
       await generator.generateStructure(mockProjectInfo);
 

@@ -1,0 +1,44 @@
+{
+  "timestamp": "2025-11-02T15:50:09.032Z",
+  "stagedFiles": [
+    ".hodge/architecture-graph.dot",
+    ".hodge/features/HODGE-377.2/ship-record.json",
+    ".hodge/features/HODGE-377.3/build/build-plan.md",
+    ".hodge/features/HODGE-377.3/explore/exploration.md",
+    ".hodge/features/HODGE-377.3/explore/test-intentions.md",
+    ".hodge/features/HODGE-377.3/ship-record.json",
+    ".hodge/id-mappings.json",
+    ".hodge/project_management.md",
+    "src/bin/hodge.ts",
+    "src/commands/init.ts",
+    "src/commands/regen.smoke.test.ts",
+    "src/commands/regen.ts",
+    "src/lib/architecture-graph-service.ts",
+    "src/lib/claude-commands.ts",
+    "src/lib/gitignore-patterns.smoke.test.ts",
+    "src/lib/structure-generator.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 15,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": "src/bin/hodge.ts 77ms (unchanged)\nsrc/commands/init.ts 30ms (unchanged)\nsrc/commands/regen.smoke.test.ts 9ms (unchanged)\nsrc/commands/regen.ts 8ms (unchanged)\nsrc/lib/architecture-graph-service.ts 16ms (unchanged)\nsrc/lib/claude-commands.ts 18ms (unchanged)\nsrc/lib/gitignore-patterns.smoke.test.ts 8ms (unchanged)\nsrc/lib/structure-generator.ts 26ms (unchanged)\n",
+      "stderr": "",
+      "duration": 1355
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 8,
+      "issuesFixed": 7,
+      "success": true,
+      "stdout": "\n/Users/michaelkelly/Projects/hodge/src/commands/init.ts\n  173:10  warning  Unnecessary conditional, value is always falsy  @typescript-eslint/no-unnecessary-condition\n  228:12  warning  Unnecessary conditional, value is always falsy  @typescript-eslint/no-unnecessary-condition\n\n/Users/michaelkelly/Projects/hodge/src/lib/architecture-graph-service.ts\n  47:3  warning  Async method 'generateGraph' has too many lines (69). Maximum allowed is 50  max-lines-per-function\n\n/Users/michaelkelly/Projects/hodge/src/lib/structure-generator.ts\n  180:10  warning  Unnecessary conditional, value is always falsy                                                             @typescript-eslint/no-unnecessary-condition\n  287:36  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  547:3   warning  Async method 'generateCommonPMScripts' has too many lines (52). Maximum allowed is 50                      max-lines-per-function\n  671:1   warning  File has too many lines (429). Maximum allowed is 400                                                      max-lines\n\n✖ 7 problems (0 errors, 7 warnings)\n\n",
+      "stderr": "",
+      "duration": 4523
+    }
+  ],
+  "totalIssuesFixed": 7,
+  "totalFilesModified": 23,
+  "failures": []
+}
