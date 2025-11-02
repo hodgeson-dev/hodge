@@ -125,6 +125,34 @@ run_prettier_check() {
   fi
 }
 
+# Function to run ESLint check (HODGE-378.1)
+run_eslint_check() {
+  # Allow bypass with SKIP_LINT environment variable
+  if [ "$SKIP_LINT" = "true" ]; then
+    echo "${YELLOW}⚠ Skipping ESLint check (SKIP_LINT=true)${NC}"
+    return 0
+  fi
+
+  echo "${BLUE}Running ESLint on entire codebase...${NC}"
+
+  if npm run lint > /dev/null 2>&1; then
+    echo "${GREEN}✓ No ESLint errors found${NC}"
+    return 0
+  else
+    echo "${RED}✗ ESLint errors detected${NC}"
+    echo "${YELLOW}Fix with: npm run lint${NC}"
+    echo ""
+    echo "To see detailed errors:"
+    echo "  npm run lint"
+    echo ""
+    echo "To bypass this check (emergency only):"
+    echo "  SKIP_LINT=true git push"
+    echo ""
+
+    return 1
+  fi
+}
+
 # Main execution
 main() {
   local target_branch=$(get_target_branch)
@@ -134,6 +162,12 @@ main() {
 
   # Always run prettier check (fast, ~1-2 seconds)
   if ! run_prettier_check; then
+    exit_code=1
+  fi
+
+  # Always run ESLint check (HODGE-378.1)
+  # Prevents ESLint errors from reaching CI
+  if ! run_eslint_check; then
     exit_code=1
   fi
 

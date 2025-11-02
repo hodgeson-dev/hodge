@@ -476,6 +476,19 @@ HODGE-004 (ID Management)
   - Define test intentions
   - Make architectural decisions
 
+
+### HODGE-378
+- **Status**: exploring
+- **Priority**: TBD
+- **Created**: 2025-11-02
+- **Updated**: 2025-11-02
+- **Description**: Fix ESLint errors and assess warnings slipping through pre-commit hooks
+- **Phase**: TBD
+- **Next Steps**:
+  - Complete exploration
+  - Define test intentions
+  - Make architectural decisions
+
 ## Completed Features
 
 ### HODGE-377.3

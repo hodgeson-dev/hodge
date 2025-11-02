@@ -1,0 +1,38 @@
+{
+  "timestamp": "2025-11-02T17:12:02.790Z",
+  "stagedFiles": [
+    ".hodge/features/HODGE-377.3/ship-record.json",
+    ".hodge/features/HODGE-378.1/build/build-plan.md",
+    ".hodge/features/HODGE-378.1/ship-record.json",
+    ".hodge/features/HODGE-378/explore/exploration.md",
+    ".hodge/features/HODGE-378/plan.json",
+    ".hodge/id-counter.json",
+    ".hodge/id-mappings.json",
+    ".hodge/project_management.md",
+    ".husky/pre-push",
+    "test/pre-push-hook.test.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 9,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": "test/pre-push-hook.test.ts 58ms (unchanged)\n",
+      "stderr": "",
+      "duration": 768
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 1,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": "",
+      "stderr": "",
+      "duration": 4373
+    }
+  ],
+  "totalIssuesFixed": 0,
+  "totalFilesModified": 10,
+  "failures": []
+}

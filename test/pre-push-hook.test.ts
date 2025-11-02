@@ -88,4 +88,39 @@ describe('Pre-push Hook', () => {
     expect(content).toContain('HODGE_STRICT');
     expect(content).toContain('use HODGE_STRICT=true to force');
   });
+
+  // HODGE-378.1: ESLint validation tests
+  smokeTest('pre-push hook should include ESLint check function', () => {
+    const hookPath = path.join(process.cwd(), '.husky', 'pre-push');
+    const content = fs.readFileSync(hookPath, 'utf-8');
+
+    expect(content).toContain('run_eslint_check');
+    expect(content).toContain('npm run lint');
+  });
+
+  smokeTest('pre-push hook should support SKIP_LINT environment variable', () => {
+    const hookPath = path.join(process.cwd(), '.husky', 'pre-push');
+    const content = fs.readFileSync(hookPath, 'utf-8');
+
+    expect(content).toContain('SKIP_LINT');
+    expect(content).toContain('SKIP_LINT=true git push');
+  });
+
+  smokeTest('pre-push hook should run ESLint check in main execution', () => {
+    const hookPath = path.join(process.cwd(), '.husky', 'pre-push');
+    const content = fs.readFileSync(hookPath, 'utf-8');
+
+    // Verify ESLint check is called in main()
+    expect(content).toContain('run_eslint_check');
+    expect(content).toContain('Prevents ESLint errors from reaching CI');
+  });
+
+  smokeTest('pre-push hook should provide helpful error messages for ESLint failures', () => {
+    const hookPath = path.join(process.cwd(), '.husky', 'pre-push');
+    const content = fs.readFileSync(hookPath, 'utf-8');
+
+    expect(content).toContain('ESLint errors detected');
+    expect(content).toContain('To see detailed errors:');
+    expect(content).toContain('To bypass this check (emergency only):');
+  });
 });

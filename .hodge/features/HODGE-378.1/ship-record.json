@@ -1,0 +1,99 @@
+{
+  "feature": "HODGE-378.1",
+  "timestamp": "2025-11-02T17:18:07.629Z",
+  "issueId": null,
+  "pmTool": "linear",
+  "validationPassed": true,
+  "qualityResults": [
+    {
+      "type": "type_checking",
+      "tool": "typescript",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "errors": [],
+      "warnings": [],
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "type": "linting",
+      "tool": "eslint",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "errors": [],
+      "warnings": [],
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "type": "testing",
+      "tool": "vitest",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "errors": [],
+      "warnings": [],
+      "stdout": "\n RUN  v3.2.4 /Users/michaelkelly/Projects/hodge\n\n····························································································································································································································································································································································································································································································································································································································································································································································································································································································································································{\"level\":\"warn\",\"time\":\"2025-11-02T17:18:04.863Z\",\"name\":\"pm-adapter\",\"timestamp\":\"2025-11-02T17:18:04.862Z\",\"enableConsole\":false,\"msg\":\"Failed to load PM overrides\"}\n················{\"level\":\"info\",\"time\":\"2025-11-02T17:18:04.881Z\",\"msg\":\"Process terminated\"}\n·············································································································································································································································································································································································································································\n\n Test Files  132 passed (132)\n      Tests  1369 passed (1369)\n   Start at  09:17:50\n   Duration  16.58s (transform 2.39s, setup 0ms, collect 16.17s, tests 43.51s, environment 19ms, prepare 11.21s)\n\n",
+      "stderr": "(node:4716) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:5076) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:5106) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:5173) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:5221) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:5427) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\nfatal: No names found, cannot describe anything.\nfatal: No names found, cannot describe anything.\n(node:5580) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:5661) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:5657) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:5675) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:5676) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:5872) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:5879) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Generating architecture graph...\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Generating architecture graph...\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Generating architecture graph...\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Generating architecture graph...\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n(node:5886) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:5891) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:5946) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:5968) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:5999) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:6003) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:6007) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:6016) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:6080) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:6085) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:6099) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n"
+    },
+    {
+      "type": "formatting",
+      "tool": "prettier",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "errors": [],
+      "warnings": [],
+      "stdout": "Checking formatting...\nAll matched files use Prettier code style!\n",
+      "stderr": ""
+    },
+    {
+      "type": "complexity",
+      "tool": "none",
+      "skipped": true,
+      "reason": "No tools configured for this check type"
+    },
+    {
+      "type": "code_smells",
+      "tool": "none",
+      "skipped": true,
+      "reason": "No tools configured for this check type"
+    },
+    {
+      "type": "duplication",
+      "tool": "jscpd",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "errors": [],
+      "warnings": [],
+      "stdout": "\u001b[90m┌────────────\u001b[39m\u001b[90m┬────────────────\u001b[39m\u001b[90m┬─────────────\u001b[39m\u001b[90m┬──────────────\u001b[39m\u001b[90m┬──────────────\u001b[39m\u001b[90m┬──────────────────\u001b[39m\u001b[90m┬───────────────────┐\u001b[39m\n\u001b[90m│\u001b[39m\u001b[31m Format     \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Files analyzed \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Total lines \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Total tokens \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Clones found \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Duplicated lines \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Duplicated tokens \u001b[39m\u001b[90m│\u001b[39m\n\u001b[90m├────────────\u001b[39m\u001b[90m┼────────────────\u001b[39m\u001b[90m┼─────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────────\u001b[39m\u001b[90m┼───────────────────┤\u001b[39m\n\u001b[90m│\u001b[39m typescript \u001b[90m│\u001b[39m 1              \u001b[90m│\u001b[39m 125         \u001b[90m│\u001b[39m 1352         \u001b[90m│\u001b[39m 0            \u001b[90m│\u001b[39m 0 (0%)           \u001b[90m│\u001b[39m 0 (0%)            \u001b[90m│\u001b[39m\n\u001b[90m├────────────\u001b[39m\u001b[90m┼────────────────\u001b[39m\u001b[90m┼─────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────────\u001b[39m\u001b[90m┼───────────────────┤\u001b[39m\n\u001b[90m│\u001b[39m \u001b[1mTotal:\u001b[22m     \u001b[90m│\u001b[39m 1              \u001b[90m│\u001b[39m 125         \u001b[90m│\u001b[39m 1352         \u001b[90m│\u001b[39m 0            \u001b[90m│\u001b[39m 0 (0%)           \u001b[90m│\u001b[39m 0 (0%)            \u001b[90m│\u001b[39m\n\u001b[90m└────────────\u001b[39m\u001b[90m┴────────────────\u001b[39m\u001b[90m┴─────────────\u001b[39m\u001b[90m┴──────────────\u001b[39m\u001b[90m┴──────────────\u001b[39m\u001b[90m┴──────────────────\u001b[39m\u001b[90m┴───────────────────┘\u001b[39m\n\u001b[90mFound 0 clones.\u001b[39m\n\u001b[3m\u001b[90mDetection time:\u001b[39m\u001b[23m: 119.846ms\n",
+      "stderr": ""
+    },
+    {
+      "type": "architecture",
+      "tool": "dependency-cruiser",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "errors": [],
+      "warnings": [],
+      "stdout": "\n✔ no dependency violations found (5 modules, 5 dependencies cruised)\n\n",
+      "stderr": ""
+    },
+    {
+      "type": "security",
+      "tool": "semgrep",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "errors": [],
+      "warnings": [],
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "commitMessage": "feat(git-hooks): add ESLint validation to pre-push hook\n\nImplements Phase 1 of HODGE-378 (\"Stop the bleeding\") by adding full ESLint \nvalidation to the pre-push hook. This prevents ESLint errors from reaching \nCI and provides immediate feedback to developers.\n\n## What Changed\n\nImplementation (2 files modified):\n- `.husky/pre-push`: Added `run_eslint_check()` function (lines 128-154)\n  - Runs `npm run lint` on entire codebase before every push\n  - Integrated into main execution flow (lines 168-172)\n  - Positioned after Prettier check, before npm audit\n  - Supports `SKIP_LINT=true` environment variable for emergency bypass\n  - Provides helpful error messages with fix instructions\n\n- `test/pre-push-hook.test.ts`: Added 4 new smoke tests (+35 lines)\n  - Validates `run_eslint_check()` function presence\n  - Verifies `SKIP_LINT` environment variable support\n  - Confirms ESLint check runs in main execution\n  - Tests helpful error messages for failures\n\nDocumentation (13 files, 1,048 lines):\n- Feature planning and tracking (exploration, build plan, PM tracking)\n- Harden validation reports (review manifest, validation results, quality reports)\n- All 1,369 tests passing, zero ESLint/TypeScript errors\n\n## Why This Change\n\nESLint errors were reaching CI, breaking builds after developers pushed. This \ncreates a gap where developers push broken code thinking it's fine. The \npre-push hook closes this gap by running full ESLint validation locally \nbefore any push.\n\nKey design decisions:\n- **Always run**: No branch conditionals - runs for all pushes to prevent \n  errors from slipping through on feature branches\n- **Emergency bypass**: `SKIP_LINT=true` escape hatch for emergencies while \n  keeping other checks active\n- **Progressive checks**: Prettier (fast) → ESLint (moderate) → npm audit \n  (slow/cached) for optimal UX\n\n## Impact\n\nDeveloper Experience:\n- ✅ Immediate feedback on ESLint errors before push\n- ✅ Prevents broken builds in CI\n- ✅ Clear error messages guide developers to fixes\n- ✅ Emergency bypass available: `SKIP_LINT=true git push`\n\nCode Quality:\n- ✅ Zero ESLint errors enforced at push boundary\n- ✅ Foundation for fixing existing errors (HODGE-378.2, 378.3, 378.4)\n- ✅ All mandatory standards met (test isolation, no subprocess spawning)\n- ✅ Comprehensive smoke tests ensure hook reliability\n\nTechnical:\n- ~10-30s added to push time (acceptable for error prevention)\n- Hook follows established patterns (consistent with existing checks)\n- Shell script with proper error handling and exit codes\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}

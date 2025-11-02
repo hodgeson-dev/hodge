@@ -1,0 +1,51 @@
+{
+  "feature": "HODGE-378",
+  "type": "epic",
+  "stories": [
+    {
+      "id": "HODGE-378.1",
+      "title": "Git Hook Enhancement with Full ESLint Validation",
+      "description": "Update pre-push hook to run full npm run lint, add SKIP_LINT escape hatch. Prevents future ESLint violations from reaching CI.",
+      "effort": "small",
+      "dependencies": [],
+      "lane": 0
+    },
+    {
+      "id": "HODGE-378.2",
+      "title": "Fix Auto-Fixable ESLint Errors",
+      "description": "Remove unused imports, dead stores, useless escapes (~60 errors) using eslint --fix. Mechanical changes that reduce error count by 40%.",
+      "effort": "small",
+      "dependencies": [
+        "HODGE-378.1"
+      ],
+      "lane": 0
+    },
+    {
+      "id": "HODGE-378.3",
+      "title": "Fix Moderate ESLint Errors (Methods & Promises)",
+      "description": "Fix unbound methods, promise handling, regex optimizations (~50 errors). Catches real bugs and reduces errors by 34%.",
+      "effort": "medium",
+      "dependencies": [
+        "HODGE-378.1"
+      ],
+      "lane": 0
+    },
+    {
+      "id": "HODGE-378.4",
+      "title": "Fix Security & Complexity ESLint Errors",
+      "description": "Replace tmpdir() with TempDirectoryFixture, fix pseudo-random usage, refactor nested complexity (~38 errors). Achieves zero errors and full compliance.",
+      "effort": "medium",
+      "dependencies": [
+        "HODGE-378.1"
+      ],
+      "lane": 0
+    }
+  ],
+  "lanes": {
+    "count": 1,
+    "assignments": {}
+  },
+  "dependencies": {},
+  "estimatedDays": 3,
+  "createdAt": "2025-11-02T16:50:54.615Z"
+}
