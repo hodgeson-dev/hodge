@@ -1,0 +1,77 @@
+{
+  "feature": "HODGE-377",
+  "type": "epic",
+  "stories": [
+    {
+      "id": "HODGE-377.1",
+      "title": "Team Mode Detection & Configuration",
+      "description": "Developer can configure Hodge for team vs solo workflow with appropriate settings applied automatically. Includes config detection, init command updates, gitignore management, and tests for both modes.",
+      "effort": "medium",
+      "dependencies": [],
+      "lane": 0,
+      "estimatedDays": 2.5
+    },
+    {
+      "id": "HODGE-377.2",
+      "title": "PM-Required Feature Creation",
+      "description": "Team mode enforces PM ID validation and provides clear guidance when IDs are missing or invalid. Includes validation logic, explore command checks, error messaging, and tests.",
+      "effort": "small",
+      "dependencies": [
+        "HODGE-377.1"
+      ],
+      "lane": 2,
+      "estimatedDays": 1.5
+    },
+    {
+      "id": "HODGE-377.3",
+      "title": "Conflict Resolution Tooling",
+      "description": "Developers have commands and documentation to handle inevitable merge conflicts. Includes hodge resolve command, pre-commit hooks, conflict docs, and tests.",
+      "effort": "small",
+      "dependencies": [
+        "HODGE-377.1"
+      ],
+      "lane": 2,
+      "estimatedDays": 1.5
+    },
+    {
+      "id": "HODGE-377.4",
+      "title": "Enhanced PM Sync for Team Visibility",
+      "description": "PM issues show rich progress updates (comments, blockers, commits) giving teams visibility. Includes PM comment appending, blocker status updates, refine command hooks, and tests.",
+      "effort": "medium",
+      "dependencies": [
+        "HODGE-377.1"
+      ],
+      "lane": 1,
+      "estimatedDays": 2.5
+    },
+    {
+      "id": "HODGE-377.5",
+      "title": "Feature ID Abstraction & Refactoring",
+      "description": "Codebase supports both HODGE-XXX (solo) and PM IDs (team) transparently. Includes FeatureIDService abstraction, refactoring 641 occurrences, path updates, and backward compatibility tests.",
+      "effort": "large",
+      "dependencies": [
+        "HODGE-377.1"
+      ],
+      "lane": 0,
+      "estimatedDays": 6
+    },
+    {
+      "id": "HODGE-377.6",
+      "title": "/explore → /refine Workflow Implementation",
+      "description": "Developers use streamlined workflow with /explore (high-level) and /refine (details) with blocker detection. Includes template updates, /refine command creation, /decide removal, blocker logic, refinements.md structure, and tests.",
+      "effort": "large",
+      "dependencies": [
+        "HODGE-377.4"
+      ],
+      "lane": 1,
+      "estimatedDays": 4.5
+    }
+  ],
+  "lanes": {
+    "count": 3,
+    "assignments": {}
+  },
+  "dependencies": {},
+  "estimatedDays": 12,
+  "createdAt": "2025-11-01T05:51:00.000Z"
+}

@@ -1,0 +1,108 @@
+[
+  {
+    "type": "type_checking",
+    "tool": "typescript",
+    "exitCode": 0,
+    "errorCount": 0,
+    "warningCount": 0,
+    "errors": [],
+    "warnings": [],
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "type": "linting",
+    "tool": "eslint",
+    "exitCode": 0,
+    "errorCount": 0,
+    "warningCount": 12,
+    "errors": [],
+    "warnings": [
+      "/Users/michaelkelly/Projects/hodge/src/lib/structure-generator.ts: line 180, col 10, Warning - Unnecessary conditional, value is always falsy. (@typescript-eslint/no-unnecessary-condition)",
+      "/Users/michaelkelly/Projects/hodge/src/lib/structure-generator.ts: line 287, col 36, Warning - Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator. (@typescript-eslint/prefer-nullish-coalescing)",
+      "/Users/michaelkelly/Projects/hodge/src/lib/structure-generator.ts: line 547, col 3, Warning - Async method 'generateCommonPMScripts' has too many lines (52). Maximum allowed is 50. (max-lines-per-function)",
+      "/Users/michaelkelly/Projects/hodge/src/lib/structure-generator.ts: line 665, col 1, Warning - File has too many lines (405). Maximum allowed is 400. (max-lines)",
+      "/Users/michaelkelly/Projects/hodge/src/lib/team-mode-service.smoke.test.ts: line 193, col 74, Warning - Async arrow function has no 'await' expression. (@typescript-eslint/require-await)",
+      "/Users/michaelkelly/Projects/hodge/src/lib/team-mode-service.smoke.test.ts: line 205, col 83, Warning - Async arrow function has no 'await' expression. (@typescript-eslint/require-await)",
+      "/Users/michaelkelly/Projects/hodge/src/lib/team-mode-service.smoke.test.ts: line 217, col 93, Warning - Async arrow function has no 'await' expression. (@typescript-eslint/require-await)",
+      "/Users/michaelkelly/Projects/hodge/src/lib/team-mode-service.smoke.test.ts: line 226, col 94, Warning - Async arrow function has no 'await' expression. (@typescript-eslint/require-await)",
+      "/Users/michaelkelly/Projects/hodge/src/lib/team-mode-service.smoke.test.ts: line 234, col 93, Warning - Async arrow function has no 'await' expression. (@typescript-eslint/require-await)",
+      "/Users/michaelkelly/Projects/hodge/src/lib/team-mode-service.smoke.test.ts: line 244, col 14, Warning - Async arrow function has no 'await' expression. (@typescript-eslint/require-await)",
+      "/Users/michaelkelly/Projects/hodge/src/lib/team-mode-service.ts: line 136, col 22, Warning - Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined. (@typescript-eslint/no-unnecessary-condition)",
+      "/Users/michaelkelly/Projects/hodge/src/lib/team-mode-service.ts: line 170, col 22, Warning - Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined. (@typescript-eslint/no-unnecessary-condition)"
+    ],
+    "stdout": "/Users/michaelkelly/Projects/hodge/src/lib/structure-generator.ts: line 180, col 10, Warning - Unnecessary conditional, value is always falsy. (@typescript-eslint/no-unnecessary-condition)\n/Users/michaelkelly/Projects/hodge/src/lib/structure-generator.ts: line 287, col 36, Warning - Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator. (@typescript-eslint/prefer-nullish-coalescing)\n/Users/michaelkelly/Projects/hodge/src/lib/structure-generator.ts: line 547, col 3, Warning - Async method 'generateCommonPMScripts' has too many lines (52). Maximum allowed is 50. (max-lines-per-function)\n/Users/michaelkelly/Projects/hodge/src/lib/structure-generator.ts: line 665, col 1, Warning - File has too many lines (405). Maximum allowed is 400. (max-lines)\n/Users/michaelkelly/Projects/hodge/src/lib/team-mode-service.smoke.test.ts: line 193, col 74, Warning - Async arrow function has no 'await' expression. (@typescript-eslint/require-await)\n/Users/michaelkelly/Projects/hodge/src/lib/team-mode-service.smoke.test.ts: line 205, col 83, Warning - Async arrow function has no 'await' expression. (@typescript-eslint/require-await)\n/Users/michaelkelly/Projects/hodge/src/lib/team-mode-service.smoke.test.ts: line 217, col 93, Warning - Async arrow function has no 'await' expression. (@typescript-eslint/require-await)\n/Users/michaelkelly/Projects/hodge/src/lib/team-mode-service.smoke.test.ts: line 226, col 94, Warning - Async arrow function has no 'await' expression. (@typescript-eslint/require-await)\n/Users/michaelkelly/Projects/hodge/src/lib/team-mode-service.smoke.test.ts: line 234, col 93, Warning - Async arrow function has no 'await' expression. (@typescript-eslint/require-await)\n/Users/michaelkelly/Projects/hodge/src/lib/team-mode-service.smoke.test.ts: line 244, col 14, Warning - Async arrow function has no 'await' expression. (@typescript-eslint/require-await)\n/Users/michaelkelly/Projects/hodge/src/lib/team-mode-service.ts: line 136, col 22, Warning - Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined. (@typescript-eslint/no-unnecessary-condition)\n/Users/michaelkelly/Projects/hodge/src/lib/team-mode-service.ts: line 170, col 22, Warning - Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined. (@typescript-eslint/no-unnecessary-condition)\n\n12 problems\n",
+    "stderr": ""
+  },
+  {
+    "type": "testing",
+    "tool": "vitest",
+    "exitCode": 0,
+    "errorCount": 0,
+    "warningCount": 0,
+    "errors": [],
+    "warnings": [],
+    "stdout": "\n RUN  v3.2.4 /Users/michaelkelly/Projects/hodge\n\n···········································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································{\"level\":\"warn\",\"time\":\"2025-11-02T00:01:42.171Z\",\"name\":\"pm-adapter\",\"timestamp\":\"2025-11-02T00:01:42.170Z\",\"enableConsole\":false,\"msg\":\"Failed to load PM overrides\"}\n····················································{\"level\":\"info\",\"time\":\"2025-11-02T00:01:42.195Z\",\"msg\":\"Process terminated\"}\n································································································································································································································································································\n\n Test Files  128 passed (128)\n      Tests  1343 passed (1343)\n   Start at  17:01:30\n   Duration  13.15s (transform 2.08s, setup 0ms, collect 13.75s, tests 30.02s, environment 17ms, prepare 9.32s)\n\n",
+    "stderr": "(node:7117) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:7113) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:7300) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:7720) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:7891) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:7984) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:8070) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\nfatal: No names found, cannot describe anything.\nfatal: No names found, cannot describe anything.\n(node:8152) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n(node:8197) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n⚠ No development tools detected\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n(node:8242) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:8241) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:8245) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:8393) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:8405) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:8551) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:8565) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:8586) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:8605) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:8616) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:8633) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:8644) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:8660) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n"
+  },
+  {
+    "type": "formatting",
+    "tool": "prettier",
+    "exitCode": 0,
+    "errorCount": 0,
+    "warningCount": 0,
+    "errors": [],
+    "warnings": [],
+    "stdout": "Checking formatting...\nAll matched files use Prettier code style!\n",
+    "stderr": ""
+  },
+  {
+    "type": "complexity",
+    "tool": "none",
+    "skipped": true,
+    "reason": "No tools configured for this check type"
+  },
+  {
+    "type": "code_smells",
+    "tool": "none",
+    "skipped": true,
+    "reason": "No tools configured for this check type"
+  },
+  {
+    "type": "duplication",
+    "tool": "jscpd",
+    "exitCode": 0,
+    "errorCount": 0,
+    "warningCount": 1,
+    "errors": [],
+    "warnings": [
+      "Clone found ("
+    ],
+    "stdout": "Clone found (typescript):\n - \u001b[1m\u001b[32msrc/lib/team-mode-service.smoke.test.ts\u001b[39m\u001b[22m [41:5 - 51:47] (10 lines, 91 tokens)\n   \u001b[1m\u001b[32msrc/lib/team-mode-service.smoke.test.ts\u001b[39m\u001b[22m [24:5 - 34:8]\n\n\u001b[90m┌────────────\u001b[39m\u001b[90m┬────────────────\u001b[39m\u001b[90m┬─────────────\u001b[39m\u001b[90m┬──────────────\u001b[39m\u001b[90m┬──────────────\u001b[39m\u001b[90m┬──────────────────\u001b[39m\u001b[90m┬───────────────────┐\u001b[39m\n\u001b[90m│\u001b[39m\u001b[31m Format     \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Files analyzed \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Total lines \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Total tokens \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Clones found \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Duplicated lines \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Duplicated tokens \u001b[39m\u001b[90m│\u001b[39m\n\u001b[90m├────────────\u001b[39m\u001b[90m┼────────────────\u001b[39m\u001b[90m┼─────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────────\u001b[39m\u001b[90m┼───────────────────┤\u001b[39m\n\u001b[90m│\u001b[39m typescript \u001b[90m│\u001b[39m 4              \u001b[90m│\u001b[39m 1231        \u001b[90m│\u001b[39m 7722         \u001b[90m│\u001b[39m 1            \u001b[90m│\u001b[39m 10 (0.81%)       \u001b[90m│\u001b[39m 91 (1.18%)        \u001b[90m│\u001b[39m\n\u001b[90m├────────────\u001b[39m\u001b[90m┼────────────────\u001b[39m\u001b[90m┼─────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────────\u001b[39m\u001b[90m┼───────────────────┤\u001b[39m\n\u001b[90m│\u001b[39m \u001b[1mTotal:\u001b[22m     \u001b[90m│\u001b[39m 4              \u001b[90m│\u001b[39m 1231        \u001b[90m│\u001b[39m 7722         \u001b[90m│\u001b[39m 1            \u001b[90m│\u001b[39m 10 (0.81%)       \u001b[90m│\u001b[39m 91 (1.18%)        \u001b[90m│\u001b[39m\n\u001b[90m└────────────\u001b[39m\u001b[90m┴────────────────\u001b[39m\u001b[90m┴─────────────\u001b[39m\u001b[90m┴──────────────\u001b[39m\u001b[90m┴──────────────\u001b[39m\u001b[90m┴──────────────────\u001b[39m\u001b[90m┴───────────────────┘\u001b[39m\n\u001b[90mFound 1 clones.\u001b[39m\n\u001b[3m\u001b[90mDetection time:\u001b[39m\u001b[23m: 163.429ms\n",
+    "stderr": ""
+  },
+  {
+    "type": "architecture",
+    "tool": "dependency-cruiser",
+    "exitCode": 0,
+    "errorCount": 0,
+    "warningCount": 1,
+    "errors": [],
+    "warnings": [
+      "\n  warn no-circular: "
+    ],
+    "stdout": "\n  warn no-circular: src/lib/detection.ts → \n      src/lib/project-name-detector.ts →\n      src/lib/detection.ts\n\nx 1 dependency violations (0 errors, 1 warnings). 29 modules, 60 dependencies cruised.\n\n",
+    "stderr": ""
+  },
+  {
+    "type": "security",
+    "tool": "semgrep",
+    "exitCode": 0,
+    "errorCount": 0,
+    "warningCount": 0,
+    "errors": [],
+    "warnings": [],
+    "stdout": "",
+    "stderr": ""
+  }
+]

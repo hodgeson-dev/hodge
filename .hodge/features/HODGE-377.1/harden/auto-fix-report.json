@@ -1,0 +1,44 @@
+{
+  "timestamp": "2025-11-01T23:51:18.141Z",
+  "stagedFiles": [
+    ".hodge/features/HODGE-376/ship-record.json",
+    ".hodge/features/HODGE-377.1/build/build-plan.md",
+    ".hodge/features/HODGE-377.1/explore/exploration.md",
+    ".hodge/features/HODGE-377.1/explore/test-intentions.md",
+    ".hodge/features/HODGE-377.1/ship-record.json",
+    ".hodge/features/HODGE-377/explore/exploration.md",
+    ".hodge/features/HODGE-377/explore/test-intentions.md",
+    ".hodge/features/HODGE-377/plan.json",
+    ".hodge/id-counter.json",
+    ".hodge/id-mappings.json",
+    ".hodge/project_management.md",
+    "hodge.json",
+    "src/lib/pm/types.ts",
+    "src/lib/structure-generator.ts",
+    "src/lib/team-mode-service.smoke.test.ts",
+    "src/lib/team-mode-service.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 16,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": "src/lib/pm/types.ts 38ms (unchanged)\nsrc/lib/structure-generator.ts 52ms\nsrc/lib/team-mode-service.smoke.test.ts 18ms\nsrc/lib/team-mode-service.ts 12ms\n",
+      "stderr": "",
+      "duration": 1002
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 4,
+      "issuesFixed": 17,
+      "success": true,
+      "stdout": "\n/Users/michaelkelly/Projects/hodge/src/lib/structure-generator.ts\n  180:10  warning  Unnecessary conditional, value is always falsy                                                             @typescript-eslint/no-unnecessary-condition\n  287:36  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  547:3   warning  Async method 'generateCommonPMScripts' has too many lines (52). Maximum allowed is 50                      max-lines-per-function\n  665:1   warning  File has too many lines (405). Maximum allowed is 400                                                      max-lines\n\n/Users/michaelkelly/Projects/hodge/src/lib/team-mode-service.smoke.test.ts\n    6:20  warning  'it' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars\n    6:20  error    Remove this unused import of 'it'                                     sonarjs/unused-import\n  193:74  warning  Async arrow function has no 'await' expression                        @typescript-eslint/require-await\n  205:83  warning  Async arrow function has no 'await' expression                        @typescript-eslint/require-await\n  217:93  warning  Async arrow function has no 'await' expression                        @typescript-eslint/require-await\n  226:94  warning  Async arrow function has no 'await' expression                        @typescript-eslint/require-await\n  234:93  warning  Async arrow function has no 'await' expression                        @typescript-eslint/require-await\n  244:14  warning  Async arrow function has no 'await' expression                        @typescript-eslint/require-await\n\n/Users/michaelkelly/Projects/hodge/src/lib/team-mode-service.ts\n  136:22  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition\n  170:22  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition\n  192:13  error    Unsafe assignment of an `any` value                                                                 @typescript-eslint/no-unsafe-assignment\n  195:19  error    Unsafe member access .pm on an `any` value                                                          @typescript-eslint/no-unsafe-member-access\n  200:21  error    Unsafe member access .pm on an `any` value                                                          @typescript-eslint/no-unsafe-member-access\n\n✖ 17 problems (4 errors, 13 warnings)\n\n",
+      "stderr": "",
+      "duration": 4332
+    }
+  ],
+  "totalIssuesFixed": 17,
+  "totalFilesModified": 20,
+  "failures": []
+}

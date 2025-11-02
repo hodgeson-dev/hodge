@@ -1,14 +1,17 @@
 {
   "version": "1.0.0",
   "pm": {
+    "enabled": true,
     "tool": "linear",
+    "teamId": "",
     "statusMap": {
       "explore": "To Do",
       "build": "In Progress",
       "harden": "In Review",
       "ship": "Done"
     },
-    "verbosity": "essential"
+    "verbosity": "essential",
+    "queueOfflineRequests": true
   },
   "ship": {
     "autoPush": false,

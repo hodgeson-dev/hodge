@@ -195,6 +195,9 @@ export class StructureGenerator {
       await fs.ensureDir(path.join(hodgePath, 'patterns'));
       await fs.ensureDir(path.join(hodgePath, 'features'));
 
+      // Create .hodge/.gitignore with context.json (HODGE-377.1)
+      await this.createHodgeGitignore(hodgePath);
+
       // Generate all configuration files
       await this.generateConfig(projectInfo, hodgePath);
       await this.generateUserConfig(projectInfo); // Create hodge.json if PM tool selected
@@ -618,6 +621,27 @@ These scripts are designed to work out of the box, but you can customize them ba
    * Updates .gitignore to include Hodge-specific entries
    * @throws {StructureGenerationError} If gitignore update fails
    */
+  /**
+   * Creates .hodge/.gitignore with context.json entry (HODGE-377.1)
+   * This keeps context.json (session state) out of git regardless of mode
+   * @param hodgePath - The .hodge directory path
+   */
+  private async createHodgeGitignore(hodgePath: string): Promise<void> {
+    try {
+      const hodgeGitignorePath = path.join(hodgePath, '.gitignore');
+      const gitignoreContent =
+        '# Hodge session state - keep out of version control\ncontext.json\n';
+
+      await fs.writeFile(hodgeGitignorePath, gitignoreContent, 'utf8');
+      this.logger.debug('Created .hodge/.gitignore with context.json');
+    } catch (error) {
+      // Don't fail init if .hodge/.gitignore creation fails
+      this.logger.warn(
+        `Warning: Failed to create .hodge/.gitignore: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
+    }
+  }
+
   private async updateGitignore(): Promise<void> {
     try {
       const gitignorePath = this.safePath('.gitignore');

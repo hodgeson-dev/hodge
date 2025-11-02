@@ -33,11 +33,15 @@ export interface PMTransition {
 }
 
 export interface PMConfig {
+  enabled?: boolean; // Master switch for PM integration (HODGE-377.1)
   tool: PMTool;
   apiKey?: string;
-  teamId?: string;
+  teamId?: string; // Required for Linear
   projectId?: string;
   baseUrl?: string;
+  statusMap?: Record<string, string>; // Mode to PM state mapping
+  verbosity?: 'minimal' | 'normal' | 'detailed' | 'essential';
+  queueOfflineRequests?: boolean; // Graceful degradation (HODGE-377.1)
 }
 
 export interface PMOverrides {
