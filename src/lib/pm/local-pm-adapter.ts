@@ -543,4 +543,14 @@ HODGE-004 (ID Management)
 
     return stateMap[status] || stateMap.exploring;
   }
+
+  /**
+   * Check if input is a valid Local PM issue ID
+   * Local IDs follow the format: HOD-001, HODGE-123
+   * Must match the ENTIRE input, not just part of it
+   */
+  isValidIssueID(input: string): boolean {
+    const trimmed = input.trim();
+    return /^HOD(GE)?-\d+$/.test(trimmed);
+  }
 }

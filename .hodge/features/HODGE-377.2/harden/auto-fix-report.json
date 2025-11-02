@@ -1,0 +1,44 @@
+{
+  "timestamp": "2025-11-02T03:45:55.338Z",
+  "stagedFiles": [
+    ".hodge/features/HODGE-377.2/build/build-plan.md",
+    ".hodge/features/HODGE-377.2/explore/exploration.md",
+    ".hodge/features/HODGE-377.2/explore/test-intentions.md",
+    ".hodge/features/HODGE-377.2/ship-record.json",
+    ".hodge/id-mappings.json",
+    ".hodge/project_management.md",
+    "src/bin/hodge.ts",
+    "src/commands/explore-flags.smoke.test.ts",
+    "src/commands/explore.ts",
+    "src/lib/claude-commands.ts",
+    "src/lib/explore-service.ts",
+    "src/lib/pm/base-adapter.ts",
+    "src/lib/pm/github-adapter.ts",
+    "src/lib/pm/linear-adapter.ts",
+    "src/lib/pm/local-pm-adapter.ts",
+    "src/lib/pm/pm-adapter-id-detection.smoke.test.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 16,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": "src/bin/hodge.ts 143ms (unchanged)\nsrc/commands/explore-flags.smoke.test.ts 36ms (unchanged)\nsrc/commands/explore.ts 76ms (unchanged)\nsrc/lib/claude-commands.ts 15ms\nsrc/lib/explore-service.ts 26ms (unchanged)\nsrc/lib/pm/base-adapter.ts 10ms (unchanged)\nsrc/lib/pm/github-adapter.ts 19ms (unchanged)\nsrc/lib/pm/linear-adapter.ts 16ms (unchanged)\nsrc/lib/pm/local-pm-adapter.ts 18ms (unchanged)\nsrc/lib/pm/pm-adapter-id-detection.smoke.test.ts 6ms\n",
+      "stderr": "",
+      "duration": 1295
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 10,
+      "issuesFixed": 30,
+      "success": true,
+      "stdout": "\n/Users/michaelkelly/Projects/hodge/src/commands/explore-flags.smoke.test.ts\n  43:26  error  Avoid referencing unbound methods which may cause unintentional scoping of `this`.\nIf your function does not access `this`, you can annotate it with `this: void`, or consider using an arrow function instead  @typescript-eslint/unbound-method\n\n/Users/michaelkelly/Projects/hodge/src/commands/explore.ts\n   96:3  error    Async method 'handleCreateIssue' has no 'await' expression  @typescript-eslint/require-await\n  104:8  warning  Complete the task associated to this \"TODO\" comment         sonarjs/todo-tag\n  122:3  error    Async method 'handleRerun' has no 'await' expression        @typescript-eslint/require-await\n  126:8  warning  Complete the task associated to this \"TODO\" comment         sonarjs/todo-tag\n\n/Users/michaelkelly/Projects/hodge/src/lib/pm/github-adapter.ts\n  118:33  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  151:33  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  174:25  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  229:33  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  342:35  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  357:3   warning  Async method 'createEpicWithStories' has too many lines (66). Maximum allowed is 50                        max-lines-per-function\n  384:37  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  409:40  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n\n/Users/michaelkelly/Projects/hodge/src/lib/pm/linear-adapter.ts\n   47:40  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n   75:40  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n   83:48  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  129:44  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  170:47  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  195:12  warning  Unnecessary conditional, value is always truthy                                                            @typescript-eslint/no-unnecessary-condition\n\n/Users/michaelkelly/Projects/hodge/src/lib/pm/local-pm-adapter.ts\n   50:27  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n   53:30  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  173:22  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  473:46  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  544:12  warning  Unnecessary conditional, value is always truthy                                                            @typescript-eslint/no-unnecessary-condition\n\n/Users/michaelkelly/Projects/hodge/src/lib/pm/pm-adapter-id-detection.smoke.test.ts\n  16:11  warning  'testDir' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars\n  16:11  error    Remove the declaration of the unused 'testDir' variable                             sonarjs/no-unused-vars\n  16:11  error    Remove this useless assignment to variable \"testDir\"                                sonarjs/no-dead-store\n  43:11  warning  'testDir' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars\n  43:11  error    Remove the declaration of the unused 'testDir' variable                             sonarjs/no-unused-vars\n  43:11  error    Remove this useless assignment to variable \"testDir\"                                sonarjs/no-dead-store\n\n✖ 30 problems (7 errors, 23 warnings)\n\n",
+      "stderr": "",
+      "duration": 4820
+    }
+  ],
+  "totalIssuesFixed": 30,
+  "totalFilesModified": 26,
+  "failures": []
+}

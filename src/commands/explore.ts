@@ -20,6 +20,10 @@ import { ExploreService } from '../lib/explore-service.js';
 export interface ExploreOptions {
   verbose?: boolean;
   skipIdManagement?: boolean; // For testing
+  createIssue?: boolean; // HODGE-377.2: Create PM issue after exploration
+  title?: string; // Issue title for --create-issue
+  description?: string; // Issue description for --create-issue
+  rerun?: string; // HODGE-377.2: Re-exploration reason
 }
 
 /**
@@ -51,6 +55,18 @@ export class ExploreCommand {
   async execute(feature: string, options: ExploreOptions = {}): Promise<void> {
     const startTime = Date.now();
 
+    // HODGE-377.2: Handle --create-issue flag (PM issue creation after exploration)
+    if (options.createIssue) {
+      this.handleCreateIssue(feature, options);
+      return;
+    }
+
+    // HODGE-377.2: Handle --rerun flag (re-exploration)
+    if (options.rerun) {
+      this.handleRerun(feature, options);
+      return;
+    }
+
     // HODGE-053: Detect input type and handle topic exploration warning
     const inputType = this.detectInputType(feature);
     const userDescription = inputType === 'topic' ? feature : undefined;
@@ -71,6 +87,51 @@ export class ExploreCommand {
 
     // Standard exploration flow
     await this.performExploration(featureName, featureID, userDescription, options, startTime);
+  }
+
+  /**
+   * HODGE-377.2: Handle --create-issue flag (PM issue creation after exploration)
+   * This is the "closing call" in the two-step workflow
+   */
+  private handleCreateIssue(feature: string, options: ExploreOptions): void {
+    this.logger.info(chalk.cyan('🔨 Creating PM issue after exploration approval...'));
+
+    if (!options.title) {
+      this.logger.error(chalk.red('Error: --title is required when using --create-issue'));
+      process.exit(1);
+    }
+
+    // TODO (HODGE-377.2 harden): Implement full PM issue creation logic
+    // 1. Get active PM adapter
+    // 2. Call adapter.createIssue(title, description)
+    // 3. Create feature directory with returned ID
+    // 4. Output feature ID to stdout for AI to capture
+    this.logger.info(chalk.yellow('⚠️  PM issue creation not yet implemented'));
+    this.logger.info(
+      chalk.gray('This will be completed in the harden phase with integration tests')
+    );
+    this.logger.info(chalk.gray(`Feature: ${feature}`));
+    this.logger.info(chalk.gray(`Title: ${options.title}`));
+    this.logger.info(chalk.gray(`Description: ${options.description ?? 'N/A'}`));
+  }
+
+  /**
+   * HODGE-377.2: Handle --rerun flag (re-exploration with reason)
+   * Loads existing exploration.md for context, then overwrites after new synthesis
+   */
+  private handleRerun(feature: string, options: ExploreOptions): void {
+    this.logger.info(chalk.cyan(`🔄 Re-exploring ${feature}...`));
+    this.logger.info(chalk.gray(`Reason: ${options.rerun}`));
+
+    // TODO (HODGE-377.2 harden): Implement full re-exploration logic
+    // 1. Check if exploration.md exists
+    // 2. Load existing content for AI context
+    // 3. Start exploration conversation with re-exploration focus
+    // 4. Overwrite exploration.md after new synthesis
+    this.logger.info(chalk.yellow('⚠️  Re-exploration not yet implemented'));
+    this.logger.info(
+      chalk.gray('This will be completed in the harden phase with integration tests')
+    );
   }
 
   /**

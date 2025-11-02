@@ -324,24 +324,29 @@ Read: .hodge/decisions.md  # (FULL tier only)
 **Example**: If a review profile suggests "always use async", but standards.md says "only use async when necessary", the standard wins.
 
 ────────────────────────────────────────────────────────────
-📍 Step 5 of 7: Conduct AI Code Review
+📍 Step 5 of 7: Conduct AI Code Review (MANDATORY - NO SKIP)
 ────────────────────────────────────────────────────────────
 
 Previously completed:
   ✓ Generate Review Manifest
   ✓ Read Review Manifest
   ✓ Choose Review Tier
-  ✓ Load Context Files
+  ✓ Load Context Files (verified via Step 4c checklist)
 
 Remaining:
-  ○ Assess Findings
-  ○ Generate Review Report
+  ○ Conduct Review (Step 5)
+  ○ Document Findings (Step 5.6 - MANDATORY DELIVERABLE)
+  ○ Assess Findings (Step 6)
+  ○ Generate Review Report (Step 7)
 
 ### Step 5: Conduct AI Code Review
+
+**🚫 BLOCKER**: This step is MANDATORY. You cannot skip directly to Step 6.
 
 **⚠️ PREREQUISITE CHECK**: Did you complete Step 4c verification checklist?
 - If NO, return to Step 4 immediately
 - If YES, proceed with review
+- **You MUST complete Step 5.6 (Document Findings) before proceeding to Step 6**
 
 **Review Strategy**: Use the context files you loaded in Step 4 to assess the code.
 
@@ -386,11 +391,52 @@ Before moving to Step 6, confirm you actually USED the context files:
 **If you answered NO to ANY question above:**
 1. Return to Step 4 and re-load the context files you missed
 2. Re-conduct your review with ALL context applied
-3. DO NOT proceed to Step 6
+3. DO NOT proceed to Step 5.6
 
 **The purpose of loading context is to APPLY it, not just read it.**
 
 **Specific Profile Check**: Look at your review report draft - does it reference any of the profiles you loaded? If not, you didn't actually apply them. Go back and review against profile rules.
+
+### Step 5.6: Document Review Findings (MANDATORY - NO SKIP)
+
+**🚫 BLOCKER**: You MUST complete this step before proceeding to Step 6.
+
+**Output your review findings to the user NOW** in this format:
+
+```
+## 📋 AI CODE REVIEW RESULTS
+
+### Standards Checked:
+- ✅ standards.md: [List specific rules checked]
+- ✅ principles.md: [List principles verified]
+- ✅ Patterns: [List patterns checked]
+- ✅ Profiles: [List profiles applied - MUST include all loaded profiles]
+
+### Critical Files Reviewed:
+[List each critical file from manifest with findings]
+
+### Findings by Severity:
+**BLOCKERS (0)**
+[List each blocker with file:line, violated rule, and profile/standard reference]
+
+**WARNINGS (N)**
+[List each warning with file:line, violated rule, and profile/standard reference]
+
+**SUGGESTIONS (N)**
+[List each suggestion with file:line, violated rule, and profile/standard reference]
+
+### Standards Compliance:
+- Test Isolation (MANDATORY): [✅ or ❌ with details]
+- No Subprocess Spawning (CRITICAL): [✅ or ❌ with details]
+- TypeScript Strict Mode (MANDATORY): [✅ or ❌ with details]
+- [Other mandatory rules]: [✅ or ❌ with details]
+```
+
+**IMPORTANT**:
+- This output proves you conducted the review
+- It will be used in Step 6 to assess next actions
+- If you cannot produce this output with specific rule references, you did NOT conduct the review
+- DO NOT proceed to Step 6 until you output this to the user
 
 ────────────────────────────────────────────────────────────
 📍 Step 6 of 7: Assess Review Findings
@@ -402,13 +448,18 @@ Previously completed:
   ✓ Choose Review Tier
   ✓ Load Context Files
   ✓ Conduct AI Review
+  ✓ Document Review Findings (Step 5.6)
 
 Remaining:
   ○ Generate Review Report
 
 ### Step 6: Assess Review Findings
 
-After reviewing all files, determine if there are blocking issues.
+**⚠️ PREREQUISITE CHECK**: Did you complete Step 5.6 and output review findings to the user?
+- If NO, return to Step 5.6 immediately - DO NOT SKIP THIS STEP
+- If YES, proceed with assessment
+
+After reviewing all files and documenting your findings in Step 5.6, determine if there are blocking issues.
 
 **Question**: Did you find any ERRORS (not warnings) in validation-results.json or during code review?
 

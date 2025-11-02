@@ -43,11 +43,25 @@ program
 const exploreCmd = program
   .command('explore <feature>')
   .description('[Internal] Start exploring a new feature')
-  .action(async (feature: string, options: Record<string, never>) => {
-    const { ExploreCommand } = await import('../commands/explore.js');
-    const exploreCommand = new ExploreCommand();
-    await exploreCommand.execute(feature, options);
-  });
+  .option('--create-issue', 'Create PM issue after exploration approval (HODGE-377.2)')
+  .option('--title <title>', 'Issue title when using --create-issue')
+  .option('--description <description>', 'Issue description when using --create-issue')
+  .option('--rerun <reason>', 'Re-explore existing feature with reason (HODGE-377.2)')
+  .action(
+    async (
+      feature: string,
+      options: {
+        createIssue?: boolean;
+        title?: string;
+        description?: string;
+        rerun?: string;
+      }
+    ) => {
+      const { ExploreCommand } = await import('../commands/explore.js');
+      const exploreCommand = new ExploreCommand();
+      await exploreCommand.execute(feature, options);
+    }
+  );
 
 const buildCmd = program
   .command('build [feature]')

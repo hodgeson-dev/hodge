@@ -58,9 +58,7 @@ describe('ExploreCommand - Sub-Feature Support', () => {
         expect(await workspace.exists('.hodge/features/HODGE-333.2/explore/exploration.md')).toBe(
           true
         );
-        expect(
-          await workspace.exists('.hodge/features/HODGE-333.2/explore/test-intentions.md')
-        ).toBe(true);
+        // HODGE-377.2: test-intentions.md no longer created (AI writes test intentions in exploration.md)
       });
     });
 

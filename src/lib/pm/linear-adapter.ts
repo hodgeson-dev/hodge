@@ -256,4 +256,14 @@ export class LinearAdapter extends BasePMAdapter {
       throw new Error(`Failed to add comment to Linear issue ${issueId}: ${String(error)}`);
     }
   }
+
+  /**
+   * Check if input is a valid Linear issue ID
+   * Linear IDs follow the format: PROJ-123
+   * Must match the ENTIRE input, not just part of it
+   */
+  isValidIssueID(input: string): boolean {
+    const trimmed = input.trim();
+    return /^[A-Z]+-\d+$/.test(trimmed);
+  }
 }

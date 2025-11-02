@@ -177,4 +177,12 @@ export abstract class BasePMAdapter {
   abstract updateIssueState(issueId: string, stateId: string): Promise<void>;
   abstract searchIssues(query: string): Promise<PMIssue[]>;
   abstract createIssue(title: string, description?: string): Promise<PMIssue>;
+
+  /**
+   * Check if input string is a valid issue ID for this PM adapter
+   * Must match the ENTIRE input string, not just part of it
+   * @param input - The input string to check
+   * @returns true if input is a valid issue ID format for this adapter
+   */
+  abstract isValidIssueID(input: string): boolean;
 }

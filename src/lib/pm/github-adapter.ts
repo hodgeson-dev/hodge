@@ -477,4 +477,14 @@ export class GitHubAdapter extends BasePMAdapter {
     }
     return parseInt(match[0], 10);
   }
+
+  /**
+   * Check if input is a valid GitHub issue ID
+   * GitHub IDs can be: #123 or 123 (just numbers)
+   * Must match the ENTIRE input, not just part of it
+   */
+  isValidIssueID(input: string): boolean {
+    const trimmed = input.trim();
+    return /^#?\d+$/.test(trimmed);
+  }
 }

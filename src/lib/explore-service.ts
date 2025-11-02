@@ -301,7 +301,7 @@ export class ExploreService {
     featureName: string,
     exploreDir: string,
     template: SmartTemplate,
-    intent: FeatureIntent,
+    _intent: FeatureIntent,
     pmIssue: PMIssue | null,
     featureID: FeatureID | null
   ): Promise<void> {
@@ -311,9 +311,9 @@ export class ExploreService {
     // Create exploration.md
     await fs.writeFile(path.join(exploreDir, 'exploration.md'), template.content);
 
-    // Create test-intentions.md
-    const testIntentions = this.generateTestIntentions(featureName, intent);
-    await fs.writeFile(path.join(exploreDir, 'test-intentions.md'), testIntentions);
+    // HODGE-377.2: Removed test-intentions.md creation
+    // Test intentions are now part of exploration.md (AI writes them during synthesis)
+    // This eliminates redundancy and keeps test intentions with exploration content
 
     // Write issue ID file if we have one
     if (pmIssue?.id ?? featureID?.externalID) {
@@ -486,57 +486,7 @@ export class ExploreService {
     return approaches;
   }
 
-  /**
-   * Generate test intentions template
-   */
-  private generateTestIntentions(feature: string, intent: FeatureIntent): string {
-    const sections: string[] = [];
-
-    sections.push(`# Test Intentions for ${feature}\n`);
-    sections.push(`## Purpose`);
-    sections.push(`Document what we intend to test when this feature moves to build mode.`);
-    sections.push(`These are not actual tests, but a checklist of behaviors to verify.\n`);
-
-    sections.push(`## Core Requirements`);
-    sections.push(`- [ ] Should not crash when executed`);
-    sections.push(`- [ ] Should complete within reasonable time (<500ms)`);
-    sections.push(`- [ ] Should handle invalid input gracefully`);
-    sections.push(`- [ ] Should integrate with existing systems\n`);
-
-    // Intent-specific test intentions
-    if (intent.type === 'authentication') {
-      sections.push(`## Authentication-Specific Tests`);
-      sections.push(`- [ ] Should validate credentials correctly`);
-      sections.push(`- [ ] Should reject invalid credentials`);
-      sections.push(`- [ ] Should handle token expiration`);
-      sections.push(`- [ ] Should maintain session state\n`);
-    }
-
-    if (intent.type === 'caching') {
-      sections.push(`## Caching-Specific Tests`);
-      sections.push(`- [ ] Should cache values correctly`);
-      sections.push(`- [ ] Should respect TTL settings`);
-      sections.push(`- [ ] Should handle cache misses`);
-      sections.push(`- [ ] Should invalidate when needed\n`);
-    }
-
-    sections.push(`## Integration Tests`);
-    sections.push(`- [ ] Should work with current authentication system`);
-    sections.push(`- [ ] Should respect user permissions`);
-    sections.push(`- [ ] Should handle database transactions properly`);
-    sections.push(`- [ ] Should emit appropriate events/logs\n`);
-
-    sections.push(`## Notes`);
-    sections.push(`Add any specific test scenarios or edge cases discovered during exploration:\n`);
-    sections.push(`-`);
-    sections.push(`-`);
-    sections.push(`-\n`);
-
-    sections.push(`---`);
-    sections.push(
-      `*Generated during exploration phase. Convert to actual tests during build phase.*`
-    );
-
-    return sections.join('\n');
-  }
+  // HODGE-377.2: Removed generateTestIntentions() method
+  // Test intentions are now written by AI directly in exploration.md
+  // This method was only used to create test-intentions.md which has been removed
 }
