@@ -115,7 +115,7 @@ export class GitHubAdapter extends BasePMAdapter {
           name: issue.state === 'closed' ? 'Closed' : 'Open',
           type: issue.state === 'closed' ? ('completed' as StateType) : ('started' as StateType),
         },
-        description: issue.body || '',
+        description: issue.body ?? '',
         url: issue.html_url,
       };
     } catch (error) {
@@ -148,7 +148,7 @@ export class GitHubAdapter extends BasePMAdapter {
           name: issue.state === 'closed' ? 'Closed' : 'Open',
           type: issue.state === 'closed' ? ('completed' as StateType) : ('started' as StateType),
         },
-        description: issue.body || '',
+        description: issue.body ?? '',
         url: issue.html_url,
       };
     } catch (error) {
@@ -226,7 +226,7 @@ export class GitHubAdapter extends BasePMAdapter {
           name: issue.state === 'closed' ? 'Closed' : 'Open',
           type: issue.state === 'closed' ? ('completed' as StateType) : ('started' as StateType),
         },
-        description: issue.body || '',
+        description: issue.body ?? '',
         url: issue.html_url,
       }));
     } catch (error) {
@@ -298,6 +298,16 @@ export class GitHubAdapter extends BasePMAdapter {
   }
 
   /**
+   * Append a comment to a GitHub issue
+   * HODGE-377.4: Implements BasePMAdapter.appendComment interface
+   * @param issueId - GitHub issue ID (number or "#123" format)
+   * @param comment - Comment body in markdown format
+   */
+  async appendComment(issueId: string, comment: string): Promise<void> {
+    return this.addComment(issueId, comment);
+  }
+
+  /**
    * Get issue by title or ID
    */
   async findIssueByFeature(feature: string): Promise<PMIssue | undefined> {
@@ -339,7 +349,7 @@ export class GitHubAdapter extends BasePMAdapter {
             name: issue.state === 'closed' ? 'Closed' : 'Open',
             type: issue.state === 'closed' ? ('completed' as StateType) : ('started' as StateType),
           },
-          description: issue.body || '',
+          description: issue.body ?? '',
           url: issue.html_url,
         };
       }
@@ -381,7 +391,7 @@ export class GitHubAdapter extends BasePMAdapter {
           type:
             epicIssue.state === 'closed' ? ('completed' as StateType) : ('started' as StateType),
         },
-        description: epicIssue.body || '',
+        description: epicIssue.body ?? '',
         url: epicIssue.html_url,
       };
 
@@ -406,7 +416,7 @@ export class GitHubAdapter extends BasePMAdapter {
             type:
               storyIssue.state === 'closed' ? ('completed' as StateType) : ('started' as StateType),
           },
-          description: storyIssue.body || '',
+          description: storyIssue.body ?? '',
           url: storyIssue.html_url,
         });
       }

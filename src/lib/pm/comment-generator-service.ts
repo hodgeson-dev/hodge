@@ -1,12 +1,100 @@
 import { ShipContext } from './types.js';
 import { getConfigManager } from '../config-manager.js';
 
+export interface Decision {
+  title: string;
+  rationale: string;
+  timestamp: string;
+}
+
+export interface QualityGate {
+  name: string;
+  passed: boolean;
+  details?: string;
+}
+
 /**
- * Generates rich PM comments for ship notifications
- * Extracted from PMHooks to reduce complexity
+ * Generates rich PM comments for ship notifications, decisions, and blockers
+ * HODGE-377.4: Extended to support decision and blocker comments
  */
 export class CommentGeneratorService {
   private configManager = getConfigManager();
+
+  /**
+   * Generates a decision comment for PM issues
+   * @param decisions - Array of decisions made
+   * @param hasNewDecisions - Whether these are new or reviewed decisions
+   * @returns Formatted markdown comment
+   */
+  generateDecisionComment(decisions: Decision[], hasNewDecisions: boolean): string {
+    const action = hasNewDecisions ? 'Finalized' : 'Reviewed';
+    const count = decisions.length;
+
+    let comment = `📋 Decisions ${action} (${count} decision${count !== 1 ? 's' : ''})\n\n`;
+
+    // Add decision summaries
+    if (decisions.length > 0) {
+      decisions.forEach((decision, index) => {
+        comment += `${index + 1}. **${decision.title}**\n`;
+        if (decision.rationale) {
+          comment += `   ${decision.rationale}\n`;
+        }
+      });
+      comment += '\n';
+    }
+
+    comment += `Status: Ready to build`;
+
+    return comment;
+  }
+
+  /**
+   * Generates a ship comment for PM issues
+   * @param commitSha - Git commit SHA
+   * @param qualityGates - Quality gate results
+   * @param timestamp - Ship timestamp
+   * @param commitLink - Optional link to commit (if constructible)
+   * @returns Formatted markdown comment
+   */
+  generateShipComment(
+    commitSha: string,
+    qualityGates: QualityGate[],
+    timestamp: Date,
+    commitLink?: string
+  ): string {
+    let comment = `🚀 Shipped in commit ${commitSha.substring(0, 7)}\n\n`;
+
+    if (commitLink) {
+      comment += `${commitLink}\n\n`;
+    }
+
+    // Quality gates summary
+    if (qualityGates.length > 0) {
+      comment += '**Quality Gates:**\n';
+      qualityGates.forEach((gate) => {
+        const status = gate.passed ? '✓' : '✗';
+        comment += `${status} ${gate.name}`;
+        if (gate.details) {
+          comment += ` (${gate.details})`;
+        }
+        comment += '\n';
+      });
+      comment += '\n';
+    }
+
+    comment += `Shipped: ${timestamp.toISOString()}`;
+
+    return comment;
+  }
+
+  /**
+   * Generates a blocker comment for PM issues
+   * @param blockerDetails - Description of what's blocked and why
+   * @returns Formatted markdown comment
+   */
+  generateBlockerComment(blockerDetails: string): string {
+    return `⚠️ Blocked\n\n${blockerDetails}`;
+  }
 
   /**
    * Generates a rich comment based on ship context and configured verbosity

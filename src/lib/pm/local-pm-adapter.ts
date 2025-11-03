@@ -47,10 +47,10 @@ export class LocalPMAdapter extends BasePMAdapter {
     super({
       config: {
         tool: 'local',
-        baseUrl: basePath || '.',
+        baseUrl: basePath ?? '.',
       },
     });
-    this.basePath = basePath || '.';
+    this.basePath = basePath ?? '.';
     this.pmPath = path.join(this.basePath, '.hodge', 'project_management.md');
   }
 
@@ -170,7 +170,7 @@ export class LocalPMAdapter extends BasePMAdapter {
 - **Created**: ${date}
 - **Updated**: ${date}
 - **Description**: ${fullDescription}
-- **Phase**: ${phase || 'TBD'}
+- **Phase**: ${phase ?? 'TBD'}
 - **Next Steps**:
   - Complete exploration
   - Define test intentions
@@ -470,7 +470,7 @@ HODGE-004 (ID Management)
    * Maps to internal addFeature
    */
   async createIssue(title: string, description?: string): Promise<PMIssue> {
-    await this.addFeature(title, description || title);
+    await this.addFeature(title, description ?? title);
     return this.getIssue(title);
   }
 
@@ -541,7 +541,32 @@ HODGE-004 (ID Management)
       shipped: { id: 'shipped', name: 'Shipped', type: 'completed' as StateType },
     };
 
-    return stateMap[status] || stateMap.exploring;
+    return stateMap[status] ?? stateMap.exploring;
+  }
+
+  /**
+   * Append a comment to a local PM issue
+   * HODGE-377.4: Implements BasePMAdapter.appendComment interface
+   * @param issueId - Feature ID (e.g., "HODGE-377.4")
+   * @param comment - Comment body in markdown format
+   */
+  async appendComment(issueId: string, comment: string): Promise<void> {
+    return this.serializeOperation(async () => {
+      const commentsPath = path.join(this.basePath, '.hodge', 'pm-comments.log');
+      const timestamp = new Date().toISOString();
+      const logEntry = `\n\n---\n**${issueId}** - ${timestamp}\n\n${comment}\n`;
+
+      try {
+        // Ensure directory exists
+        await fs.mkdir(path.dirname(commentsPath), { recursive: true });
+
+        // Append comment to log file
+        await fs.appendFile(commentsPath, logEntry, 'utf-8');
+      } catch (error) {
+        this.logger.error('Failed to append comment to local PM', { error: error as Error });
+        throw new Error(`Failed to append comment: ${String(error)}`);
+      }
+    });
   }
 
   /**

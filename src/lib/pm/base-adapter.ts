@@ -179,6 +179,14 @@ export abstract class BasePMAdapter {
   abstract createIssue(title: string, description?: string): Promise<PMIssue>;
 
   /**
+   * Append a comment to an issue
+   * HODGE-377.4: Added for PM synchronization (decision comments, ship notifications, blockers)
+   * @param issueId - The ID of the issue to comment on
+   * @param comment - The comment body (markdown format)
+   */
+  abstract appendComment(issueId: string, comment: string): Promise<void>;
+
+  /**
    * Check if input string is a valid issue ID for this PM adapter
    * Must match the ENTIRE input string, not just part of it
    * @param input - The input string to check

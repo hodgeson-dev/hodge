@@ -44,7 +44,7 @@ export class LinearAdapter extends BasePMAdapter {
         name: state.name,
         type: this.mapLinearType(state.type),
         color: state.color,
-        description: state.description || undefined,
+        description: state.description ?? undefined,
       }));
     } catch (error) {
       throw new Error(`Failed to fetch Linear states: ${String(error)}`);
@@ -72,7 +72,7 @@ export class LinearAdapter extends BasePMAdapter {
       return {
         id: issue.id,
         title: issue.title,
-        description: issue.description || undefined,
+        description: issue.description ?? undefined,
         state: {
           id: state.id,
           name: state.name,
@@ -80,7 +80,7 @@ export class LinearAdapter extends BasePMAdapter {
         },
         url: issue.url,
         labels: await this.getIssueLabels(issue),
-        assignee: (await issue.assignee)?.name || undefined,
+        assignee: (await issue.assignee)?.name ?? undefined,
       };
     } catch (error) {
       throw new Error(`Failed to get Linear issue ${issueId}: ${String(error)}`);
@@ -126,7 +126,7 @@ export class LinearAdapter extends BasePMAdapter {
           results.push({
             id: issue.id,
             title: issue.title,
-            description: issue.description || undefined,
+            description: issue.description ?? undefined,
             state: {
               id: state.id,
               name: state.name,
@@ -167,7 +167,7 @@ export class LinearAdapter extends BasePMAdapter {
       return {
         id: createdIssue.id,
         title: createdIssue.title,
-        description: createdIssue.description || undefined,
+        description: createdIssue.description ?? undefined,
         state: {
           id: state.id,
           name: state.name,
@@ -192,7 +192,7 @@ export class LinearAdapter extends BasePMAdapter {
       canceled: 'canceled',
     };
 
-    return typeMap[linearType] || 'unknown';
+    return typeMap[linearType] ?? 'unknown';
   }
 
   /**
@@ -255,6 +255,16 @@ export class LinearAdapter extends BasePMAdapter {
     } catch (error) {
       throw new Error(`Failed to add comment to Linear issue ${issueId}: ${String(error)}`);
     }
+  }
+
+  /**
+   * Append a comment to a Linear issue
+   * HODGE-377.4: Implements BasePMAdapter.appendComment interface
+   * @param issueId - Linear issue ID
+   * @param comment - Comment body in markdown format
+   */
+  async appendComment(issueId: string, comment: string): Promise<void> {
+    return this.addComment(issueId, comment);
   }
 
   /**

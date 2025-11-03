@@ -1,0 +1,40 @@
+{
+  "timestamp": "2025-11-03T03:52:50.088Z",
+  "stagedFiles": [
+    ".hodge/features/HODGE-377.4/build/build-plan.md",
+    ".hodge/features/HODGE-377.4/explore/exploration.md",
+    ".hodge/features/HODGE-377.4/ship-record.json",
+    ".hodge/features/HODGE-378.3/ship-record.json",
+    ".hodge/id-mappings.json",
+    ".hodge/project_management.md",
+    "src/lib/pm/base-adapter.ts",
+    "src/lib/pm/comment-generator-service.smoke.test.ts",
+    "src/lib/pm/comment-generator-service.ts",
+    "src/lib/pm/github-adapter.ts",
+    "src/lib/pm/linear-adapter.ts",
+    "src/lib/pm/local-pm-adapter.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 12,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": "src/lib/pm/base-adapter.ts 60ms (unchanged)\nsrc/lib/pm/comment-generator-service.smoke.test.ts 87ms\nsrc/lib/pm/comment-generator-service.ts 22ms (unchanged)\nsrc/lib/pm/github-adapter.ts 40ms (unchanged)\nsrc/lib/pm/linear-adapter.ts 12ms (unchanged)\nsrc/lib/pm/local-pm-adapter.ts 24ms (unchanged)\n",
+      "stderr": "",
+      "duration": 1058
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 6,
+      "issuesFixed": 20,
+      "success": true,
+      "stdout": "\n/Users/michaelkelly/Projects/hodge/src/lib/pm/comment-generator-service.ts\n  118:38  warning  Unnecessary conditional, both sides of the expression are literal values  @typescript-eslint/no-unnecessary-condition\n\n/Users/michaelkelly/Projects/hodge/src/lib/pm/github-adapter.ts\n  118:33  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  151:33  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  174:25  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  229:33  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  352:35  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  367:3   warning  Async method 'createEpicWithStories' has too many lines (66). Maximum allowed is 50                        max-lines-per-function\n  394:37  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  419:40  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n\n/Users/michaelkelly/Projects/hodge/src/lib/pm/linear-adapter.ts\n   47:40  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n   75:40  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n   83:48  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  129:44  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  170:47  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  195:12  warning  Unnecessary conditional, value is always truthy                                                            @typescript-eslint/no-unnecessary-condition\n\n/Users/michaelkelly/Projects/hodge/src/lib/pm/local-pm-adapter.ts\n   50:27  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n   53:30  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  173:22  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  473:46  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  544:12  warning  Unnecessary conditional, value is always truthy                                                            @typescript-eslint/no-unnecessary-condition\n\n✖ 20 problems (0 errors, 20 warnings)\n\n",
+      "stderr": "",
+      "duration": 4545
+    }
+  ],
+  "totalIssuesFixed": 20,
+  "totalFilesModified": 18,
+  "failures": []
+}
