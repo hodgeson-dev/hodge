@@ -1,20 +1,13 @@
 # Input Validation
 
 **Category**: security
-**Frequency**: Used 5 times
-**Confidence**: 100%
+**Frequency**: Used 4 times
+**Confidence**: 80%
 
 ## Description
 Input validation before processing
 
 ## Examples
-
-### src/commands/ship.ts
-```typescript
-if (!resolvedFeature) {
-      throw new Error
-```
-
 
 ### src/lib/pm/base-adapter.ts
 ```typescript
@@ -30,11 +23,18 @@ if (!this.octokit) {
 ```
 
 
+### src/lib/pm/linear-adapter.ts
+```typescript
+if (!state) {
+        throw new Error
+```
+
+
 ## When to Use
 - 
 - When handling user input
 - 
 
 ---
-*First seen: 2025-11-03T04:11:09.215Z*
-*Last used: 2025-11-03T04:11:09.219Z*
+*First seen: 2025-11-03T15:21:11.175Z*
+*Last used: 2025-11-03T15:21:11.178Z*

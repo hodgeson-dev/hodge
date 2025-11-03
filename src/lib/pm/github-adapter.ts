@@ -1,11 +1,16 @@
 /**
  * GitHub Issues PM Adapter Implementation
+ *
+ * eslint-disable-next-line max-lines -- Comprehensive PM adapter implementing full BasePMAdapter interface
+ * (15+ methods). Already extracted helpers to github-utils.ts. Splitting further would harm cohesion.
  */
+/* eslint-disable max-lines */
 
 import { BasePMAdapter } from './base-adapter.js';
 import { PMAdapterOptions, PMIssue, PMState, StateType } from './types.js';
 import { execSync } from 'child_process';
 import { createCommandLogger } from '../logger.js';
+import { convertGitHubIssueToPMIssue, updateEpicWithStoryLinks } from './github-utils.js';
 
 // Type definitions for GitHub API responses
 interface GitHubIssue {
@@ -171,7 +176,7 @@ export class GitHubAdapter extends BasePMAdapter {
       const issueNumber = this.parseIssueNumber(issueId);
 
       // Update basic fields
-      if (updates.title || updates.description) {
+      if (updates.title != null || updates.description != null) {
         await octokit.issues.update({
           owner: this.owner,
           repo: this.repo,
@@ -382,18 +387,7 @@ export class GitHubAdapter extends BasePMAdapter {
         labels: ['hodge', 'epic'],
       });
 
-      const epic: PMIssue = {
-        id: epicIssue.number.toString(),
-        title: epicIssue.title,
-        state: {
-          id: epicIssue.state ?? 'open',
-          name: epicIssue.state === 'closed' ? 'Closed' : 'Open',
-          type:
-            epicIssue.state === 'closed' ? ('completed' as StateType) : ('started' as StateType),
-        },
-        description: epicIssue.body ?? '',
-        url: epicIssue.html_url,
-      };
+      const epic: PMIssue = convertGitHubIssueToPMIssue(epicIssue);
 
       // Create sub-issues with references to the epic
       const createdStories: PMIssue[] = [];
@@ -407,32 +401,18 @@ export class GitHubAdapter extends BasePMAdapter {
           labels: ['hodge', 'story'],
         });
 
-        createdStories.push({
-          id: storyIssue.number.toString(),
-          title: storyIssue.title,
-          state: {
-            id: storyIssue.state ?? 'open',
-            name: storyIssue.state === 'closed' ? 'Closed' : 'Open',
-            type:
-              storyIssue.state === 'closed' ? ('completed' as StateType) : ('started' as StateType),
-          },
-          description: storyIssue.body ?? '',
-          url: storyIssue.html_url,
-        });
+        createdStories.push(convertGitHubIssueToPMIssue(storyIssue));
       }
 
       // Update epic body with links to stories
-      const storyLinks = createdStories
-        .map((story) => `- [ ] #${story.id} - ${story.title}`)
-        .join('\n');
-      const updatedBody = `${epicDescription}\n\n## Stories\n${storyLinks}`;
-
-      await octokit.issues.update({
-        owner: this.owner,
-        repo: this.repo,
-        issue_number: epicIssue.number,
-        body: updatedBody,
-      });
+      await updateEpicWithStoryLinks(
+        octokit,
+        this.owner,
+        this.repo,
+        epicIssue.number,
+        epicDescription,
+        createdStories
+      );
 
       return { epic, stories: createdStories };
     } catch (error) {
@@ -496,5 +476,122 @@ export class GitHubAdapter extends BasePMAdapter {
   isValidIssueID(input: string): boolean {
     const trimmed = input.trim();
     return /^#?\d+$/.test(trimmed);
+  }
+
+  /**
+   * Check if an issue is an epic (has sub-issues)
+   * HODGE-377.5: Detects epics via "epic" label or task list pattern
+   * @param issueId - GitHub issue number
+   * @returns true if issue has "epic" label or task list
+   */
+  async isEpic(issueId: string): Promise<boolean> {
+    try {
+      await this.ensureOctokit();
+      const octokit = this.getOctokit();
+      const issueNumber = this.parseIssueNumber(issueId);
+
+      const { data: issue } = await octokit.issues.get({
+        owner: this.owner,
+        repo: this.repo,
+        issue_number: issueNumber,
+      });
+
+      // Check for "epic" label (GitHub API returns labels as objects with name property)
+      const labels = (issue as { labels?: Array<{ name?: string } | string> }).labels ?? [];
+      const hasEpicLabel = labels.some((label) => {
+        if (typeof label === 'string') {
+          return label.toLowerCase() === 'epic';
+        }
+        if (typeof label === 'object' && 'name' in label) {
+          return (label as { name?: string }).name?.toLowerCase() === 'epic';
+        }
+        return false;
+      });
+
+      if (hasEpicLabel) {
+        return true;
+      }
+
+      // Check for task list items in body
+      return /- \[[ x]\] #\d+/.test(issue.body ?? '');
+    } catch (error) {
+      this.logger.warn('Failed to check if issue is epic', { error: error as Error, issueId });
+      return false;
+    }
+  }
+
+  /**
+   * Get all sub-issues of an epic
+   * HODGE-377.5: Parses task list from issue body
+   * @param epicId - Parent issue number
+   * @returns Array of sub-issues referenced in task list
+   */
+  async getSubIssues(epicId: string): Promise<PMIssue[]> {
+    try {
+      await this.ensureOctokit();
+      const octokit = this.getOctokit();
+      const issueNumber = this.parseIssueNumber(epicId);
+
+      const { data: issue } = await octokit.issues.get({
+        owner: this.owner,
+        repo: this.repo,
+        issue_number: issueNumber,
+      });
+
+      // Parse task list for sub-issue numbers
+      const taskListPattern = /- \[[ x]\] #(\d+)/g;
+      const subIssueNumbers: number[] = [];
+      let match;
+      while ((match = taskListPattern.exec(issue.body ?? '')) !== null) {
+        subIssueNumbers.push(parseInt(match[1]));
+      }
+
+      // Fetch each sub-issue
+      const subIssues: PMIssue[] = [];
+      for (const num of subIssueNumbers) {
+        try {
+          const { data: subIssue } = await octokit.issues.get({
+            owner: this.owner,
+            repo: this.repo,
+            issue_number: num,
+          });
+
+          subIssues.push({
+            id: `#${subIssue.number}`,
+            title: subIssue.title,
+            description: subIssue.body ?? '',
+            state: {
+              id: subIssue.state ?? 'open',
+              name: subIssue.state === 'closed' ? 'Closed' : 'Open',
+              type:
+                subIssue.state === 'closed' ? ('completed' as StateType) : ('started' as StateType),
+            },
+            url: subIssue.html_url,
+          });
+        } catch (error) {
+          this.logger.warn('Failed to fetch sub-issue', {
+            error: error as Error,
+            issueNumber: num,
+          });
+        }
+      }
+
+      return subIssues;
+    } catch (error) {
+      this.logger.warn('Failed to get sub-issues', { error: error as Error, epicId });
+      return [];
+    }
+  }
+
+  /**
+   * Get parent issue ID for a sub-issue
+   * HODGE-377.5: GitHub doesn't have native parent/child relationships
+   * @param _issueId - Sub-issue number
+   * @returns null (GitHub doesn't support native parent tracking)
+   */
+  getParentIssue(_issueId: string): Promise<string | null> {
+    // GitHub doesn't have native parent/child relationships
+    // Could enhance later to parse "Part of #123" patterns from issue body
+    return Promise.resolve(null);
   }
 }

@@ -193,4 +193,28 @@ export abstract class BasePMAdapter {
    * @returns true if input is a valid issue ID format for this adapter
    */
   abstract isValidIssueID(input: string): boolean;
+
+  /**
+   * Check if an issue is an epic (has sub-issues)
+   * HODGE-377.5: Sub-feature detection for multi-adapter support
+   * @param issueId - The ID of the issue to check
+   * @returns true if issue has sub-issues/children
+   */
+  abstract isEpic(issueId: string): Promise<boolean>;
+
+  /**
+   * Get all sub-issues of an epic
+   * HODGE-377.5: Sub-feature detection for multi-adapter support
+   * @param epicId - The ID of the parent epic
+   * @returns Array of sub-issues/children
+   */
+  abstract getSubIssues(epicId: string): Promise<PMIssue[]>;
+
+  /**
+   * Get the parent issue ID for a sub-issue
+   * HODGE-377.5: Sub-feature detection for multi-adapter support
+   * @param issueId - The ID of the sub-issue
+   * @returns Parent issue ID if exists, null otherwise
+   */
+  abstract getParentIssue(issueId: string): Promise<string | null>;
 }

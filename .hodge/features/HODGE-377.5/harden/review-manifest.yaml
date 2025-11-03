@@ -1,0 +1,167 @@
+version: '1.0'
+feature: HODGE-377.5
+generated_at: '2025-11-03T07:07:51.208Z'
+recommended_tier: full
+change_analysis:
+  total_files: 12
+  total_lines: 1105
+  breakdown:
+    implementation: 8
+    test: 1
+    documentation: 3
+    config: 0
+changed_files:
+  - path: .hodge/features/HODGE-377.4/ship-record.json
+    lines_changed: 3
+    change_type: implementation
+  - path: .hodge/features/HODGE-377.5/build/build-plan.md
+    lines_changed: 54
+    change_type: documentation
+  - path: .hodge/features/HODGE-377.5/checkpoint-2025-11-03-064353.yaml
+    lines_changed: 47
+    change_type: implementation
+  - path: .hodge/features/HODGE-377.5/explore/exploration.md
+    lines_changed: 525
+    change_type: documentation
+  - path: .hodge/features/HODGE-377.5/ship-record.json
+    lines_changed: 11
+    change_type: implementation
+  - path: .hodge/id-mappings.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/project_management.md
+    lines_changed: 13
+    change_type: documentation
+  - path: src/lib/pm/base-adapter.ts
+    lines_changed: 24
+    change_type: implementation
+  - path: src/lib/pm/github-adapter.ts
+    lines_changed: 117
+    change_type: implementation
+  - path: src/lib/pm/linear-adapter.ts
+    lines_changed: 70
+    change_type: implementation
+  - path: src/lib/pm/local-pm-adapter.ts
+    lines_changed: 115
+    change_type: implementation
+  - path: src/lib/pm/sub-feature-methods.smoke.test.ts
+    lines_changed: 122
+    change_type: test
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - test-pattern.md
+      - error-boundary.md
+      - input-validation.md
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - testing/vitest-3.x.yaml
+      - testing/general-test-standards.yaml
+      - languages/typescript-5.x.yaml
+      - languages/general-coding-standards.yaml
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed
+scope:
+  type: feature
+  target: HODGE-377.5
+  fileCount: 12
+critical_files:
+  algorithm: risk-weighted-v1.0
+  total_files: 12
+  top_n: 10
+  files:
+    - path: src/lib/pm/local-pm-adapter.ts
+      rank: 1
+      score: 525
+      risk_factors:
+        - 4 blocker issues
+        - 2 warnings
+        - medium change (115 lines)
+        - new file
+    - path: src/lib/pm/github-adapter.ts
+      rank: 2
+      score: 375
+      risk_factors:
+        - 2 blocker issues
+        - 4 warnings
+        - medium change (117 lines)
+        - new file
+    - path: src/lib/pm/sub-feature-methods.smoke.test.ts
+      rank: 3
+      score: 325
+      risk_factors:
+        - 3 blocker issues
+        - medium change (122 lines)
+        - new file
+        - test file (lower priority)
+    - path: src/lib/pm/linear-adapter.ts
+      rank: 4
+      score: 110
+      risk_factors:
+        - 1 warning
+        - new file
+    - path: .hodge/features/HODGE-377.5/explore/exploration.md
+      rank: 5
+      score: 100
+      risk_factors:
+        - large change (525 lines)
+        - new file
+    - path: .hodge/features/HODGE-377.5/build/build-plan.md
+      rank: 6
+      score: 77
+      risk_factors:
+        - new file
+    - path: .hodge/features/HODGE-377.5/checkpoint-2025-11-03-064353.yaml
+      rank: 7
+      score: 74
+      risk_factors:
+        - new file
+    - path: src/lib/pm/base-adapter.ts
+      rank: 8
+      score: 62
+      risk_factors:
+        - new file
+    - path: .hodge/project_management.md
+      rank: 9
+      score: 57
+      risk_factors:
+        - new file
+    - path: .hodge/features/HODGE-377.5/ship-record.json
+      rank: 10
+      score: 56
+      risk_factors:
+        - new file

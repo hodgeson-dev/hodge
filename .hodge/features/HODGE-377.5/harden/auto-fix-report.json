@@ -1,0 +1,40 @@
+{
+  "timestamp": "2025-11-03T07:07:04.242Z",
+  "stagedFiles": [
+    ".hodge/features/HODGE-377.4/ship-record.json",
+    ".hodge/features/HODGE-377.5/build/build-plan.md",
+    ".hodge/features/HODGE-377.5/checkpoint-2025-11-03-064353.yaml",
+    ".hodge/features/HODGE-377.5/explore/exploration.md",
+    ".hodge/features/HODGE-377.5/ship-record.json",
+    ".hodge/id-mappings.json",
+    ".hodge/project_management.md",
+    "src/lib/pm/base-adapter.ts",
+    "src/lib/pm/github-adapter.ts",
+    "src/lib/pm/linear-adapter.ts",
+    "src/lib/pm/local-pm-adapter.ts",
+    "src/lib/pm/sub-feature-methods.smoke.test.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 12,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": ".hodge/features/HODGE-377.5/checkpoint-2025-11-03-064353.yaml 66ms\nsrc/lib/pm/base-adapter.ts 74ms (unchanged)\nsrc/lib/pm/github-adapter.ts 66ms\nsrc/lib/pm/linear-adapter.ts 20ms (unchanged)\nsrc/lib/pm/local-pm-adapter.ts 35ms\nsrc/lib/pm/sub-feature-methods.smoke.test.ts 11ms (unchanged)\n",
+      "stderr": "",
+      "duration": 1339
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 5,
+      "issuesFixed": 16,
+      "success": true,
+      "stdout": "\n/Users/michaelkelly/Projects/hodge/src/lib/pm/github-adapter.ts\n  174:25  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing\n  367:3   warning  Async method 'createEpicWithStories' has too many lines (66). Maximum allowed is 50                        max-lines-per-function\n  525:42  warning  Unnecessary conditional, the types have no overlap                                                         @typescript-eslint/no-unnecessary-condition\n  525:48  error    Remove this \"!==\" check; it will always be true. Did you mean to use \"!=\"?                                 sonarjs/different-types-comparison\n  551:1   warning  File has too many lines (451). Maximum allowed is 400                                                      max-lines\n  612:3   error    Async method 'getParentIssue' has no 'await' expression                                                    @typescript-eslint/require-await\n\n/Users/michaelkelly/Projects/hodge/src/lib/pm/linear-adapter.ts\n  290:15  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition\n\n/Users/michaelkelly/Projects/hodge/src/lib/pm/local-pm-adapter.ts\n  612:3   warning  Async method 'getSubIssues' has too many lines (53). Maximum allowed is 50                                                        max-lines-per-function\n  638:1   warning  File has too many lines (442). Maximum allowed is 400                                                                             max-lines\n  641:32  error    Make sure the regex used here, which is vulnerable to super-linear runtime due to backtracking, cannot lead to denial of service  sonarjs/slow-regex\n  646:34  error    Make sure the regex used here, which is vulnerable to super-linear runtime due to backtracking, cannot lead to denial of service  sonarjs/slow-regex\n  684:3   error    Async method 'getParentIssue' has no 'await' expression                                                                           @typescript-eslint/require-await\n  686:27  error    Use the \"RegExp.exec()\" method instead                                                                                            sonarjs/prefer-regexp-exec\n\n/Users/michaelkelly/Projects/hodge/src/lib/pm/sub-feature-methods.smoke.test.ts\n  19:12  error  Avoid referencing unbound methods which may cause unintentional scoping of `this`.\nIf your function does not access `this`, you can annotate it with `this: void`, or consider using an arrow function instead  @typescript-eslint/unbound-method\n  30:12  error  Avoid referencing unbound methods which may cause unintentional scoping of `this`.\nIf your function does not access `this`, you can annotate it with `this: void`, or consider using an arrow function instead  @typescript-eslint/unbound-method\n  41:12  error  Avoid referencing unbound methods which may cause unintentional scoping of `this`.\nIf your function does not access `this`, you can annotate it with `this: void`, or consider using an arrow function instead  @typescript-eslint/unbound-method\n\n✖ 16 problems (9 errors, 7 warnings)\n\n",
+      "stderr": "",
+      "duration": 4590
+    }
+  ],
+  "totalIssuesFixed": 16,
+  "totalFilesModified": 17,
+  "failures": []
+}

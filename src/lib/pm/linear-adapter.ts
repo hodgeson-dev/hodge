@@ -276,4 +276,74 @@ export class LinearAdapter extends BasePMAdapter {
     const trimmed = input.trim();
     return /^[A-Z]+-\d+$/.test(trimmed);
   }
+
+  /**
+   * Check if an issue is an epic (has sub-issues)
+   * HODGE-377.5: Uses Linear API's native parent/child relationships
+   * @param issueId - Linear issue ID
+   * @returns true if issue has children
+   */
+  async isEpic(issueId: string): Promise<boolean> {
+    try {
+      const issue = await this.client.issue(issueId);
+      const children = await issue.children();
+      return children.nodes.length > 0;
+    } catch (error) {
+      this.logger.warn('Failed to check if issue is epic', { error: error as Error, issueId });
+      return false;
+    }
+  }
+
+  /**
+   * Get all sub-issues of an epic
+   * HODGE-377.5: Fetches child issues via Linear API
+   * @param epicId - Parent issue ID
+   * @returns Array of child issues
+   */
+  async getSubIssues(epicId: string): Promise<PMIssue[]> {
+    try {
+      const issue = await this.client.issue(epicId);
+      const children = await issue.children();
+
+      const subIssues: PMIssue[] = [];
+      for (const child of children.nodes) {
+        const state = await child.state;
+        if (state) {
+          subIssues.push({
+            id: child.identifier,
+            title: child.title,
+            description: child.description ?? undefined,
+            state: {
+              id: state.id,
+              name: state.name,
+              type: this.mapLinearType(state.type),
+            },
+            url: child.url,
+          });
+        }
+      }
+
+      return subIssues;
+    } catch (error) {
+      this.logger.warn('Failed to get sub-issues', { error: error as Error, epicId });
+      return [];
+    }
+  }
+
+  /**
+   * Get parent issue ID for a sub-issue
+   * HODGE-377.5: Uses Linear API's parent relationship
+   * @param issueId - Sub-issue ID
+   * @returns Parent issue ID or null if no parent
+   */
+  async getParentIssue(issueId: string): Promise<string | null> {
+    try {
+      const issue = await this.client.issue(issueId);
+      const parent = await issue.parent;
+      return parent?.identifier ?? null;
+    } catch (error) {
+      this.logger.warn('Failed to get parent issue', { error: error as Error, issueId });
+      return null;
+    }
+  }
 }

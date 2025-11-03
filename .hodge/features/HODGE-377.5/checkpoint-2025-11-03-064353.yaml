@@ -1,0 +1,47 @@
+timestamp: 2025-11-03T06:43:53Z
+phase: build
+featureId: HODGE-377.5
+summary: 'Implemented PM adapter sub-feature methods, 8 smoke tests passing'
+
+progress:
+  - 'Extended BasePMAdapter interface with isEpic(), getSubIssues(), getParentIssue()'
+  - 'Implemented LocalAdapter sub-feature methods using directory scanning'
+  - 'Implemented LinearAdapter sub-feature methods using Linear API'
+  - 'Implemented GitHubAdapter sub-feature methods using labels and task lists'
+  - 'Created comprehensive smoke test suite (8 tests, all passing)'
+  - 'Verified zero TypeScript compilation errors'
+
+decisions:
+  - 'Chose adapter-centric design: each adapter owns its sub-feature detection logic'
+  - 'Made all sub-feature methods async to accommodate API calls (non-hot-path operations)'
+  - 'Implemented graceful degradation: API failures return empty/null with warning logs'
+  - 'LocalAdapter uses numeric sorting for sub-features (HODGE-377.10 after HODGE-377.9)'
+  - 'GitHubAdapter getParentIssue() returns null (no native parent/child support)'
+
+nextSteps:
+  - 'Refactor id-manager.ts to use adapter.isValidIssueID() instead of hardcoded regex'
+  - 'Refactor sub-feature-context-service.ts to use adapter.getParentIssue() and adapter.getSubIssues()'
+  - 'Refactor local-pm-adapter.ts to remove hardcoded HODGE- patterns from ID generation'
+  - 'Refactor lessons.ts to make feature ID extraction adapter-agnostic'
+  - 'Run full test suite to verify no regressions'
+
+context:
+  filesModified:
+    - 'src/lib/pm/base-adapter.ts'
+    - 'src/lib/pm/local-pm-adapter.ts'
+    - 'src/lib/pm/linear-adapter.ts'
+    - 'src/lib/pm/github-adapter.ts'
+    - 'src/lib/pm/sub-feature-methods.smoke.test.ts'
+  linesAdded: 325
+  testsAdded: 8
+  testsStatus: '8/8 passing (13ms runtime)'
+  typeCheckStatus: 'Zero errors'
+  conversationHighlights: |
+    Built foundation for multi-adapter support by implementing sub-feature detection
+    methods across all three PM adapters. Each adapter uses its native mechanism:
+    - LocalAdapter: Directory naming convention parsing
+    - LinearAdapter: Native Linear API parent/child relationships
+    - GitHubAdapter: Epic label and task list parsing
+
+    Foundation complete and tested. Ready for refactoring phase to actually USE
+    these methods throughout the codebase (id-manager, sub-feature-context-service, etc).

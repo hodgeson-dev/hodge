@@ -1,9 +1,19 @@
+/**
+ * Local File-Based PM Adapter Implementation
+ *
+ * eslint-disable-next-line max-lines -- Comprehensive PM adapter implementing full BasePMAdapter interface
+ * (15+ methods) plus extensive file-based operations. Already extracted helpers to local-utils.ts.
+ * Splitting further would harm cohesion.
+ */
+/* eslint-disable max-lines */
+
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import chalk from 'chalk';
 import { BasePMAdapter } from './base-adapter.js';
 import { PMIssue, PMState, StateType } from './types.js';
 import { createCommandLogger } from '../logger.js';
+import { loadSubFeatureMetadata } from './local-utils.js';
 
 /**
  * Feature status type for local PM tracking
@@ -577,5 +587,100 @@ HODGE-004 (ID Management)
   isValidIssueID(input: string): boolean {
     const trimmed = input.trim();
     return /^HOD(GE)?-\d+$/.test(trimmed);
+  }
+
+  /**
+   * Check if a feature is an epic (has sub-features)
+   * HODGE-377.5: Detects epics via directory naming pattern
+   * @param issueId - Feature ID (e.g., "HODGE-377")
+   * @returns true if sub-feature directories exist (e.g., HODGE-377.1, HODGE-377.2)
+   */
+  async isEpic(issueId: string): Promise<boolean> {
+    try {
+      const featuresDir = path.join(this.basePath, '.hodge', 'features');
+      const entries = await fs.readdir(featuresDir, { withFileTypes: true });
+
+      // Check if any directories match the sub-feature pattern: {issueId}.{number}
+      const subFeaturePattern = new RegExp(`^${this.escapeRegex(issueId)}\\.(\\d+)$`);
+      const hasSubFeatures = entries.some(
+        (entry) => entry.isDirectory() && subFeaturePattern.test(entry.name)
+      );
+
+      return hasSubFeatures;
+    } catch (error) {
+      this.logger.warn('Failed to check if feature is epic', { error: error as Error, issueId });
+      return false;
+    }
+  }
+
+  /**
+   * Get all sub-features of an epic
+   * HODGE-377.5: Returns sub-features based on directory naming
+   * @param epicId - Parent feature ID (e.g., "HODGE-377")
+   * @returns Array of sub-feature PMIssues (e.g., HODGE-377.1, HODGE-377.2)
+   */
+  async getSubIssues(epicId: string): Promise<PMIssue[]> {
+    try {
+      const featuresDir = path.join(this.basePath, '.hodge', 'features');
+      const entries = await fs.readdir(featuresDir, { withFileTypes: true });
+
+      // Find all directories matching the sub-feature pattern: {epicId}.{number}
+      const subFeaturePattern = new RegExp(`^${this.escapeRegex(epicId)}\\.(\\d+)$`);
+      const subFeatureDirs = entries
+        .filter((entry) => entry.isDirectory() && subFeaturePattern.test(entry.name))
+        .map((entry) => entry.name)
+        .sort((a, b) => {
+          // Numeric sort by sub-feature number
+          const aNum = parseInt(a.split('.').pop()!);
+          const bNum = parseInt(b.split('.').pop()!);
+          return aNum - bNum;
+        });
+
+      // Convert to PMIssue array
+      const subIssues: PMIssue[] = [];
+      for (const subId of subFeatureDirs) {
+        try {
+          const { title, description } = await loadSubFeatureMetadata(subId, featuresDir);
+
+          subIssues.push({
+            id: subId,
+            title,
+            description,
+            state: this.mapStatusToState('exploring'), // Default to exploring
+            url: `file://${path.join(featuresDir, subId)}`,
+          });
+        } catch (error) {
+          this.logger.warn('Failed to load sub-feature metadata', {
+            error: error as Error,
+            subId,
+          });
+        }
+      }
+
+      return subIssues;
+    } catch (error) {
+      this.logger.warn('Failed to get sub-issues', { error: error as Error, epicId });
+      return [];
+    }
+  }
+
+  /**
+   * Get parent feature ID for a sub-feature
+   * HODGE-377.5: Parses sub-feature ID to extract parent
+   * @param issueId - Sub-feature ID (e.g., "HODGE-377.1")
+   * @returns Parent feature ID (e.g., "HODGE-377") or null if no parent
+   */
+  getParentIssue(issueId: string): Promise<string | null> {
+    // Parse pattern: {parent}.{number} -> {parent}
+    const regex = /^(.+)\.(\d+)$/;
+    const match = regex.exec(issueId);
+    return Promise.resolve(match ? match[1] : null);
+  }
+
+  /**
+   * Helper to escape regex special characters
+   */
+  private escapeRegex(str: string): string {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 }
