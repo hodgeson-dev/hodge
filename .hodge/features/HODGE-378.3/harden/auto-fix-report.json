@@ -1,0 +1,54 @@
+{
+  "timestamp": "2025-11-02T23:10:21.506Z",
+  "stagedFiles": [
+    ".github/workflows/quality.yml",
+    ".hodge/features/HODGE-378.2/ship-record.json",
+    ".hodge/features/HODGE-378.3/build/build-plan.md",
+    ".hodge/features/HODGE-378.3/explore/exploration.md",
+    ".hodge/features/HODGE-378.3/ship-record.json",
+    ".hodge/id-mappings.json",
+    ".hodge/project_management.md",
+    "scripts/validate-standards.integration.test.ts",
+    "scripts/validate-standards.js",
+    "scripts/validate-standards.smoke.test.ts",
+    "src/commands/context.ts",
+    "src/commands/init.ts",
+    "src/commands/regen.ts",
+    "src/commands/ship.ts",
+    "src/lib/architecture-graph-service.smoke.test.ts",
+    "src/lib/architecture-graph-service.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 16,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": ".github/workflows/quality.yml 22ms (unchanged)\nsrc/commands/context.ts 72ms (unchanged)\nsrc/commands/init.ts 22ms (unchanged)\nsrc/commands/regen.ts 7ms (unchanged)\nsrc/commands/ship.ts 41ms (unchanged)\nsrc/lib/architecture-graph-service.smoke.test.ts 10ms (unchanged)\nsrc/lib/architecture-graph-service.ts 10ms (unchanged)\n",
+      "stderr": "[error] No files matching the pattern were found: \"scripts/validate-standards.integration.test.ts\".\n[error] No files matching the pattern were found: \"scripts/validate-standards.js\".\n[error] No files matching the pattern were found: \"scripts/validate-standards.smoke.test.ts\".\n",
+      "duration": 1019
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 0,
+      "issuesFixed": 0,
+      "success": false,
+      "stdout": "",
+      "stderr": "\nOops! Something went wrong! :(\n\nESLint: 8.57.1\n\nNo files matching the pattern \"scripts/validate-standards.integration.test.ts\" were found.\nPlease check for typing mistakes in the pattern.\n\n",
+      "duration": 651
+    }
+  ],
+  "totalIssuesFixed": 0,
+  "totalFilesModified": 16,
+  "failures": [
+    {
+      "tool": "eslint",
+      "filesProcessed": 0,
+      "issuesFixed": 0,
+      "success": false,
+      "stdout": "",
+      "stderr": "\nOops! Something went wrong! :(\n\nESLint: 8.57.1\n\nNo files matching the pattern \"scripts/validate-standards.integration.test.ts\" were found.\nPlease check for typing mistakes in the pattern.\n\n",
+      "duration": 651
+    }
+  ]
+}

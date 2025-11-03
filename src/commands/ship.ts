@@ -492,7 +492,7 @@ export class ShipCommand {
       const result = await graphService.generateGraph({
         projectRoot: this.basePath,
         toolchainConfig,
-        quiet: false,
+        enableConsole: false, // AI-orchestrated command, no console output
       });
 
       if (result.success) {

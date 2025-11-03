@@ -52,7 +52,7 @@ export class RegenCommand {
       const result = await this.graphService.generateGraph({
         projectRoot: this.basePath,
         toolchainConfig,
-        quiet: false,
+        enableConsole: false, // AI-orchestrated command, no console output
       });
 
       if (!result.success) {

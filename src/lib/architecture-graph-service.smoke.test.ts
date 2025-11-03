@@ -23,6 +23,20 @@ describe('ArchitectureGraphService - Smoke Tests', () => {
     await fixture.cleanup();
   });
 
+  // Helper to create minimal toolchain config for testing
+  const createMinimalToolchainConfig = (overrides?: Partial<ToolchainConfig>): ToolchainConfig => ({
+    version: '1.0',
+    language: 'typescript',
+    commands: {},
+    quality_checks: {
+      type_checking: [],
+      linting: [],
+      testing: [],
+      formatting: [],
+    },
+    ...overrides,
+  });
+
   smokeTest('should create instance without errors', () => {
     expect(service).toBeDefined();
     expect(service).toBeInstanceOf(ArchitectureGraphService);
@@ -55,22 +69,12 @@ describe('ArchitectureGraphService - Smoke Tests', () => {
   });
 
   smokeTest('should handle missing toolchain config gracefully', async () => {
-    const toolchainConfig: ToolchainConfig = {
-      version: '1.0',
-      language: 'typescript',
-      commands: {},
-      quality_checks: {
-        type_checking: [],
-        linting: [],
-        testing: [],
-        formatting: [],
-      },
-    };
+    const toolchainConfig = createMinimalToolchainConfig();
 
     const result = await service.generateGraph({
       projectRoot: fixture.getPath(),
       toolchainConfig,
-      quiet: true,
+      enableConsole: false,
     });
 
     expect(result.success).toBe(false);
@@ -78,28 +82,19 @@ describe('ArchitectureGraphService - Smoke Tests', () => {
   });
 
   smokeTest('should skip graph generation when explicitly disabled', async () => {
-    const toolchainConfig: ToolchainConfig = {
-      version: '1.0',
-      language: 'typescript',
-      commands: {},
-      quality_checks: {
-        type_checking: [],
-        linting: [],
-        testing: [],
-        formatting: [],
-      },
+    const toolchainConfig = createMinimalToolchainConfig({
       codebase_analysis: {
         architecture_graph: {
           tool: 'dependency-cruiser',
           enabled: false,
         },
       },
-    };
+    });
 
     const result = await service.generateGraph({
       projectRoot: fixture.getPath(),
       toolchainConfig,
-      quiet: true,
+      enableConsole: false,
     });
 
     expect(result.success).toBe(false);
@@ -107,26 +102,46 @@ describe('ArchitectureGraphService - Smoke Tests', () => {
   });
 
   smokeTest('should return error when no architecture graphing tool configured', async () => {
-    const toolchainConfig: ToolchainConfig = {
-      version: '1.0',
+    const toolchainConfig = createMinimalToolchainConfig({
       language: 'python',
-      commands: {}, // No architecture graph tool configured
-      quality_checks: {
-        type_checking: [],
-        linting: [],
-        testing: [],
-        formatting: [],
-      },
-    };
+    });
 
     const result = await service.generateGraph({
       projectRoot: fixture.getPath(),
       toolchainConfig,
-      quiet: true,
+      enableConsole: false,
     });
 
     expect(result.success).toBe(false);
     expect(result.error).toContain('No graph tool configured');
+  });
+
+  // HODGE-378.3: Dual-logging pattern tests
+  smokeTest('should accept enableConsole parameter (defaults to false)', async () => {
+    const toolchainConfig = createMinimalToolchainConfig();
+
+    // Test default (should not throw)
+    const result1 = await service.generateGraph({
+      projectRoot: fixture.getPath(),
+      toolchainConfig,
+    });
+    expect(result1).toBeDefined();
+
+    // Test explicit false
+    const result2 = await service.generateGraph({
+      projectRoot: fixture.getPath(),
+      toolchainConfig,
+      enableConsole: false,
+    });
+    expect(result2).toBeDefined();
+
+    // Test explicit true
+    const result3 = await service.generateGraph({
+      projectRoot: fixture.getPath(),
+      toolchainConfig,
+      enableConsole: true,
+    });
+    expect(result3).toBeDefined();
   });
 
   smokeTest('should load custom output path when specified', async () => {

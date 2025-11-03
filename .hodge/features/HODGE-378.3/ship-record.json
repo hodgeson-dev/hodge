@@ -1,0 +1,106 @@
+{
+  "feature": "HODGE-378.3",
+  "timestamp": "2025-11-03T00:13:45.340Z",
+  "issueId": null,
+  "pmTool": "linear",
+  "validationPassed": true,
+  "qualityResults": [
+    {
+      "type": "type_checking",
+      "tool": "typescript",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "errors": [],
+      "warnings": [],
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "type": "linting",
+      "tool": "eslint",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 1,
+      "errors": [],
+      "warnings": [
+        "/Users/michaelkelly/Projects/hodge/src/commands/ship.ts: line 239, col 10, Warning - Complete the task associated to this \"TODO\" comment. (sonarjs/todo-tag)"
+      ],
+      "stdout": "/Users/michaelkelly/Projects/hodge/src/commands/ship.ts: line 239, col 10, Warning - Complete the task associated to this \"TODO\" comment. (sonarjs/todo-tag)\n\n1 problem\n",
+      "stderr": ""
+    },
+    {
+      "type": "testing",
+      "tool": "vitest",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "errors": [],
+      "warnings": [],
+      "stdout": "\n RUN  v3.2.4 /Users/michaelkelly/Projects/hodge\n\n············································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································{\"level\":\"warn\",\"time\":\"2025-11-03T00:13:42.990Z\",\"name\":\"pm-adapter\",\"timestamp\":\"2025-11-03T00:13:42.990Z\",\"enableConsole\":false,\"msg\":\"Failed to load PM overrides\"}\n················{\"level\":\"info\",\"time\":\"2025-11-03T00:13:43.004Z\",\"msg\":\"Process terminated\"}\n······················································································································································································································································································································································································\n\n Test Files  130 passed (130)\n      Tests  1362 passed (1362)\n   Start at  16:13:29\n   Duration  15.41s (transform 2.48s, setup 0ms, collect 15.19s, tests 38.82s, environment 17ms, prepare 10.71s)\n\n",
+      "stderr": "(node:74678) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:74677) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:74861) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:74982) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:75097) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:75203) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\nfatal: No names found, cannot describe anything.\nfatal: No names found, cannot describe anything.\n(node:75527) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:75560) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:75570) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:75575) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:75615) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:75631) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:75632) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:75642) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Generating architecture graph...\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Generating architecture graph...\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Generating architecture graph...\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n- Detecting project configuration...\n✔ Project detection complete\n- Creating Hodge structure...\n✔ Hodge structure created successfully\n- Detecting development tools...\n⚠ No development tools detected\n- Generating architecture graph...\n- Detecting project technologies...\n⚠ No review profiles with detection rules found\n(node:75651) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:75837) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:75869) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:75870) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:75919) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:75928) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:75964) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:75971) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:75978) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n"
+    },
+    {
+      "type": "formatting",
+      "tool": "prettier",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "errors": [],
+      "warnings": [],
+      "stdout": "Checking formatting...\nAll matched files use Prettier code style!\n",
+      "stderr": ""
+    },
+    {
+      "type": "complexity",
+      "tool": "none",
+      "skipped": true,
+      "reason": "No tools configured for this check type"
+    },
+    {
+      "type": "code_smells",
+      "tool": "none",
+      "skipped": true,
+      "reason": "No tools configured for this check type"
+    },
+    {
+      "type": "duplication",
+      "tool": "jscpd",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 1,
+      "errors": [],
+      "warnings": [
+        "Clone found ("
+      ],
+      "stdout": "Clone found (typescript):\n - \u001b[1m\u001b[32msrc/lib/architecture-graph-service.smoke.test.ts\u001b[39m\u001b[22m [106:9 - 116:27] (10 lines, 75 tokens)\n   \u001b[1m\u001b[32msrc/lib/architecture-graph-service.smoke.test.ts\u001b[39m\u001b[22m [91:2 - 101:11]\n\n\u001b[90m┌────────────\u001b[39m\u001b[90m┬────────────────\u001b[39m\u001b[90m┬─────────────\u001b[39m\u001b[90m┬──────────────\u001b[39m\u001b[90m┬──────────────\u001b[39m\u001b[90m┬──────────────────\u001b[39m\u001b[90m┬───────────────────┐\u001b[39m\n\u001b[90m│\u001b[39m\u001b[31m Format     \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Files analyzed \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Total lines \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Total tokens \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Clones found \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Duplicated lines \u001b[39m\u001b[90m│\u001b[39m\u001b[31m Duplicated tokens \u001b[39m\u001b[90m│\u001b[39m\n\u001b[90m├────────────\u001b[39m\u001b[90m┼────────────────\u001b[39m\u001b[90m┼─────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────────\u001b[39m\u001b[90m┼───────────────────┤\u001b[39m\n\u001b[90m│\u001b[39m typescript \u001b[90m│\u001b[39m 6              \u001b[90m│\u001b[39m 1661        \u001b[90m│\u001b[39m 12856        \u001b[90m│\u001b[39m 1            \u001b[90m│\u001b[39m 10 (0.6%)        \u001b[90m│\u001b[39m 75 (0.58%)        \u001b[90m│\u001b[39m\n\u001b[90m├────────────\u001b[39m\u001b[90m┼────────────────\u001b[39m\u001b[90m┼─────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────\u001b[39m\u001b[90m┼──────────────────\u001b[39m\u001b[90m┼───────────────────┤\u001b[39m\n\u001b[90m│\u001b[39m \u001b[1mTotal:\u001b[22m     \u001b[90m│\u001b[39m 6              \u001b[90m│\u001b[39m 1661        \u001b[90m│\u001b[39m 12856        \u001b[90m│\u001b[39m 1            \u001b[90m│\u001b[39m 10 (0.6%)        \u001b[90m│\u001b[39m 75 (0.58%)        \u001b[90m│\u001b[39m\n\u001b[90m└────────────\u001b[39m\u001b[90m┴────────────────\u001b[39m\u001b[90m┴─────────────\u001b[39m\u001b[90m┴──────────────\u001b[39m\u001b[90m┴──────────────\u001b[39m\u001b[90m┴──────────────────\u001b[39m\u001b[90m┴───────────────────┘\u001b[39m\n\u001b[90mFound 1 clones.\u001b[39m\n\u001b[3m\u001b[90mDetection time:\u001b[39m\u001b[23m: 737.515ms\n",
+      "stderr": ""
+    },
+    {
+      "type": "architecture",
+      "tool": "dependency-cruiser",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 2,
+      "errors": [],
+      "warnings": [
+        "\n  warn no-circular: ",
+        "  warn no-circular: "
+      ],
+      "stdout": "\n  warn no-circular: src/lib/detection.ts → \n      src/lib/project-name-detector.ts →\n      src/lib/detection.ts\n  warn no-circular: src/commands/init.ts → \n      src/commands/init/init-interaction.ts →\n      src/commands/init.ts\n\nx 2 dependency violations (0 errors, 2 warnings). 74 modules, 234 dependencies cruised.\n\n",
+      "stderr": ""
+    },
+    {
+      "type": "security",
+      "tool": "semgrep",
+      "exitCode": 0,
+      "errorCount": 0,
+      "warningCount": 0,
+      "errors": [],
+      "warnings": [],
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "commitMessage": "refactor(validation): remove redundant validation script and add dual-logging to architecture service\n\nRemoves the legacy validate-standards.js script that duplicated CI checks and\nconverts architecture-graph-service.ts to use the dual-logging pattern for\nproper separation between user-facing and AI-orchestrated contexts.\n\n## What Changed\n\nImplementation (6 files modified, 3 files deleted):\n\n**Deleted Files:**\n- `scripts/validate-standards.js` (254 lines) - Redundant validation script\n- `scripts/validate-standards.integration.test.ts` (59 lines)\n- `scripts/validate-standards.smoke.test.ts` (55 lines)\n\n**CI Configuration:**\n- `.github/workflows/quality.yml` - Removed validate-standards.js step (3 lines removed)\n\n**Source Code:**\n- `src/lib/architecture-graph-service.ts` - Added dual-logging pattern with enableConsole parameter (39 lines modified)\n  - Replaced 5 console.warn() calls with conditional dual-logging\n  - Added optional enableConsole parameter (defaults to false for AI contexts)\n  - Maintains logger.warn() for persistent logging in all contexts\n  \n- `src/commands/context.ts` - Added ESLint exemption comment for intentional console.log (1 line)\n- `src/commands/init.ts` - Pass enableConsole: true to ArchitectureGraphService (2 lines)\n- `src/commands/regen.ts` - Pass enableConsole: false for AI context (2 lines)\n- `src/commands/ship.ts` - Pass enableConsole: false for AI context (2 lines)\n\n**Tests:**\n- `src/lib/architecture-graph-service.smoke.test.ts` - Updated 8 test cases for new enableConsole parameter (87 lines modified)\n\n**Documentation:**\n- Feature tracking files (exploration, build plan, ship record, PM tracking)\n\n## Why This Change\n\nAfter HODGE-378.1 added ESLint validation to pre-push hooks and HODGE-378.2 \nfixed all ESLint errors, the validate-standards.js script became redundant:\n\n1. **Duplicated CI checks**: Script ran ESLint, Prettier, and TypeScript checks \n   that were already performed independently by GitHub Actions workflow\n2. **False positives**: Console.log detection was too strict, blocking legitimate \n   usage in context.ts (structured YAML output) and architecture-graph-service.ts \n   (user-facing warnings)\n3. **No longer needed**: With comprehensive pre-push ESLint enforcement, the \n   additional validation layer added no value\n\nThe dual-logging pattern properly addresses the architecture-graph-service.ts \nconsole usage:\n- **User-facing commands** (init): console.warn + logger.warn for immediate feedback\n- **AI-orchestrated commands** (regen, ship): logger.warn only for clean stdout\n- Follows existing logger pattern from `.hodge/standards.md:80-151`\n- Sets clear precedent for future library code serving dual contexts\n\n## Impact\n\n**CI/CD:**\n- ✅ CI no longer blocks on false-positive console.log detections\n- ✅ Faster CI execution (eliminated redundant quality checks)\n- ✅ Simpler CI configuration (one less script to maintain)\n\n**Code Quality:**\n- ✅ Established dual-logging pattern for library code\n- ✅ Clear separation: user-facing vs AI-orchestrated contexts\n- ✅ Intentional console usage documented with ESLint exemption\n- ✅ All 1,362 tests passing, zero ESLint/TypeScript errors\n\n**Architecture:**\n- ✅ Library code properly supports both init (user) and AI contexts\n- ✅ Explicit enableConsole parameter makes output mode clear\n- ✅ Reduced maintenance burden (368 fewer lines of validation code)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+}

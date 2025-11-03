@@ -175,17 +175,6 @@ strict digraph "dependency-cruiser output"{
     "scripts/update-pm-scripts.js" -> "node_modules/fs-extra" [penwidth="1.0"]
     "scripts/update-pm-scripts.js" -> "path" [style="dashed" penwidth="1.0"]
     "scripts/update-pm-scripts.js" -> "url" [style="dashed" penwidth="1.0"]
-    subgraph "cluster_scripts" {label="scripts" "scripts/validate-standards.integration.test.ts" [label=<validate-standards.integration.test.ts> tooltip="validate-standards.integration.test.ts" URL="scripts/validate-standards.integration.test.ts" fillcolor="#ddfeff"] }
-    "scripts/validate-standards.integration.test.ts" -> "src/test/"
-    "scripts/validate-standards.integration.test.ts" -> "fs" [style="dashed" penwidth="1.0"]
-    "scripts/validate-standards.integration.test.ts" -> "node_modules/vitest" [penwidth="1.0"]
-    subgraph "cluster_scripts" {label="scripts" "scripts/validate-standards.js" [label=<validate-standards.js> tooltip="validate-standards.js" URL="scripts/validate-standards.js" ] }
-    "scripts/validate-standards.js" -> "child_process" [style="dashed" penwidth="1.0"]
-    "scripts/validate-standards.js" -> "fs" [style="dashed" penwidth="1.0"]
-    subgraph "cluster_scripts" {label="scripts" "scripts/validate-standards.smoke.test.ts" [label=<validate-standards.smoke.test.ts> tooltip="validate-standards.smoke.test.ts" URL="scripts/validate-standards.smoke.test.ts" fillcolor="#ddfeff"] }
-    "scripts/validate-standards.smoke.test.ts" -> "src/test/"
-    "scripts/validate-standards.smoke.test.ts" -> "fs" [style="dashed" penwidth="1.0"]
-    "scripts/validate-standards.smoke.test.ts" -> "node_modules/vitest" [penwidth="1.0"]
     subgraph "cluster_src" {label="src" "src/bin/" [label=<bin> tooltip="bin" URL="src/bin/" shape="box3d"] }
     "src/bin/" -> "src/commands/" [style="dashed"]
     "src/bin/" -> "node_modules/commander" [penwidth="1.0"]

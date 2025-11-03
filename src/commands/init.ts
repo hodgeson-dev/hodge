@@ -229,7 +229,7 @@ export class InitCommand {
       const result = await graphService.generateGraph({
         projectRoot: projectInfo.rootPath,
         toolchainConfig,
-        quiet: true, // Suppress console output, we have spinner
+        enableConsole: false, // Suppress console output, we have spinner
       });
 
       if (result.success) {

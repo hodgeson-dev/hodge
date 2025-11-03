@@ -93,6 +93,7 @@ export class ContextCommand {
 
     // Output YAML to stdout (for AI consumption)
     // Use console.log (not logger) - logger goes to pino files, console.log to stdout
+    // eslint-disable-next-line no-console -- Intentional: outputs YAML to stdout for AI parsing
     console.log(yaml.dump(manifest, { lineWidth: 100, noRefs: true }));
 
     this.logger.info(`Context manifest generated for ${feature ?? 'project'}`);

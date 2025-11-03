@@ -18,8 +18,8 @@ export interface ArchitectureGraphOptions {
   projectRoot: string;
   /** Toolchain configuration */
   toolchainConfig: ToolchainConfig;
-  /** Suppress warning messages */
-  quiet?: boolean;
+  /** Enable console output (for user-facing commands like init). Defaults to false */
+  enableConsole?: boolean;
 }
 
 export interface GraphGenerationResult {
@@ -45,11 +45,11 @@ export class ArchitectureGraphService {
    * Non-blocking: logs warnings on failure but doesn't throw
    */
   async generateGraph(options: ArchitectureGraphOptions): Promise<GraphGenerationResult> {
-    const { projectRoot, toolchainConfig, quiet = false } = options;
+    const { projectRoot, toolchainConfig, enableConsole = false } = options;
 
     try {
       // Validate tool configuration
-      const validation = this.validateToolConfig(toolchainConfig, quiet);
+      const validation = this.validateToolConfig(toolchainConfig, enableConsole);
       if (!validation.valid) {
         return { success: false, error: validation.error };
       }
@@ -72,12 +72,12 @@ export class ArchitectureGraphService {
         absoluteOutputPath,
         outputPath,
         projectRoot,
-        quiet,
+        enableConsole,
       });
     } catch (error) {
       const err = error as Error;
       this.logger.error('Architecture graph generation failed', { error: err });
-      if (!quiet) {
+      if (enableConsole) {
         console.warn(`⚠️  Architecture graph generation failed: ${err.message}`);
       }
       return {
@@ -96,9 +96,10 @@ export class ArchitectureGraphService {
     absoluteOutputPath: string;
     outputPath: string;
     projectRoot: string;
-    quiet: boolean;
+    enableConsole: boolean;
   }): Promise<GraphGenerationResult> {
-    const { toolName, graphCommand, absoluteOutputPath, outputPath, projectRoot, quiet } = options;
+    const { toolName, graphCommand, absoluteOutputPath, outputPath, projectRoot, enableConsole } =
+      options;
 
     this.logger.info(`Generating architecture graph using ${toolName}`, {
       tool: toolName,
@@ -119,10 +120,10 @@ export class ArchitectureGraphService {
       });
 
       return Promise.resolve(
-        this.verifyGraphCreation(absoluteOutputPath, outputPath, toolName, quiet)
+        this.verifyGraphCreation(absoluteOutputPath, outputPath, toolName, enableConsole)
       );
     } catch (execError) {
-      return Promise.resolve(this.handleGraphError(execError as Error, toolName, quiet));
+      return Promise.resolve(this.handleGraphError(execError as Error, toolName, enableConsole));
     }
   }
 
@@ -133,14 +134,14 @@ export class ArchitectureGraphService {
     absoluteOutputPath: string,
     outputPath: string,
     toolName: string,
-    quiet: boolean
+    enableConsole: boolean
   ): GraphGenerationResult {
     if (existsSync(absoluteOutputPath)) {
       this.logger.info('Architecture graph generated successfully', {
         path: outputPath,
         tool: toolName,
       });
-      if (!quiet) {
+      if (enableConsole) {
         console.log(`✓ Architecture graph: ${outputPath}`);
       }
       return {
@@ -156,12 +157,16 @@ export class ArchitectureGraphService {
   /**
    * Handle errors during graph generation
    */
-  private handleGraphError(error: Error, toolName: string, quiet: boolean): GraphGenerationResult {
+  private handleGraphError(
+    error: Error,
+    toolName: string,
+    enableConsole: boolean
+  ): GraphGenerationResult {
     this.logger.warn('Graph generation command failed', {
       tool: toolName,
       error: error.message,
     });
-    if (!quiet) {
+    if (enableConsole) {
       console.warn(`⚠️  Failed to generate architecture graph: ${error.message}`);
     }
     return {
@@ -177,7 +182,7 @@ export class ArchitectureGraphService {
    */
   private validateToolConfig(
     toolchainConfig: ToolchainConfig,
-    quiet: boolean
+    enableConsole: boolean
   ):
     | { valid: true; toolName: string; graphCommand: string; outputPath?: string }
     | { valid: false; error: string } {
@@ -193,7 +198,7 @@ export class ArchitectureGraphService {
     const toolName = analysisConfig?.architecture_graph?.tool;
     if (!toolName) {
       this.logger.warn('No architecture graph tool specified in toolchain config');
-      if (!quiet) {
+      if (enableConsole) {
         console.warn(`⚠️  No architecture graph tool configured`);
       }
       return { valid: false, error: 'No graph tool configured' };
@@ -203,7 +208,7 @@ export class ArchitectureGraphService {
     const toolConfig = toolchainConfig.commands[toolName];
     if (!toolConfig.graph_command) {
       this.logger.warn(`Tool ${toolName} does not have graph_command configured in toolchain.yaml`);
-      if (!quiet) {
+      if (enableConsole) {
         console.warn(`⚠️  Tool ${toolName} missing graph_command in .hodge/toolchain.yaml`);
       }
       return { valid: false, error: 'No graph command configured' };

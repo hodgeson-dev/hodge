@@ -45,9 +45,6 @@ jobs:
       - name: Test coverage
         run: npm run test:coverage
 
-      - name: Validate standards
-        run: node scripts/validate-standards.js
-
       - name: Upload coverage reports
         if: matrix.node-version == '20.x'
         uses: codecov/codecov-action@v3

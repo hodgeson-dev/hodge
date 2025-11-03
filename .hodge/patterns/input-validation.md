@@ -1,32 +1,32 @@
 # Input Validation
 
 **Category**: security
-**Frequency**: Used 4 times
-**Confidence**: 80%
+**Frequency**: Used 3 times
+**Confidence**: 60%
 
 ## Description
 Input validation before processing
 
 ## Examples
 
-### src/lib/pm/base-adapter.ts
+### src/commands/build.ts
 ```typescript
-if (!targetState) {
+if (!resolvedFeature) {
       throw new Error
 ```
 
 
-### src/lib/pm/github-adapter.ts
+### src/commands/harden.ts
 ```typescript
-if (!this.octokit) {
+if (!resolvedFeature) {
       throw new Error
 ```
 
 
-### src/lib/pm/linear-adapter.ts
+### src/commands/ship.ts
 ```typescript
-if (!state) {
-        throw new Error
+if (!resolvedFeature) {
+      throw new Error
 ```
 
 
@@ -36,5 +36,5 @@ if (!state) {
 - 
 
 ---
-*First seen: 2025-11-02T16:44:25.808Z*
-*Last used: 2025-11-02T16:44:25.810Z*
+*First seen: 2025-11-03T00:13:45.427Z*
+*Last used: 2025-11-03T00:13:45.431Z*
