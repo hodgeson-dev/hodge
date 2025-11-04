@@ -228,6 +228,47 @@ Each step revealed the next opportunity.
 
 **Related**: Test performance standards (<30s full suite)
 
+### 8. Proactive Quality 🎯
+**Write code that passes standards from the start**
+
+During build phase, write code that already complies with ship-phase standards when practical. This avoids rework cycles during hardening.
+
+**Key practices:**
+- Follow function length limits (50 lines) while writing, not after
+- Stay within file length limits (400 lines) from the start
+- Structure code for testability as you write it
+- Use proper error handling patterns initially
+
+**Why this matters:**
+- Reduces harden-phase rework (no refactoring for length violations)
+- Builds good habits (quality becomes natural, not forced)
+- Faster shipping (fewer issues to fix before production)
+- Less context switching (fix while context is fresh, not later)
+
+**When to apply:**
+- ✅ Build phase: Follow limits proactively when writing new code
+- ✅ Harden phase: Must meet all standards before shipping
+- ⚠️ Explore phase: Optional (freedom to experiment)
+
+**Example:**
+```typescript
+// ❌ Build phase: Write 80-line function, fix later in harden
+async function processOrder() {
+  // ... 80 lines of mixed concerns
+}
+
+// ✅ Build phase: Extract helpers while writing
+async function processOrder(order: Order) {
+  validateOrder(order);
+  const payment = await processPayment(order);
+  await sendConfirmation(order, payment);
+}
+```
+
+**Balance:** Don't let perfect be the enemy of good. If breaking a function into helpers disrupts your flow during exploration, that's fine. But during build phase, take the extra few minutes to structure properly.
+
+**Related**: File and Function Length Standards (.hodge/standards.md:619-676)
+
 ## Applied Principles
 
 ### For Individual Developers

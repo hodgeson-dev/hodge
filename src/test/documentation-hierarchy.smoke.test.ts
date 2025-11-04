@@ -59,10 +59,10 @@ describe('Documentation Hierarchy Smoke Tests', () => {
     expect(exploreContent).toContain('Check Lessons from Similar Features');
     expect(exploreContent).toContain('Review Applicable Patterns');
 
-    // /decide should consider principles
-    const decideContent = fs.readFileSync(path.join(commandsRoot, 'decide.md'), 'utf-8');
-    expect(decideContent).toContain('Review Guiding Principles');
-    expect(decideContent).toContain('Principle Consideration');
-    expect(decideContent).toContain('Alignment:');
+    // /refine should focus on implementation details
+    const refineContent = fs.readFileSync(path.join(commandsRoot, 'refine.md'), 'utf-8');
+    expect(refineContent).toContain('Implementation Summary');
+    expect(refineContent).toContain('Detailed Implementation Plan');
+    expect(refineContent).toContain('Test Strategy');
   });
 });

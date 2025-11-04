@@ -13,7 +13,6 @@ const COMMANDS_DIR = join(__dirname, '..', '..', '.claude', 'commands');
 
 // Commands that should have choice blocks
 const COMMANDS_WITH_CHOICES = [
-  'decide.md',
   'review.md',
   'plan.md',
   'ship.md',
@@ -23,7 +22,7 @@ const COMMANDS_WITH_CHOICES = [
 ];
 
 describe('[smoke] HODGE-346.3: Choice Formatting Standards', () => {
-  describe('All Commands Updated (/decide, /review, /plan, /ship, /codify, /build, /harden)', () => {
+  describe('All Commands Updated (/review, /plan, /ship, /codify, /build, /harden)', () => {
     COMMANDS_WITH_CHOICES.forEach((filename) => {
       const filepath = join(COMMANDS_DIR, filename);
       const content = readFileSync(filepath, 'utf-8');

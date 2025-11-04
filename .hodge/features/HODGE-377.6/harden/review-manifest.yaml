@@ -1,0 +1,203 @@
+version: '1.0'
+feature: HODGE-377.6
+generated_at: '2025-11-03T23:38:49.591Z'
+recommended_tier: full
+change_analysis:
+  total_files: 22
+  total_lines: 1655
+  breakdown:
+    implementation: 8
+    test: 8
+    documentation: 6
+    config: 0
+changed_files:
+  - path: .claude/commands/explore.md
+    lines_changed: 16
+    change_type: documentation
+  - path: .claude/commands/refine.md
+    lines_changed: 261
+    change_type: documentation
+  - path: .hodge/features/HODGE-377.5/ship-record.json
+    lines_changed: 3
+    change_type: implementation
+  - path: .hodge/features/HODGE-377.6/build/build-plan.md
+    lines_changed: 46
+    change_type: documentation
+  - path: .hodge/features/HODGE-377.6/explore/exploration.md
+    lines_changed: 651
+    change_type: documentation
+  - path: .hodge/features/HODGE-377.6/ship-record.json
+    lines_changed: 11
+    change_type: implementation
+  - path: .hodge/id-mappings.json
+    lines_changed: 4
+    change_type: implementation
+  - path: .hodge/principles.md
+    lines_changed: 41
+    change_type: documentation
+  - path: .hodge/project_management.md
+    lines_changed: 13
+    change_type: documentation
+  - path: src/bin/hodge.ts
+    lines_changed: 19
+    change_type: implementation
+  - path: src/commands/build.ts
+    lines_changed: 38
+    change_type: implementation
+  - path: src/commands/choice-formatting.smoke.test.ts
+    lines_changed: 2
+    change_type: test
+  - path: src/commands/refine.smoke.test.ts
+    lines_changed: 174
+    change_type: test
+  - path: src/commands/refine.ts
+    lines_changed: 295
+    change_type: implementation
+  - path: src/commands/status.ts
+    lines_changed: 21
+    change_type: implementation
+  - path: src/commands/template-compliance.smoke.test.ts
+    lines_changed: 4
+    change_type: test
+  - path: src/commands/visual-patterns.smoke.test.ts
+    lines_changed: 8
+    change_type: test
+  - path: src/commands/visual-rendering.smoke.test.ts
+    lines_changed: 8
+    change_type: test
+  - path: src/lib/claude-commands.smoke.test.ts
+    lines_changed: 6
+    change_type: test
+  - path: src/lib/explore-service.ts
+    lines_changed: 14
+    change_type: implementation
+  - path: src/test/explore-template-what-vs-how.smoke.test.ts
+    lines_changed: 8
+    change_type: test
+  - path: src/test/standards-enforcement.smoke.test.ts
+    lines_changed: 12
+    change_type: test
+context:
+  project_standards:
+    path: .hodge/standards.md
+    precedence: 1
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+  project_principles:
+    path: .hodge/principles.md
+    precedence: 2
+    required_for_tiers:
+      - standard
+      - full
+  matched_patterns:
+    precedence: 4
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - test-pattern.md
+      - error-boundary.md
+      - input-validation.md
+      - README.md
+  matched_profiles:
+    precedence: 5
+    required_for_tiers:
+      - quick
+      - standard
+      - full
+    files:
+      - ux-patterns/claude-code-slash-commands.yaml
+      - testing/vitest-3.x.yaml
+      - testing/general-test-standards.yaml
+      - languages/typescript-5.x.yaml
+      - languages/general-coding-standards.yaml
+  project_decisions:
+    path: .hodge/decisions.md
+    precedence: 3
+    required_for_tiers:
+      - full
+    note: Large file - read selectively if needed
+  lessons_learned:
+    precedence: 6
+    required_for_tiers:
+      - full
+    files: []
+    note: Read relevant lessons as needed
+scope:
+  type: feature
+  target: HODGE-377.6
+  fileCount: 22
+critical_files:
+  algorithm: risk-weighted-v1.0
+  total_files: 22
+  top_n: 10
+  files:
+    - path: src/commands/refine.ts
+      rank: 1
+      score: 4100
+      risk_factors:
+        - 40 blocker issues
+        - large change (295 lines)
+        - new file
+    - path: src/commands/choice-formatting.smoke.test.ts
+      rank: 2
+      score: 676
+      risk_factors:
+        - 6 blocker issues
+        - 5 warnings
+        - test file (lower priority)
+    - path: src/commands/refine.smoke.test.ts
+      rank: 3
+      score: 625
+      risk_factors:
+        - 6 blocker issues
+        - medium change (174 lines)
+        - new file
+        - test file (lower priority)
+    - path: src/commands/visual-rendering.smoke.test.ts
+      rank: 4
+      score: 379
+      risk_factors:
+        - 4 blocker issues
+        - 1 warning
+        - test file (lower priority)
+    - path: src/commands/visual-patterns.smoke.test.ts
+      rank: 5
+      score: 179
+      risk_factors:
+        - 2 blocker issues
+        - 1 warning
+        - test file (lower priority)
+    - path: src/lib/claude-commands.smoke.test.ts
+      rank: 6
+      score: 153
+      risk_factors:
+        - 2 blocker issues
+        - test file (lower priority)
+    - path: src/test/standards-enforcement.smoke.test.ts
+      rank: 7
+      score: 131
+      risk_factors:
+        - 7 warnings
+        - test file (lower priority)
+    - path: .claude/commands/refine.md
+      rank: 8
+      score: 125
+      risk_factors:
+        - 1 warning
+        - large change (261 lines)
+        - new file
+    - path: .hodge/features/HODGE-377.6/explore/exploration.md
+      rank: 9
+      score: 100
+      risk_factors:
+        - large change (651 lines)
+        - new file
+    - path: .hodge/features/HODGE-377.6/build/build-plan.md
+      rank: 10
+      score: 73
+      risk_factors:
+        - new file

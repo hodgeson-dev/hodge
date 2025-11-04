@@ -429,19 +429,23 @@ export class ExploreService {
 
   /**
    * Add placeholder sections for AI to fill
+   * HODGE-377.6: Added High-Level Architecture, renamed Decisions Needed → Questions for Refinement
    */
   private addPlaceholderSections(sections: string[], feature: string): void {
-    sections.push(`## Implementation Approaches\n`);
+    sections.push(`## High-Level Architecture\n`);
+    sections.push(`<!-- AI will describe the what + high-level how here -->\n`);
+    sections.push(`_Describe the overall approach and architecture_\n`);
+    sections.push(`\n## Implementation Approaches\n`);
     sections.push(`<!-- AI will generate 2-3 approaches here -->\n`);
     sections.push(`_Add your approach analysis here_\n`);
     sections.push(`\n## Recommendation\n`);
     sections.push(`<!-- AI will provide recommendation -->\n`);
-    sections.push(`\n## Decisions Needed\n`);
-    sections.push(`<!-- AI will list decisions for /decide command -->\n`);
-    sections.push(`_List key decisions here_\n`);
+    sections.push(`\n## Questions for Refinement\n`);
+    sections.push(`<!-- AI will list questions for /refine command -->\n`);
+    sections.push(`_List key questions for implementation refinement_\n`);
     sections.push(`## Next Steps\n`);
     sections.push(`1. Review exploration`);
-    sections.push(`2. Make decisions with \`hodge decide\``);
+    sections.push(`2. Refine implementation details with \`hodge refine ${feature}\``);
     sections.push(`3. Start building with \`hodge build ${feature}\``);
   }
 

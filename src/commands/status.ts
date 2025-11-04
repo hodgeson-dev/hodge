@@ -61,15 +61,16 @@ export class StatusCommand {
     this.displayNextStep(feature, featureState);
   }
 
+  // HODGE-377.6: Updated to check refinements.md instead of decisions.md
   private async getFeatureState(featureDir: string) {
     const hasExploration = existsSync(path.join(featureDir, 'explore'));
-    const hasDecision = existsSync(path.join(featureDir, 'decisions.md'));
+    const hasRefinement = existsSync(path.join(featureDir, 'refine', 'refinements.md'));
     const hasBuild = existsSync(path.join(featureDir, 'build'));
     const hasHarden = existsSync(path.join(featureDir, 'harden'));
     const isProductionReady = await this.checkProductionReady(featureDir);
     const isShipped = await this.checkShipped(featureDir);
 
-    return { hasExploration, hasDecision, hasBuild, hasHarden, isProductionReady, isShipped };
+    return { hasExploration, hasRefinement, hasBuild, hasHarden, isProductionReady, isShipped };
   }
 
   private async checkProductionReady(featureDir: string): Promise<boolean> {
@@ -114,9 +115,10 @@ export class StatusCommand {
     return (await fs.readFile(issueIdFile, 'utf-8')).trim();
   }
 
+  // HODGE-377.6: Updated to display "Refinement" instead of "Decision"
   private displayFeatureProgress(state: {
     hasExploration: boolean;
-    hasDecision: boolean;
+    hasRefinement: boolean;
     hasBuild: boolean;
     hasHarden: boolean;
     isProductionReady: boolean;
@@ -126,7 +128,9 @@ export class StatusCommand {
     this.logger.info(
       '  ' + (state.hasExploration ? chalk.green('✓') : chalk.gray('○')) + ' Exploration'
     );
-    this.logger.info('  ' + (state.hasDecision ? chalk.green('✓') : chalk.gray('○')) + ' Decision');
+    this.logger.info(
+      '  ' + (state.hasRefinement ? chalk.green('✓') : chalk.gray('○')) + ' Refinement'
+    );
     this.logger.info('  ' + (state.hasBuild ? chalk.green('✓') : chalk.gray('○')) + ' Build');
     this.logger.info('  ' + (state.hasHarden ? chalk.green('✓') : chalk.gray('○')) + ' Harden');
     this.logger.info(
@@ -148,11 +152,12 @@ export class StatusCommand {
     this.logger.info('');
   }
 
+  // HODGE-377.6: Updated to recommend /refine instead of /decide
   private displayNextStep(
     feature: string,
     state: {
       hasExploration: boolean;
-      hasDecision: boolean;
+      hasRefinement: boolean;
       hasBuild: boolean;
       hasHarden: boolean;
       isProductionReady: boolean;
@@ -167,9 +172,9 @@ export class StatusCommand {
       this.logger.info(chalk.cyan(`  hodge explore <feature>`));
     } else if (!state.hasExploration) {
       this.logger.info(chalk.cyan(`  hodge explore ${feature}`));
-    } else if (!state.hasDecision) {
-      this.logger.info(chalk.yellow('  Review exploration and make a decision'));
-      this.logger.info(chalk.cyan(`  hodge decide "Your decision here" --feature ${feature}`));
+    } else if (!state.hasRefinement) {
+      this.logger.info(chalk.yellow('  Review exploration and refine implementation details'));
+      this.logger.info(chalk.cyan(`  hodge refine ${feature}`));
     } else if (!state.hasBuild) {
       this.logger.info(chalk.cyan(`  hodge build ${feature}`));
     } else if (!state.hasHarden) {

@@ -10,10 +10,10 @@
 
 import { smokeTest } from '../src/test/helpers';
 import { PMHooks } from '../src/lib/pm/pm-hooks';
-import { DecideCommand } from '../src/commands/decide';
+import { RefineCommand } from '../src/commands/refine';
 import { IDManager } from '../src/lib/id-manager';
 import { TempDirectoryFixture } from '../src/test/temp-directory-fixture';
-import fs from 'fs/promises';
+import { existsSync } from 'fs';
 import path from 'path';
 
 smokeTest('PMHooks should have createPMIssue method', async () => {
@@ -38,13 +38,13 @@ smokeTest('PMHooks should have processQueue method', async () => {
   await fixture.cleanup();
 });
 
-smokeTest('DecideCommand should be properly instantiated', async () => {
+smokeTest('RefineCommand should be properly instantiated', async () => {
   const fixture = new TempDirectoryFixture();
   const testDir = await fixture.setup();
 
-  const decideCommand = new DecideCommand(testDir);
-  expect(decideCommand).toBeDefined();
-  expect(typeof decideCommand.execute).toBe('function');
+  const refineCommand = new RefineCommand(testDir);
+  expect(refineCommand).toBeDefined();
+  expect(typeof refineCommand.execute).toBe('function');
 
   await fixture.cleanup();
 });
@@ -177,23 +177,22 @@ smokeTest('PlanCommand should generate epic structure from decisions', async () 
   await fixture.cleanup();
 });
 
-smokeTest('DecideCommand should record decisions without PM integration', async () => {
+smokeTest('RefineCommand should create refine directory without PM integration', async () => {
   const fixture = new TempDirectoryFixture();
   const testDir = await fixture.setup();
-  const decideCommand = new DecideCommand(testDir);
+  const refineCommand = new RefineCommand(testDir);
 
-  // Create feature directory (required for --feature flag validation)
-  await fixture.writeFile('.hodge/features/HODGE-301/.gitkeep', '');
-
-  await decideCommand.execute('Implement as a single story', { feature: 'HODGE-301' });
-
-  // With --feature flag, decision should be in feature-specific file
-  const decisions = await fs.readFile(
-    path.join(testDir, '.hodge', 'features', 'HODGE-301', 'decisions.md'),
-    'utf-8'
+  // Create feature directory with exploration.md (required for refine)
+  await fixture.writeFile(
+    '.hodge/features/HODGE-301/explore/exploration.md',
+    '# Exploration: HODGE-301\n\n## Questions for Refinement\n\n1. **Test Question**'
   );
-  expect(decisions).toContain('Implement as a single story');
-  expect(decisions).toContain('HODGE-301');
+
+  await refineCommand.execute('HODGE-301');
+
+  // Verify refine directory was created
+  const refineDir = path.join(testDir, '.hodge', 'features', 'HODGE-301', 'refine');
+  expect(existsSync(refineDir)).toBe(true);
 
   await fixture.cleanup();
 });

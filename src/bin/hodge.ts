@@ -134,14 +134,15 @@ const contextCmd = program
     await contextCommand.execute(options);
   });
 
-const decideCmd = program
-  .command('decide <decision>')
-  .description('[Internal] Record a project decision')
-  .option('-f, --feature <feature>', 'Associate decision with a specific feature')
-  .action(async (decision: string, options: { feature?: string }) => {
-    const { DecideCommand } = await import('../commands/decide.js');
-    const decideCommand = new DecideCommand();
-    await decideCommand.execute(decision, options);
+// HODGE-377.6: Refine command replaces decide command
+const refineCmd = program
+  .command('refine <feature>')
+  .description('[Internal] Drill into implementation details after exploration')
+  .option('--rerun', 'Regenerate existing refinements')
+  .action(async (feature: string, options: { rerun?: boolean }) => {
+    const { RefineCommand } = await import('../commands/refine.js');
+    const refineCommand = new RefineCommand();
+    await refineCommand.execute(feature, options);
   });
 
 program
@@ -224,7 +225,7 @@ if (!showInternal) {
     statusCmd,
     lessonsCmd,
     contextCmd,
-    decideCmd,
+    refineCmd, // HODGE-377.6: Refine replaces decide
     shipCmd,
   ];
 

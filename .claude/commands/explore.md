@@ -134,7 +134,7 @@ Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
 
 **IMPORTANT**: Engage in natural dialogue to deeply understand the feature before documenting anything.
 
-**FOCUS**: This phase focuses on the **"what"** (requirements, behavior, scope) with minimal technical detail - only enough to validate feasibility and understand constraints/opportunities. Save the **"how"** (implementation details) for `/decide`.
+**FOCUS**: This phase focuses on the **"what"** (requirements, behavior, scope) with minimal technical detail - only enough to validate feasibility and understand constraints/opportunities. Save the **"how"** (implementation details) for `/refine`.
 
 #### "What" vs "How" Decision Framework
 
@@ -145,7 +145,7 @@ Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
 - Technical feasibility validation (can we do X with our current stack?)
 - Integration patterns that affect user experience (sync vs async workflows)
 
-**Defer to /decide** (implementation details):
+**Defer to /refine** (implementation details):
 - Specific library/framework choices (which GraphQL library, which validation library)
 - Code organization patterns (folder structure, module boundaries)
 - Validation strategies (Zod vs Yup, where to validate)
@@ -156,11 +156,11 @@ Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
 
 **Examples**:
 - ✅ Explore: "Should we use REST or GraphQL?" (affects API capabilities)
-- ❌ Explore: "Which GraphQL library should we use?" → Defer to /decide
+- ❌ Explore: "Which GraphQL library should we use?" → Defer to /refine
 - ✅ Explore: "Do we need real-time updates or is polling sufficient?" (affects UX)
-- ❌ Explore: "How should we structure the WebSocket connection logic?" → Defer to /decide
+- ❌ Explore: "How should we structure the WebSocket connection logic?" → Defer to /refine
 - ✅ Explore: "Should authentication be required for this feature?" (affects requirements)
-- ❌ Explore: "Should we use JWT or sessions for authentication?" → Defer to /decide
+- ❌ Explore: "Should we use JWT or sessions for authentication?" → Defer to /refine
 
 #### Required Coverage Areas (MUST ask about ALL of these):
 1. **What & Why** (Requirements and Context)
@@ -195,7 +195,7 @@ Copy it CHARACTER-FOR-CHARACTER. Do NOT use markdown headers as substitutes.
 - **Scale to complexity**: Simple features = 1-2 quick questions; Complex features = extensive discussion
 - **Conversation pacing**: Aim for 5-7 exchanges to keep exploration focused, but conclude earlier if understanding is complete
 - **Conversation ends when**: Either AI feels satisfied OR user says to proceed (whichever comes first)
-- **Stop before "how" details**: If conversation drifts into implementation specifics (library choices, code organization), acknowledge them but note they're for `/decide` phase
+- **Stop before "how" details**: If conversation drifts into implementation specifics (library choices, code organization), acknowledge them but note they're for `/refine` phase
 
 #### Complexity Signals (When to Recommend /plan):
 Watch for these signals that indicate feature breakdown might be beneficial:
@@ -297,7 +297,7 @@ If user skips conversation or provides complete requirements upfront, fall back 
 
 1. **Read the template** at `.hodge/features/{{feature}}/explore/exploration.md`
 2. **Generate title, approaches, recommendations** as before
-3. **Document decisions needed** for /decide phase
+3. **Document questions for refinement** for /refine phase
 
 ## Exploration Guidelines
 - Standards are **suggested** but not enforced
@@ -339,7 +339,7 @@ Based on the status output, suggest relevant next steps:
 
 I see you have decisions to make. Here are your options:
 
-• `/decide` - Make and record architectural decisions (Recommended)
+• `/refine` - Drill into implementation details (Recommended)
 • `/build {{feature}}` - Start building with recommended approach (decisions can be made later)
 • `/save` - Save your progress
 • Continue exploring - Just describe what else to explore

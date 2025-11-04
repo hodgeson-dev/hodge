@@ -91,12 +91,12 @@ describe('Standards Enforcement Clarity (HODGE-283)', () => {
     expect(shipContent).toContain('BLOCKING Level');
   });
 
-  smokeTest('decide.md should prevent skipping interactive mode', async () => {
-    const decidePath = path.join(process.cwd(), '.claude', 'commands', 'decide.md');
-    const decideContent = fs.readFileSync(decidePath, 'utf-8');
+  smokeTest('refine.md should describe two-phase refinement process', async () => {
+    const refinePath = path.join(process.cwd(), '.claude', 'commands', 'refine.md');
+    const refineContent = fs.readFileSync(refinePath, 'utf-8');
 
-    expect(decideContent).toContain('DEFAULT BEHAVIOR: Interactive Decision Mode');
-    expect(decideContent).toContain('WRONG: Jumping to recording');
-    expect(decideContent).toContain('RIGHT: Present options first');
+    expect(refineContent).toContain('Two-Phase Refinement Conversation');
+    expect(refineContent).toContain('Phase 1: Address Known Questions');
+    expect(refineContent).toContain('Phase 2: Open Implementation Drill-Down');
   });
 });

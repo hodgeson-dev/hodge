@@ -11,7 +11,7 @@ describe('[smoke] explore.md template - "what" vs "how" framework (HODGE-348)', 
 
     expect(exploreTemplate).toContain('#### "What" vs "How" Decision Framework');
     expect(exploreTemplate).toContain("**Explore in /explore** (affects what's possible):");
-    expect(exploreTemplate).toContain('**Defer to /decide** (implementation details):');
+    expect(exploreTemplate).toContain('**Defer to /refine** (implementation details):');
   });
 
   it('should include concrete examples of "what" decisions for /explore', () => {
@@ -27,7 +27,7 @@ describe('[smoke] explore.md template - "what" vs "how" framework (HODGE-348)', 
     expect(exploreTemplate).toContain('High-level approach options');
   });
 
-  it('should include concrete examples of "how" decisions to defer to /decide', () => {
+  it('should include concrete examples of "how" decisions to defer to /refine', () => {
     const exploreTemplate = readFileSync(
       join(__dirname, '../../.claude/commands/explore.md'),
       'utf-8'
@@ -51,9 +51,9 @@ describe('[smoke] explore.md template - "what" vs "how" framework (HODGE-348)', 
     expect(exploreTemplate).toContain('✅ Explore: "Should we use REST or GraphQL?"');
     expect(exploreTemplate).toContain('(affects API capabilities)');
 
-    // Negative examples (defer to /decide)
+    // Negative examples (defer to /refine)
     expect(exploreTemplate).toContain('❌ Explore: "Which GraphQL library should we use?"');
-    expect(exploreTemplate).toContain('→ Defer to /decide');
+    expect(exploreTemplate).toContain('→ Defer to /refine');
   });
 
   it('should include FOCUS statement about "what" vs "how"', () => {
@@ -63,7 +63,7 @@ describe('[smoke] explore.md template - "what" vs "how" framework (HODGE-348)', 
     );
 
     expect(exploreTemplate).toContain('**FOCUS**: This phase focuses on the **"what"**');
-    expect(exploreTemplate).toContain('Save the **"how"** (implementation details) for `/decide`');
+    expect(exploreTemplate).toContain('Save the **"how"** (implementation details) for `/refine`');
   });
 });
 
@@ -87,7 +87,7 @@ describe('[smoke] explore.md template - conversation pacing (HODGE-348)', () => 
 
     expect(exploreTemplate).toContain('**Stop before "how" details**:');
     expect(exploreTemplate).toContain('implementation specifics');
-    expect(exploreTemplate).toContain("note they're for `/decide` phase");
+    expect(exploreTemplate).toContain("note they're for `/refine` phase");
   });
 });
 

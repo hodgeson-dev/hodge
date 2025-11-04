@@ -1,0 +1,66 @@
+{
+  "timestamp": "2025-11-03T23:38:21.475Z",
+  "stagedFiles": [
+    ".claude/commands/decide.md",
+    ".claude/commands/explore.md",
+    ".claude/commands/refine.md",
+    ".hodge/features/HODGE-377.5/ship-record.json",
+    ".hodge/features/HODGE-377.6/build/build-plan.md",
+    ".hodge/features/HODGE-377.6/explore/exploration.md",
+    ".hodge/features/HODGE-377.6/ship-record.json",
+    ".hodge/id-mappings.json",
+    ".hodge/principles.md",
+    ".hodge/project_management.md",
+    "src/bin/hodge.ts",
+    "src/commands/build.ts",
+    "src/commands/choice-formatting.smoke.test.ts",
+    "src/commands/decide.smoke.test.ts",
+    "src/commands/decide.smoke.test.ts.tmp",
+    "src/commands/decide.ts",
+    "src/commands/decide.ts.tmp",
+    "src/commands/refine.smoke.test.ts",
+    "src/commands/refine.ts",
+    "src/commands/status.ts",
+    "src/commands/template-compliance.smoke.test.ts",
+    "src/commands/visual-patterns.smoke.test.ts",
+    "src/commands/visual-rendering.smoke.test.ts",
+    "src/lib/claude-commands.smoke.test.ts",
+    "src/lib/explore-service.ts",
+    "src/test/decide-command.smoke.test.ts",
+    "src/test/explore-template-what-vs-how.smoke.test.ts",
+    "src/test/standards-enforcement.smoke.test.ts"
+  ],
+  "results": [
+    {
+      "tool": "prettier",
+      "filesProcessed": 26,
+      "issuesFixed": 0,
+      "success": true,
+      "stdout": "src/bin/hodge.ts 82ms (unchanged)\nsrc/commands/build.ts 55ms\nsrc/commands/choice-formatting.smoke.test.ts 20ms (unchanged)\nsrc/commands/refine.smoke.test.ts 10ms (unchanged)\nsrc/commands/refine.ts 21ms\nsrc/commands/status.ts 33ms\nsrc/commands/template-compliance.smoke.test.ts 4ms (unchanged)\nsrc/commands/visual-patterns.smoke.test.ts 18ms (unchanged)\nsrc/commands/visual-rendering.smoke.test.ts 17ms (unchanged)\nsrc/lib/claude-commands.smoke.test.ts 10ms (unchanged)\nsrc/lib/explore-service.ts 17ms (unchanged)\nsrc/test/explore-template-what-vs-how.smoke.test.ts 5ms (unchanged)\nsrc/test/standards-enforcement.smoke.test.ts 5ms (unchanged)\n",
+      "stderr": "[error] No files matching the pattern were found: \".claude/commands/decide.md\".\n[error] No files matching the pattern were found: \"src/commands/decide.smoke.test.ts\".\n[error] No files matching the pattern were found: \"src/commands/decide.ts\".\n[error] No files matching the pattern were found: \"src/test/decide-command.smoke.test.ts\".\n",
+      "duration": 1035
+    },
+    {
+      "tool": "eslint",
+      "filesProcessed": 0,
+      "issuesFixed": 0,
+      "success": false,
+      "stdout": "",
+      "stderr": "\nOops! Something went wrong! :(\n\nESLint: 8.57.1\n\nNo files matching the pattern \"src/commands/decide.smoke.test.ts\" were found.\nPlease check for typing mistakes in the pattern.\n\n",
+      "duration": 4050
+    }
+  ],
+  "totalIssuesFixed": 0,
+  "totalFilesModified": 26,
+  "failures": [
+    {
+      "tool": "eslint",
+      "filesProcessed": 0,
+      "issuesFixed": 0,
+      "success": false,
+      "stdout": "",
+      "stderr": "\nOops! Something went wrong! :(\n\nESLint: 8.57.1\n\nNo files matching the pattern \"src/commands/decide.smoke.test.ts\" were found.\nPlease check for typing mistakes in the pattern.\n\n",
+      "duration": 4050
+    }
+  ]
+}

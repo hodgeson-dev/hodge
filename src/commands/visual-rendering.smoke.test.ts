@@ -166,22 +166,23 @@ describe('[smoke] Visual Rendering Verification (HODGE-346.2 Layer 3)', () => {
     });
   });
 
-  describe('Mock Command Execution: /decide', () => {
-    it('should render box header for decisions', () => {
-      const template = readFileSync(join(COMMANDS_DIR, 'decide.md'), 'utf-8');
+  describe('Mock Command Execution: /refine', () => {
+    it('should render box header for refinement', () => {
+      const template = readFileSync(join(COMMANDS_DIR, 'refine.md'), 'utf-8');
 
-      expect(template).toContain('│ 📋 Decide:');
+      expect(template).toContain('│ 📋 Refine:');
 
-      // Should have decision box within template
-      expect(template).toContain('│ 📋 Decide: Decision');
+      // Should have refinement box within template
+      expect(template).toContain('│ 📋 Refine:');
     });
 
-    it('should render choice block for decision options', () => {
-      const template = readFileSync(join(COMMANDS_DIR, 'decide.md'), 'utf-8');
+    it('should have conversational structure for refinement', () => {
+      const template = readFileSync(join(COMMANDS_DIR, 'refine.md'), 'utf-8');
 
-      // Should have full response block
-      expect(template).toContain('🔔 YOUR RESPONSE NEEDED');
-      expect(template).toContain('👉 Your choice [a/b/c/d/e]:');
+      // Refine is conversational, not choice-based
+      expect(template).toContain('Two-Phase Refinement Conversation');
+      expect(template).toContain('Phase 1: Address Known Questions');
+      expect(template).toContain('Phase 2: Open Implementation Drill-Down');
     });
   });
 
@@ -216,7 +217,7 @@ describe('[smoke] Visual Rendering Verification (HODGE-346.2 Layer 3)', () => {
 
       // Should have bullet format (• or -)
       expect(nextSteps).toContain('•');
-      expect(nextSteps).toContain('/decide');
+      expect(nextSteps).toContain('/refine');
       expect(nextSteps).toContain('/build');
     });
   });
@@ -355,7 +356,7 @@ describe('[smoke] Visual Rendering Verification (HODGE-346.2 Layer 3)', () => {
     const COMMAND_FILES = [
       'status.md',
       'hodge.md',
-      'decide.md',
+      'refine.md',
       'build.md',
       'codify.md',
       'explore.md',
@@ -393,14 +394,7 @@ describe('[smoke] Visual Rendering Verification (HODGE-346.2 Layer 3)', () => {
     });
 
     it('all choice blocks should render consistently', () => {
-      const filesWithChoices = [
-        'decide.md',
-        'build.md',
-        'codify.md',
-        'plan.md',
-        'review.md',
-        'ship.md',
-      ];
+      const filesWithChoices = ['build.md', 'codify.md', 'plan.md', 'review.md', 'ship.md'];
 
       filesWithChoices.forEach((file) => {
         const template = readFileSync(join(COMMANDS_DIR, file), 'utf-8');

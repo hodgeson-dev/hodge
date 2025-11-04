@@ -15,7 +15,7 @@ const COMMANDS_DIR = join(__dirname, '..', '..', '.claude', 'commands');
 const COMMAND_FILES = [
   'status.md',
   'hodge.md',
-  'decide.md',
+  'refine.md',
   'build.md',
   'codify.md',
   'explore.md',
@@ -130,11 +130,11 @@ describe('[smoke] Visual Pattern Compliance (HODGE-346.2)', () => {
       expect(boxCount).toBeGreaterThanOrEqual(1);
     });
 
-    it('decide.md should have box headers for decision sections', () => {
-      const content = readFileSync(join(COMMANDS_DIR, 'decide.md'), 'utf-8');
+    it('refine.md should have box headers for refinement sections', () => {
+      const content = readFileSync(join(COMMANDS_DIR, 'refine.md'), 'utf-8');
 
       // Should have main command box
-      expect(content).toContain('│ 📋 Decide:');
+      expect(content).toContain('│ 📋 Refine:');
     });
 
     it('plan.md should have box headers for major sections', () => {
@@ -159,7 +159,6 @@ describe('[smoke] Visual Pattern Compliance (HODGE-346.2)', () => {
 
   describe('Test Intention 5: Choice lists use full response block', () => {
     const choiceFiles = [
-      { file: 'decide.md', pattern: /🔔 YOUR RESPONSE NEEDED[\s\S]*?👉 Your choice/ },
       { file: 'build.md', pattern: /🔔 YOUR RESPONSE NEEDED[\s\S]*?👉 Your choice/ },
       { file: 'codify.md', pattern: /🔔 YOUR RESPONSE NEEDED[\s\S]*?👉 Your choice/ },
       { file: 'plan.md', pattern: /🔔 YOUR RESPONSE NEEDED[\s\S]*?👉 Your choice/ },

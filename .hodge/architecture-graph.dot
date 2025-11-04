@@ -188,10 +188,10 @@ strict digraph "dependency-cruiser output"{
     "src/commands/" -> "path" [style="dashed" penwidth="1.0"]
     "src/commands/" -> "src/types/" [arrowhead="onormal" penwidth="1.0"]
     "src/commands/" -> "node_modules/js-yaml" [penwidth="1.0"]
-    "src/commands/" -> "fs/promises" [style="dashed" penwidth="1.0"]
     "src/commands/" -> "node_modules/ora" [penwidth="1.0"]
     "src/commands/" -> "node_modules/fs-extra" [penwidth="1.0"]
     "src/commands/" -> "node_modules/inquirer" [penwidth="1.0"]
+    "src/commands/" -> "fs/promises" [style="dashed" penwidth="1.0"]
     "src/commands/" -> "node_modules/glob" [penwidth="1.0"]
     "src/commands/" -> "node_modules/gray-matter" [penwidth="1.0"]
     "src/commands/" -> "readline" [style="dashed" penwidth="1.0"]
@@ -246,17 +246,17 @@ strict digraph "dependency-cruiser output"{
     "test/commands/" -> "path" [style="dashed" penwidth="1.0"]
     "test/commands/" -> "node_modules/vitest" [penwidth="1.0"]
     subgraph "cluster_test" {label="test" "test/pm-integration.integration.test.ts" [label=<pm-integration.integration.test.ts> tooltip="pm-integration.integration.test.ts" URL="test/pm-integration.integration.test.ts" fillcolor="#ddfeff"] }
-    "test/pm-integration.integration.test.ts" -> "src/commands/"
+    "test/pm-integration.integration.test.ts" -> "src/commands/" [style="dashed"]
     "test/pm-integration.integration.test.ts" -> "src/lib/"
     "test/pm-integration.integration.test.ts" -> "src/test/"
     "test/pm-integration.integration.test.ts" -> "fs" [style="dashed" penwidth="1.0"]
     "test/pm-integration.integration.test.ts" -> "fs/promises" [style="dashed" penwidth="1.0"]
     "test/pm-integration.integration.test.ts" -> "path" [style="dashed" penwidth="1.0"]
     subgraph "cluster_test" {label="test" "test/pm-integration.smoke.test.ts" [label=<pm-integration.smoke.test.ts> tooltip="pm-integration.smoke.test.ts" URL="test/pm-integration.smoke.test.ts" fillcolor="#ddfeff"] }
-    "test/pm-integration.smoke.test.ts" -> "src/commands/"
+    "test/pm-integration.smoke.test.ts" -> "src/commands/" [style="dashed"]
     "test/pm-integration.smoke.test.ts" -> "src/lib/"
     "test/pm-integration.smoke.test.ts" -> "src/test/"
-    "test/pm-integration.smoke.test.ts" -> "fs/promises" [style="dashed" penwidth="1.0"]
+    "test/pm-integration.smoke.test.ts" -> "fs" [style="dashed" penwidth="1.0"]
     "test/pm-integration.smoke.test.ts" -> "path" [style="dashed" penwidth="1.0"]
     subgraph "cluster_test" {label="test" "test/pre-push-hook.test.ts" [label=<pre-push-hook.test.ts> tooltip="pre-push-hook.test.ts" URL="test/pre-push-hook.test.ts" fillcolor="#ddfeff"] }
     "test/pre-push-hook.test.ts" -> "src/test/"

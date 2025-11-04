@@ -14,15 +14,15 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 
 describe('[smoke] BuildCommand', () => {
-  smokeTest('should use correct decision file path (not exploreDir/decision.md)', async () => {
-    // Verify build.ts uses correct decision file path
+  smokeTest('should use correct refinements file path (not exploreDir/decision.md)', async () => {
+    // Verify build.ts uses correct refinements file path
     const buildPath = path.join(process.cwd(), 'src', 'commands', 'build.ts');
     const content = await fs.readFile(buildPath, 'utf-8');
 
-    // Should use correct path: '.hodge/features/${feature}/decisions.md'
+    // Should use correct path: '.hodge/features/${feature}/refine/refinements.md'
     // Path can be constructed directly or via featureDir variable
-    expect(content).toMatch(/path\.join\([^)]*'decisions\.md'\)/);
-    expect(content).toContain("'.hodge', 'features', feature, 'decisions.md'");
+    expect(content).toMatch(/path\.join\([^)]*'refinements\.md'\)/);
+    expect(content).toContain("'refine', 'refinements.md'");
 
     // Should NOT check exploreDir/decision.md (old incorrect path)
     expect(content).not.toContain("path.join(exploreDir, 'decision.md')");

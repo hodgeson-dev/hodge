@@ -5,61 +5,53 @@
 
 import { integrationTest } from '../src/test/helpers';
 import { PMHooks } from '../src/lib/pm/pm-hooks';
-import { DecideCommand } from '../src/commands/decide';
+import { RefineCommand } from '../src/commands/refine';
 import { IDManager } from '../src/lib/id-manager';
 import fs from 'fs/promises';
 import path from 'path';
 import { existsSync } from 'fs';
 import { TempDirectoryFixture } from '../src/test/temp-directory-fixture';
 
-integrationTest('PM integration: decide command creates issues after decisions', async () => {
+integrationTest('PM integration: refine command sets up refinement phase', async () => {
   // Setup test environment
   const fixture = new TempDirectoryFixture();
   const testDir = await fixture.setup();
   const hodgeDir = path.join(testDir, '.hodge');
   await fs.mkdir(hodgeDir, { recursive: true });
 
-  // Create decisions file with feature decisions
-  const decisionsContent = `
-# Architecture Decisions
+  // Create feature directory with exploration (required for refine)
+  const featureDir = path.join(hodgeDir, 'features', 'TEST-001');
+  const exploreDir = path.join(featureDir, 'explore');
+  await fs.mkdir(exploreDir, { recursive: true });
 
-### 2025-01-01 - Test Decision
+  // Create exploration.md (required prerequisite)
+  const explorationContent = `
+# Exploration: TEST-001
 
-**Status**: Accepted
+## Questions for Refinement
 
-**Context**:
-Feature: TEST-001
-
-**Decision**:
-Implement feature with epic structure
-
----
+1. **How should we structure the epic?**
+2. **What testing strategy should we use?**
 `;
 
-  await fs.writeFile(path.join(hodgeDir, 'decisions.md'), decisionsContent);
+  await fs.writeFile(path.join(exploreDir, 'exploration.md'), explorationContent);
 
-  // Create feature directory (required for --feature flag validation)
-  const featureDir = path.join(hodgeDir, 'features', 'TEST-001');
-  await fs.mkdir(featureDir, { recursive: true });
-
-  // Create decide command instance with test directory
-  const decideCommand = new DecideCommand(testDir);
+  // Create refine command instance with test directory
+  const refineCommand = new RefineCommand(testDir);
 
   // Mock environment to prevent real API calls
   const originalPmTool = process.env.HODGE_PM_TOOL;
   delete process.env.HODGE_PM_TOOL;
 
   try {
-    // Execute decision recording
-    await decideCommand.execute('Create epic for authentication', { feature: 'TEST-001' });
+    // Execute refinement setup
+    await refineCommand.execute('TEST-001');
 
-    // Verify decision was recorded in feature-specific file
-    const updatedDecisions = await fs.readFile(
-      path.join(hodgeDir, 'features', 'TEST-001', 'decisions.md'),
-      'utf-8'
-    );
-    expect(updatedDecisions).toContain('Create epic for authentication');
-    expect(updatedDecisions).toContain('TEST-001');
+    // Verify refine directory was created
+    const refineDir = path.join(featureDir, 'refine');
+    expect(existsSync(refineDir)).toBe(true);
+
+    // Note: refinements.md is created by AI during conversation, not by CLI
   } finally {
     // Restore environment
     if (originalPmTool) {

@@ -151,30 +151,30 @@ describe('[smoke] PM mapping check - grep pattern behavior', () => {
   });
 });
 
-describe('[smoke] decide.md template - decision prompt formatting', () => {
-  it('should have blank line between Topic and Context fields', () => {
-    const decideTemplate = readFileSync(
-      join(__dirname, '../../.claude/commands/decide.md'),
+describe('[smoke] refine.md template - refinement structure', () => {
+  it('should have two-phase refinement conversation structure', () => {
+    const refineTemplate = readFileSync(
+      join(__dirname, '../../.claude/commands/refine.md'),
       'utf-8'
     );
 
-    // Check that Topic and Context are separated by a blank line
-    expect(decideTemplate).toContain(
-      '**Topic**: {{decision_topic}}\n\n   **Context**: {{brief_context}}'
-    );
+    // Check that template includes two-phase structure
+    expect(refineTemplate).toContain('## Two-Phase Refinement Conversation');
+    expect(refineTemplate).toContain('### Phase 1: Address Known Questions');
+    expect(refineTemplate).toContain('### Phase 2: Open Implementation Drill-Down');
   });
 
-  it('should display decision prompt sections in correct order', () => {
-    const decideTemplate = readFileSync(
-      join(__dirname, '../../.claude/commands/decide.md'),
+  it('should include refinements.md template sections', () => {
+    const refineTemplate = readFileSync(
+      join(__dirname, '../../.claude/commands/refine.md'),
       'utf-8'
     );
 
-    // Verify decision prompt structure
-    expect(decideTemplate).toContain('📋 Decide: Decision {{number}} of {{total}}');
-    expect(decideTemplate).toContain('**Topic**: {{decision_topic}}');
-    expect(decideTemplate).toContain('**Context**: {{brief_context}}');
-    expect(decideTemplate).toContain('**Principle Consideration**:');
+    // Verify refinements.md structure sections
+    expect(refineTemplate).toContain('## Implementation Summary');
+    expect(refineTemplate).toContain('## Detailed Implementation Plan');
+    expect(refineTemplate).toContain('## Known Questions Resolved');
+    expect(refineTemplate).toContain('## Test Strategy');
   });
 });
 

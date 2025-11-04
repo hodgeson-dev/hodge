@@ -37,13 +37,14 @@ export class BuildCommand {
 
   /**
    * Setup build paths for the feature
+   * HODGE-377.6: Updated to use refinements.md instead of decisions.md
    */
   private setupBuildPaths(feature: string) {
     return {
       featureDir: path.join('.hodge', 'features', feature),
       buildDir: path.join('.hodge', 'features', feature, 'build'),
       exploreDir: path.join('.hodge', 'features', feature, 'explore'),
-      decisionFile: path.join('.hodge', 'features', feature, 'decisions.md'),
+      refinementsFile: path.join('.hodge', 'features', feature, 'refine', 'refinements.md'),
       issueIdFile: path.join('.hodge', 'features', feature, 'issue-id.txt'),
       standardsFile: path.join('.hodge', 'standards.md'),
       patternsDir: path.join('.hodge', 'patterns'),
@@ -397,9 +398,10 @@ After implementation:
    * Check file existence for all prerequisites
    * @private
    */
+  // HODGE-377.6: Updated to check refinements.md instead of decisions.md
   private async checkPrerequisiteFiles(params: {
     exploreDir: string;
-    decisionFile: string;
+    refinementsFile: string;
     issueIdFile: string;
     standardsFile: string;
     patternsDir: string;
@@ -408,31 +410,33 @@ After implementation:
     if (params.sequential) {
       return {
         hasExploration: await this.fileExists(params.exploreDir),
-        hasDecision: await this.fileExists(params.decisionFile),
+        hasRefinements: await this.fileExists(params.refinementsFile),
         hasIssueId: await this.fileExists(params.issueIdFile),
         hasStandards: await this.fileExists(params.standardsFile),
         hasPatterns: await this.fileExists(params.patternsDir),
       };
     }
 
-    const [hasExploration, hasDecision, hasIssueId, hasStandards, hasPatterns] = await Promise.all([
-      this.fileExists(params.exploreDir),
-      this.fileExists(params.decisionFile),
-      this.fileExists(params.issueIdFile),
-      this.fileExists(params.standardsFile),
-      this.fileExists(params.patternsDir),
-    ]);
+    const [hasExploration, hasRefinements, hasIssueId, hasStandards, hasPatterns] =
+      await Promise.all([
+        this.fileExists(params.exploreDir),
+        this.fileExists(params.refinementsFile),
+        this.fileExists(params.issueIdFile),
+        this.fileExists(params.standardsFile),
+        this.fileExists(params.patternsDir),
+      ]);
 
-    return { hasExploration, hasDecision, hasIssueId, hasStandards, hasPatterns };
+    return { hasExploration, hasRefinements, hasIssueId, hasStandards, hasPatterns };
   }
 
   /**
    * Validate prerequisites before building
    * @private
    */
+  // HODGE-377.6: Updated to validate refinements.md instead of decisions.md
   private async validatePrerequisites(params: {
     exploreDir: string;
-    decisionFile: string;
+    refinementsFile: string;
     issueIdFile: string;
     standardsFile: string;
     patternsDir: string;
@@ -446,7 +450,7 @@ After implementation:
     hasPatterns: boolean;
   }> {
     // Check file existence
-    const { hasExploration, hasDecision, hasIssueId, hasStandards, hasPatterns } =
+    const { hasExploration, hasRefinements, hasIssueId, hasStandards, hasPatterns } =
       await this.checkPrerequisiteFiles(params);
 
     // Validate required prerequisites
@@ -459,9 +463,11 @@ After implementation:
         return { canProceed: false, hasIssueId, hasStandards, hasPatterns };
       }
 
-      if (!hasDecision) {
-        this.logger.info(chalk.yellow('⚠️  No decision recorded for this feature.'));
-        this.logger.info(chalk.gray('   Review exploration and make a decision first.'));
+      if (!hasRefinements) {
+        this.logger.info(chalk.yellow('⚠️  No refinement found for this feature.'));
+        this.logger.info(
+          chalk.gray('   Review exploration and refine implementation details first.')
+        );
         this.logger.info(chalk.gray('   Or use --skip-checks to proceed anyway.\n'));
       }
     }
